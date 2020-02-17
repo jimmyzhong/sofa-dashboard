@@ -20,8 +20,10 @@ public class User extends EditableEntity {
     private Long id;
     @Column(name = "PASSWORD", nullable = false, length = 50)
     private String password;
-    @Column(name = "USER_NAME", nullable = false, length = 50)
-    private String username;
+    @Column(name = "USER_NAME", unique = true, nullable = false, length = 50)
+    private String userName;
+    @Column(name = "NAME", nullable = false, length = 50)
+    private String name;
     @Column(name = "PHONE", nullable = false, length = 20)
     private String phone;
     @Column(name = "EMAIL", length = 20)

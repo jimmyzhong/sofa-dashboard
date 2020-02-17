@@ -8,6 +8,6 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequireUserLogin {
-    String[] roles();
-    String[] permissions();
+    String[] roles() default {""};
+    String[] permissions() default {""};
 }
