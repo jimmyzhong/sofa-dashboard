@@ -1,0 +1,20 @@
+jwt:
+  # 代表这个JWT的接收对象
+  applicationID: me.izhong.shop.xxx1
+  # 密钥, 经过Base64加密, 可自行替换
+  secret: bWUuaXpob25nLnNob3AueHh4MQ==
+  # JWT的签发主体，存入issuer
+  name: shop.server
+  # 过期时间，时间戳
+  expiresSecond: 172800
+aliCloud:
+  certifyServiceHost: http://checkone.market.alicloudapi.com
+  certifyServicePath: /chinadatapay/1882
+  appCode: need_to_be_private
+  smsDomain: dysmsapi.aliyuncs.com
+  smsVersion: 2017-05-25
+  smsRegionId: cn-hangzhou
+  smsAccessKey: need_to_be_private
+  smsSecret: need_to_be_private
+  smsSignName: 可劲儿买
+  smsTemplate: SMS_183835163
