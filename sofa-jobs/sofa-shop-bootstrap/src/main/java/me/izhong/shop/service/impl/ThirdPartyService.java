@@ -1,4 +1,4 @@
-package me.izhong.shop.service;
+package me.izhong.shop.service.impl;
 
 import me.izhong.shop.config.AliCloudProperties;
 import me.izhong.shop.response.ali.CertifyServiceResponse;

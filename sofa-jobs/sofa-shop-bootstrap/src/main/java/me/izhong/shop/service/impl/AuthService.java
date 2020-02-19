@@ -1,4 +1,4 @@
-package me.izhong.shop.service;
+package me.izhong.shop.service.impl;
 
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.User;

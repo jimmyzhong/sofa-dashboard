@@ -3,7 +3,7 @@ package me.izhong.shop.interceptor;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.config.JWTProperties;
-import me.izhong.shop.service.UserService;
+import me.izhong.shop.service.impl.UserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;

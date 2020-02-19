@@ -34,9 +34,5 @@ public class User extends EditableEntity {
     private Boolean isCertified;
     @Column(name = "LOCKED", length = 1)
     private Boolean isLocked;
-    @ManyToMany(targetEntity = Role.class)
-    @JoinTable(name="USER_ROLE",
-            joinColumns = {@JoinColumn(name="USER_ID", nullable = false)},
-            inverseJoinColumns = {@JoinColumn(name="ROLE_ID", nullable = false)})
-    private Set<Role> roles;
+
 }

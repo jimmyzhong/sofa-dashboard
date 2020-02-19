@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>sofa-jobs</artifactId>
+        <artifactId>sofa-db-commons</artifactId>
         <groupId>me.izhong.sofa</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
@@ -12,11 +12,6 @@
     <artifactId>sofa-shop-bootstrap</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-jobs-impl</artifactId>
-        </dependency>
-
         <!-- 引入依赖在这里 -->
         <!--SOFARPC 依赖-->
         <dependency>
@@ -85,6 +80,24 @@
             <artifactId>aliyun-java-sdk-core</artifactId>
             <version>4.0.3</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.18</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>5.2.17.Final</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -93,7 +106,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>me.izhong.jobs.JobsApplicationRunner</mainClass>
+                    <mainClass>me.izhong.shop.ShopApplication</mainClass>
                     <fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
                 </configuration>
                 <executions>

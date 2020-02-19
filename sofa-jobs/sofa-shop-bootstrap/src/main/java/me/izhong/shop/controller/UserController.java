@@ -5,9 +5,9 @@ import io.swagger.annotations.ApiOperation;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.entity.User;
-import me.izhong.shop.service.AuthService;
-import me.izhong.shop.service.ThirdPartyService;
-import me.izhong.shop.service.UserService;
+import me.izhong.shop.service.impl.AuthService;
+import me.izhong.shop.service.IUserService;
+import me.izhong.shop.service.impl.ThirdPartyService;
 import me.izhong.shop.util.JWTUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 public class UserController {
 
     @Autowired
-    public UserController(UserService userService,
+    public UserController(IUserService userService,
                           AuthService authService,
                           ThirdPartyService thirdService,
                           JWTProperties jwtConfig) {
@@ -35,7 +35,7 @@ public class UserController {
         this.thirdService = thirdService;
     }
 
-    private UserService userService;
+    private IUserService userService;
     private AuthService authService;
     private JWTProperties jwtConfig;
     private ThirdPartyService thirdService;
