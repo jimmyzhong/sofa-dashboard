@@ -3,7 +3,7 @@ package me.izhong.jobs.admin.controller;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.exception.BusinessException;
 import me.izhong.jobs.admin.config.JobPermissions;
 import me.izhong.jobs.admin.service.JobServiceReference;

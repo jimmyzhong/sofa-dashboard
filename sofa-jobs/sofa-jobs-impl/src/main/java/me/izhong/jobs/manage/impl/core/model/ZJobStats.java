@@ -2,12 +2,11 @@ package me.izhong.jobs.manage.impl.core.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.izhong.db.common.annotation.AutoId;
-import me.izhong.db.common.annotation.PrimaryId;
+import me.izhong.common.annotation.AutoId;
+import me.izhong.common.annotation.PrimaryId;
 import me.izhong.db.common.domain.TimedBasedEntity;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.io.Serializable;
 import java.util.Date;

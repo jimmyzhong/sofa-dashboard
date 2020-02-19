@@ -2,9 +2,9 @@ package me.izhong.db.common.domain;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
-import me.izhong.db.common.annotation.CreateTimeAdvise;
-import me.izhong.db.common.annotation.Search;
-import me.izhong.db.common.annotation.UpdateTimeAdvise;
+import me.izhong.common.annotation.CreateTimeAdvise;
+import me.izhong.common.annotation.Search;
+import me.izhong.common.annotation.UpdateTimeAdvise;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;

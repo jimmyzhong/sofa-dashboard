@@ -13,13 +13,13 @@ public class AuthService {
         this.userDao = userDao;
     }
 
-    public User attemptLogin(User user) {
-        User persistedUser = userDao.findFirstByUserName(user.getUserName());
+    public User attemptLogin(String username, String password) {
+        User persistedUser = userDao.findFirstByUserName(username);
         if (persistedUser == null) {
-            persistedUser = userDao.findFirstByEmail(user.getUserName());
+            persistedUser = userDao.findFirstByEmail(username);
         }
         if (persistedUser == null) {
-            persistedUser = userDao.findFirstByPhone(user.getUserName());
+            persistedUser = userDao.findFirstByPhone(username);
         }
 
         if (persistedUser == null) {

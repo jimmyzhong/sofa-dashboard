@@ -1,9 +1,8 @@
 package me.izhong.dashboard.web.controller.admin;
 
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.domain.Ztree;

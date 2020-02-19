@@ -1,7 +1,7 @@
 package me.izhong.dashboard.web.controller.admin;
 
 import me.izhong.dashboard.manage.service.SysUserService;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.domain.PageModel;
 import me.izhong.domain.PageRequest;

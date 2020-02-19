@@ -1,7 +1,6 @@
 package me.izhong.jobs.admin.controller;
 
-import me.izhong.dashboard.manage.security.config.PermissionConstants;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.domain.PageModel;
 import me.izhong.jobs.admin.config.JobPermissions;

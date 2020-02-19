@@ -1,10 +1,9 @@
 package me.izhong.dashboard.web.controller.monitor;
 
 import me.izhong.dashboard.manage.security.service.PasswordService;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysLoginInfo;
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;

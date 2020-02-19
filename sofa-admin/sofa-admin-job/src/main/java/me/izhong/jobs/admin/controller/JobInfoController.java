@@ -10,7 +10,7 @@ import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.domain.PageModel;
 import me.izhong.jobs.admin.config.JobPermissions;
 import me.izhong.jobs.admin.service.JobServiceReference;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.jobs.model.Job;
 import me.izhong.jobs.model.JobGroup;
 import me.izhong.jobs.type.TriggerTypeEnum;

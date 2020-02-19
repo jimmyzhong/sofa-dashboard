@@ -5,7 +5,7 @@ import me.izhong.domain.PageModel;
 import me.izhong.domain.PageRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

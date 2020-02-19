@@ -1,6 +1,6 @@
 package me.izhong.dashboard.web.demo.controller;
 
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.domain.PageModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

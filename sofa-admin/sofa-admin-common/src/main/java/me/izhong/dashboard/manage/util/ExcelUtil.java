@@ -1,8 +1,8 @@
 package me.izhong.dashboard.manage.util;
 
 import me.izhong.common.util.Convert;
-import me.izhong.db.common.annotation.Excel;
-import me.izhong.db.common.annotation.Excels;
+import me.izhong.common.annotation.Excel;
+import me.izhong.common.annotation.Excels;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.db.common.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;

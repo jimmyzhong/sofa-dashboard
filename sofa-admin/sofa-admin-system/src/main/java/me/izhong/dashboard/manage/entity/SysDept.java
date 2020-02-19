@@ -1,11 +1,11 @@
 package me.izhong.dashboard.manage.entity;
 
-import me.izhong.db.common.annotation.PrimaryId;
+import me.izhong.common.annotation.PrimaryId;
 import me.izhong.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.izhong.db.common.annotation.AutoId;
-import me.izhong.db.common.annotation.Search;
+import me.izhong.common.annotation.AutoId;
+import me.izhong.common.annotation.Search;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.hibernate.validator.constraints.Email;

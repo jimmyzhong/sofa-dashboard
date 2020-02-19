@@ -2,19 +2,17 @@ package me.izhong.jobs.manage.impl.core.model;
 
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.annotation.Search;
+import me.izhong.common.annotation.Search;
 import me.izhong.db.common.domain.TimedBasedEntity;
 import lombok.Data;
-import me.izhong.db.common.annotation.AutoId;
-import me.izhong.db.common.annotation.PrimaryId;
+import me.izhong.common.annotation.AutoId;
+import me.izhong.common.annotation.PrimaryId;
 import lombok.EqualsAndHashCode;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j

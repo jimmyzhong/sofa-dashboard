@@ -29,7 +29,7 @@ public class SwaggerConfig{
                 .title("Sofa Shop APIs")
                 .termsOfServiceUrl("me.izhong.sofa-shop")
                 .contact(new Contact("Call me maybe","me.izhong","neal_job@163.com"))
-                .version("1.0")
+                .version("2.0")
                 .build();
     }
 }

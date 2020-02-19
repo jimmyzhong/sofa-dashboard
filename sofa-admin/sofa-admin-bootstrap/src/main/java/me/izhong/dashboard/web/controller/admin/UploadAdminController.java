@@ -1,7 +1,7 @@
 package me.izhong.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.exception.BusinessException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.RandomStringUtils;

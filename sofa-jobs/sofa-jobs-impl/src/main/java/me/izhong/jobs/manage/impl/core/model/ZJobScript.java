@@ -1,15 +1,13 @@
 package me.izhong.jobs.manage.impl.core.model;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import me.izhong.db.common.annotation.AutoId;
-import me.izhong.db.common.annotation.CreateTimeAdvise;
-import me.izhong.db.common.annotation.PrimaryId;
+import me.izhong.common.annotation.AutoId;
+import me.izhong.common.annotation.CreateTimeAdvise;
+import me.izhong.common.annotation.PrimaryId;
 import me.izhong.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;

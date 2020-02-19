@@ -1,4 +1,4 @@
-package me.izhong.db.common.annotation;
+package me.izhong.common.annotation;
 
 import java.lang.annotation.*;
 

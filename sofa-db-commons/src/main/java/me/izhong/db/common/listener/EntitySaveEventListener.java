@@ -1,14 +1,10 @@
 package me.izhong.db.common.listener;
 
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.annotation.AutoId;
-import me.izhong.db.common.annotation.CreateTimeAdvise;
-import me.izhong.db.common.annotation.UpdateTimeAdvise;
+import me.izhong.common.annotation.AutoId;
+import me.izhong.common.annotation.CreateTimeAdvise;
+import me.izhong.common.annotation.UpdateTimeAdvise;
 import me.izhong.db.common.domain.SysSeqInfo;
-import me.izhong.db.common.exception.BusinessException;
-import me.izhong.db.common.annotation.AutoId;
-import me.izhong.db.common.annotation.CreateTimeAdvise;
-import me.izhong.db.common.annotation.UpdateTimeAdvise;
 import me.izhong.db.common.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
@@ -18,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;

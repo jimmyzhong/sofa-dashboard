@@ -1,7 +1,7 @@
 package me.izhong.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.annotation.AjaxWrapper;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysMenu;
