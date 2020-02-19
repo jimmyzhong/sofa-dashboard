@@ -13,14 +13,9 @@ import java.util.Optional;
 @Service
 @Slf4j
 public class UserService implements IUserService {
-    private UserDao userDao;
-    private ThirdPartyService certifyService;
 
-    @Autowired
-    public UserService(UserDao userDao, ThirdPartyService certifyService) {
-        this.userDao = userDao;
-        this.certifyService = certifyService;
-    }
+    @Autowired private UserDao userDao;
+    @Autowired private ThirdPartyService certifyService;
 
     public void validateRole(String[] requiredRoles, String userId) {
         Optional<User> user = userDao.findById(Long.valueOf(userId));
