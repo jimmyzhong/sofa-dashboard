@@ -40,6 +40,7 @@ spring:
   redis:
     host: r-bp1o1p8t1kg5squfft.redis.rds.aliyuncs.com
     port: 6379
+    password: redis@test123
     timeout: 3000
     jedis:
       pool:
