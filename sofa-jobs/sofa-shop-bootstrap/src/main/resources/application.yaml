@@ -10,14 +10,15 @@ jwt:
 ali-cloud:
   certifyServiceHost: http://checkone.market.alicloudapi.com
   certifyServicePath: /chinadatapay/1882
-  appCode: need_to_be_private
+  appCode: f4a69bfd4671490ebc12fe06adbd3b96
   smsDomain: dysmsapi.aliyuncs.com
   smsVersion: 2017-05-25
   smsRegionId: cn-hangzhou
-  smsAccessKey: need_to_be_private
-  smsSecret: need_to_be_private
-  smsSignName: 可劲儿买
-  smsTemplate: SMS_183835163
+  smsAccessKey: LTAI4FcU393LqZwefamE2T5R
+  smsSecret: lrpkrbcduzLhqbrHQKEnkIMKQyF14k
+  smsSignName: 可劲买
+  smsTemplate: SMS_183810132
+  smsPassResetTemplate: SMS_183805124
 spring:
   application:
     name: sjm
@@ -35,6 +36,21 @@ spring:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         format_sql: true
     show-sql: true
+  #redis
+  redis:
+    host: r-bp1o1p8t1kg5squfft.redis.rds.aliyuncs.com
+    port: 6379
+    password: redis@test123
+    timeout: 3000
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+  #session
+  session:
+    store-type: redis
 
 server:
   # 服务器的HTTP端口，默认为80

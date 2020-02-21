@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.shop.config.AliCloudProperties;
 import me.izhong.shop.response.ali.CertifyServiceResponse;
 import me.izhong.shop.response.ali.SmsResponse;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
@@ -54,7 +55,7 @@ public class AliCloudUtils {
         return null;
     }
 
-    public SmsResponse sendSms(AliCloudProperties props, String phoneNumber){
+    public SmsResponse sendSms(AliCloudProperties props, String phoneNumber, String params){
         DefaultProfile profile = DefaultProfile.getProfile(props.getSmsRegionId(), props.getSmsAccessKey(), props.getSmsSecret());
         IAcsClient client = new DefaultAcsClient(profile);
 
@@ -67,6 +68,9 @@ public class AliCloudUtils {
         request.putQueryParameter("PhoneNumbers", phoneNumber);
         request.putQueryParameter("SignName", props.getSmsSignName());
         request.putQueryParameter("TemplateCode", props.getSmsTemplate());
+        if (!StringUtils.isEmpty(params)) {
+            request.putQueryParameter("TemplateParam", params);
+        }
 
         try {
             CommonResponse response = client.getCommonResponse(request);
