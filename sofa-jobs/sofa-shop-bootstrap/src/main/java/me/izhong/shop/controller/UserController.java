@@ -9,45 +9,54 @@ import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.config.Constants;
-import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.ThirdPartyService;
-import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@Api
-@RestController
+@Controller
 @AjaxWrapper
-@RequestMapping(value = "/api/user", consumes = "application/json")
+@Api(value = "用户相关接口",description = "用户相关接口描述")
+@RequestMapping(value = "/api/user")
+//, consumes = "application/json"
 @Slf4j
 public class UserController {
 
     @Autowired private IUserService userService;
     @Autowired private AuthService authService;
-    @Autowired private JWTProperties jwtConfig;
     @Autowired private ThirdPartyService thirdService;
 
     @PostMapping("/login")
-    @ResponseBody
-    @ApiOperation(value="验证用户登陆",httpMethod = "POST")
+    @ApiOperation(value="用户登陆",httpMethod = "POST",
+            notes = "用户登陆使用的接口(登陆后返回的token在后续需要登陆接口head里面的Authorization字段上送)",consumes = "application/json")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string"),
     })
-    public String login(@RequestBody Map<String,String> params, HttpServletResponse response) {
+    @ApiResponses({
+            @ApiResponse(code = 200, message = "正常应答，响应数据在data节点{token}")
+    })
+//    {
+//        "code": 200,
+//            "data": {
+//        "token": "11a977e694bd241e4be8ba99bb571e051"
+//    },
+//        "msg": "成功"
+//    }
+    public Map login(@ApiParam(hidden = true) @RequestBody Map<String,String> params, HttpServletResponse response) {
         String phone = params.get("phone");
         String password = params.get("password");
         //TODO verify login attempt, e.g. exceed max count
@@ -60,17 +69,18 @@ public class UserController {
         String token = persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-","");
         session.setId(persistedUser.getId());
         CacheUtil.setSessionInfo(token, session);
-        response.addHeader(Constants.AUTHORIZATION, token);
-        return "Success.";
+        //response.addHeader(Constants.AUTHORIZATION, token);
+        return new HashMap(){{
+            put("token",token);
+        }};
     }
 
     @PostMapping("/register")
     @ApiOperation(value="用户注册",httpMethod = "POST")
-    @ResponseBody
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "string"),
     })
     public String register(@RequestBody Map<String,String> params) {
         User user = new User();
@@ -90,9 +100,9 @@ public class UserController {
     @ApiOperation(value="重置密码",httpMethod = "POST")
     @ResponseBody
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "string"),
     })
     public String resetPassword(@RequestBody Map<String,String> params) {
         String phone = params.get("phone");
@@ -121,13 +131,12 @@ public class UserController {
     }
 
     @PostMapping("/certify")
-    @ResponseBody
     @RequireUserLogin
     @ApiOperation(value="用户实名认证",httpMethod = "POST")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "姓名", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "idCard", value = "身份证号码", required = true, dataType = "String"),
-            @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
+            @ApiImplicitParam(name = "name", value = "姓名", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "idCard", value = "身份证号码", required = true, dataType = "string"),
+            @ApiImplicitParam(paramType = "header", dataType = "string", name = Constants.AUTHORIZATION, value = "登录成功后token", required = true)
     })
     public String certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
         Long userId = (Long)request.getAttribute("userId");
@@ -143,7 +152,6 @@ public class UserController {
 //
     @GetMapping("/register/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
-    @ResponseBody
     public String getPhoneCode(@RequestParam("phone")String phoneNumber,
                                @RequestParam(name="resetPass", defaultValue = "false")Boolean resetPass) {
         // TODO a valid phone number and valid attempt to send sms

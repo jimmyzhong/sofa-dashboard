@@ -1,16 +1,22 @@
 package me.izhong.shop.filter;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import me.izhong.db.common.constant.ErrCode;
 
 import java.io.Serializable;
 
 @Data
+@ApiModel("api接口通用返回对象")
 public class ResponseContainer<T> implements Serializable {
 
-    public static final String SUCCESS_CODE = ErrCode.SUCCESS_CODE;
-    public static final String FAIL_CODE = ErrCode.FAIL_CODE;
-    private String code;
+    public static final int SUCCESS_CODE = 200;
+    public static final int FAIL_CODE = 409;
+
+    @ApiModelProperty(value = "返回码",dataType = "int")
+    private int code;
+    @ApiModelProperty(value = "错误信息",dataType = "String")
     private String msg;
 
     private T data;
@@ -19,11 +25,11 @@ public class ResponseContainer<T> implements Serializable {
 
     }
 
-    public ResponseContainer(String code, T data) {
+    public ResponseContainer(int code, T data) {
         this(code, null, data);
     }
 
-    public ResponseContainer(String code, String msg, T data) {
+    public ResponseContainer(int code, String msg, T data) {
         this.code = code;
         this.msg = msg;
         this.data = data;
@@ -41,7 +47,7 @@ public class ResponseContainer<T> implements Serializable {
         return container(FAIL_CODE, msg, data);
     }
 
-    public static <T> ResponseContainer<T> container(String code, String msg, T data) {
+    public static <T> ResponseContainer<T> container(int code, String msg, T data) {
         ResponseContainer<T> rc = new ResponseContainer<>();
         rc.setData(data);
         rc.setMsg(msg);

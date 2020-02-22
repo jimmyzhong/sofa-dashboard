@@ -30,12 +30,11 @@ public class ExceptionFilter implements HandlerExceptionResolver {
         //httpServletResponse.getWriter().write("wrong" + e.getMessage());
         //httpServletResponse.flushBuffer();
 
-        String code = ResponseContainer.FAIL_CODE;
+        int code = ResponseContainer.FAIL_CODE;
         String msg = "系统异常";
          if (e instanceof BusinessException) {
             log.error("请求BusinessException异常", e);
             BusinessException bexp = (BusinessException) e;
-            code = bexp.getCode();
             msg = bexp.getMessage();
         } else if(e instanceof BindException){
             BindException ex = (BindException)e;
