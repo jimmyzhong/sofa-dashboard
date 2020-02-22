@@ -17,6 +17,8 @@
         <module>sofa-jobs-facade</module>
         <module>sofa-jobs-impl</module>
         <module>sofa-jobs-agent-bootstrap</module>
+
+        <module>sofa-shop-facade</module>
         <module>sofa-shop-bootstrap</module>
     </modules>
 

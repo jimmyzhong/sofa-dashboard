@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('执行器名称修改')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-shop-user-edit" th:object="${user}">
+			<input id="id" name="id" type="hidden" th:field="*{id}"/>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">用户名称：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="username" id="username" th:field="*{username}" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">手机号：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="phone" id="phone" th:field="*{phone}">
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript">
+        var prefix = ctx + "ext/djob/group";
+		
+		function submitHandler() {
+	        if ($.validate.form()) {
+	        	$.operate.save(prefix + "/edit", $('#form-shop-user-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>
