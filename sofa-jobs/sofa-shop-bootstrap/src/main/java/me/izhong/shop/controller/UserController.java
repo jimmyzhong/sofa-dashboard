@@ -1,10 +1,7 @@
 package me.izhong.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.model.UserInfo;
@@ -24,7 +21,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -34,8 +30,7 @@ import java.util.UUID;
 @Controller
 @AjaxWrapper
 @Api(value = "用户相关接口",description = "用户相关接口描述")
-@RequestMapping(value = "/api/user")
-//, consumes = "application/json"
+@RequestMapping(value = "/api/user", consumes = "application/json")
 @Slf4j
 public class UserController {
 
@@ -48,6 +43,15 @@ public class UserController {
     @RequireUserLogin
     @ApiOperation(value="获取当前登录用户信息",httpMethod = "GET")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
+    @ApiResponses({@ApiResponse(code=200, message = "当前用户信息, 比如: \n{\n" +
+            "  \"avatar\": \"头像\",\n" +
+            "  \"email\": \"邮件\",\n" +
+            "  \"loginName\": \"登录名\",\n" +
+            "  \"phoneNumber\": \"手机\",\n" +
+            "  \"sex\": \"性别\",\n" +
+            "  \"userId\": 0,\n" +
+            "  \"userName\": \"姓名\"\n" +
+            "}")})
     public UserInfo getCurrentUser(HttpServletRequest request) {
         Long userId = getCurrentUserId(request);
         User user = userService.findById(userId);
@@ -68,25 +72,33 @@ public class UserController {
         return userId;
     }
 
-    @PostMapping("/")
+    @PostMapping(path="/", consumes = "application/json")
     @ResponseBody
     @RequireUserLogin
     @ApiOperation(value="更新当前登录用户信息", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
-    public String updateUserInfo(@RequestBody UserInfo userInfo, HttpServletRequest request) {
+    public String updateUserInfo(
+            @ApiParam(required = true, type = "object", value = "uer info, like: \n{" +
+                    "  \"avatar\": \"头像\",\n" +
+                    "  \"email\": \"邮件\",\n" +
+                    "  \"loginName\": \"登录名\",\n" +
+                    "  \"phoneNumber\": \"手机\",\n" +
+                    "  \"sex\": \"性别\",\n" +
+                    "  \"userId\": 0,\n" +
+                    "  \"userName\": \"姓名\"\n" +
+                    "}")
+            @RequestBody UserInfo userInfo, HttpServletRequest request) {
         Long userId = getCurrentUserId(request);
         User user = userService.findById(userId);
 
         //make sure email, telephone and login name are unique
         User test = new User();
-        test.setPhone(userInfo.getPhoneNumber());
         test.setEmail(userInfo.getEmail());
         test.setLoginName(userInfo.getLoginName());
         userService.expectNew(test);
 
         user.setLoginName(userInfo.getLoginName());
         user.setEmail(userInfo.getEmail());
-        user.setPhone(userInfo.getPhoneNumber());
         user.setAvatar(userInfo.getAvatar());
 
         if (!user.getIsCertified() && !StringUtils.isEmpty(userInfo.getUserName())) {
@@ -103,21 +115,21 @@ public class UserController {
     @PostMapping("/login")
     @ApiOperation(value="用户登陆",httpMethod = "POST",
             notes = "用户登陆使用的接口(登陆后返回的token在后续需要登陆接口head里面的Authorization字段上送)",consumes = "application/json")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string"),
-    })
     @ApiResponses({
-            @ApiResponse(code = 200, message = "正常应答，响应数据在data节点{token}")
+            @ApiResponse(code = 200, message = "正常应答，响应数据在data节点{token}, 例如:\n" + "{\n" +
+                    "  \"code\":200,\n" +
+                    "  \"data\":{\n" +
+                    "      \"token\":\"11a977e694bd241e4be8ba99bb571e051\"\n" +
+                    "  },\n" +
+                    "  \"msg\":\"成功\"\n" +
+                    "}")
     })
-//    {
-//        "code": 200,
-//            "data": {
-//        "token": "11a977e694bd241e4be8ba99bb571e051"
-//    },
-//        "msg": "成功"
-//    }
-    public Map login(@ApiParam(hidden = true) @RequestBody Map<String,String> params, HttpServletResponse response) {
+    public Map login(
+            @ApiParam(required = true, type = "object", value = "login request body, like: \n{" +
+                    "  \"phone\": \"12345678\",\n" +
+                    "  \"password\": \"12345678\"\n" +
+                    "}")
+            @RequestBody Map<String,String> params) {
         String phone = params.get("phone");
         String password = params.get("password");
         //TODO verify login attempt, e.g. exceed max count
@@ -161,9 +173,9 @@ public class UserController {
     @ApiOperation(value="重置密码",httpMethod = "POST")
     @ResponseBody
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "phone", value = "手机号", dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
+            @ApiImplicitParam(name = "code", value = "验证码", dataType = "string"),
     })
     public String resetPassword(@RequestBody Map<String,String> params) {
         String phone = params.get("phone");
