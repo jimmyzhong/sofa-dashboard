@@ -2,6 +2,8 @@ package me.izhong.shop.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.shop.cache.CacheUtil;
+import me.izhong.shop.cache.SessionInfo;
 import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
@@ -72,6 +74,24 @@ public class TestController {
         Map map = new HashedMap();
         map.put("local_ip", InetAddress.getLocalHost().toString());
         return map;
+    }
+
+    @GetMapping("/testcache")
+    @AjaxWrapper
+    public SessionInfo test2(String uid)  throws Exception{
+
+        String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        SessionInfo sessionInfo = CacheUtil.getSessionInfo(uid);
+        if(sessionInfo == null) {
+            sessionInfo = new SessionInfo();
+            sessionInfo.setTimestamp(now);
+        } else {
+            sessionInfo.setLasttimestamp(sessionInfo.getTimestamp());
+            sessionInfo.setTimestamp(now);
+        }
+        CacheUtil.setSessionInfo(uid,sessionInfo);
+
+        return sessionInfo;
     }
 
 }
