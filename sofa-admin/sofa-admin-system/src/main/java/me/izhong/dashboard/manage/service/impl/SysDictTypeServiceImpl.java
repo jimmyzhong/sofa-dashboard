@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.service.impl;
 
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.db.common.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.UserConstants;

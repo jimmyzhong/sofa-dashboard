@@ -1,10 +1,10 @@
 package me.izhong.jobs.manage.impl.service;
 
 import me.izhong.db.common.service.CrudBaseService;
-import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.manage.impl.core.model.ZJobInfo;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 
 import java.util.Date;
 import java.util.List;

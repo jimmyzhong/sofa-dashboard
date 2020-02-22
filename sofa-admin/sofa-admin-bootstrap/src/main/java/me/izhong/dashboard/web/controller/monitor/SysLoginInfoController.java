@@ -3,7 +3,7 @@ package me.izhong.dashboard.web.controller.monitor;
 import me.izhong.dashboard.manage.security.service.PasswordService;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.common.util.PageRequestUtil;
-import me.izhong.domain.PageModel;
+import me.izhong.common.domain.PageModel;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysLoginInfo;

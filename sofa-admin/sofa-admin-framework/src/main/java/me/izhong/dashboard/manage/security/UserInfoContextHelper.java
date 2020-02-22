@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.security;
 
-import me.izhong.model.UserInfo;
+import me.izhong.common.model.UserInfo;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;

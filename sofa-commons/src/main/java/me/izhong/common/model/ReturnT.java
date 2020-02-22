@@ -1,4 +1,4 @@
-package me.izhong.model;
+package me.izhong.common.model;
 
 import java.io.Serializable;
 

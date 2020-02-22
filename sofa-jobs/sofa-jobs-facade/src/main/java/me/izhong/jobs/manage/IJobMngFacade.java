@@ -1,12 +1,11 @@
 package me.izhong.jobs.manage;
 
-import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.model.*;
 import me.izhong.jobs.type.TriggerTypeEnum;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 
-import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 

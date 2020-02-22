@@ -10,7 +10,7 @@ import me.izhong.jobs.agent.exp.JobExecutionException;
 import me.izhong.jobs.agent.service.JobServiceReference;
 import me.izhong.jobs.agent.util.ContextUtil;
 import me.izhong.jobs.manage.IJobMngFacade;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.StringUtils;
 

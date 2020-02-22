@@ -1,4 +1,4 @@
-package me.izhong.model;
+package me.izhong.common.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;

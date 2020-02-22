@@ -2,7 +2,7 @@ package me.izhong.jobs.manage.impl.core.route;
 
 
 import me.izhong.jobs.model.TriggerParam;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

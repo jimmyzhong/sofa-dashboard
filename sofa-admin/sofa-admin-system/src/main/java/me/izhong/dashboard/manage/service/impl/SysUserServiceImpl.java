@@ -1,10 +1,9 @@
 package me.izhong.dashboard.manage.service.impl;
 
 import me.izhong.db.common.util.PageRequestUtil;
-import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.db.common.service.CrudBaseServiceImpl;
-import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.dashboard.manage.dao.*;
@@ -25,13 +24,11 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 

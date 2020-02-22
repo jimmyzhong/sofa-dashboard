@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.jobs.agent.bean.JobContext;
 import me.izhong.jobs.agent.bean.JobsConfigBean;
 import me.izhong.jobs.agent.util.ContextUtil;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;

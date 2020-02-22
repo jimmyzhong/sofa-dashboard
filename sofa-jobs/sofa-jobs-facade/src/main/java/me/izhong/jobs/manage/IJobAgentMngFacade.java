@@ -1,7 +1,7 @@
 package me.izhong.jobs.manage;
 
 import me.izhong.jobs.model.LogResult;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 
 import java.util.Map;
 

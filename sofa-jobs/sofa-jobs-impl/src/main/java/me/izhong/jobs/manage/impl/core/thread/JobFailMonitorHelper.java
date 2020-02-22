@@ -8,7 +8,7 @@ import me.izhong.jobs.manage.impl.core.model.ZJobLog;
 import me.izhong.jobs.type.TriggerTypeEnum;
 import me.izhong.jobs.manage.impl.service.ZJobInfoService;
 import me.izhong.jobs.manage.impl.service.ZJobLogService;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

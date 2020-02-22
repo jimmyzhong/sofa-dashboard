@@ -2,7 +2,7 @@ package me.izhong.jobs.manage.impl.core.route.strategy;
 
 import me.izhong.jobs.manage.impl.core.route.ExecutorRouter;
 import me.izhong.jobs.model.TriggerParam;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 
 
 import java.util.List;

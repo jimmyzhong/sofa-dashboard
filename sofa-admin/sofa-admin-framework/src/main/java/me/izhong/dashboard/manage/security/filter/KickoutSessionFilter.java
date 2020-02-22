@@ -1,7 +1,7 @@
 package me.izhong.dashboard.manage.security.filter;
 
 import com.alibaba.fastjson.JSON;
-import me.izhong.model.UserInfo;
+import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.constants.ShiroConstants;
 import me.izhong.dashboard.manage.util.ServletUtil;
 import me.izhong.dashboard.web.bean.ResponseContainer;

@@ -1,7 +1,7 @@
 package me.izhong.jobs.agent.job;
 
 import me.izhong.jobs.agent.bean.JobContext;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 
 public abstract class IJobHandler {
 

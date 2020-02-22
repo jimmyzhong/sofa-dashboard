@@ -14,7 +14,7 @@ import me.izhong.jobs.manage.impl.service.ZJobLogService;
 import me.izhong.jobs.model.TriggerParam;
 import me.izhong.jobs.type.ExecutorBlockStrategyEnum;
 import me.izhong.jobs.type.TriggerTypeEnum;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -7,7 +7,7 @@ import me.izhong.jobs.agent.job.ShellCommandStatusJob;
 import me.izhong.jobs.manage.IJobAgentMngFacade;
 import me.izhong.jobs.agent.bean.JobContext;
 import me.izhong.jobs.model.LogResult;
-import me.izhong.model.ReturnT;
+import me.izhong.common.model.ReturnT;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

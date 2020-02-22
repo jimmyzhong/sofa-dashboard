@@ -1,8 +1,8 @@
 package me.izhong.dashboard.web.demo.controller;
 
 import me.izhong.db.common.util.PageRequestUtil;
-import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import me.izhong.common.annotation.AjaxWrapper;

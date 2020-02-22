@@ -1,6 +1,6 @@
 package me.izhong.dashboard.web.controller;
 
-import me.izhong.model.UserInfo;
+import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import me.izhong.dashboard.manage.service.SysMenuService;

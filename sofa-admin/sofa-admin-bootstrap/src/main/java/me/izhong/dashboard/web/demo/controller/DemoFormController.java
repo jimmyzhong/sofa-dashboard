@@ -1,7 +1,7 @@
 package me.izhong.dashboard.web.demo.controller;
 
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.domain.PageModel;
+import me.izhong.common.domain.PageModel;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

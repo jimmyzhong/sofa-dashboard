@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.util;
 
-import me.izhong.model.UserInfo;
+import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.entity.SysUser;
 
 public class UserConvertUtil {

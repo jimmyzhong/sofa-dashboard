@@ -1,10 +1,8 @@
 package me.izhong.db.common.util;
 
 import me.izhong.common.util.TimeUtil;
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageRequest;
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.common.util.TimeUtil;
-import me.izhong.domain.PageRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 

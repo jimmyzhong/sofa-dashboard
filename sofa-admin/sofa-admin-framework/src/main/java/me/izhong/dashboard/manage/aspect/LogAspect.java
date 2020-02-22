@@ -1,7 +1,7 @@
 package me.izhong.dashboard.manage.aspect;
 
 import com.alibaba.fastjson.JSON;
-import me.izhong.model.UserInfo;
+import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.SystemConstants;
 import me.izhong.dashboard.manage.entity.SysOperLog;

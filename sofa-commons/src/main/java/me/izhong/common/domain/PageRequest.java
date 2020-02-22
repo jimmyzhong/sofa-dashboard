@@ -1,6 +1,6 @@
-package me.izhong.domain;
+package me.izhong.common.domain;
 
-import me.izhong.model.UserInfo;
+import me.izhong.common.model.UserInfo;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 

@@ -1,11 +1,8 @@
 package me.izhong.db.common.service;
 
-import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.db.common.exception.BusinessException;
-import me.izhong.db.common.exception.BusinessException;
-import me.izhong.domain.PageModel;
-import me.izhong.domain.PageRequest;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;

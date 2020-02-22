@@ -1,7 +1,6 @@
 package me.izhong.dashboard.manage.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import me.izhong.annotation.*;
 import me.izhong.common.annotation.AutoId;
 import me.izhong.common.annotation.Excel;
 import me.izhong.common.annotation.PrimaryId;
