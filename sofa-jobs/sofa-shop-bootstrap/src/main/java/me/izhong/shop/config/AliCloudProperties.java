@@ -19,4 +19,5 @@ public class AliCloudProperties {
     private String smsSecret;
     private String smsSignName;
     private String smsTemplate;
+    private String smsPassResetTemplate;
 }

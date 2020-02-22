@@ -3,10 +3,9 @@ package me.izhong.shop.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import me.izhong.shop.util.PasswordUtils;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Set;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -18,13 +17,13 @@ public class User extends EditableEntity {
     @Id
     @GeneratedValue(generator = "USER_SEQ", strategy = GenerationType.SEQUENCE)
     private Long id;
-    @Column(name = "PASSWORD", nullable = false, length = 50)
+    @Column(name = "PASSWORD", nullable = false, length = 64)
     private String password;
-    @Column(name = "USER_NAME", unique = true, nullable = false, length = 50)
+    @Column(name = "USER_NAME", length = 50)
     private String userName;
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "NAME", length = 50)
     private String name;
-    @Column(name = "PHONE", nullable = false, length = 20)
+    @Column(name = "PHONE",  length = 20)
     private String phone;
     @Column(name = "EMAIL", length = 20)
     private String email;
@@ -34,5 +33,12 @@ public class User extends EditableEntity {
     private Boolean isCertified;
     @Column(name = "LOCKED", length = 1)
     private Boolean isLocked;
+    @Column(name = "SALT", length = 32)
+    private String salt;
 
+
+    public void encryptUserPassword() {
+        setSalt(PasswordUtils.generateSalt(8));
+        setPassword(PasswordUtils.encrypt(getPassword(), getSalt()));
+    }
 }

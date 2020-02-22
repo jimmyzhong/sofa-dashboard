@@ -1,18 +1,20 @@
 package me.izhong.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.db.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
+import me.izhong.shop.cache.CacheUtil;
+import me.izhong.shop.cache.SessionInfo;
+import me.izhong.shop.config.Constants;
 import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.ThirdPartyService;
-import me.izhong.shop.util.JWTUtils;
+import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +22,16 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.nio.charset.Charset;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.UUID;
 
 @Api
 @RestController
 @AjaxWrapper
-@RequestMapping("/user")
+@RequestMapping(value = "/user", consumes = "application/json")
 @Slf4j
 public class UserController {
 
@@ -34,55 +41,130 @@ public class UserController {
     @Autowired private ThirdPartyService thirdService;
 
     @PostMapping("/login")
-    @AjaxWrapper
+    @ResponseBody
     @ApiOperation(value="验证用户登陆",httpMethod = "POST")
-    public String login(String username, String password, HttpServletResponse response) {
-//        User persistedUser = authService.attemptLogin(username,password);
-//        String token = JWTUtils.createJWT(persistedUser.getId().toString(), persistedUser.getUserName(),
-//                jwtConfig);
-//        response.addHeader(JWTUtils.AUTH_HEADER_KEY, JWTUtils.TOKEN_PREFIX + token);
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+    })
+    public String login(@RequestBody Map<String,String> params, HttpServletResponse response) {
+        String phone = params.get("phone");
+        String password = params.get("password");
+        //TODO verify login attempt, e.g. exceed max count
+        if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(password)) {
+            throw BusinessException.build("用户名密码不能为空");
+        }
+        User persistedUser = authService.attemptLogin(phone, password);
+        SessionInfo session = new SessionInfo();
+        session.setLasttimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        String token = persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-","");
+        session.setId(persistedUser.getId());
+        CacheUtil.setSessionInfo(token, session);
+        response.addHeader(Constants.AUTHORIZATION, token);
         return "Success.";
     }
-//
-//    @PostMapping("/register")
-//    @ApiOperation(value="用户注册",httpMethod = "POST")
-//    @ResponseBody
-//    public String register(User user) {
-//        validateInput(user);
-//        userService.saveOrUpdate(user);
-//        return "Success.";
-//    }
-//
-    @PostMapping("/certify")
-    @ApiOperation(value="用户实名认证",httpMethod = "POST")
+
+    @PostMapping("/register")
+    @ApiOperation(value="用户注册",httpMethod = "POST")
     @ResponseBody
-//    @RequireUserLogin
-    public String certify(HttpServletRequest request) {
-        String userId = (String)request.getAttribute("userId");
-        if (StringUtils.isEmpty(userId)) {
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+    })
+    public String register(@RequestBody Map<String,String> params) {
+        User user = new User();
+        user.setPhone(params.get("phone"));
+        user.setPassword(params.get("password"));
+        ensureRequiredFieldWhenRegistering(user);
+        userService.expectNew(user);
+        user.setId(null);
+        user.encryptUserPassword();
+        userService.saveOrUpdate(user);
+        return "Success.";
+    }
+
+    @PostMapping("/resetPassword")
+    @ApiOperation(value="重置密码",httpMethod = "POST")
+    @ResponseBody
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+    })
+    public String resetPassword(@RequestBody Map<String,String> params) {
+        String phone = params.get("phone");
+        String password = params.get("password");
+
+        User user = new User();
+        user.setPhone(phone);
+        user.setPassword(password);
+        ensureRequiredFieldWhenRegistering(user);
+        user = userService.expectExists(user);
+        user.setPassword(password);
+        user.encryptUserPassword();
+        userService.saveOrUpdate(user);
+        return "Success.";
+    }
+
+    private void ensureRequiredFieldWhenRegistering(User user) {
+        if (StringUtils.isEmpty(user.getPassword())){
+            throw BusinessException.build("密码不能为空");
+        }
+        if (StringUtils.isEmpty(user.getUserName())
+                && StringUtils.isEmpty(user.getEmail()) && StringUtils.isEmpty(user.getPhone())) {
+            throw BusinessException.build("用户名不能为空");
+        }
+    }
+
+    @PostMapping("/certify")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="用户实名认证",httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "name", value = "姓名", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "idCard", value = "身份证号码", required = true, dataType = "String"),
+            @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
+    })
+    public String certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
+        Long userId = (Long)request.getAttribute("userId");
+        if (userId == null) {
             throw new RuntimeException("没有找到User Id");
         }
         User user = userService.findById(Long.valueOf(userId));
+        user.setName(params.get("name"));
+        user.setIdentityID(params.get("idCard"));
         userService.certify(user);
         return "Success.";
     }
 //
-    @PostMapping("/register/phoneCode")
-    @ApiOperation(value="获取验证码",httpMethod = "POST")
+    @GetMapping("/register/phoneCode")
+    @ApiOperation(value="获取验证码",httpMethod = "GET")
     @ResponseBody
-    public String getPhoneCode(@RequestParam("phone")String phoneNumber) {
+    public String getPhoneCode(@RequestParam("phone")String phoneNumber,
+                               @RequestParam(name="resetPass", defaultValue = "false")Boolean resetPass) {
         // TODO a valid phone number and valid attempt to send sms
         String randomNumber = RandomStringUtils.randomNumeric(6);
-        String res = thirdService.sendSms(phoneNumber, new JSONObject(){{put("code", randomNumber);}});
+        String res = thirdService.sendSms(phoneNumber, new JSONObject(){{put("code", randomNumber);}}, resetPass);
         if (res != null) {
             log.info("sms res:" + res);
             return res;
         }
+        SessionInfo sessionInfo = new SessionInfo();
+        sessionInfo.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:SS")));
+        sessionInfo.setData(randomNumber);
+        //TODO 过期时间 ？
+        CacheUtil.setSessionInfo("phone" + phoneNumber, sessionInfo);
         return "Success.";
     }
 
-//    private void validateInput(User user) {
-//        userService.expectNew(user);
-//    }
-
+    @GetMapping("/register/phoneCode/verify")
+    @ApiOperation(value="验证",httpMethod = "GET")
+    @ResponseBody
+    public String verifyPhoneCode(@RequestParam("phone")String phoneNumber, @RequestParam("code")String code) {
+        SessionInfo sessionInfo = CacheUtil.getSessionInfo("phone" + phoneNumber);
+        if (sessionInfo == null || StringUtils.isEmpty(sessionInfo.getData())
+            || !sessionInfo.getData().equalsIgnoreCase(code)) {
+            throw BusinessException.build("验证失败");
+        }
+        return "Success.";
+    }
 }
