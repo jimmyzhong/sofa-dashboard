@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 @Controller
 public class DefaultController {
 
-    @RequestMapping
+    @RequestMapping(value = "/api")
     public void error(HttpServletRequest request) throws NoHandlerFoundException {
         throw new NoHandlerFoundException(request.getMethod(),request.getRequestURI(),new HttpHeaders());
     }

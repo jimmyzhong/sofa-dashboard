@@ -31,7 +31,7 @@ import java.util.UUID;
 @Api
 @RestController
 @AjaxWrapper
-@RequestMapping(value = "/user", consumes = "application/json")
+@RequestMapping(value = "/api/user", consumes = "application/json")
 @Slf4j
 public class UserController {
 
