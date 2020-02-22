@@ -70,12 +70,15 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "String"),
     })
     public String register(@RequestBody Map<String,String> params) {
         User user = new User();
         user.setPhone(params.get("phone"));
         user.setPassword(params.get("password"));
         ensureRequiredFieldWhenRegistering(user);
+        verifyPhoneCode(params.get("phone"), params.get("code"));
+
         userService.expectNew(user);
         user.setId(null);
         user.encryptUserPassword();
@@ -89,15 +92,17 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "String"),
             @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "String"),
     })
     public String resetPassword(@RequestBody Map<String,String> params) {
         String phone = params.get("phone");
         String password = params.get("password");
-
         User user = new User();
         user.setPhone(phone);
         user.setPassword(password);
         ensureRequiredFieldWhenRegistering(user);
+        verifyPhoneCode(phone, params.get("code"));
+
         user = userService.expectExists(user);
         user.setPassword(password);
         user.encryptUserPassword();
@@ -156,13 +161,11 @@ public class UserController {
         return "Success.";
     }
 
-    @GetMapping("/register/phoneCode/verify")
-    @ApiOperation(value="验证",httpMethod = "GET")
-    @ResponseBody
     public String verifyPhoneCode(@RequestParam("phone")String phoneNumber, @RequestParam("code")String code) {
         SessionInfo sessionInfo = CacheUtil.getSessionInfo("phone" + phoneNumber);
         if (sessionInfo == null || StringUtils.isEmpty(sessionInfo.getData())
             || !sessionInfo.getData().equalsIgnoreCase(code)) {
+            log.warn(phoneNumber + " invalid phone code " + code);
             throw BusinessException.build("验证失败");
         }
         return "Success.";
