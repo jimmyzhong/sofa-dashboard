@@ -35,13 +35,12 @@ public class ThirdPartyService {
         return null;
     }
 
-    public String sendSms(String phoneNumber, JSONObject params) {
+    public String sendSms(String phoneNumber, JSONObject params, Boolean resetPasswordSms) {
         String paramString = params.toString();
-        SmsResponse response = AliCloudUtils.instance.sendSms(properties, phoneNumber, paramString);
+        SmsResponse response = AliCloudUtils.instance.sendSms(properties, phoneNumber, paramString, resetPasswordSms);
         if (!response.isSuccess()) {
             return response.getCode() + "," + response.getMessage();
         }
-        redisTemplate.opsForValue().set(phoneNumber, params.getString("code"));
         return null;
     }
 }

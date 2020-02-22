@@ -11,4 +11,6 @@ public interface IUserService {
     void expectNew(User user);
 
     void certify(User user);
+
+    User expectExists(User user);
 }

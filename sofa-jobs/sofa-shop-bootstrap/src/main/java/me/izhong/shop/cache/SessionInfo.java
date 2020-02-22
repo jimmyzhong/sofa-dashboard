@@ -10,4 +10,5 @@ public class SessionInfo extends User {
 
     private String timestamp;
     private String lasttimestamp;
+    private String data;
 }

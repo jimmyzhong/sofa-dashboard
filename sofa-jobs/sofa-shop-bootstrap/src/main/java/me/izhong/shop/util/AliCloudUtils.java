@@ -55,7 +55,7 @@ public class AliCloudUtils {
         return null;
     }
 
-    public SmsResponse sendSms(AliCloudProperties props, String phoneNumber, String params){
+    public SmsResponse sendSms(AliCloudProperties props, String phoneNumber, String params, boolean usePasswordResetTempate){
         DefaultProfile profile = DefaultProfile.getProfile(props.getSmsRegionId(), props.getSmsAccessKey(), props.getSmsSecret());
         IAcsClient client = new DefaultAcsClient(profile);
 
@@ -67,7 +67,8 @@ public class AliCloudUtils {
         request.putQueryParameter("RegionId", props.getSmsRegionId());
         request.putQueryParameter("PhoneNumbers", phoneNumber);
         request.putQueryParameter("SignName", props.getSmsSignName());
-        request.putQueryParameter("TemplateCode", props.getSmsTemplate());
+        request.putQueryParameter("TemplateCode", usePasswordResetTempate? props.getSmsPassResetTemplate():
+                props.getSmsTemplate());
         if (!StringUtils.isEmpty(params)) {
             request.putQueryParameter("TemplateParam", params);
         }

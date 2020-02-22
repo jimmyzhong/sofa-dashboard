@@ -4,9 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.db.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
+import me.izhong.shop.cache.SessionInfo;
+import me.izhong.shop.config.Constants;
 import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.service.impl.UserService;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.method.HandlerMethod;
@@ -14,8 +15,6 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import static me.izhong.shop.util.JWTUtils.*;
 
 @Slf4j
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -48,9 +47,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             throw BusinessException.build("用户未登陆");
         }
 
-        if(CacheUtil.getSessionInfo(token) == null) {
+        SessionInfo session = null;
+        if((session = CacheUtil.getSessionInfo(token)) == null) {
             throw BusinessException.build("用户未登陆,或者登陆已经过期");
         }
+
+        request.setAttribute("userId", session.getId());
 
 //        validateToken(token, request, jwtConfig);
 //
@@ -65,6 +67,6 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
     }
 
     private String getTok(HttpServletRequest request){
-        return request.getHeader("Authorization");
+        return request.getHeader(Constants.AUTHORIZATION);
     }
 }

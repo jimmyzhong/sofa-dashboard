@@ -1,6 +1,7 @@
 package me.izhong.shop.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.db.common.exception.BusinessException;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
@@ -41,12 +42,15 @@ public class UserService implements IUserService {
     }
 
     public void expectNew(User user) {
-        if (userDao.findFirstByUserName(user.getUserName()) != null) {
-            throw new RuntimeException("用户名已经存在:" + user.getUserName());
-        } else if (userDao.findFirstByEmail(user.getEmail())!=null) {
-            throw new RuntimeException("用户名已经存在:" + user.getEmail());
-        } else if (userDao.findFirstByEmail(user.getPhone())!=null) {
-            throw new RuntimeException("该号码已被使用:" + user.getPhone());
+        if (!StringUtils.isEmpty(user.getUserName()) &&
+                userDao.findFirstByUserName(user.getUserName()) != null) {
+            throw BusinessException.build("用户名已经存在:" + user.getUserName());
+        } else if (!StringUtils.isEmpty(user.getEmail()) &&
+                userDao.findFirstByEmail(user.getEmail())!=null) {
+            throw BusinessException.build("邮箱已经被使用:" + user.getEmail());
+        } else if (!StringUtils.isEmpty(user.getPhone()) &&
+                userDao.findFirstByPhone(user.getPhone())!=null) {
+            throw BusinessException.build("该号码已被使用:" + user.getPhone());
         }
     }
 
@@ -61,6 +65,22 @@ public class UserService implements IUserService {
             user.setIsCertified(true);
             userDao.save(user);
         }
+    }
+
+    @Override
+    public User expectExists(User user) {
+        User u = null;
+        if (!StringUtils.isEmpty(user.getUserName()) &&
+                (u=userDao.findFirstByUserName(user.getUserName())) != null) {
+            return u;
+        } else if (!StringUtils.isEmpty(user.getEmail()) &&
+                (u=userDao.findFirstByEmail(user.getEmail()))!=null) {
+            return u;
+        } else if (!StringUtils.isEmpty(user.getPhone()) &&
+                (u=userDao.findFirstByPhone(user.getPhone()))!=null) {
+            return u;
+        }
+        throw BusinessException.build("用户不存在");
     }
 
     @Override
