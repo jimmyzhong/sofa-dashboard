@@ -2,6 +2,7 @@ package me.izhong.shop.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import org.apache.commons.collections4.map.HashedMap;
@@ -76,8 +77,9 @@ public class TestController {
         return map;
     }
 
-    @GetMapping("/testcache")
+    @RequestMapping("/testcache")
     @AjaxWrapper
+    @RequireUserLogin
     public SessionInfo test2(String uid)  throws Exception{
 
         String now = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());

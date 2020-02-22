@@ -1,7 +1,9 @@
 package me.izhong.shop.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.db.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
+import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.service.impl.UserService;
 import org.apache.commons.lang.StringUtils;
@@ -40,16 +42,29 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        String token = getToken(request);
-        validateToken(token, request, jwtConfig);
+        String token = getTok(request);
 
-        String userId = getUserId(token, jwtConfig.getSecret());
-        if (StringUtils.isEmpty(userId)) {
-            throw new RuntimeException("unable to find user id.");
+        if(token == null) {
+            throw BusinessException.build("用户未登陆");
         }
 
-        userService.validateRole(requireUserLogin.roles(), userId);
-        request.setAttribute("userId", userId);
+        if(CacheUtil.getSessionInfo(token) == null) {
+            throw BusinessException.build("用户未登陆,或者登陆已经过期");
+        }
+
+//        validateToken(token, request, jwtConfig);
+//
+//        String userId = getUserId(token, jwtConfig.getSecret());
+//        if (StringUtils.isEmpty(userId)) {
+//            throw new RuntimeException("unable to find user id.");
+//        }
+//
+//        userService.validateRole(requireUserLogin.roles(), userId);
+//        request.setAttribute("userId", userId);
         return true;
+    }
+
+    private String getTok(HttpServletRequest request){
+        return request.getHeader("Authorization");
     }
 }

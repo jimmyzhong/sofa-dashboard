@@ -80,7 +80,6 @@ public class WebConfig implements WebMvcConfigurer , InitializingBean {
 
         return fastJsonHttpMessageConverter;
     }
-
     //
     @Autowired
     private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
@@ -94,9 +93,12 @@ public class WebConfig implements WebMvcConfigurer , InitializingBean {
         List<HandlerMethodReturnValueHandler> newHandels = new ArrayList<>(handlers);
         List<HttpMessageConverter<?>> converts = new ArrayList<>();
         converts.add(ajaxMessageConverter());
+
         newHandels.add(0, new AjaxMethodReturnValueHandler(converts));
 
         requestMappingHandlerAdapter.setReturnValueHandlers(newHandels);
+
+
 //        System.out.println(newHandels);
 //        HandlerMethodReturnValueHandlerComposite composite = exceptionHandlerExceptionResolver.getReturnValueHandlers();
 //        composite.addHandler(new AjaxMethodReturnValueHandler(converts));
@@ -106,6 +108,7 @@ public class WebConfig implements WebMvcConfigurer , InitializingBean {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new AuthInterceptor()).addPathPatterns("/**");
+
     }
 
     @Override
