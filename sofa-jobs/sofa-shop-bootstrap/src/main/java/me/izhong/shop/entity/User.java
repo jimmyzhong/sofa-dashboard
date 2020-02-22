@@ -19,8 +19,8 @@ public class User extends EditableEntity {
     private Long id;
     @Column(name = "PASSWORD", nullable = false, length = 64)
     private String password;
-    @Column(name = "USER_NAME", length = 50)
-    private String userName;
+    @Column(name = "LOGIN_NAME", length = 50)
+    private String loginName;
     @Column(name = "NAME", length = 50)
     private String name;
     @Column(name = "PHONE",  length = 20)
@@ -35,6 +35,9 @@ public class User extends EditableEntity {
     private Boolean isLocked;
     @Column(name = "SALT", length = 32)
     private String salt;
+    @Column(name = "AVATAR", length = 200)
+    private String avatar;
+
 
 
     public void encryptUserPassword() {

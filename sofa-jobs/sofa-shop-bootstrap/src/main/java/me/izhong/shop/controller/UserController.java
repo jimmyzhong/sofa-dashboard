@@ -1,20 +1,22 @@
 package me.izhong.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import io.swagger.annotations.*;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.common.model.UserInfo;
 import me.izhong.db.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.config.Constants;
-import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.entity.User;
-import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.IUserService;
+import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.impl.ThirdPartyService;
-import org.apache.commons.codec.digest.Md5Crypt;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -37,8 +38,64 @@ public class UserController {
 
     @Autowired private IUserService userService;
     @Autowired private AuthService authService;
-    @Autowired private JWTProperties jwtConfig;
     @Autowired private ThirdPartyService thirdService;
+
+    @GetMapping(path="/", consumes = "application/json", produces = "application/json;charset=UTF-8")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="获取当前登录用户信息",httpMethod = "GET")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
+    public UserInfo getCurrentUser(HttpServletRequest request) {
+        Long userId = getCurrentUserId(request);
+        User user = userService.findById(userId);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setAvatar(user.getAvatar());
+        userInfo.setEmail(user.getEmail());
+        userInfo.setPhoneNumber(user.getPhone());
+        userInfo.setLoginName(user.getLoginName());
+        userInfo.setUserName(user.getName());
+        return userInfo;
+    }
+
+    private Long getCurrentUserId(HttpServletRequest request) {
+        Long userId = (Long) request.getAttribute("userId");
+        if (userId == null) {
+            throw new RuntimeException("没有找到User Id");
+        }
+        return userId;
+    }
+
+    @PostMapping("/")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="更新当前登录用户信息", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
+    public String updateUserInfo(@RequestBody UserInfo userInfo, HttpServletRequest request) {
+        Long userId = getCurrentUserId(request);
+        User user = userService.findById(userId);
+
+        //make sure email, telephone and login name are unique
+        User test = new User();
+        test.setPhone(userInfo.getPhoneNumber());
+        test.setEmail(userInfo.getEmail());
+        test.setLoginName(userInfo.getLoginName());
+        userService.expectNew(test);
+
+        user.setLoginName(userInfo.getLoginName());
+        user.setEmail(userInfo.getEmail());
+        user.setPhone(userInfo.getPhoneNumber());
+        user.setAvatar(userInfo.getAvatar());
+
+        if (!user.getIsCertified() && !StringUtils.isEmpty(userInfo.getUserName())) {
+            user.setName(userInfo.getUserName());
+        }
+
+        userService.saveOrUpdate(user);
+
+        return "Success.";
+    }
+
+
 
     @PostMapping("/login")
     @ResponseBody
@@ -114,7 +171,7 @@ public class UserController {
         if (StringUtils.isEmpty(user.getPassword())){
             throw BusinessException.build("密码不能为空");
         }
-        if (StringUtils.isEmpty(user.getUserName())
+        if (StringUtils.isEmpty(user.getLoginName())
                 && StringUtils.isEmpty(user.getEmail()) && StringUtils.isEmpty(user.getPhone())) {
             throw BusinessException.build("用户名不能为空");
         }
@@ -130,17 +187,14 @@ public class UserController {
             @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
     })
     public String certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
-        Long userId = (Long)request.getAttribute("userId");
-        if (userId == null) {
-            throw new RuntimeException("没有找到User Id");
-        }
+        Long userId = getCurrentUserId(request);
         User user = userService.findById(Long.valueOf(userId));
         user.setName(params.get("name"));
         user.setIdentityID(params.get("idCard"));
         userService.certify(user);
         return "Success.";
     }
-//
+
     @GetMapping("/register/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
     @ResponseBody
@@ -161,7 +215,22 @@ public class UserController {
         return "Success.";
     }
 
-    public String verifyPhoneCode(@RequestParam("phone")String phoneNumber, @RequestParam("code")String code) {
+    @GetMapping("/expectNew")
+    @ApiOperation(value="判断用户名是否存在",httpMethod = "GET")
+    @ResponseBody
+    public String expectNew(@RequestParam("phone")String phoneNumber) {
+        if (StringUtils.isEmpty(phoneNumber)) {
+            throw BusinessException.build("输入不能为空");
+        }
+        User user = new User();
+        user.setPhone(phoneNumber);
+        user.setEmail(phoneNumber);
+        user.setLoginName(phoneNumber);
+        userService.expectNew(user);
+        return "Success.";
+    }
+
+    private String verifyPhoneCode(@RequestParam("phone")String phoneNumber, @RequestParam("code")String code) {
         SessionInfo sessionInfo = CacheUtil.getSessionInfo("phone" + phoneNumber);
         if (sessionInfo == null || StringUtils.isEmpty(sessionInfo.getData())
             || !sessionInfo.getData().equalsIgnoreCase(code)) {
@@ -170,4 +239,5 @@ public class UserController {
         }
         return "Success.";
     }
+
 }

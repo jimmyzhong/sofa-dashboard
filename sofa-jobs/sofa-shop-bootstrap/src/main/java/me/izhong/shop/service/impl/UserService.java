@@ -42,13 +42,15 @@ public class UserService implements IUserService {
     }
 
     public void expectNew(User user) {
-        if (!StringUtils.isEmpty(user.getUserName()) &&
-                userDao.findFirstByUserName(user.getUserName()) != null) {
-            throw BusinessException.build("用户名已经存在:" + user.getUserName());
-        } else if (!StringUtils.isEmpty(user.getEmail()) &&
+        if (!StringUtils.isEmpty(user.getLoginName()) &&
+                userDao.findFirstByLoginName(user.getLoginName()) != null) {
+            throw BusinessException.build("用户名已经存在:" + user.getLoginName());
+        }
+        if (!StringUtils.isEmpty(user.getEmail()) &&
                 userDao.findFirstByEmail(user.getEmail())!=null) {
             throw BusinessException.build("邮箱已经被使用:" + user.getEmail());
-        } else if (!StringUtils.isEmpty(user.getPhone()) &&
+        }
+        if (!StringUtils.isEmpty(user.getPhone()) &&
                 userDao.findFirstByPhone(user.getPhone())!=null) {
             throw BusinessException.build("该号码已被使用:" + user.getPhone());
         }
@@ -70,8 +72,8 @@ public class UserService implements IUserService {
     @Override
     public User expectExists(User user) {
         User u = null;
-        if (!StringUtils.isEmpty(user.getUserName()) &&
-                (u=userDao.findFirstByUserName(user.getUserName())) != null) {
+        if (!StringUtils.isEmpty(user.getLoginName()) &&
+                (u=userDao.findFirstByLoginName(user.getLoginName())) != null) {
             return u;
         } else if (!StringUtils.isEmpty(user.getEmail()) &&
                 (u=userDao.findFirstByEmail(user.getEmail()))!=null) {

@@ -19,7 +19,7 @@ public class AuthService {
     }
 
     public User attemptLogin(String username, String password) {
-        User persistedUser = userDao.findFirstByUserName(username);
+        User persistedUser = userDao.findFirstByLoginName(username);
         if (persistedUser == null) {
             persistedUser = userDao.findFirstByEmail(username);
         }
