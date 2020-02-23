@@ -7,7 +7,7 @@ import me.izhong.dashboard.manage.dao.DeptDao;
 import me.izhong.dashboard.manage.dao.UserDao;
 import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.entity.SysUser;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysDeptService;
 import me.izhong.db.common.util.CriteriaUtil;
 import me.izhong.dashboard.manage.domain.Ztree;

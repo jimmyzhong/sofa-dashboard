@@ -62,7 +62,7 @@ spring:
 
 server:
   # 服务器的HTTP端口，默认为80
-  port: 80
+  port: 52185
   servlet:
     # 应用的访问路径
     context-path: /

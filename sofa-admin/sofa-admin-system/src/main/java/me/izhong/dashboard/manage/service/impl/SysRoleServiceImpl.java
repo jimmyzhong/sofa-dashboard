@@ -9,7 +9,7 @@ import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.dashboard.manage.entity.SysRoleDept;
 import me.izhong.dashboard.manage.entity.SysRoleMenu;
 import me.izhong.dashboard.manage.entity.SysUserRole;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysRoleService;
 import me.izhong.common.util.Convert;
 import me.izhong.db.common.util.CriteriaUtil;

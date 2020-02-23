@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.expection.user;
 
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 
 public class UserPasswordNotMatchException extends BusinessException {
 

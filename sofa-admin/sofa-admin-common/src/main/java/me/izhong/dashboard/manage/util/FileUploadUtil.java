@@ -1,7 +1,7 @@
 package me.izhong.dashboard.manage.util;
 
 import me.izhong.common.util.DateUtil;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.dashboard.manage.expection.file.FileNameLengthLimitExceededException;

@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.expection;
 
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 
 /**
  * 验证码错误异常类

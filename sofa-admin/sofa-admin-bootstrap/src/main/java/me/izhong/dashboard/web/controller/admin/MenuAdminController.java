@@ -6,7 +6,7 @@ import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.entity.SysRole;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.service.SysMenuService;
 import me.izhong.dashboard.manage.domain.Ztree;

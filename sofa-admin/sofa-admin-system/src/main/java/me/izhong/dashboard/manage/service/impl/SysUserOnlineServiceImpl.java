@@ -4,7 +4,7 @@ import me.izhong.db.common.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.dao.UserOnlineDao;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

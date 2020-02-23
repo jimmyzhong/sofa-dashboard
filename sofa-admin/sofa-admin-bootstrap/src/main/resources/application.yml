@@ -34,7 +34,7 @@ spring:
        # 热部署开关
        enabled: true
 server:
-  port: 8800
+  port: 52186
   tomcat:
     uri-encoding: UTF-8
     max-http-header-size: 81940

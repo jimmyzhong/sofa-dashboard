@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.common.model.UserInfo;
-import me.izhong.db.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
@@ -14,7 +14,6 @@ import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.impl.ThirdPartyService;
-import me.izhong.shop.util.AliCloudUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -244,16 +242,17 @@ public class UserController {
 
     @RequestMapping("/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
-    public Map getPhoneCode(@RequestParam("phone")String phoneNumber,
-                               @RequestParam(name="resetPass", defaultValue = "false")Boolean resetPass) {
+    public Map getPhoneCode(@RequestBody Map<String,String> params) {
+        String phone = params.get("phone");
+        String resetPass = params.get("resetPass");
         String randomNumber = RandomStringUtils.randomNumeric(6);
 
-        String res = thirdService.sendSms(phoneNumber, new JSONObject(){{put("code", randomNumber);}}, resetPass);
+        String res = thirdService.sendSms(phone, new JSONObject(){{put("code", randomNumber);}}, StringUtils.equals(resetPass,"true"));
         if (res != null) {
             log.info("sms res:" + res);
             throw BusinessException.build(res);
         }
-        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phoneNumber;
+        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phone;
         CacheUtil.setSmsInfo(randomToken,randomNumber);
         return new HashMap(){{
             put("token",randomToken);
@@ -262,7 +261,8 @@ public class UserController {
 
     @RequestMapping("/expectNew")
     @ApiOperation(value="判断用户手机是否存在",httpMethod = "GET")
-    public void expectNew(@RequestParam("phone")String phoneNumber) {
+    public void expectNew(@RequestBody Map<String,String> params) {
+        String phoneNumber = params.get("phone");
         if (StringUtils.isEmpty(phoneNumber)) {
             throw BusinessException.build("输入不能为空");
         }
@@ -294,7 +294,7 @@ public class UserController {
         if(cacheCode == null){
             throw BusinessException.build("短信验证码过期");
         }
-        if(StringUtils.equals(cacheCode,code)){
+        if(!StringUtils.equals(cacheCode,code)){
             throw BusinessException.build("短信验证码不正确");
         }
     }

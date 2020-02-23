@@ -87,11 +87,13 @@
             <version>4.0.3</version>
         </dependency>
 
+<!--
         <dependency>
             <groupId>me.izhong.sofa</groupId>
             <artifactId>sofa-db-commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+-->
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -135,7 +137,8 @@
 
         <dependency>
             <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-jobs-facade</artifactId>
+            <artifactId>sofa-shop-facade</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!--OSS-->

@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.dashboard.manage.dao.*;
 import me.izhong.dashboard.manage.entity.*;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.expection.user.UserNotFoundException;
 import me.izhong.dashboard.manage.service.SysConfigService;
 import me.izhong.dashboard.manage.service.SysPostService;

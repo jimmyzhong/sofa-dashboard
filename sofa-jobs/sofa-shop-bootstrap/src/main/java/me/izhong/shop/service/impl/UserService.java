@@ -1,7 +1,7 @@
 package me.izhong.shop.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
