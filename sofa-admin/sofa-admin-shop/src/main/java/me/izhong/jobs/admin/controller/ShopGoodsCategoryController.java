@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -20,6 +20,7 @@ import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
+import me.izhong.jobs.model.ShopGoods;
 import me.izhong.jobs.model.ShopGoodsCategory;
 
 @Controller
@@ -32,8 +33,8 @@ public class ShopGoodsCategoryController {
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
-	public String goods(Model model, @RequestParam(required = false, defaultValue = "-1") int jobGroup) {
-		return prefix + "/page";
+	public String goods() {
+		return prefix + "/goods/category";
 	}
 
 	@RequiresPermissions(ShopPermissions.User.VIEW)
@@ -58,13 +59,25 @@ public class ShopGoodsCategoryController {
 		}
 		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.find(categoryId);
 		if (goodsCategory == null) {
-			throw BusinessException.build(String.format("商品分类不存在%s", categoryId));
+			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
 		}
 		model.addAttribute("goodsCategory", goodsCategory);
 		return prefix + "/edit";
 	}
 
-	@Log(title = "商品管理", businessType = BusinessType.DELETE)
+	@Log(title = "商品类目管理", businessType = BusinessType.UPDATE)
+	@RequiresPermissions(ShopPermissions.User.EDIT)
+	@PostMapping("/edit")
+	@AjaxWrapper
+	public void edit(ShopGoods goods) {
+		ShopGoodsCategory obj = shopServiceReference.goodsCategoryService.find(goods.getId());
+		if (obj == null) {
+			throw BusinessException.build(String.format("商品类目不存在%s", goods.getId()));
+		}
+		shopServiceReference.goodsCategoryService.edit(obj);
+	}
+
+	@Log(title = "商品类目管理", businessType = BusinessType.DELETE)
 	@RequiresPermissions(ShopPermissions.User.REMOVE)
 	@RequestMapping("/remove")
 	@AjaxWrapper

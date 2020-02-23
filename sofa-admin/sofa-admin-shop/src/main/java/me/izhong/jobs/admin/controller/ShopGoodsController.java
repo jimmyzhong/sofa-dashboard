@@ -8,8 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -32,15 +32,15 @@ public class ShopGoodsController {
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
-	public String goods(Model model, @RequestParam(required = false, defaultValue = "-1") int jobGroup) {
-		return prefix + "/page";
+	public String goods() {
+		return prefix + "/goods";
 	}
 
 	@RequiresPermissions(ShopPermissions.User.VIEW)
 	@RequestMapping("/view")
 	@AjaxWrapper
-	public ShopGoods view(Long jobId) {
-		return shopServiceReference.goodsService.find(jobId);
+	public ShopGoods view(Long goodsId) {
+		return shopServiceReference.goodsService.find(goodsId);
 	}
 
 	@RequiresPermissions(ShopPermissions.User.VIEW)
@@ -52,16 +52,28 @@ public class ShopGoodsController {
 	}
 
 	@GetMapping("/edit/{goodsId}")
-	public String edit(@PathVariable("jobId") Long goodsId, Model model) {
+	public String edit(@PathVariable("goodsId") Long goodsId, Model model) {
 		if (goodsId == null) {
 			throw BusinessException.build("goodsId不能为空");
 		}
-		ShopGoods good = shopServiceReference.goodsService.find(goodsId);
-		if (good == null) {
+		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
+		if (goods == null) {
 			throw BusinessException.build(String.format("商品不存在%s", goodsId));
 		}
-		model.addAttribute("goods", good);
+		model.addAttribute("goods", goods);
 		return prefix + "/edit";
+	}
+
+	@Log(title = "商品管理", businessType = BusinessType.UPDATE)
+	@RequiresPermissions(ShopPermissions.User.EDIT)
+	@PostMapping("/edit")
+	@AjaxWrapper
+	public void edit(ShopGoods goods) {
+		ShopGoods obj = shopServiceReference.goodsService.find(goods.getId());
+		if (obj == null) {
+			throw BusinessException.build(String.format("商品不存在%s", goods.getId()));
+		}
+		shopServiceReference.goodsService.edit(obj);
 	}
 
 	@Log(title = "商品管理", businessType = BusinessType.DELETE)
@@ -69,9 +81,9 @@ public class ShopGoodsController {
 	@RequestMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
-		Long[] jobIds = Convert.toLongArray(ids);
-		for (Long jobId : jobIds) {
-			boolean rt = shopServiceReference.goodsService.remove(jobId);
+		Long[] goodsIds = Convert.toLongArray(ids);
+		for (Long goodsId : goodsIds) {
+			boolean rt = shopServiceReference.goodsService.remove(goodsId);
 			if (!rt) {
 				throw BusinessException.build("删除失败");
 			}
