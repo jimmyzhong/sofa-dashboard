@@ -38,7 +38,7 @@ public class UserController {
     @Autowired private AuthService authService;
     @Autowired private ThirdPartyService thirdService;
 
-    @GetMapping(path="/",  produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/current",  produces = "application/json;charset=UTF-8")
     @ResponseBody
     @RequireUserLogin
     @ApiOperation(value="获取当前登录用户信息",httpMethod = "GET")
@@ -61,7 +61,7 @@ public class UserController {
         }};
     }
 
-    @PostMapping(path="/", consumes = "application/json")
+    @PostMapping(path="/update", consumes = "application/json")
     @ResponseBody
     @RequireUserLogin
     @ApiOperation(value="更新当前登录用户信息", httpMethod = "POST")
@@ -116,9 +116,14 @@ public class UserController {
         String token = persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-","");
         session.setId(persistedUser.getId());
         CacheUtil.setSessionInfo(token, session);
+
         //response.addHeader(Constants.AUTHORIZATION, token);
         return new HashMap(){{
             put("token",token);
+            put("userId",persistedUser.getId());
+            put("phone",persistedUser.getPhone());
+            put("nickName",persistedUser.getNickName());
+            put("avatar",persistedUser.getAvatar());
         }};
     }
 
@@ -143,23 +148,25 @@ public class UserController {
         user.setNickName(nickName);
         ensureRequiredFieldWhenRegistering(user);
 
-
         verifyPhoneCode(token,phone,code);
-        user = userService.registerUser(user);
+        final User dbUser = userService.registerUser(user);
 
         SessionInfo session = new SessionInfo();
         session.setLasttimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        String loginToken = user.getId() + UUID.randomUUID().toString().replaceAll("-","");
-        session.setId(user.getId());
+        String loginToken = dbUser.getId() + UUID.randomUUID().toString().replaceAll("-","");
+        session.setId(dbUser.getId());
         CacheUtil.setSessionInfo(token, session);
         return new HashMap(){{
             put("token",loginToken);
+            put("userId",dbUser.getId());
+            put("phone",dbUser.getPhone());
+            put("nickName",dbUser.getNickName());
+            put("avatar",dbUser.getAvatar());
         }};
     }
 
     @PostMapping("/resetPassword")
     @ApiOperation(value="重置密码",httpMethod = "POST")
-    @ResponseBody
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号", dataType = "string"),
             @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
@@ -170,10 +177,11 @@ public class UserController {
         String phone = params.get("phone");
         String password = params.get("password");
         User user = new User();
-        //user.setPhone(phone);
+        user.setPhone(phone);
         user.setPassword(password);
         ensureRequiredFieldWhenRegistering(user);
         verifyPhoneCode(token,phone, params.get("code"));
+
 
         user = userService.expectExists(user);
         user.setPassword(password);
@@ -209,7 +217,7 @@ public class UserController {
         userService.certify(user);
     }
 
-    @GetMapping("/register/phoneCode")
+    @RequestMapping("/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
     public Map getPhoneCode(@RequestParam("phone")String phoneNumber,
                                @RequestParam(name="resetPass", defaultValue = "false")Boolean resetPass) {
@@ -227,10 +235,9 @@ public class UserController {
         }};
     }
 
-    @GetMapping("/expectNew")
-    @ApiOperation(value="判断用户名是否存在",httpMethod = "GET")
-    @ResponseBody
-    public String expectNew(@RequestParam("phone")String phoneNumber) {
+    @RequestMapping("/expectNew")
+    @ApiOperation(value="判断用户手机是否存在",httpMethod = "GET")
+    public void expectNew(@RequestParam("phone")String phoneNumber) {
         if (StringUtils.isEmpty(phoneNumber)) {
             throw BusinessException.build("输入不能为空");
         }
@@ -239,7 +246,6 @@ public class UserController {
         user.setEmail(phoneNumber);
         user.setLoginName(phoneNumber);
         userService.expectNew(user);
-        return "Success.";
     }
 
     private void verifyPhoneCode( String token, String phone , String code) {
