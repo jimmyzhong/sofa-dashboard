@@ -11,7 +11,10 @@
 					<div class="select-list">
 						<ul>
 							<li>
-								用户名称：<input type="text" name="username"/>
+								用户昵称：<input type="text" name="nickName"/>
+							</li>
+							<li>
+								手机号：<input type="text" name="phone"/>
 							</li>
 							<li>
 								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
@@ -62,10 +65,14 @@
                     sortable: true
 		        },
 		        {
-		            field: 'username',
-		            title: '分组名称',
+		            field: 'phone',
+		            title: '手机',
                     sortable: true
 		        },
+					{
+						field: 'nickName',
+						title: '昵称'
+					},
 				{
 					field: 'createBy',
 					title: '创建人',
