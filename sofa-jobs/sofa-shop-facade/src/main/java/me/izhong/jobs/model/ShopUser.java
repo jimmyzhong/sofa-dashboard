@@ -13,7 +13,7 @@ public class ShopUser implements Serializable {
     private Long id;
 
     private String password;
-    private String userName;
+    private String loginName;
     private String nickName;
     private String name;
     private String phone;
