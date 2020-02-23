@@ -20,4 +20,10 @@ public class AliCloudProperties {
     private String smsSignName;
     private String smsTemplate;
     private String smsPassResetTemplate;
+
+    private String ossEndpoint;
+    private String ossAccessKey;
+    private String ossAccessSecret;
+    private String ossPicBucket;
+    private String ossPicAccessUrl;
 }

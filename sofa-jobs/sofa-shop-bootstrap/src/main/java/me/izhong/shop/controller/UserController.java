@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.common.model.UserInfo;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.common.model.UserInfo;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
@@ -19,6 +19,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -84,6 +85,28 @@ public class UserController {
             user.setNickName(userInfo.getNickName());
         }
         userService.saveOrUpdate(user);
+    }
+
+    @PostMapping(value = "/avatar/upload", consumes = "multipart/form-data")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="上传用户头像", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
+    public String uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+        log.info("upload content type:" + file.getContentType());
+        if (file.getContentType()==null || !file.getContentType().contains("image")) {
+            throw BusinessException.build("无法识别图片");
+        }
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
+        User user = userService.findById(userId);
+
+        String fileName = "shop/upload/avatar/" + user.getId() + ".jpg";
+        String fileUploadedUrl = thirdService.uploadFile(fileName, file);
+
+        user.setAvatar(fileUploadedUrl);
+        userService.saveOrUpdate(user);
+        return fileUploadedUrl;
     }
 
     @PostMapping("/login")

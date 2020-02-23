@@ -2,27 +2,27 @@ package me.izhong.shop.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
+import me.izhong.shop.config.AliCloudProperties;
+import me.izhong.shop.util.AliCloudUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/test")
@@ -31,6 +31,31 @@ public class TestController {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private AliCloudProperties cloudProperties;
+
+    @GetMapping("/bucket/list")
+    public List<String> listBuckets(){
+        return AliCloudUtils.instance.listBucket(cloudProperties);
+    }
+
+    @GetMapping("/bucket/{bucketName}")
+    public List<String> listBuckets(@PathVariable("bucketName") String bucketName,
+                                    @RequestParam(value = "prefix", defaultValue = "") String prefix){
+        return AliCloudUtils.instance.listObjsOfBucket(cloudProperties, bucketName, prefix);
+    }
+
+    @PostMapping("/bucket/upload")
+    @ResponseBody
+    public void uploadFile(@RequestParam("file") MultipartFile file){
+        String fileName = "shop/upload/avatar/1.jpg";
+        try {
+            AliCloudUtils.instance.uploadStream(cloudProperties, fileName, file.getInputStream());
+        } catch (IOException e) {
+            throw BusinessException.build("upload file failed.");
+        }
+    }
 
     @GetMapping("/session")
     public Map getByName(HttpServletRequest request)  throws Exception{

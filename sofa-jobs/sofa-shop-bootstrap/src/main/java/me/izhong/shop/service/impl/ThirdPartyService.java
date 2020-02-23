@@ -10,6 +10,9 @@ import me.izhong.shop.util.AliCloudUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Component
 @Slf4j
@@ -43,5 +46,19 @@ public class ThirdPartyService {
             return response.getCode() + "," + response.getMessage();
         }
         return null;
+    }
+
+    public String uploadFile(String fileName, MultipartFile file) {
+        try {
+            AliCloudUtils.instance.uploadStream(properties, fileName, file.getInputStream());
+        } catch (IOException e) {
+            log.error("upload file error", e);
+            throw BusinessException.build("上传文件失败");
+        }
+        return properties.getOssPicAccessUrl() + fileName;
+    }
+
+    public String generateUploadPicUrl(String fileName) {
+        return properties.getOssPicAccessUrl() + fileName;
     }
 }

@@ -1,6 +1,11 @@
 package me.izhong.shop.util;
 
 import com.alipay.sofa.rpc.common.utils.JSONUtils;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.Bucket;
+import com.aliyun.oss.model.OSSObjectSummary;
+import com.aliyun.oss.model.ObjectListing;
 import com.aliyuncs.CommonRequest;
 import com.aliyuncs.CommonResponse;
 import com.aliyuncs.DefaultAcsClient;
@@ -17,14 +22,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
 public class AliCloudUtils {
     public final static AliCloudUtils instance = new AliCloudUtils();
 
-    private AliCloudUtils(){
+    private AliCloudUtils() {
 
     }
 
@@ -55,7 +63,7 @@ public class AliCloudUtils {
         return null;
     }
 
-    public SmsResponse sendSms(AliCloudProperties props, String phoneNumber, String params, boolean usePasswordResetTempate){
+    public SmsResponse sendSms(AliCloudProperties props, String phoneNumber, String params, boolean usePasswordResetTempate) {
         DefaultProfile profile = DefaultProfile.getProfile(props.getSmsRegionId(), props.getSmsAccessKey(), props.getSmsSecret());
         IAcsClient client = new DefaultAcsClient(profile);
 
@@ -67,7 +75,7 @@ public class AliCloudUtils {
         request.putQueryParameter("RegionId", props.getSmsRegionId());
         request.putQueryParameter("PhoneNumbers", phoneNumber);
         request.putQueryParameter("SignName", props.getSmsSignName());
-        request.putQueryParameter("TemplateCode", usePasswordResetTempate? props.getSmsPassResetTemplate():
+        request.putQueryParameter("TemplateCode", usePasswordResetTempate ? props.getSmsPassResetTemplate() :
                 props.getSmsTemplate());
         if (!StringUtils.isEmpty(params)) {
             request.putQueryParameter("TemplateParam", params);
@@ -84,6 +92,58 @@ public class AliCloudUtils {
         } catch (ClientException e) {
             log.error("sms client error", e);
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<String> listBucket(AliCloudProperties props) {
+        String endpoint = props.getOssEndpoint();
+        String accessKeyId = props.getOssAccessKey();
+        String accessKeySecret = props.getOssAccessSecret();
+
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        try {
+            List<Bucket> buckets = ossClient.listBuckets();
+            List<String> res = new ArrayList<>();
+            for (Bucket bucket : buckets) {
+                res.add(bucket.getName());
+            }
+            return res;
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    public List<String> listObjsOfBucket(AliCloudProperties props, String bucketName, String keyPrefix) {
+        String endpoint = props.getOssEndpoint();
+        String accessKeyId = props.getOssAccessKey();
+        String accessKeySecret = props.getOssAccessSecret();
+
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        try {
+            ObjectListing objectListing = ossClient.listObjects(bucketName, keyPrefix);
+            List<OSSObjectSummary> sums = objectListing.getObjectSummaries();
+            List<String> res = new ArrayList<>();
+            for (OSSObjectSummary s : sums) {
+                res.add(s.getKey());
+            }
+            return res;
+        } finally {
+            ossClient.shutdown();
+        }
+    }
+
+    public void uploadStream(AliCloudProperties props, String fileName, InputStream inputStream) {
+        String endpoint = props.getOssEndpoint();
+        String accessKeyId = props.getOssAccessKey();
+        String accessKeySecret = props.getOssAccessSecret();
+        String bucketName = props.getOssPicBucket();
+
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        try {
+            ossClient.putObject(bucketName, fileName, inputStream);
+
+        } finally {
+            ossClient.shutdown();
         }
     }
 }
