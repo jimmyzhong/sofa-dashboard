@@ -219,16 +219,17 @@ public class UserController {
 
     @RequestMapping("/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
-    public Map getPhoneCode(@RequestParam("phone")String phoneNumber,
-                               @RequestParam(name="resetPass", defaultValue = "false")Boolean resetPass) {
+    public Map getPhoneCode(@RequestBody Map<String,String> params) {
+        String phone = params.get("phone");
+        String resetPass = params.get("resetPass");
         String randomNumber = RandomStringUtils.randomNumeric(6);
 
-        String res = thirdService.sendSms(phoneNumber, new JSONObject(){{put("code", randomNumber);}}, resetPass);
+        String res = thirdService.sendSms(phone, new JSONObject(){{put("code", randomNumber);}}, StringUtils.equals(resetPass,"true"));
         if (res != null) {
             log.info("sms res:" + res);
             throw BusinessException.build(res);
         }
-        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phoneNumber;
+        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phone;
         CacheUtil.setSmsInfo(randomToken,randomNumber);
         return new HashMap(){{
             put("token",randomToken);
@@ -237,7 +238,8 @@ public class UserController {
 
     @RequestMapping("/expectNew")
     @ApiOperation(value="判断用户手机是否存在",httpMethod = "GET")
-    public void expectNew(@RequestParam("phone")String phoneNumber) {
+    public void expectNew(@RequestBody Map<String,String> params) {
+        String phoneNumber = params.get("phone");
         if (StringUtils.isEmpty(phoneNumber)) {
             throw BusinessException.build("输入不能为空");
         }
@@ -269,7 +271,7 @@ public class UserController {
         if(cacheCode == null){
             throw BusinessException.build("短信验证码过期");
         }
-        if(StringUtils.equals(cacheCode,code)){
+        if(!StringUtils.equals(cacheCode,code)){
             throw BusinessException.build("短信验证码不正确");
         }
     }
