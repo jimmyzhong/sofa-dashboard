@@ -92,7 +92,7 @@ public class UserController {
     @RequireUserLogin
     @ApiOperation(value="上传用户头像", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
-    public String uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request){
+    public Map uploadFile(@RequestParam("file") MultipartFile file, HttpServletRequest request){
         log.info("upload content type:" + file.getContentType());
         if (file.getContentType()==null || !file.getContentType().contains("image")) {
             throw BusinessException.build("无法识别图片");
@@ -106,7 +106,9 @@ public class UserController {
 
         user.setAvatar(fileUploadedUrl);
         userService.saveOrUpdate(user);
-        return fileUploadedUrl;
+        return new HashMap(){{
+            put("avatar",fileUploadedUrl);
+        }};
     }
 
     @PostMapping("/login")
