@@ -44,8 +44,8 @@ public class ShopUserController {
 	@RequestMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopUser> pageList(HttpServletRequest request, ShopUser ino) {
-		if(true)
-			return null;
+//		if(true)
+//			return null;
 		PageModel<ShopUser>  pm = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request),ino);
 		return pm;
 	}
@@ -72,8 +72,8 @@ public class ShopUserController {
 		if(u == null) {
 			throw BusinessException.build(String.format("用户不存在%s",user.getId()));
 		}
-		if(StringUtils.isNotBlank(user.getUserName())) {
-			u.setUserName(user.getUserName());
+		if(StringUtils.isNotBlank(user.getLoginName())) {
+			u.setLoginName(user.getLoginName());
 		}
 		if(StringUtils.isNotBlank(user.getNickName())) {
 			u.setNickName(user.getNickName());

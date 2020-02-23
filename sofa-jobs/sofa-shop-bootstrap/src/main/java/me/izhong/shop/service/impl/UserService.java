@@ -19,28 +19,6 @@ public class UserService implements IUserService {
     @Autowired private UserDao userDao;
     @Autowired private ThirdPartyService certifyService;
 
-    public void validateRole(String[] requiredRoles, String userId) {
-        Optional<User> user = userDao.findById(Long.valueOf(userId));
-        if (!user.isPresent()) {
-            log.warn("unable to find user by id " + userId);
-            throw new RuntimeException("unable to find user.");
-        }
-
-//        if (requiredRoles!=null && requiredRoles.length > 0) {
-//            Set<Role> roles = user.get().getRoles();
-//            if (roles == null || roles.isEmpty()) {
-//                throw new RuntimeException("access denied. require " + Arrays.asList(requiredRoles).stream()
-//                        .collect(Collectors.joining(",")));
-//            }
-//
-//            for (String roleName: requiredRoles) {
-//                if(!StringUtils.isEmpty(roleName) && !roles.stream()
-//                        .anyMatch(r->roleName.equalsIgnoreCase(r.getName()))){
-//                    throw new RuntimeException("insufficient privilege. require " + roleName);
-//                }
-//            }
-//        }
-    }
 
     public void expectNew(User user) {
         if (!StringUtils.isEmpty(user.getLoginName()) &&
@@ -98,7 +76,55 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void lock(Long userId, boolean isLock) {
+        User user = findById(userId);
+        user.setIsLocked(isLock);
+        saveOrUpdate(user);
+    }
+
+    @Override
+    public void attemptModifyPhone(User user, String newPhoneNumber) {
+        if (StringUtils.isEmpty(newPhoneNumber)) {
+            throw BusinessException.build("手机号不能为空");
+        }
+        if (!StringUtils.equals(newPhoneNumber, user.getPhone())) {
+            if (userDao.findFirstByPhone(newPhoneNumber) != null ) {
+                throw BusinessException.build("手机号码 " + newPhoneNumber + " 已经被注册");
+            }
+            user.setPhone(newPhoneNumber);
+        }
+    }
+
+    @Override
+    public void attemptModifyEmail(User user, String email) {
+        if (!StringUtils.isEmpty(email) && !StringUtils.equals(user.getPhone(), email)) {
+            if (userDao.findFirstByEmail(email) != null ) {
+                throw BusinessException.build(email  + " 已经被注册");
+            }
+        }
+        user.setEmail(email);
+    }
+
+    @Override
+    public void attemptModifyLoginName(User dbUser, String loginName) {
+        if (!StringUtils.isEmpty(loginName) && !StringUtils.equals(dbUser.getLoginName(), loginName)) {
+            if (userDao.findFirstByEmail(loginName) != null ) {
+                throw BusinessException.build(loginName  + " 已经被注册");
+            }
+        }
+        dbUser.setLoginName(loginName);
+    }
+
+    @Override
+    public void attemptModifyPassword(User dbUser, String password) {
+        if (!StringUtils.isEmpty(password)) {
+            dbUser.setPassword(password);
+            dbUser.encryptUserPassword();
+        }
+    }
+
+    @Override
     public User findById(Long userId) {
-        return userDao.findById(userId).get();
+        return userDao.findById(userId).orElseThrow(()->new RuntimeException("unable to find user by " + userId));
     }
 }

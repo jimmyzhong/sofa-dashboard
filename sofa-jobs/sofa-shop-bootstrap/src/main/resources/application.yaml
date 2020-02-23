@@ -73,3 +73,14 @@ server:
     max-threads: 800
     # Tomcat启动初始化的线程数，默认值25
     min-spare-threads: 30
+
+service:
+  unique:
+    id: 1
+com:
+  alipay:
+    sofa:
+      rpc:
+        registry:
+          address: zookeeper://lpp.izhong.me:52181
+        bolt-port: 13304
