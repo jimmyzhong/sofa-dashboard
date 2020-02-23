@@ -8,9 +8,11 @@ jwt:
   # 过期时间，时间戳
   expiresSecond: 172800
 ali-cloud:
+  # 实名认证服务
   certifyServiceHost: http://checkone.market.alicloudapi.com
   certifyServicePath: /chinadatapay/1882
   appCode: f4a69bfd4671490ebc12fe06adbd3b96
+  # 短信服务
   smsDomain: dysmsapi.aliyuncs.com
   smsVersion: 2017-05-25
   smsRegionId: cn-hangzhou
@@ -19,6 +21,12 @@ ali-cloud:
   smsSignName: 可劲买
   smsTemplate: SMS_183810132
   smsPassResetTemplate: SMS_183805124
+  # OSS
+  ossEndpoint: http://oss-cn-hangzhou.aliyuncs.com
+  ossAccessKey: LTAI4FtwBZR8p8RzSijUvFbs
+  ossAccessSecret: 6xxnifu3vJGFo4brtpTPCKsolGPt0n
+  ossPicBucket: lpp-cn-pic
+  ossPicAccessUrl: http://lpp-cn-pic.oss-accelerate.aliyuncs.com/
 spring:
   application:
     name: sjm
