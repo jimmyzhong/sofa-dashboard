@@ -3,7 +3,7 @@ package me.izhong.dashboard.manage.service;
 import me.izhong.db.common.service.CrudBaseService;
 import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.dashboard.manage.entity.SysUserRole;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 
 import java.util.List;
 import java.util.Set;

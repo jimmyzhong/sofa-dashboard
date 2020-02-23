@@ -1,7 +1,7 @@
 package me.izhong.shop.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;

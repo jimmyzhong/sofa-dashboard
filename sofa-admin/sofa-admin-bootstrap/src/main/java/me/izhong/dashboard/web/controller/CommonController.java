@@ -5,7 +5,7 @@ import me.izhong.dashboard.manage.util.StringUtil;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.dashboard.manage.config.ServerConfig;
 import me.izhong.dashboard.manage.constants.Global;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.util.FileUploadUtil;
 import me.izhong.dashboard.manage.util.FileUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;

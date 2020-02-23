@@ -12,7 +12,7 @@ import me.izhong.dashboard.manage.entity.SysUserRole;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import me.izhong.dashboard.manage.service.SysRoleService;
 import me.izhong.dashboard.manage.service.SysUserService;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.util.ExcelUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;

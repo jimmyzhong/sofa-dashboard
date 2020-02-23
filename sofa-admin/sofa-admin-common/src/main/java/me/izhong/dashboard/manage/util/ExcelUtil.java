@@ -4,7 +4,7 @@ import me.izhong.common.util.Convert;
 import me.izhong.common.annotation.Excel;
 import me.izhong.common.annotation.Excels;
 import me.izhong.dashboard.manage.constants.Global;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;

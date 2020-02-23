@@ -1,7 +1,7 @@
 package me.izhong.dashboard.web.controller.admin;
 
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.util.ServletUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;

@@ -1,4 +1,4 @@
-package me.izhong.db.common.constant;
+package me.izhong.common.constant;
 
 public class ErrCode {
 

@@ -4,7 +4,7 @@ import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.util.Convert;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.db.common.service.MongoDistributedLock;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;

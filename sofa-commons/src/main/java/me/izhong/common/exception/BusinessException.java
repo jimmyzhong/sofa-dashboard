@@ -1,6 +1,6 @@
-package me.izhong.db.common.exception;
+package me.izhong.common.exception;
 
-import me.izhong.db.common.constant.ErrCode;
+import me.izhong.common.constant.ErrCode;
 
 public class BusinessException extends RuntimeException {
 

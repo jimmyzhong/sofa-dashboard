@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.expection.file;
 
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.web.bean.ResponseContainer;
 
 public class FileNameLengthLimitExceededException extends BusinessException {

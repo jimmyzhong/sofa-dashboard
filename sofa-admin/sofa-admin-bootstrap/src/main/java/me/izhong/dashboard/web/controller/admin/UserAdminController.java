@@ -13,7 +13,7 @@ import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.entity.SysUser;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.security.service.PasswordService;
 import me.izhong.common.util.Convert;

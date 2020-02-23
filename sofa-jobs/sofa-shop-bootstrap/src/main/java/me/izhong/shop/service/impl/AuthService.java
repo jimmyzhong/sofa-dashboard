@@ -1,14 +1,11 @@
 package me.izhong.shop.service.impl;
 
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.util.PasswordUtils;
-import org.apache.commons.codec.digest.Md5Crypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.nio.charset.Charset;
 
 @Service
 public class AuthService {

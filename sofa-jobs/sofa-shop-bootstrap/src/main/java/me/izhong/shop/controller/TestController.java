@@ -5,7 +5,6 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
-import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +48,7 @@ public class TestController {
 
         Map bMap = (Map)hashOps.get("xxx-data", "tome");
 
-        Map map = new HashedMap();
+        Map map = new HashMap();
         if(bMap !=null) {
             String last_local_ip = (String) bMap.get("local_ip");
             String last_access_time = (String) bMap.get("access_time");
@@ -72,7 +72,7 @@ public class TestController {
     @GetMapping("/ajax")
     @AjaxWrapper
     public Map ajaxWrapper()  throws Exception{
-        Map map = new HashedMap();
+        Map map = new HashMap();
         map.put("local_ip", InetAddress.getLocalHost().toString());
         return map;
     }

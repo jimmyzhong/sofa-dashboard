@@ -8,7 +8,7 @@ import me.izhong.jobs.admin.service.JobServiceReference;
 import me.izhong.jobs.model.JobGroup;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.Convert;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import org.apache.shiro.authz.annotation.RequiresPermissions;

@@ -5,7 +5,7 @@ import me.izhong.dashboard.manage.dao.MenuDao;
 import me.izhong.dashboard.manage.dao.RoleMenuDao;
 import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.entity.SysRoleMenu;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysMenuService;
 import me.izhong.db.common.util.CriteriaUtil;
 import me.izhong.dashboard.manage.domain.Ztree;

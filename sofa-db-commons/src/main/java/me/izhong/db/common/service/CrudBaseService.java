@@ -2,7 +2,7 @@ package me.izhong.db.common.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;

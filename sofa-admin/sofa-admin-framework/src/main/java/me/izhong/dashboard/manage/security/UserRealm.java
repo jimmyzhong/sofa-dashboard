@@ -2,7 +2,7 @@ package me.izhong.dashboard.manage.security;
 
 import me.izhong.dashboard.manage.service.SysUserService;
 import me.izhong.dashboard.manage.util.SpringUtil;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.dashboard.manage.entity.SysDept;

@@ -7,7 +7,7 @@ import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.dashboard.manage.util.StringUtil;
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;

@@ -5,7 +5,7 @@ import me.izhong.common.util.CronUtil;
 import me.izhong.common.util.DateUtil;
 import me.izhong.dashboard.manage.annotation.Log;
 import me.izhong.dashboard.manage.constants.BusinessType;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.jobs.admin.config.JobPermissions;

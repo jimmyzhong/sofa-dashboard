@@ -2,11 +2,10 @@ package me.izhong.jobs.manage.impl.service.impl;
 
 import com.mongodb.client.result.DeleteResult;
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.exception.BusinessException;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.db.common.service.CrudBaseServiceImpl;
 import com.mongodb.client.result.UpdateResult;
 import me.izhong.jobs.manage.impl.core.model.ZJobLog;
-import me.izhong.jobs.manage.impl.core.model.ZJobScript;
 import me.izhong.jobs.manage.impl.service.ZJobLogService;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
