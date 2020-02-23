@@ -31,6 +31,7 @@ public class CacheUtil {
         Object o = ops.get(SESSION_PREFIX + key);
         if(o == null)
             return null;
+        getRedisTemplate().expire(SESSION_PREFIX + key,SESSION_TIMEOUT, TimeUnit.SECONDS);
         return JSONObject.parseObject(o.toString(),SessionInfo.class);
     }
 
@@ -49,11 +50,11 @@ public class CacheUtil {
      */
     public static void setSmsInfo(String key, String value) {
         ValueOperations ops = getRedisTemplate().opsForValue();
-        ops.set(SESSION_PREFIX + "sms_" + key,value,120, TimeUnit.SECONDS);
+        ops.set("_sms_" + key,value,120, TimeUnit.SECONDS);
     }
 
     public static String getSmsInfo(String key) {
         ValueOperations ops = getRedisTemplate().opsForValue();
-        return (String)ops.get(SESSION_PREFIX + "sms_"  + key);
+        return (String)ops.get("_sms_"  + key);
     }
 }
