@@ -44,8 +44,8 @@ public class ShopUserController {
 	@RequestMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopUser> pageList(HttpServletRequest request, ShopUser ino) {
-		if(true)
-			return null;
+//		if(true)
+//			return null;
 		PageModel<ShopUser>  pm = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request),ino);
 		return pm;
 	}
