@@ -30,7 +30,7 @@ import java.util.UUID;
 @Controller
 @AjaxWrapper
 @Api(value = "用户相关接口",description = "用户相关接口描述")
-@RequestMapping(value = "/api/user", consumes = "application/json")
+@RequestMapping(value = "/api/user")
 @Slf4j
 public class UserController {
 
@@ -38,7 +38,7 @@ public class UserController {
     @Autowired private AuthService authService;
     @Autowired private ThirdPartyService thirdService;
 
-    @GetMapping(path="/", consumes = "application/json", produces = "application/json;charset=UTF-8")
+    @GetMapping(path="/",  produces = "application/json;charset=UTF-8")
     @ResponseBody
     @RequireUserLogin
     @ApiOperation(value="获取当前登录用户信息",httpMethod = "GET")
@@ -93,13 +93,23 @@ public class UserController {
 
         //make sure email, telephone and login name are unique
         User test = new User();
-        test.setEmail(userInfo.getEmail());
-        test.setLoginName(userInfo.getLoginName());
+        if (!StringUtils.equals(user.getEmail(), userInfo.getEmail())){
+            test.setEmail(userInfo.getEmail());
+        }
+        if (!StringUtils.equals(user.getLoginName(), userInfo.getLoginName())) {
+            test.setLoginName(userInfo.getLoginName());
+        }
         userService.expectNew(test);
 
-        user.setLoginName(userInfo.getLoginName());
-        user.setEmail(userInfo.getEmail());
-        user.setAvatar(userInfo.getAvatar());
+        if (!StringUtils.isEmpty(userInfo.getLoginName())) {
+            user.setLoginName(userInfo.getLoginName());
+        }
+        if (!StringUtils.isEmpty(userInfo.getEmail())) {
+            user.setEmail(userInfo.getEmail());
+        }
+        if (!StringUtils.isEmpty(userInfo.getAvatar())) {
+            user.setAvatar(userInfo.getAvatar());
+        }
 
         if (!user.getIsCertified() && !StringUtils.isEmpty(userInfo.getUserName())) {
             user.setName(userInfo.getUserName());
@@ -151,9 +161,9 @@ public class UserController {
     @PostMapping("/register")
     @ApiOperation(value="用户注册",httpMethod = "POST")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "password", value = "密码", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "code", value = "验证码", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "phone", value = "手机号",  dataType = "string"),
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
+            @ApiImplicitParam(name = "code", value = "验证码", dataType = "string"),
     })
     public String register(@RequestBody Map<String,String> params) {
         User user = new User();
@@ -207,8 +217,8 @@ public class UserController {
     @RequireUserLogin
     @ApiOperation(value="用户实名认证",httpMethod = "POST")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "name", value = "姓名", required = true, dataType = "string"),
-            @ApiImplicitParam(name = "idCard", value = "身份证号码", required = true, dataType = "string"),
+            @ApiImplicitParam(name = "name", value = "姓名",  dataType = "string"),
+            @ApiImplicitParam(name = "idCard", value = "身份证号码",  dataType = "string"),
             @ApiImplicitParam(paramType = "header", dataType = "string", name = Constants.AUTHORIZATION, value = "登录成功后token", required = true)
     })
     public String certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
