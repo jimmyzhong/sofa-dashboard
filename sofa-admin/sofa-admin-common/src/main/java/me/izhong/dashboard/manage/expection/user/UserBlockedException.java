@@ -5,7 +5,7 @@ import me.izhong.common.exception.BusinessException;
 public class UserBlockedException extends BusinessException {
 
 
-    public static final String KEY = "USER_BLOCK";
+    public static final int KEY = 400;
 
     public UserBlockedException() {
         super(KEY, "用户已禁用");

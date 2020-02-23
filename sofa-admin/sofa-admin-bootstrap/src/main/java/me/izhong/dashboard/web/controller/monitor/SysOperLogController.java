@@ -54,7 +54,7 @@ public class SysOperLogController {
     @PostMapping("/remove")
     @AjaxWrapper
     public long remove(String ids) {
-        return sysOperLogService.deleteByPIds(ids);
+        return sysOperLogService.removeByPIds(ids);
     }
 
     @RequiresPermissions(PermissionConstants.OperLog.VIEW)

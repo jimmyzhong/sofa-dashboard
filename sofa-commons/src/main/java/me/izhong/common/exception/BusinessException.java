@@ -4,17 +4,17 @@ import me.izhong.common.constant.ErrCode;
 
 public class BusinessException extends RuntimeException {
 
-    private String code;
+    private int code;
 
     public BusinessException() {
 
     }
 
-    public BusinessException(String code, String msg) {
+    public BusinessException(int code, String msg) {
         this(code, msg, null);
     }
 
-    public BusinessException(String code, String msg, Exception e) {
+    public BusinessException(int code, String msg, Exception e) {
         super(msg, e);
         this.code = code;
     }
@@ -27,19 +27,19 @@ public class BusinessException extends RuntimeException {
         return new BusinessException(ErrCode.FAIL_CODE, msg, e);
     }
 
-    public static BusinessException build(String code, String msg) {
+    public static BusinessException build(int code, String msg) {
         return new BusinessException(code, msg);
     }
 
-    public static BusinessException build(String code, String msg, Exception e) {
+    public static BusinessException build(int code, String msg, Exception e) {
         return new BusinessException(code, msg, e);
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 }

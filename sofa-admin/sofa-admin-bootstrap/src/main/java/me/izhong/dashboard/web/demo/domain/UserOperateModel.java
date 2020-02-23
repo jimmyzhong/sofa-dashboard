@@ -1,12 +1,15 @@
 package me.izhong.dashboard.web.demo.domain;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import me.izhong.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 
 import java.util.Date;
 
-@Data
+@Getter
+@Setter
 public class UserOperateModel extends TimedBasedEntity {
     private static final long serialVersionUID = 1L;
 

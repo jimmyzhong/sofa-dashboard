@@ -1,9 +1,9 @@
 package me.izhong.dashboard.manage.entity;
 
-import me.izhong.common.annotation.*;
 import me.izhong.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import me.izhong.common.annotation.*;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.data.mongodb.core.index.Indexed;

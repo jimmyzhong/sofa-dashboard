@@ -1,14 +1,14 @@
 package me.izhong.dashboard.manage.expection.file;
 
+import me.izhong.common.constant.ErrCode;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.dashboard.web.bean.ResponseContainer;
 
 import java.util.Arrays;
 
 public class InvalidExtensionException extends BusinessException {
 
     public InvalidExtensionException(String ext) {
-        super(ResponseContainer.FAIL_CODE, "文件后缀不支持" + ext);
+        super(ErrCode.FAIL_CODE, "文件后缀不支持" + ext);
     }
 
     private static final long serialVersionUID = 1L;
@@ -18,7 +18,7 @@ public class InvalidExtensionException extends BusinessException {
     private String filename;
 
     public InvalidExtensionException(String[] allowedExtension, String extension, String filename) {
-        super(ResponseContainer.FAIL_CODE, "filename : [" + filename + "], extension : [" + extension + "], allowed extension : [" + Arrays.toString(allowedExtension) + "]");
+        super(ErrCode.FAIL_CODE, "filename : [" + filename + "], extension : [" + extension + "], allowed extension : [" + Arrays.toString(allowedExtension) + "]");
         this.allowedExtension = allowedExtension;
         this.extension = extension;
         this.filename = filename;

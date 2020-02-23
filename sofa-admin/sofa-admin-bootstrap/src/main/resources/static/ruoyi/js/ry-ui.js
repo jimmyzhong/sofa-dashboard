@@ -155,28 +155,18 @@ var table = {
                 if (typeof table.options.responseHandler == "function") {
                     table.options.responseHandler(res);
                 }
-                if (res.code == 0 || res.code == 'SUCCESS') {
+                if (res.code == web_status.SUCCESS) {
                     if ($.common.isNotEmpty(table.options.sidePagination) && table.options.sidePagination == 'client') {
-                        if (res.code == 'SUCCESS')
-                            return res.data;
                         return res.rows;
                     } else {
                         if ($.common.isNotEmpty(table.options.rememberSelected) && table.options.rememberSelected) {
                             var column = $.common.isEmpty(table.options.uniqueId) ? table.options.columns[1].field : table.options.uniqueId;
-                            if (res.code == 'SUCCESS') {
-                                $.each(res.data.rows, function (i, row) {
-                                    row.state = $.inArray(row[column], table.rememberSelectedIds[table.options.id]) !== -1;
-                                })
-                            } else {
-                                $.each(res.rows, function (i, row) {
-                                    row.state = $.inArray(row[column], table.rememberSelectedIds[table.options.id]) !== -1;
-                                })
-                            }
+                            $.each(res.data.rows, function (i, row) {
+                                row.state = $.inArray(row[column], table.rememberSelectedIds[table.options.id]) !== -1;
+                            })
                         }
-                        if (res.code == 'SUCCESS')
-                            return {rows: $.common.isEmpty(res.data)?[]:res.data.rows,
-                                total: $.common.isEmpty(res.data)? 0: res.data.count};
-                        return {rows: res.rows, total: res.total};
+                        return {rows: $.common.isEmpty(res.data)?[]:res.data.rows,
+                            total: $.common.isEmpty(res.data)? 0: res.data.count};
                     }
                 } else {
                     $.modal.alertWarning(res.msg);
@@ -584,7 +574,7 @@ var table = {
                 }
             },
             responseHandler: function(data) {
-                if (data.code != undefined && data.code != "SUCCESS") {
+                if (data.code != undefined && data.code != web_status.SUCCESS) {
                     $.modal.alertWarning(data.msg);
                     return [];
                 } else {
@@ -886,7 +876,7 @@ var table = {
                     },
                     success: function (result) {
                         $.modal.closeLoading();
-                        if(result.code == "SUCCESS") {
+                        if(result.code == web_status.SUCCESS) {
                             if (typeof callback == "function") {
                                 callback(result.data);
                             }
@@ -1605,9 +1595,9 @@ web_status2 = {
 };
 
 web_status = {
-    SUCCESS: "SUCCESS",
-    FAIL: "FAIL",
-    WARNING: "WAIN"
+    SUCCESS: 200,
+    FAIL: 400,
+    WARNING: 300
 };
 
 

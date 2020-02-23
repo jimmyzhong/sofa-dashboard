@@ -134,7 +134,7 @@ public class ShellCommandRunJob extends IJobHandler {
             } else if(exitValue == 3) {
                 jobMng.uploadJobEndStatics(triggerId,new Date(), 405, "执行失败:参数解析异常");
             } else {
-                jobMng.uploadJobEndStatics(triggerId,new Date(), 405, "执行失败:"+exitValue+"查询日志");
+                jobMng.uploadJobEndStatics(triggerId,new Date(), 405, "执行失败:脚本返回码("+exitValue+"),查询日志检查原因");
             }
             log.info("run.sh任务异常结束了: triggerId:{} exitValue:{}",triggerId,exitValue);
             return ReturnT.FAIL;

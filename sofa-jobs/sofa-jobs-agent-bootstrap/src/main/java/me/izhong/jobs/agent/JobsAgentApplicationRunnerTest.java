@@ -27,9 +27,9 @@ public class JobsAgentApplicationRunnerTest {
         System.setProperty("spring.main.web-application-type","NONE");
         SpringApplication.run(JobsAgentApplicationRunnerTest.class, args);
 
-        //String file = "/Users/jimmy/space/tianru/sofa-dashboard/sofa-jobs/sofa-jobs-agent-bootstrap/src/main/groovy/test.groovy";
+        String file = "/Users/jimmy/space/sofa-dashboard/sofa-jobs/sofa-jobs-agent-bootstrap/src/main/groovy/入库清分文件.groovy";
 
-        String file = "H:\\space\\xxx\\sofa-dashboard\\sofa-jobs\\sofa-jobs-agent-bootstrap\\src\\main\\groovy\\ftp.groovy";
+        //String file = "H:\\space\\xxx\\sofa-dashboard\\sofa-jobs\\sofa-jobs-agent-bootstrap\\src\\main\\groovy\\读取清分文件.groovy";
         //初始化运行环境
         ScriptRunContext context = new ScriptRunContext();
         context.setJobId(0L);

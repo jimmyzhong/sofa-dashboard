@@ -3,8 +3,8 @@ package me.izhong.db.common.service;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.common.annotation.*;
 import me.izhong.common.util.Convert;
+import me.izhong.common.annotation.*;
 import me.izhong.db.common.domain.SysSeqInfo;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.db.common.util.CriteriaUtil;
@@ -346,7 +346,6 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 
         Query query = new Query();
         query.addCriteria(Criteria.where(fieldName).in(postIds));
-        query.addCriteria(CriteriaUtil.notDeleteCriteria());
 
         DeleteResult ur = mongoTemplate.remove(query, (Class) tClass);
         return ur.getDeletedCount();

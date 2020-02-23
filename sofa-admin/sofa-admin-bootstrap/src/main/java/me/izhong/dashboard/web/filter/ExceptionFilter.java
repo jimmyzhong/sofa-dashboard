@@ -35,7 +35,7 @@ public class ExceptionFilter implements HandlerExceptionResolver {
         //httpServletResponse.flushBuffer();
 
 
-        String code = ResponseContainer.FAIL_CODE;
+        int code = ResponseContainer.FAIL_CODE;
         String msg = "系统异常";
         if (e instanceof UserHasNotPermissionException) {
             UserHasNotPermissionException ce = (UserHasNotPermissionException) e;

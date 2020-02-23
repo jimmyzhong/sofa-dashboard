@@ -59,7 +59,7 @@ public class SysLoginInfoController {
     @PostMapping("/remove")
     @AjaxWrapper
     public long remove(String ids) {
-        return sysLoginInfoService.deleteByPIds(ids);
+        return sysLoginInfoService.removeByPIds(ids);
     }
 
     @RequiresPermissions(PermissionConstants.LoginInfo.REMOVE)

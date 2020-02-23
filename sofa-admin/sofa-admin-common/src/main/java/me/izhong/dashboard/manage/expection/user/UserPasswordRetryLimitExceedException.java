@@ -5,7 +5,7 @@ import me.izhong.common.exception.BusinessException;
 public class UserPasswordRetryLimitExceedException extends BusinessException {
 
 
-    public static final String KEY = "USER_PASSWORD_EXCEED";
+    public static final int KEY = 400;
 
     public UserPasswordRetryLimitExceedException() {
         super(KEY, "密码输入错误次数超过限制，请联系管理员");

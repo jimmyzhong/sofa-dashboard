@@ -16,7 +16,7 @@ public @interface Search {
 
     Op op() default Op.IS;
 
-    public enum Op {
+    enum Op {
         IS, REGEX, IN, GT, GTE, LT,LTE;
     }
 

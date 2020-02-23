@@ -1,8 +1,7 @@
 package me.izhong.dashboard.manage.plugin.ip;
+
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.Global;
-import org.apache.commons.io.FileUtils;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -11,10 +10,7 @@ import org.springframework.util.StreamUtils;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.zip.ZipInputStream;
 
 /**
  * ip定位(使用byte数据方式读取)

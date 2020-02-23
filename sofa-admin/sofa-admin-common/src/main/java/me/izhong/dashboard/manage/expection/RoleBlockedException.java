@@ -4,8 +4,7 @@ import me.izhong.common.exception.BusinessException;
 
 public class RoleBlockedException extends BusinessException {
 
-
-    public static final String KEY = "ROLE_BLOCK";
+    public static final int KEY = 400;
 
     public RoleBlockedException() {
         super(KEY, "角色已禁用");

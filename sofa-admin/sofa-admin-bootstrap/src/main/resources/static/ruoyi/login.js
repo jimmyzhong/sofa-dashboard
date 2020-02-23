@@ -29,7 +29,7 @@ function login() {
             "rememberMe": rememberMe
         },
         success: function (r) {
-            if (r.code == 0 || r.code == 'SUCCESS') {
+            if (r.code == 200 || r.code == 'SUCCESS') {
                 $.modal.msg(r.msg);
                 location.href = ctx + 'index';
             } else {

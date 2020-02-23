@@ -5,7 +5,7 @@ import me.izhong.common.exception.BusinessException;
 public class UserPasswordNotMatchException extends BusinessException {
 
 
-    public static final String KEY = "USER_PASSWORD";
+    public static final int KEY = 400;
 
     public UserPasswordNotMatchException() {
         super(KEY, "密码不正确");
