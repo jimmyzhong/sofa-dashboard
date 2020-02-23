@@ -76,6 +76,19 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!-- 定时任务-->
+        <dependency>
+            <groupId>me.izhong.sofa</groupId>
+            <artifactId>sofa-shop-facade</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>me.izhong.sofa</groupId>
+            <artifactId>sofa-admin-shop</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
