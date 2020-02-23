@@ -16,6 +16,7 @@ public class UserInfo implements Serializable {
     private String loginName;
     private String loginIp;
     private String userName;
+    private String nickName;
     private String email;
     private String phoneNumber;
     private String sex;

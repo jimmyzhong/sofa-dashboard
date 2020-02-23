@@ -8,6 +8,7 @@ import me.izhong.shop.service.IUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -56,14 +57,25 @@ public class UserService implements IUserService {
         }
     }
 
+    @Transactional
+    @Override
+    public User registerUser(User user) {
+        if (userDao.findFirstByPhone(user.getPhone())!=null) {
+            throw BusinessException.build("该号码已被使用:" + user.getPhone());
+        }
+        user.encryptUserPassword();
+        return userDao.save(user);
+    }
+
+    @Transactional
     @Override
     public User saveOrUpdate(User user) {
         return userDao.save(user);
     }
 
     public void certify(User user) {
-        String certifiedRes = certifyService.getCertifiedInfo(user.getName(), user.getIdentityID());
-        if (!StringUtils.isEmpty(certifiedRes)) {
+        boolean certifiedRes = certifyService.getCertifiedInfo(user.getName(), user.getIdentityID());
+        if (certifiedRes) {
             user.setIsCertified(true);
             userDao.save(user);
         }

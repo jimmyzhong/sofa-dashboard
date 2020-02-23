@@ -23,6 +23,8 @@ public class User extends EditableEntity {
     private String loginName;
     @Column(name = "NAME", length = 50)
     private String name;
+    @Column(name = "NICK_NAME", length = 50)
+    private String nickName;
     @Column(name = "PHONE",  length = 20)
     private String phone;
     @Column(name = "EMAIL", length = 20)

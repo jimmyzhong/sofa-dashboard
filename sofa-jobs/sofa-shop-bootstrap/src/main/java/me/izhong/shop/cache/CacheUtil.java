@@ -3,10 +3,12 @@ package me.izhong.shop.cache;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import me.izhong.shop.util.SpringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 public class CacheUtil {
@@ -30,5 +32,28 @@ public class CacheUtil {
         if(o == null)
             return null;
         return JSONObject.parseObject(o.toString(),SessionInfo.class);
+    }
+
+    public static SessionInfo getSessionInfo(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        if(StringUtils.isBlank(token)) {
+            return null;
+        }
+        return getSessionInfo(token);
+    }
+
+    /**
+     * 短信换成
+     * @param key
+     * @param value
+     */
+    public static void setSmsInfo(String key, String value) {
+        ValueOperations ops = getRedisTemplate().opsForValue();
+        ops.set(SESSION_PREFIX + "sms_" + key,value,120, TimeUnit.SECONDS);
+    }
+
+    public static String getSmsInfo(String key) {
+        ValueOperations ops = getRedisTemplate().opsForValue();
+        return (String)ops.get(SESSION_PREFIX + "sms_"  + key);
     }
 }

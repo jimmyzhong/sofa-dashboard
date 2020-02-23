@@ -45,31 +45,20 @@ public class UserController {
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
     @ApiResponses({@ApiResponse(code=200, message = "当前用户信息, 比如: \n{\n" +
             "  \"avatar\": \"头像\",\n" +
-            "  \"email\": \"邮件\",\n" +
-            "  \"loginName\": \"登录名\",\n" +
-            "  \"phoneNumber\": \"手机\",\n" +
-            "  \"sex\": \"性别\",\n" +
+            "  \"phone\": \"手机\",\n" +
             "  \"userId\": 0,\n" +
-            "  \"userName\": \"姓名\"\n" +
+            "  \"nickName\": \"昵称\"\n" +
             "}")})
-    public UserInfo getCurrentUser(HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
+    public Map getCurrentUser(HttpServletRequest request) {
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
         User user = userService.findById(userId);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setAvatar(user.getAvatar());
-        userInfo.setEmail(user.getEmail());
-        userInfo.setPhoneNumber(user.getPhone());
-        userInfo.setLoginName(user.getLoginName());
-        userInfo.setUserName(user.getName());
-        return userInfo;
-    }
-
-    private Long getCurrentUserId(HttpServletRequest request) {
-        Long userId = (Long) request.getAttribute("userId");
-        if (userId == null) {
-            throw new RuntimeException("没有找到User Id");
-        }
-        return userId;
+        return new HashMap(){{
+            put("userId",user.getId());
+            put("phone",user.getPhone());
+            put("nickName",user.getNickName());
+            put("avatar",user.getAvatar());
+        }};
     }
 
     @PostMapping(path="/", consumes = "application/json")
@@ -77,50 +66,25 @@ public class UserController {
     @RequireUserLogin
     @ApiOperation(value="更新当前登录用户信息", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
-    public String updateUserInfo(
+    public void updateUserInfo(
             @ApiParam(required = true, type = "object", value = "uer info, like: \n{" +
                     "  \"avatar\": \"头像\",\n" +
-                    "  \"email\": \"邮件\",\n" +
-                    "  \"loginName\": \"登录名\",\n" +
-                    "  \"phoneNumber\": \"手机\",\n" +
-                    "  \"sex\": \"性别\",\n" +
-                    "  \"userId\": 0,\n" +
-                    "  \"userName\": \"姓名\"\n" +
+                    "  \"nickName\": \"姓名\"\n" +
                     "}")
             @RequestBody UserInfo userInfo, HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
+
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
         User user = userService.findById(userId);
 
-        //make sure email, telephone and login name are unique
-        User test = new User();
-        if (!StringUtils.equals(user.getEmail(), userInfo.getEmail())){
-            test.setEmail(userInfo.getEmail());
-        }
-        if (!StringUtils.equals(user.getLoginName(), userInfo.getLoginName())) {
-            test.setLoginName(userInfo.getLoginName());
-        }
-        userService.expectNew(test);
-
-        if (!StringUtils.isEmpty(userInfo.getLoginName())) {
-            user.setLoginName(userInfo.getLoginName());
-        }
-        if (!StringUtils.isEmpty(userInfo.getEmail())) {
-            user.setEmail(userInfo.getEmail());
-        }
-        if (!StringUtils.isEmpty(userInfo.getAvatar())) {
+        if (StringUtils.isNotBlank(userInfo.getAvatar())) {
             user.setAvatar(userInfo.getAvatar());
         }
-
-        if (!user.getIsCertified() && !StringUtils.isEmpty(userInfo.getUserName())) {
-            user.setName(userInfo.getUserName());
+        if (StringUtils.isNotBlank(userInfo.getAvatar())) {
+            user.setNickName(userInfo.getNickName());
         }
-
         userService.saveOrUpdate(user);
-
-        return "Success.";
     }
-
-
 
     @PostMapping("/login")
     @ApiOperation(value="用户登陆",httpMethod = "POST",
@@ -163,20 +127,34 @@ public class UserController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "phone", value = "手机号",  dataType = "string"),
             @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
+            @ApiImplicitParam(name = "token", value = "token", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", dataType = "string"),
     })
-    public String register(@RequestBody Map<String,String> params) {
-        User user = new User();
-        user.setPhone(params.get("phone"));
-        user.setPassword(params.get("password"));
-        ensureRequiredFieldWhenRegistering(user);
-        verifyPhoneCode(params.get("phone"), params.get("code"));
+    public Map register(@RequestBody Map<String,String> params) {
+        String phone = params.get("phone");
+        String token = params.get("token");
+        String password = params.get("password");
+        String code = params.get("code");
+        String nickName = params.get("nickName");
 
-        userService.expectNew(user);
-        user.setId(null);
-        user.encryptUserPassword();
-        userService.saveOrUpdate(user);
-        return "Success.";
+        User user = new User();
+        user.setPhone(phone);
+        user.setPassword(password);
+        user.setNickName(nickName);
+        ensureRequiredFieldWhenRegistering(user);
+
+
+        verifyPhoneCode(token,phone,code);
+        user = userService.registerUser(user);
+
+        SessionInfo session = new SessionInfo();
+        session.setLasttimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        String loginToken = user.getId() + UUID.randomUUID().toString().replaceAll("-","");
+        session.setId(user.getId());
+        CacheUtil.setSessionInfo(token, session);
+        return new HashMap(){{
+            put("token",loginToken);
+        }};
     }
 
     @PostMapping("/resetPassword")
@@ -187,20 +165,20 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", dataType = "string"),
     })
-    public String resetPassword(@RequestBody Map<String,String> params) {
+    public void resetPassword(@RequestBody Map<String,String> params) {
+        String token = params.get("token");
         String phone = params.get("phone");
         String password = params.get("password");
         User user = new User();
-        user.setPhone(phone);
+        //user.setPhone(phone);
         user.setPassword(password);
         ensureRequiredFieldWhenRegistering(user);
-        verifyPhoneCode(phone, params.get("code"));
+        verifyPhoneCode(token,phone, params.get("code"));
 
         user = userService.expectExists(user);
         user.setPassword(password);
         user.encryptUserPassword();
         userService.saveOrUpdate(user);
-        return "Success.";
     }
 
     private void ensureRequiredFieldWhenRegistering(User user) {
@@ -221,32 +199,32 @@ public class UserController {
             @ApiImplicitParam(name = "idCard", value = "身份证号码",  dataType = "string"),
             @ApiImplicitParam(paramType = "header", dataType = "string", name = Constants.AUTHORIZATION, value = "登录成功后token", required = true)
     })
-    public String certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
-        Long userId = getCurrentUserId(request);
+    public void certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
         User user = userService.findById(Long.valueOf(userId));
         user.setName(params.get("name"));
         user.setIdentityID(params.get("idCard"));
+        //认证失败会抛出异常
         userService.certify(user);
-        return "Success.";
     }
 
     @GetMapping("/register/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
-    public String getPhoneCode(@RequestParam("phone")String phoneNumber,
+    public Map getPhoneCode(@RequestParam("phone")String phoneNumber,
                                @RequestParam(name="resetPass", defaultValue = "false")Boolean resetPass) {
-        // TODO a valid phone number and valid attempt to send sms
         String randomNumber = RandomStringUtils.randomNumeric(6);
+
         String res = thirdService.sendSms(phoneNumber, new JSONObject(){{put("code", randomNumber);}}, resetPass);
         if (res != null) {
             log.info("sms res:" + res);
-            return res;
+            throw BusinessException.build(res);
         }
-        SessionInfo sessionInfo = new SessionInfo();
-        sessionInfo.setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy:MM:dd HH:mm:SS")));
-        sessionInfo.setData(randomNumber);
-        //TODO 过期时间 ？
-        CacheUtil.setSessionInfo("phone" + phoneNumber, sessionInfo);
-        return "Success.";
+        String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phoneNumber;
+        CacheUtil.setSmsInfo(randomToken,randomNumber);
+        return new HashMap(){{
+            put("token",randomToken);
+        }};
     }
 
     @GetMapping("/expectNew")
@@ -264,14 +242,30 @@ public class UserController {
         return "Success.";
     }
 
-    private String verifyPhoneCode(@RequestParam("phone")String phoneNumber, @RequestParam("code")String code) {
-        SessionInfo sessionInfo = CacheUtil.getSessionInfo("phone" + phoneNumber);
-        if (sessionInfo == null || StringUtils.isEmpty(sessionInfo.getData())
-            || !sessionInfo.getData().equalsIgnoreCase(code)) {
-            log.warn(phoneNumber + " invalid phone code " + code);
-            throw BusinessException.build("验证失败");
+    private void verifyPhoneCode( String token, String phone , String code) {
+//        SessionInfo sessionInfo = CacheUtil.getSessionInfo("phone" + phoneNumber);
+//        if (sessionInfo == null || StringUtils.isEmpty(sessionInfo.getData())
+//            || !sessionInfo.getData().equalsIgnoreCase(code)) {
+//            log.warn(phoneNumber + " invalid phone code " + code);
+//            throw BusinessException.build("验证失败");
+//        }
+//        return "Success.";
+        if(StringUtils.isBlank(phone)) {
+            throw BusinessException.build("手机号不能为空");
         }
-        return "Success.";
+        if(StringUtils.isBlank(token)) {
+            throw BusinessException.build("token不能为空");
+        }
+        if(!token.endsWith(phone)){
+            throw BusinessException.build("token异常");
+        }
+        String cacheCode = CacheUtil.getSmsInfo(token);
+        if(cacheCode == null){
+            throw BusinessException.build("短信验证码过期");
+        }
+        if(StringUtils.equals(cacheCode,code)){
+            throw BusinessException.build("短信验证码不正确");
+        }
     }
 
 }
