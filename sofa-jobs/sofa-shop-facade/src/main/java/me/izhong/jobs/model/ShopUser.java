@@ -16,6 +16,7 @@ public class ShopUser implements Serializable {
     private String loginName;
     private String nickName;
     private String name;
+    private String avatar;
     private String phone;
     private String email;
 

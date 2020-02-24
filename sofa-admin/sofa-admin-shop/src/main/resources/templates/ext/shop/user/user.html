@@ -64,6 +64,13 @@
 		            title: '用户ID',
                     sortable: true
 		        },
+				{
+					title: '头像',
+					field: 'avatar',
+					formatter: function(value, row, index) {
+						return $.table.imageView(value);
+					}
+				},
 		        {
 		            field: 'phone',
 		            title: '手机',
