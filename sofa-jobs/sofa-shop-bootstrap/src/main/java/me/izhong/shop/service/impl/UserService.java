@@ -88,7 +88,8 @@ public class UserService implements IUserService {
             throw BusinessException.build("手机号不能为空");
         }
         if (!StringUtils.equals(newPhoneNumber, user.getPhone())) {
-            if (userDao.findFirstByPhone(newPhoneNumber) != null ) {
+            User checkUser = userDao.findFirstByPhone(newPhoneNumber);
+            if (checkUser != null && !checkUser.getId().equals(user.getId())) {
                 throw BusinessException.build("手机号码 " + newPhoneNumber + " 已经被注册");
             }
             user.setPhone(newPhoneNumber);

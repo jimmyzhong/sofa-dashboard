@@ -19,4 +19,7 @@ public class ShopUser implements Serializable {
     private String phone;
     private String email;
 
+    private Date registerTime;
+    private Date loginTime;
+
 }

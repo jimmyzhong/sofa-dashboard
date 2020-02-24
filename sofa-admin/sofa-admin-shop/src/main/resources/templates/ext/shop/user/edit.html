@@ -8,7 +8,7 @@
 		<form class="form-horizontal m" id="form-shop-user-edit" th:object="${user}">
 			<input id="id" name="id" type="hidden" th:field="*{id}"/>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">用户名称：</label>
+				<label class="col-sm-3 control-label">用户昵称：</label>
 				<div class="col-sm-8">
 					<input class="form-control" type="text" name="username" id="nickName" th:field="*{nickName}">
 				</div>
@@ -22,15 +22,14 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">密码：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="phone" id="password">
+					<input class="form-control" type="text" name="password" id="password">
 				</div>
 			</div>
 		</form>
 	</div>
 	<th:block th:include="include :: footer" />
 	<script type="text/javascript">
-        var prefix = ctx + "ext/djob/group";
-		
+        var prefix = ctx + "ext/shop/user";
 		function submitHandler() {
 	        if ($.validate.form()) {
 	        	$.operate.save(prefix + "/edit", $('#form-shop-user-edit').serialize());

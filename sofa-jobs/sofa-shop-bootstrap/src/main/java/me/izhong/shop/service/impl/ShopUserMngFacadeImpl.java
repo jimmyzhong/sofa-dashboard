@@ -59,8 +59,8 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
         User dbUser = userService.findById(user.getId());
 
         userService.attemptModifyPhone(dbUser, user.getPhone());
-        userService.attemptModifyEmail(dbUser, user.getEmail());
-        userService.attemptModifyLoginName(dbUser, user.getLoginName());
+        //userService.attemptModifyEmail(dbUser, user.getEmail());
+        //userService.attemptModifyLoginName(dbUser, user.getLoginName());
         userService.attemptModifyPassword(dbUser, user.getPassword());
 
         if (!StringUtils.isEmpty(user.getName())) {
