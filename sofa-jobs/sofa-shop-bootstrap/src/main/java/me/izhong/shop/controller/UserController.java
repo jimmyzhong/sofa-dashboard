@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -136,9 +137,11 @@ public class UserController {
             throw BusinessException.build("用户名密码不能为空");
         }
         User persistedUser = authService.attemptLogin(phone, password);
+
         SessionInfo session = new SessionInfo();
-        session.setLasttimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        String token = persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-","");
+        session.setLasttimestamp(persistedUser.getLoginTime().toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        String token = getToken(persistedUser);
         session.setId(persistedUser.getId());
         CacheUtil.setSessionInfo(token, session);
 
@@ -150,6 +153,10 @@ public class UserController {
             put("nickName",persistedUser.getNickName());
             put("avatar",persistedUser.getAvatar());
         }};
+    }
+
+    private String getToken(User persistedUser) {
+        return persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     @PostMapping("/register")
@@ -178,7 +185,7 @@ public class UserController {
 
         SessionInfo session = new SessionInfo();
         session.setLasttimestamp(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        String loginToken = dbUser.getId() + UUID.randomUUID().toString().replaceAll("-","");
+        String loginToken = getToken(dbUser);
         session.setId(dbUser.getId());
         CacheUtil.setSessionInfo(token, session);
         return new HashMap(){{

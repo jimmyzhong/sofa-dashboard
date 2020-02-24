@@ -84,10 +84,10 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
         Example<User> example = Example.of(user, userMatcher);
 
         Sort sort = Sort.unsorted();
-//        if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
-//            sort = Sort.by("asc".equalsIgnoreCase(request.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
-//                    request.getOrderByColumn());
-//        }
+        if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
+            sort = Sort.by("asc".equalsIgnoreCase(request.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
+                    request.getOrderByColumn());
+        }
 
         Pageable pageableReq = org.springframework.data.domain.PageRequest.of(
                 Long.valueOf(request.getPageNum()-1).intValue(),

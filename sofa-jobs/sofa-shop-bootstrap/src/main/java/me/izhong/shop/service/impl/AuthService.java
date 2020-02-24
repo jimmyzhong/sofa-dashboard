@@ -7,6 +7,9 @@ import me.izhong.shop.util.PasswordUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Service
 public class AuthService {
     private UserDao userDao;
@@ -32,6 +35,11 @@ public class AuthService {
         if (!persistedUser.getPassword().equalsIgnoreCase(encryptedPass)) {
             throw BusinessException.build("用户名密码不匹配");
         }
+
+        LocalDateTime now = LocalDateTime.now();
+        persistedUser.setLoginTime(Timestamp.valueOf(now));
+
+        userDao.save(persistedUser);
         return persistedUser;
     }
 

@@ -6,6 +6,8 @@ import lombok.experimental.Accessors;
 import me.izhong.shop.util.PasswordUtils;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -39,8 +41,10 @@ public class User extends EditableEntity {
     private String salt;
     @Column(name = "AVATAR", length = 200)
     private String avatar;
-
-
+    @Column(name = "registerTime")
+    private Timestamp registerTime;
+    @Column(name = "loginTime")
+    private Timestamp loginTime;
 
     public void encryptUserPassword() {
         setSalt(PasswordUtils.generateSalt(8));

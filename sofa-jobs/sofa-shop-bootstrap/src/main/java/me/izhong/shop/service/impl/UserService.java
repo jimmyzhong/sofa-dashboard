@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -42,6 +44,8 @@ public class UserService implements IUserService {
             throw BusinessException.build("该号码已被使用:" + user.getPhone());
         }
         user.encryptUserPassword();
+        user.setRegisterTime(Timestamp.valueOf(LocalDateTime.now()));
+        user.setLoginTime(user.getRegisterTime());
         return userDao.save(user);
     }
 
