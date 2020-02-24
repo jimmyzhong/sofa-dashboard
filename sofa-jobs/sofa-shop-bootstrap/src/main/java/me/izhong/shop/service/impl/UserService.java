@@ -117,7 +117,7 @@ public class UserService implements IUserService {
 
     @Override
     public void attemptModifyPassword(User dbUser, String password) {
-        if (!StringUtils.isEmpty(password)) {
+        if (!StringUtils.isEmpty(password) && !StringUtils.equals(dbUser.getPassword(), password)) {
             dbUser.setPassword(password);
             dbUser.encryptUserPassword();
         }
