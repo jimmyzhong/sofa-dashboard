@@ -1,5 +1,7 @@
 package me.izhong.jobs.admin.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -76,6 +79,24 @@ public class ShopGoodsController {
 			throw BusinessException.build(String.format("商品不存在%s", goods.getId()));
 		}
 		shopServiceReference.goodsService.edit(obj);
+	}
+
+	@PostMapping("/edit/publishStatus")
+	@AjaxWrapper
+	public void updatePublishStatus(@RequestParam("ids") List<Long> ids, @RequestParam("publishStatus") Integer publishStatus) {
+		shopServiceReference.goodsService.updatePublishStatus(ids, publishStatus);
+	}
+
+	@PostMapping("/edit/recommendStatus")
+	@AjaxWrapper
+	public void updateRecommendStatus(@RequestParam("ids") List<Long> ids, @RequestParam("recommendStatus") Integer recommendStatus) {
+		shopServiceReference.goodsService.updateRecommendStatus(ids, recommendStatus);
+	}
+
+	@PostMapping("/edit/deleteStatus")
+	@AjaxWrapper
+	public void updateDeleteStatus(@RequestParam("ids") List<Long> ids, @RequestParam("deleteStatus") Integer deleteStatus) {
+		shopServiceReference.goodsService.updateDeleteStatus(ids, deleteStatus);
 	}
 
 	@PostMapping("/remove")
