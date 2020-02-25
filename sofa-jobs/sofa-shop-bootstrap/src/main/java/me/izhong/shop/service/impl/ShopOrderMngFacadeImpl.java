@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
@@ -14,6 +15,7 @@ import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.manage.IShopOrderMngFacade;
 import me.izhong.jobs.model.ShopOrder;
+import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.dao.OrderDao;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.IOrderService;
@@ -40,6 +42,17 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
 	@Override
 	public void updateOrderStatus(List<Long> ids, Integer orderStatus) {
 		orderService.updateOrderStatusByIds(orderStatus, ids);
+	}
+
+	@Override
+	public void updateReceiverInfo(ShopReceiverInfo shopReceiverInfo) {
+		orderService.updateReceiverInfoById(shopReceiverInfo);
+	}
+
+	@Override
+	@Transactional
+	public void updateNote(Long id, String note) {
+		orderService.updateNoteById(id, note);
 	}
 
 	@Override

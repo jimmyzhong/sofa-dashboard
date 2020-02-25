@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.dao.OrderDao;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.IOrderService;
@@ -37,5 +38,15 @@ public class OrderService implements IOrderService {
 	@Override
 	public void updateOrderStatusByIds(Integer orderStatus, List<Long> ids) {
 		orderDao.updateOrderStatus(orderStatus, ids);
+	}
+
+	@Override
+	public void updateReceiverInfoById(ShopReceiverInfo shopReceiverInfo) {
+		orderDao.updateReceiverInfo(shopReceiverInfo);
+	}
+
+	@Override
+	public void updateNoteById(Long id, String note) {
+		orderDao.updateNote(note, id);
 	}
 }

@@ -2,6 +2,7 @@ package me.izhong.shop.service;
 
 import java.util.List;
 
+import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.entity.Order;
 
 public interface IOrderService {
@@ -13,4 +14,10 @@ public interface IOrderService {
 	void deleteById(Long orderId);
 
 	void updateOrderStatusByIds(Integer orderStatus, List<Long> ids);
+
+	void updateReceiverInfoById(ShopReceiverInfo shopReceiverInfo);
+
+	void updateNoteById(Long id, String note);
+
+
 }

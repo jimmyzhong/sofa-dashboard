@@ -20,7 +20,7 @@ public class GoodsCategory {
 	@Id
     @GeneratedValue
     private Long id;
-    @Column(name = "PARENT_ID", nullable = false)
+    @Column(name = "PARENT_ID")
     private Long parentId;
     @Column(name = "NAME")
     private String name;
