@@ -59,25 +59,25 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	}
 
 	@Override
-	public ShopGoods edit(ShopGoods goods) {
+	public void edit(ShopGoods goods) {
 		Goods dbGoods = goodsService.findById(goods.getId());
+		BeanUtils.copyProperties(goods, dbGoods);
 		goodsService.saveOrUpdate(dbGoods);
-        return goods;
 	}
 
 	@Override
 	public void updatePublishStatus(List<Long> ids, Integer publishStatus) {
-		goodsService.updatePublishStatusById(publishStatus, ids);
+		goodsService.updatePublishStatusByIds(publishStatus, ids);
 	}
 
 	@Override
 	public void updateRecommendStatus(List<Long> ids, Integer recommendStatus) {
-		goodsService.updateRecommendStatusById(recommendStatus, ids);		
+		goodsService.updateRecommendStatusByIds(recommendStatus, ids);		
 	}
 
 	@Override
 	public void updateDeleteStatus(List<Long> ids, Integer deleteStatus) {
-		goodsService.updateIsDeleteById(deleteStatus, ids);
+		goodsService.updateIsDeleteByIds(deleteStatus, ids);
 	}
 
 	@Override

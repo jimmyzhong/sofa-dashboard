@@ -32,17 +32,17 @@ public class GoodsService implements IGoodsService {
 	}
 
 	@Override
-	public void updatePublishStatusById(Integer publishStatus, List<Long> ids) {
+	public void updatePublishStatusByIds(Integer publishStatus, List<Long> ids) {
 		goodsDao.updatePublishStatus(publishStatus, ids);
 	}
 
 	@Override
-	public void updateRecommendStatusById(Integer recommendStatus, List<Long> ids) {
+	public void updateRecommendStatusByIds(Integer recommendStatus, List<Long> ids) {
 		goodsDao.updateRecommendStatus(recommendStatus, ids);
 	}
 
 	@Override
-	public void updateIsDeleteById(Integer deleteStatus, List<Long> ids) {
+	public void updateIsDeleteByIds(Integer deleteStatus, List<Long> ids) {
 		goodsDao.updateIsDelete(deleteStatus, ids);
 	}
 

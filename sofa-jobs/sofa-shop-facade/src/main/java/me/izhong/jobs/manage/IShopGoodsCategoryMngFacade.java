@@ -1,5 +1,7 @@
 package me.izhong.jobs.manage;
 
+import java.util.List;
+
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.model.ShopGoodsCategory;
@@ -12,9 +14,11 @@ public interface IShopGoodsCategoryMngFacade {
 
     boolean enable(Long id);
 
-    ShopGoodsCategory edit(ShopGoodsCategory goodsCategory);
+    void edit(ShopGoodsCategory goodsCategory);
 
-    PageModel<ShopGoodsCategory> pageList(PageRequest request, ShopGoodsCategory ShopGoodsCategory);
+    void updateShowStatus(List<Long> ids, Integer publishStatus);
+
+    PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type, String name);
 
     boolean remove(Long jobId);
 

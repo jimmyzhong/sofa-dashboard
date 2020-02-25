@@ -23,9 +23,11 @@ import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.manage.IShopGoodsCategoryMngFacade;
 import me.izhong.jobs.model.ShopGoodsCategory;
 import me.izhong.shop.dao.GoodsCategoryDao;
+import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IGoodsCategoryService;
+import me.izhong.shop.service.IGoodsService;
 
 import static org.springframework.data.domain.PageRequest.of;
 
@@ -36,7 +38,9 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	
 	@Autowired
 	private GoodsCategoryDao goodsCategoryDao;
-	
+
+	@Autowired
+	private IGoodsService goodsService;
 	@Autowired
 	private IGoodsCategoryService goodsCategoryService;
 
@@ -59,21 +63,36 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	}
 
 	@Override
-	public ShopGoodsCategory edit(ShopGoodsCategory goods) {
-		GoodsCategory obj = goodsCategoryService.findById(goods.getId());
+	public void edit(ShopGoodsCategory shopGoodsCategory) {
+		GoodsCategory goodsCategory = new GoodsCategory();
+		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
+		setCategoryLevel(goodsCategory);
+		GoodsCategory obj = goodsCategoryService.findById(shopGoodsCategory.getId());
+		if (!StringUtils.isEmpty(goodsCategory.getName()) && !StringUtils.equals(goodsCategory.getName(), obj.getName())) {
+			if (obj.getParentId() != 0) {
+				Goods goods = new Goods();
+				goods.setProductCategoryId(obj.getId());
+				goods.setProductCategoryName(obj.getName());
+				goodsService.saveOrUpdate(goods);
+			}
+		}
 		goodsCategoryService.saveOrUpdate(obj);
-        return goods;
 	}
 
 	@Override
-	public PageModel<ShopGoodsCategory> pageList(PageRequest request, ShopGoodsCategory shopGoodsCategory) {
+	public void updateShowStatus(List<Long> ids, Integer publishStatus) {
+		goodsCategoryService.updateShowStatusByIds(publishStatus, ids);
+	}
+
+	@Override
+	public PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type, String name) {
 		GoodsCategory goodsCategory = new GoodsCategory();
-        BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
+		goodsCategory.setName(name);
+		goodsCategory.setParentId(type == 0L ? 0L : 1L);
         removeWhiteSpaceParam(goodsCategory);
 
         ExampleMatcher userMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
-                .withIgnorePaths("password");
+                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
 
         Example<GoodsCategory> example = Example.of(goodsCategory, userMatcher);
         Sort sort = Sort.unsorted();
@@ -107,7 +126,9 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	@Override
 	public void create(ShopGoodsCategory shopGoodsCategory) {
 		GoodsCategory goodsCategory = new GoodsCategory();
+		goodsCategory.setProductCount(0);
 		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
+		setCategoryLevel(goodsCategory);
 		goodsCategoryService.saveOrUpdate(goodsCategory);
 	}
 
@@ -125,6 +146,21 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
                 }
             }
         } catch (Exception e) {
+        }
+    }
+
+    private void setCategoryLevel(GoodsCategory goodsCategory) {
+        //没有父分类时为一级分类
+        if (goodsCategory.getParentId() == 0L) {
+        	goodsCategory.setLevel(0);
+        } else {
+            //有父分类时选择根据父分类level设置
+        	GoodsCategory parentCategory = goodsCategoryService.findById(goodsCategory.getParentId());
+            if (parentCategory != null) {
+            	goodsCategory.setLevel(parentCategory.getLevel() + 1);
+            } else {
+            	goodsCategory.setLevel(0);
+            }
         }
     }
 }

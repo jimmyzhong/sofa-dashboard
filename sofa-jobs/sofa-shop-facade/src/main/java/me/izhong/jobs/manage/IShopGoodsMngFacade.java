@@ -14,7 +14,7 @@ public interface IShopGoodsMngFacade {
 
     boolean enable(Long goodsId);
 
-    ShopGoods edit(ShopGoods goods);
+    void edit(ShopGoods goods);
 
     void updatePublishStatus(List<Long> ids, Integer publishStatus);
 

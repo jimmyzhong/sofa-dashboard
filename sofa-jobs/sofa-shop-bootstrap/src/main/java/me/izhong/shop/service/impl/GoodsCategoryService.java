@@ -1,5 +1,7 @@
 package me.izhong.shop.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,11 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	@Override
 	public GoodsCategory findById(Long categoryId) {
 		return goodsCategoryDao.findById(categoryId).orElseThrow(() -> new RuntimeException("unable to find goodsCategory by " + categoryId));
+	}
+
+	@Override
+	public void updateShowStatusByIds(Integer showStatus, List<Long> ids) {
+		goodsCategoryDao.updateShowStatus(showStatus, ids);
 	}
 
 	@Override
