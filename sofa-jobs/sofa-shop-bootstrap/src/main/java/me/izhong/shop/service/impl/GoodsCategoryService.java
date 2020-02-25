@@ -8,8 +8,8 @@ import me.izhong.shop.dao.GoodsCategoryDao;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.service.IGoodsCategoryService;
 
-@Service
 @Slf4j
+@Service
 public class GoodsCategoryService implements IGoodsCategoryService {
 	
 	@Autowired
@@ -17,12 +17,17 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 
 	@Override
 	public GoodsCategory saveOrUpdate(GoodsCategory goodsCategory) {
-		return null;
+		return goodsCategoryDao.save(goodsCategory);
 	}
 
 	@Override
 	public GoodsCategory findById(Long categoryId) {
-		return goodsCategoryDao.findById(categoryId).get();
+		return goodsCategoryDao.findById(categoryId).orElseThrow(() -> new RuntimeException("unable to find goodsCategory by " + categoryId));
+	}
+
+	@Override
+	public void deleteById(Long categoryId) {
+		goodsCategoryDao.deleteById(categoryId);
 	}
 
 }

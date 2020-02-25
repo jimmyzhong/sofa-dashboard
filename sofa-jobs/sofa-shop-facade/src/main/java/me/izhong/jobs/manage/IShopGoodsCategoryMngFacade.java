@@ -17,4 +17,6 @@ public interface IShopGoodsCategoryMngFacade {
     PageModel<ShopGoodsCategory> pageList(PageRequest request, ShopGoodsCategory ShopGoodsCategory);
 
     boolean remove(Long jobId);
+
+    void create(ShopGoodsCategory goodsCategory);
 }

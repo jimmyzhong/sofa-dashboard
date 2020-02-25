@@ -7,5 +7,9 @@ public interface IGoodsService {
 	Goods saveOrUpdate(Goods goods);
 
 	Goods findById(Long goodsId);
+	
+	void deleteById(Long goodsId);
+
+	void checkGoodsName(Goods goods, String goodsName);
 
 }

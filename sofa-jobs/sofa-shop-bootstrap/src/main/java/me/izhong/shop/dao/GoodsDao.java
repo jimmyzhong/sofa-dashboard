@@ -7,4 +7,6 @@ import me.izhong.shop.entity.Goods;
 
 @Repository
 public interface GoodsDao extends JpaRepository<Goods, Long> {
+
+	Goods findByName(String name);
 }

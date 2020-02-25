@@ -2,7 +2,6 @@ package me.izhong.jobs.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +14,7 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.Convert;
-import me.izhong.dashboard.manage.annotation.Log;
-import me.izhong.dashboard.manage.constants.BusinessType;
 import me.izhong.db.common.util.PageRequestUtil;
-import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopGoods;
 import me.izhong.jobs.model.ShopGoodsCategory;
@@ -37,25 +33,33 @@ public class ShopGoodsCategoryController {
 		return prefix + "/goods/category";
 	}
 
-	@RequiresPermissions(ShopPermissions.User.VIEW)
-	@RequestMapping("/view")
-	@AjaxWrapper
-	public ShopGoodsCategory view(Long jobId) {
-		return shopServiceReference.goodsCategoryService.find(jobId);
+	@GetMapping("/view")
+	public ShopGoodsCategory view(Long categoryId) {
+		return shopServiceReference.goodsCategoryService.find(categoryId);
 	}
 
-	@RequiresPermissions(ShopPermissions.User.VIEW)
-	@RequestMapping("/list")
+	@PostMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, ShopGoodsCategory goodsCategory) {
-		PageModel<ShopGoodsCategory> pm = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), goodsCategory);
-		return pm;
+		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), goodsCategory);
+		return page;
 	}
 
+    @GetMapping("/add")
+    public String add() {
+        return prefix + "/add";
+    }
+
+    @PostMapping("/add")
+    @AjaxWrapper
+    public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
+    	shopServiceReference.goodsCategoryService.create(goodsCategory);
+    }
+
 	@GetMapping("/edit/{categoryId}")
-	public String edit(@PathVariable("jobId") Long categoryId, Model model) {
+	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
 		if (categoryId == null) {
-			throw BusinessException.build("goodsId不能为空");
+			throw BusinessException.build("categoryId不能为空");
 		}
 		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.find(categoryId);
 		if (goodsCategory == null) {
@@ -65,8 +69,6 @@ public class ShopGoodsCategoryController {
 		return prefix + "/edit";
 	}
 
-	@Log(title = "商品类目管理", businessType = BusinessType.UPDATE)
-	@RequiresPermissions(ShopPermissions.User.EDIT)
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoods goods) {
@@ -77,8 +79,6 @@ public class ShopGoodsCategoryController {
 		shopServiceReference.goodsCategoryService.edit(obj);
 	}
 
-	@Log(title = "商品类目管理", businessType = BusinessType.DELETE)
-	@RequiresPermissions(ShopPermissions.User.REMOVE)
 	@RequestMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
