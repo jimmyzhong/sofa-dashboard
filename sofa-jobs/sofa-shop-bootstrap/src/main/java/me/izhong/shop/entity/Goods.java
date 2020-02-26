@@ -1,6 +1,7 @@
 package me.izhong.shop.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,12 +18,8 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "PRODUCT")
-public class Goods extends EditableEntity {
+public class Goods {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	@Id
     @GeneratedValue
     private Long id;
@@ -70,4 +67,8 @@ public class Goods extends EditableEntity {
     private String reducePriceCount;
     @Column(name = "PRODUCT_CATEGORY_NAME")
     private String productCategoryName;
+    @Column(name = "CREATE_TIME")
+    private LocalDateTime createTime;
+    @Column(name = "UPDATE_TIME")
+    private LocalDateTime updateTime;
 }
