@@ -27,6 +27,17 @@ ali-cloud:
   ossAccessSecret: 6xxnifu3vJGFo4brtpTPCKsolGPt0n
   ossPicBucket: lpp-cn-pic
   ossPicAccessUrl: http://lpp-cn-pic.oss-accelerate.aliyuncs.com/
+
+alipay:
+  url: https://openapi.alipay.com/gateway.do
+  appId: abc
+  appPrivateKey: abc
+  format: json
+  charset: abc
+  aliPubKey: lll
+  signType: RSA2
+
+
 spring:
   application:
     name: sjm
