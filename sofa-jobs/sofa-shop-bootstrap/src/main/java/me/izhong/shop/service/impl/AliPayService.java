@@ -39,7 +39,7 @@ public class AliPayService {
      * @param tradeNo 支付时返回的支付宝交易号
      * @return
      */
-    public String queryOrder(String outTradeNo, String tradeNo) {
+    public Map<String ,String> queryOrder(String outTradeNo, String tradeNo) {
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         JSONObject bizContent = new JSONObject();
         if (!StringUtils.isEmpty(outTradeNo)) {
@@ -51,13 +51,21 @@ public class AliPayService {
         request.setBizContent(bizContent.toJSONString());
         try {
             AlipayTradeQueryResponse response = alipayClient.execute(request);//通过alipayClient调用API，获得对应的response类
-            return response.getBody();
+            return JSONUtils.parseObject(response.getBody(), Map.class);
         }catch (AlipayApiException e) {
             log.error("query order status outTradeNo="+outTradeNo+",tradeNo="+tradeNo, e);
             throw BusinessException.build("查询订单信息失败:" + e.getMessage());
         }
     }
 
+    /**
+     * 支付宝下单
+     * @param subject
+     * @param description
+     * @param outtradeno
+     * @param amount
+     * @return 支付宝订单号
+     */
     public String pay (String subject, String description, String outtradeno, BigDecimal amount) {
         //实例化客户端
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
@@ -82,24 +90,10 @@ public class AliPayService {
 
     /**
      * verify result
-     * @param request
+     * @param
      * @return
      */
-    public boolean verify(HttpServletRequest request) {
-        //获取支付宝POST过来反馈信息
-        Map<String,String> params = new HashMap<>();
-        Map requestParams = request.getParameterMap();
-        for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-            String name = (String) iter.next();
-            String[] values = (String[]) requestParams.get(name);
-            String valueStr = "";
-            if (values != null && values.length > 0) {
-                valueStr = Stream.of(values).collect(Collectors.joining(","));
-            }
-            //乱码解决，这段代码在出现乱码时使用。
-            //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
-            params.put(name, valueStr);
-        }
+    public boolean verify(Map<String, String> params) {
         try {
             boolean flag = AlipaySignature.rsaCheckV1(params, alipayProperties.getAliPubKey(),
                     alipayProperties.getCharset(), alipayProperties.getSignType());
