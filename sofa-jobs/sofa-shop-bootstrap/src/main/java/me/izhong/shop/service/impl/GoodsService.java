@@ -32,18 +32,18 @@ public class GoodsService implements IGoodsService {
 	}
 
 	@Override
-	public void updatePublishStatusByIds(Integer publishStatus, List<Long> ids) {
-		goodsDao.updatePublishStatus(publishStatus, ids);
+	public void updatePublishStatusByIds(List<Long> ids, Integer publishStatus) {
+		goodsDao.updatePublishStatus(ids, publishStatus);
 	}
 
 	@Override
-	public void updateRecommendStatusByIds(Integer recommendStatus, List<Long> ids) {
-		goodsDao.updateRecommendStatus(recommendStatus, ids);
+	public void updateRecommendStatusByIds(List<Long> ids, Integer recommendStatus) {
+		goodsDao.updateRecommendStatus(ids, recommendStatus);
 	}
 
 	@Override
-	public void updateIsDeleteByIds(Integer deleteStatus, List<Long> ids) {
-		goodsDao.updateIsDelete(deleteStatus, ids);
+	public void updateIsDeleteByIds(List<Long> ids, Integer deleteStatus) {
+		goodsDao.updateIsDelete(ids, deleteStatus);
 	}
 
 	@Override

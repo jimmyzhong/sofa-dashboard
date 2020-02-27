@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import me.izhong.shop.entity.CartItem;
+import me.izhong.shop.dto.CartItemParam;
 import me.izhong.shop.service.ICartItemService;
 import me.izhong.shop.service.IUserService;
 
@@ -26,8 +26,8 @@ public class CartItemConroller {
 
 	@PostMapping(value = "/add")
     @ResponseBody
-	public void add(@RequestBody CartItem cartItem) {
-		cartItemService.add(cartItem);
+	public void add(@RequestBody CartItemParam cartItemParam) {
+		cartItemService.add(cartItemParam);
 	}
 
 	@GetMapping(value = "/list")

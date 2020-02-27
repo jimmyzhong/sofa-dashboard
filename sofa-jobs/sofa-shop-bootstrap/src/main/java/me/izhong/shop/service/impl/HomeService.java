@@ -40,7 +40,7 @@ public class HomeService implements IHomeService {
 	public List<GoodsCategory> productCategoryList(Long parentId) {
 		GoodsCategory goodsCategory = new GoodsCategory();
 		goodsCategory.setParentId(parentId);
-		goodsCategory.setShow_status(1);
+		goodsCategory.setShowStatus(1);
 		Example<GoodsCategory> example = Example.of(goodsCategory);
 		return goodsCategoryDao.findAll(example);
 	}

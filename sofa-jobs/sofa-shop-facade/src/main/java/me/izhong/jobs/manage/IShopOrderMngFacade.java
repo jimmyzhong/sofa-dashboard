@@ -20,6 +20,4 @@ public interface IShopOrderMngFacade {
     PageModel<ShopOrder> pageList(PageRequest request, ShopOrder order);
 
     boolean remove(Long orderId);
-
-
 }

@@ -1,6 +1,8 @@
 package me.izhong.jobs.admin.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -19,6 +22,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.Convert;
 import me.izhong.db.common.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
+import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.model.ShopGoodsCategory;
 
 @Controller
@@ -31,23 +35,33 @@ public class ShopGoodsCategoryController {
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
-	public String goods() {
+	public String category() {
 		return prefix + "/goods/category";
 	}
 
-	@GetMapping("/view")
-	public ShopGoodsCategory view(Long categoryId) {
-		return shopServiceReference.goodsCategoryService.find(categoryId);
+	@PostMapping("/list")
+    @AjaxWrapper
+	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0") Long type) {
+		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), type);
+		return page;
 	}
 
-	@PostMapping("/list")
-	@AjaxWrapper
-	public PageModel<ShopGoodsCategory> pageList(
-			HttpServletRequest request,
-			@RequestParam(value = "type", defaultValue = "0") Long type,
-			@RequestParam(value = "name", required = false) String name) {
-		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), type, name);
-		return page;
+	@GetMapping("/queryLv1")
+    @ResponseBody
+	public Map<String, Object> queryLevel1() {
+		List<CategoryDTO> dtoList = shopServiceReference.goodsCategoryService.queryLevel1();
+		Map<String, Object> data = new HashMap<>();
+		data.put("list", dtoList);
+		return data;
+	}
+
+	@GetMapping("/queryAll")
+    @ResponseBody
+	public Map<String, Object> queryAll() {
+		List<CategoryDTO> dtoList = shopServiceReference.goodsCategoryService.queryAll();
+		Map<String, Object> data = new HashMap<>();
+		data.put("categoryList", dtoList);
+		return data;
 	}
 
     @GetMapping("/add")

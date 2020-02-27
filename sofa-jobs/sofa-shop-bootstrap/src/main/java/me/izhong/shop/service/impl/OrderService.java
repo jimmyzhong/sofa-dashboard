@@ -37,7 +37,7 @@ public class OrderService implements IOrderService {
 
 	@Override
 	public void updateOrderStatusByIds(Integer orderStatus, List<Long> ids) {
-		orderDao.updateOrderStatus(orderStatus, ids);
+		orderDao.updateOrderStatus(ids, orderStatus);
 	}
 
 	@Override

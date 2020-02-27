@@ -10,11 +10,11 @@ public interface IGoodsService {
 
 	Goods findById(Long goodsId);
 
-	void updatePublishStatusByIds(Integer publishStatus, List<Long> ids);
+	void updatePublishStatusByIds(List<Long> ids, Integer publishStatus);
 
-	void updateRecommendStatusByIds(Integer recommendStatus, List<Long> ids);
+	void updateRecommendStatusByIds(List<Long> ids, Integer recommendStatus);
 
-	void updateIsDeleteByIds(Integer deleteStatus, List<Long> ids);
+	void updateIsDeleteByIds(List<Long> ids, Integer deleteStatus);
 	
 	void deleteById(Long goodsId);
 

@@ -33,7 +33,7 @@ public class GoodsCategory {
     @Column(name = "NAV_STATUS")
     private Integer navStatus;
     @Column(name = "SHOW_STATUS")
-    private Integer show_status;
+    private Integer showStatus;
     @Column(name = "SORT")
     private Integer sort;
     @Column(name = "ICON")

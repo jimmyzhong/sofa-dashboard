@@ -1,6 +1,8 @@
 package me.izhong.shop.service.impl;
 
-import java.lang.reflect.Field;
+import static org.springframework.data.domain.PageRequest.of;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,16 +21,14 @@ import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.manage.IShopGoodsCategoryMngFacade;
 import me.izhong.jobs.model.ShopGoodsCategory;
 import me.izhong.shop.dao.GoodsCategoryDao;
 import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
-import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IGoodsCategoryService;
 import me.izhong.shop.service.IGoodsService;
-
-import static org.springframework.data.domain.PageRequest.of;
 
 @Slf4j
 @Service
@@ -53,23 +52,13 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	}
 
 	@Override
-	public boolean disable(Long goodsId) {
-		return false;
-	}
-
-	@Override
-	public boolean enable(Long goodsId) {
-		return false;
-	}
-
-	@Override
 	public void edit(ShopGoodsCategory shopGoodsCategory) {
 		GoodsCategory goodsCategory = new GoodsCategory();
 		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
 		setCategoryLevel(goodsCategory);
 		GoodsCategory obj = goodsCategoryService.findById(shopGoodsCategory.getId());
 		if (!StringUtils.isEmpty(goodsCategory.getName()) && !StringUtils.equals(goodsCategory.getName(), obj.getName())) {
-			if (obj.getParentId() != 0) {
+			if (obj.getParentId() != 0L) {
 				Goods goods = new Goods();
 				goods.setProductCategoryId(obj.getId());
 				goods.setProductCategoryName(obj.getName());
@@ -81,20 +70,14 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 
 	@Override
 	public void updateShowStatus(List<Long> ids, Integer publishStatus) {
-		goodsCategoryService.updateShowStatusByIds(publishStatus, ids);
+		goodsCategoryService.updateShowStatusByIds(ids, publishStatus);
 	}
 
 	@Override
-	public PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type, String name) {
+	public PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type) {
 		GoodsCategory goodsCategory = new GoodsCategory();
-		goodsCategory.setName(name);
 		goodsCategory.setParentId(type == 0L ? 0L : 1L);
-        removeWhiteSpaceParam(goodsCategory);
-
-        ExampleMatcher userMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
-
-        Example<GoodsCategory> example = Example.of(goodsCategory, userMatcher);
+        Example<GoodsCategory> example = Example.of(goodsCategory);
         Sort sort = Sort.unsorted();
         if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
             sort = Sort.by("asc".equalsIgnoreCase(request.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
@@ -105,12 +88,43 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
                 Long.valueOf(request.getPageNum()-1).intValue(),
                 Long.valueOf(request.getPageSize()).intValue(), sort);
         Page<GoodsCategory> userPage = goodsCategoryDao.findAll(example, pageableReq);
-        List<ShopGoodsCategory> shopGoodCategoryList = userPage.getContent().stream().map(t->{
+        List<ShopGoodsCategory> shopGoodCategoryList = userPage.getContent().stream().map(t -> {
         	ShopGoodsCategory obj = new ShopGoodsCategory();
             BeanUtils.copyProperties(t, obj);
             return obj;
         }).collect(Collectors.toList());
         return PageModel.instance(userPage.getTotalElements(), shopGoodCategoryList);
+	}
+
+	@Override
+	public List<CategoryDTO> queryLevel1() {
+		List<GoodsCategory> list = goodsCategoryService.findByLevel1();
+        return list.stream().map(t -> {
+        	CategoryDTO dto = new CategoryDTO();
+        	dto.setValue(t.getId());
+        	dto.setLabel(t.getName());
+            return dto;
+        }).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<CategoryDTO> queryAll() {
+		List<GoodsCategory> level1List = goodsCategoryService.findByLevel1();
+        return level1List.stream().map(t -> {
+        	CategoryDTO dto = new CategoryDTO();
+        	dto.setLabel(t.getName());
+        	dto.setValue(t.getId());
+            List<GoodsCategory> level2List = goodsCategoryService.findByParentId(t.getId());
+			List<CategoryDTO> children = new ArrayList<>(level2List.size());
+			for (GoodsCategory goodsCategory : level2List) {
+				CategoryDTO obj = new CategoryDTO();
+				obj.setLabel(goodsCategory.getName());
+				obj.setValue(goodsCategory.getId());
+				children.add(obj);
+			}
+            dto.setChildren(children);
+            return dto;
+        }).collect(Collectors.toList());
 	}
 
 	@Override
@@ -131,23 +145,6 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 		setCategoryLevel(goodsCategory);
 		goodsCategoryService.saveOrUpdate(goodsCategory);
 	}
-
-    private void removeWhiteSpaceParam(GoodsCategory goodsCategory) {
-        Field[] fields = User.class.getDeclaredFields();
-        try {
-            for (Field field : fields) {
-                if (field.getType() == String.class) {
-                    field.setAccessible(true);
-                    String value = (String) field.get(goodsCategory);
-                    if (StringUtils.isWhitespace(value)) {
-                        field.set(goodsCategory, null);
-                    }
-                    field.setAccessible(false);
-                }
-            }
-        } catch (Exception e) {
-        }
-    }
 
     private void setCategoryLevel(GoodsCategory goodsCategory) {
         //没有父分类时为一级分类

@@ -34,7 +34,7 @@ public class CartItem {
     @Column(name = "RSV1")
     private String rsv1;
     @Column(name = "RSV2")
-    private String navStatus;
+    private String rsv2;
     @Column(name = "RSV3")
     private String rsv3;
     @Column(name = "PRODUCT_PIC")

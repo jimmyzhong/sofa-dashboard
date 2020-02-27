@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -49,16 +48,6 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	}
 
 	@Override
-	public boolean disable(Long goodsId) {
-		return false;
-	}
-
-	@Override
-	public boolean enable(Long goodsId) {
-		return false;
-	}
-
-	@Override
 	public void edit(ShopGoods goods) {
 		Goods dbGoods = goodsService.findById(goods.getId());
 		BeanUtils.copyProperties(goods, dbGoods);
@@ -67,17 +56,17 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 
 	@Override
 	public void updatePublishStatus(List<Long> ids, Integer publishStatus) {
-		goodsService.updatePublishStatusByIds(publishStatus, ids);
+		goodsService.updatePublishStatusByIds(ids, publishStatus);
 	}
 
 	@Override
 	public void updateRecommendStatus(List<Long> ids, Integer recommendStatus) {
-		goodsService.updateRecommendStatusByIds(recommendStatus, ids);		
+		goodsService.updateRecommendStatusByIds(ids, recommendStatus);		
 	}
 
 	@Override
 	public void updateDeleteStatus(List<Long> ids, Integer deleteStatus) {
-		goodsService.updateIsDeleteByIds(deleteStatus, ids);
+		goodsService.updateIsDeleteByIds(ids, deleteStatus);
 	}
 
 	@Override
@@ -86,11 +75,7 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         BeanUtils.copyProperties(shopGoods, goods);
         removeWhiteSpaceParam(goods);
 
-        ExampleMatcher userMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
-                .withIgnorePaths("password");
-
-        Example<Goods> example = Example.of(goods, userMatcher);
+        Example<Goods> example = Example.of(goods);
         Sort sort = Sort.unsorted();
         if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
             sort = Sort.by("asc".equalsIgnoreCase(request.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
@@ -101,7 +86,7 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
                 Long.valueOf(request.getPageNum()-1).intValue(),
                 Long.valueOf(request.getPageSize()).intValue(), sort);
         Page<Goods> userPage = goodsDao.findAll(example, pageableReq);
-        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t->{
+        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t -> {
         	ShopGoods obj = new ShopGoods();
             BeanUtils.copyProperties(t, obj);
             return obj;
@@ -117,13 +102,6 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 		} catch (Exception e) {
 			return false;
 		}
-	}
-
-	@Override
-	public void create(ShopGoods shopGoods) {
-		Goods goods = new Goods();
-		BeanUtils.copyProperties(shopGoods, goods);
-		goodsService.saveOrUpdate(goods);
 	}
 
     private void removeWhiteSpaceParam(Goods goods) {
@@ -142,4 +120,11 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         } catch (Exception e) {
         }
     }
+
+	@Override
+	public void create(ShopGoods shopGoods) {
+		Goods goods = new Goods();
+		BeanUtils.copyProperties(shopGoods, goods);
+		goodsService.saveOrUpdate(goods);
+	}
 }

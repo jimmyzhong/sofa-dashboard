@@ -10,7 +10,12 @@ public interface IGoodsCategoryService {
 
 	GoodsCategory findById(Long categoryId);
 
-	void updateShowStatusByIds(Integer publishStatus, List<Long> ids);
+	List<GoodsCategory> findByParentId(Long parentId);
+
+	List<GoodsCategory> findByLevel1();
+
+	void updateShowStatusByIds(List<Long> ids, Integer publishStatus);
 
 	void deleteById(Long categoryId);
+
 }

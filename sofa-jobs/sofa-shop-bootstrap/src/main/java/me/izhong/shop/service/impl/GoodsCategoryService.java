@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.shop.dao.GoodsCategoryDao;
@@ -28,13 +29,23 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	}
 
 	@Override
-	public void updateShowStatusByIds(Integer showStatus, List<Long> ids) {
-		goodsCategoryDao.updateShowStatus(showStatus, ids);
+	public List<GoodsCategory> findByParentId(Long parentId) {
+		return goodsCategoryDao.findByParentId(parentId);
+	}
+
+	@Override
+	public List<GoodsCategory> findByLevel1() {
+		return goodsCategoryDao.findByLevelAndShowStatus(0, 1);
+	}
+
+	@Override
+	@Transactional
+	public void updateShowStatusByIds(List<Long> ids, Integer showStatus) {
+		goodsCategoryDao.updateShowStatus(ids, showStatus);
 	}
 
 	@Override
 	public void deleteById(Long categoryId) {
 		goodsCategoryDao.deleteById(categoryId);
 	}
-
 }

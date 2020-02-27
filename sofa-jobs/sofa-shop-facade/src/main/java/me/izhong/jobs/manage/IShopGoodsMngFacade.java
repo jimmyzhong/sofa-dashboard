@@ -10,10 +10,6 @@ public interface IShopGoodsMngFacade {
 
 	ShopGoods find(Long goodsId);
 
-    boolean disable(Long goodsId);
-
-    boolean enable(Long goodsId);
-
     void edit(ShopGoods goods);
 
     void updatePublishStatus(List<Long> ids, Integer publishStatus);
