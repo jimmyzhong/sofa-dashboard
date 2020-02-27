@@ -14,8 +14,8 @@ import me.izhong.shop.entity.Order;
 public interface OrderDao extends JpaRepository<Order, Long> {
 	
 	@Modifying
-	@Query(value = "update order t set t.status = ?1 where t.id in ?2", nativeQuery = true)
-	void updateOrderStatus(Integer orderStatus, List<Long> ids);
+	@Query(value = "update order t set t.status = ?2 where t.id in ?1", nativeQuery = true)
+	void updateOrderStatus(List<Long> ids, Integer orderStatus);
 
 	@Modifying
 	@Query(value = "update order t set t.status = ?1 where t.id in ?2", nativeQuery = true)

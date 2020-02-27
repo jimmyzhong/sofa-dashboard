@@ -11,8 +11,12 @@ import me.izhong.shop.entity.GoodsCategory;
 
 @Repository
 public interface GoodsCategoryDao extends JpaRepository<GoodsCategory, Long> {
-	
+
+	List<GoodsCategory> findByParentId(Long parentId);
+
+	List<GoodsCategory> findByLevelAndShowStatus(Integer level, Integer showStatus);
+
 	@Modifying
-	@Query(value = "update product_category t set t.show_status = ?1 where t.id in ?2", nativeQuery = true)
-	void updateShowStatus(Integer showStatus, List<Long> ids);
+	@Query(value = "update product_category t set t.show_status = ?2 where t.id in ?1", nativeQuery = true)
+	void updateShowStatus(List<Long> ids, Integer showStatus);
 }

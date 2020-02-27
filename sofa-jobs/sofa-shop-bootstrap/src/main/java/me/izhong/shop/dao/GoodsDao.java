@@ -15,14 +15,14 @@ public interface GoodsDao extends JpaRepository<Goods, Long> {
 	Goods findByName(String name);
 
 	@Modifying
-	@Query(value = "update product t set t.publish_status = ?1 where t.id in ?2", nativeQuery = true)
-	void updatePublishStatus(Integer publishStatus, List<Long> ids);
+	@Query(value = "update product t set t.publish_status = ?2 where t.id in ?1", nativeQuery = true)
+	void updatePublishStatus(List<Long> ids, Integer publishStatus);
 
 	@Modifying
-	@Query(value = "update product t set t.recommand_status = ?1 where t.id in ?2", nativeQuery = true)
-	void updateRecommendStatus(Integer recommendStatus, List<Long> ids);
+	@Query(value = "update product t set t.recommand_status = ?2 where t.id in ?1", nativeQuery = true)
+	void updateRecommendStatus(List<Long> ids, Integer recommendStatus);
 
 	@Modifying
-	@Query(value = "update product t set t.is_delete = ?1 where t.id in ?2", nativeQuery = true)
-	void updateIsDelete(Integer deleteStatus, List<Long> ids);
+	@Query(value = "update product t set t.is_delete = ?2 where t.id in ?1", nativeQuery = true)
+	void updateIsDelete(List<Long> ids, Integer deleteStatus);
 }

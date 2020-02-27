@@ -35,11 +35,6 @@ public class ShopGoodsController {
 		return prefix + "/goods";
 	}
 
-	@GetMapping("/view")
-	public ShopGoods view(Long goodsId) {
-		return shopServiceReference.goodsService.find(goodsId);
-	}
-
 	@PostMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopGoods> pageList(HttpServletRequest request, ShopGoods goods) {
