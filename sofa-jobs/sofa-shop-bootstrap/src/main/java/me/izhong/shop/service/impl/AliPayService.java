@@ -9,6 +9,7 @@ import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.sofa.rpc.common.utils.JSONUtils;
 import com.aliyuncs.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
@@ -57,16 +58,16 @@ public class AliPayService {
         }
     }
 
-    public String pay (String subject, String outtradeno, BigDecimal amount) {
+    public String pay (String subject, String description, String outtradeno, BigDecimal amount) {
         //实例化客户端
         AlipayTradeAppPayRequest request = new AlipayTradeAppPayRequest();
         AlipayTradeAppPayModel model = new AlipayTradeAppPayModel();
-        model.setBody("我是测试数据");
+        model.setBody(description);
         model.setSubject(subject);
         model.setOutTradeNo(outtradeno);
-        model.setTimeoutExpress("30m"); //TODO read from config
+        model.setTimeoutExpress(alipayProperties.getOrderExpire()); //TODO read from config
         model.setTotalAmount(amount.toString());
-        model.setProductCode("QUICK_MSECURITY_PAY"); //TODO read from config
+        model.setProductCode(alipayProperties.getProductCode()); //TODO read from config
         request.setBizModel(model);
         request.setNotifyUrl(alipayProperties.getNotifyUrl());
         try {
@@ -104,7 +105,8 @@ public class AliPayService {
                     alipayProperties.getCharset(), alipayProperties.getSignType());
             return flag;
         }catch (AlipayApiException e){
-
+            log.error("verify error with params: "+ JSONUtils.toJSONString(params), e);
+            return false;
         }
     }
 }

@@ -36,6 +36,8 @@ alipay:
   charset: abc
   aliPubKey: lll
   signType: RSA2
+  productCode: QUICK_MSECURITY_PAY
+  orderExpire: 30m
 
 
 spring:
