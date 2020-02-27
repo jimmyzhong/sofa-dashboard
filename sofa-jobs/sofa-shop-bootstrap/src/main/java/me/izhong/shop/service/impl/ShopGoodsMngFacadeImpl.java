@@ -86,7 +86,7 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
                 Long.valueOf(request.getPageNum()-1).intValue(),
                 Long.valueOf(request.getPageSize()).intValue(), sort);
         Page<Goods> userPage = goodsDao.findAll(example, pageableReq);
-        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t->{
+        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t -> {
         	ShopGoods obj = new ShopGoods();
             BeanUtils.copyProperties(t, obj);
             return obj;

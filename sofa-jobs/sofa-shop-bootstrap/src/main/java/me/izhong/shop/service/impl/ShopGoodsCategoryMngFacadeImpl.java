@@ -1,5 +1,7 @@
 package me.izhong.shop.service.impl;
 
+import static org.springframework.data.domain.PageRequest.of;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +29,6 @@ import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.service.IGoodsCategoryService;
 import me.izhong.shop.service.IGoodsService;
-
-import static org.springframework.data.domain.PageRequest.of;
 
 @Slf4j
 @Service
