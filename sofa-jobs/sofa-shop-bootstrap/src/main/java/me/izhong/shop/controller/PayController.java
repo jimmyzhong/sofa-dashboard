@@ -56,7 +56,12 @@ public class PayController {
         }
 
         Long orderNo = Long.valueOf(params.getOrderNo());
-        Order order  = orderService.findById(orderNo);
+        // TODO comment for test Order order  = orderService.findById(orderNo);
+        Order order = new Order();
+        order.setId(orderNo);
+        order.setSubject("Test商品");
+        order.setDescription("11");
+        order.setTotalAmount(BigDecimal.valueOf(0.01));
         expectMandatoryFieldForAlipay(order);
 
         String alipayTradeNo = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
@@ -151,7 +156,7 @@ public class PayController {
         if (StringUtils.isEmpty(order.getDescription())) {
             throw BusinessException.build("订单表述不能为空");
         }
-        if (order.getPayAmount() == null) {
+        if (order.getTotalAmount() == null) {
             throw BusinessException.build("订单金额不能为空");
         }
     }
