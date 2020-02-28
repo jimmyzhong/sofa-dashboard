@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Entity
-@Table(name = "ORDER")
+@Table(name = "TX_ORDER")
 public class Order {
 
 	@Id

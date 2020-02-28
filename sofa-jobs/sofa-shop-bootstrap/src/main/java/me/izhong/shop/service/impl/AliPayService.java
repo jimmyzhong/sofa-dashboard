@@ -39,7 +39,7 @@ public class AliPayService {
      * @param tradeNo 支付时返回的支付宝交易号
      * @return
      */
-    public Map<String ,String> queryOrder(String outTradeNo, String tradeNo) {
+    public AlipayTradeQueryResponse queryOrder(String outTradeNo, String tradeNo) {
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         JSONObject bizContent = new JSONObject();
         if (!StringUtils.isEmpty(outTradeNo)) {
@@ -50,8 +50,7 @@ public class AliPayService {
         }
         request.setBizContent(bizContent.toJSONString());
         try {
-            AlipayTradeQueryResponse response = alipayClient.execute(request);//通过alipayClient调用API，获得对应的response类
-            return JSONUtils.parseObject(response.getBody(), Map.class);
+            return alipayClient.execute(request);//通过alipayClient调用API，获得对应的response类
         }catch (AlipayApiException e) {
             log.error("query order status outTradeNo="+outTradeNo+",tradeNo="+tradeNo, e);
             throw BusinessException.build("查询订单信息失败:" + e.getMessage());

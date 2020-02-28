@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 @Data
 @ConfigurationProperties(prefix = "alipay")
 @Component
@@ -23,6 +25,11 @@ public class AliPayProperties {
     String notifyUrl;
     String productCode;
     String orderExpire;
+
+    @PostConstruct
+    public void setUp(){
+        java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    }
 
     @Bean
     public AlipayClient getAlipayClient() {

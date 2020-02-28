@@ -1,6 +1,7 @@
 package me.izhong.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.sofa.rpc.common.utils.JSONUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -64,15 +65,13 @@ public class PayController {
         order.setTotalAmount(BigDecimal.valueOf(0.01));
         expectMandatoryFieldForAlipay(order);
 
-        String alipayTradeNo = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
+        aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
                 order.getTotalAmount());
 
-        order.setPayTradeNo(alipayTradeNo);
         orderService.saveOrUpdate(order);
 
         AlipayDTO res = new AlipayDTO();
         res.setOrderNo(params.getOrderNo());
-        res.setAlipayTradeNo(alipayTradeNo);
         return res;
     }
 
@@ -91,16 +90,21 @@ public class PayController {
 
         Long orderNo = Long.valueOf(params.getOrderNo());
         Order order  = orderService.findById(orderNo);
-        Map<String, String> respnse = aliPayService.queryOrder(order.getId().toString(), order.getPayTradeNo());
-
-        String status = respnse.get("trade_status");
-        order.setPayStatus(status);
-        orderService.saveOrUpdate(order);
 
         AlipayDTO res = new AlipayDTO();
         res.setOrderNo(orderNo.toString());
         res.setAlipayTradeNo(order.getPayTradeNo());
-        res.setTradeStatus(status);
+
+        AlipayTradeQueryResponse response = aliPayService.queryOrder(order.getId().toString(), order.getPayTradeNo());
+        if (!response.isSuccess()) {
+            log.warn("order does not succeed." + orderNo + "," + response.getSubMsg());
+            res.setTradeStatus(response.getTradeStatus());
+            return res;
+        }
+
+        String status = response.getTradeStatus();
+        order.setPayStatus(status);
+        orderService.saveOrUpdate(order);
         return res;
     }
 
@@ -136,9 +140,6 @@ public class PayController {
                 log.error("total amount mismatch. local:" + order.getTotalAmount().toString() + ", alipay:" + totalAmount);
                 throw BusinessException.build("订单金额不相等");
             }
-        }
-        if (params.containsKey("buyer_pay_amount")) {
-
         }
 
 
