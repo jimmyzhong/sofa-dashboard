@@ -3,7 +3,6 @@ package me.izhong.dashboard;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.dashboard.manage.config.ApplicationProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -30,7 +29,6 @@ import java.util.Arrays;
 //,MongoAutoConfiguration.class
 @EnableCaching
 @ComponentScan(value = {"me.izhong"})
-@EnableConfigurationProperties(ApplicationProperties.class)
 @Slf4j
 public class DashboardMainApplication {
 

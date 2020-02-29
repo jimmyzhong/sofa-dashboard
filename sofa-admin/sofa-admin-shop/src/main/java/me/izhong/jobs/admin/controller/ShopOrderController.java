@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopOrder;
 import me.izhong.jobs.model.ShopReceiverInfo;
