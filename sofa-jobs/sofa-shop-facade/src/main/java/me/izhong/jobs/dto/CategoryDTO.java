@@ -2,9 +2,11 @@ package me.izhong.jobs.dto;
 
 import java.util.List;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class CategoryDTO {
 
     private Long value;
