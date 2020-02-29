@@ -2,6 +2,9 @@ package me.izhong.shop.service;
 
 import java.util.List;
 
+import me.izhong.common.domain.PageModel;
+import me.izhong.shop.dto.GoodsDTO;
+import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Goods;
 
 public interface IGoodsService {
@@ -20,4 +23,5 @@ public interface IGoodsService {
 
 	void checkGoodsName(Goods goods, String goodsName);
 
+	PageModel<GoodsDTO> list(PageQueryParamDTO queryParam);
 }
