@@ -3,12 +3,13 @@ package me.izhong.shop.service;
 import java.util.List;
 
 import me.izhong.shop.dto.CartItemParam;
+import me.izhong.shop.entity.CartItem;
 
 public interface ICartItemService {
 
 	void add(CartItemParam cartItemParam);
 
-	void list(Long userId);
+	List<CartItemParam> list(Long userId);
 
 	void updateQuantity(Long userId, Long id, Integer quantity);
 
