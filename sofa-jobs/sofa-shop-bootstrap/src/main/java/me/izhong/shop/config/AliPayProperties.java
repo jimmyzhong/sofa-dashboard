@@ -26,10 +26,10 @@ public class AliPayProperties {
     String productCode;
     String orderExpire;
 
-    @PostConstruct
-    public void setUp(){
-        java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-    }
+//    @PostConstruct
+//    public void setUp(){
+//        java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+//    }
 
     @Bean
     public AlipayClient getAlipayClient() {

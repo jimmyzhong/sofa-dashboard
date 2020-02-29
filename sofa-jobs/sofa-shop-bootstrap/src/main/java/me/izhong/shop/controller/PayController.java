@@ -65,13 +65,13 @@ public class PayController {
         order.setTotalAmount(BigDecimal.valueOf(0.01));
         expectMandatoryFieldForAlipay(order);
 
-        aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
+        String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
                 order.getTotalAmount());
 
         orderService.saveOrUpdate(order);
 
         AlipayDTO res = new AlipayDTO();
-        res.setOrderNo(params.getOrderNo());
+        res.setPayInfo(payMaterials);
         return res;
     }
 
