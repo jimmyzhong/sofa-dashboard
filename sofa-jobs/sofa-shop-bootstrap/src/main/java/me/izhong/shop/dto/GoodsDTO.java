@@ -4,11 +4,15 @@ import java.math.BigDecimal;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Tolerate;
 
 @Data
 @Builder
 public class GoodsDTO {
+    @Tolerate
+    public GoodsDTO() {
 
+    }
     private Long id;
     private Long productCategoryId;
     private Long productAttributeCategoryId;
