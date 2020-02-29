@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -80,8 +81,15 @@ public class AliPayService {
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
             AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+
+            if(response.isSuccess()){
+                System.out.println("调用成功");
+            } else {
+                System.out.println("调用失败");
+            }
+            log.info("支付结果应答{}", URLDecoder.decode(response.getBody(),"utf8"));
             return response.getBody();
-        } catch (AlipayApiException e) {
+        } catch (Exception e) {
             log.error("make order error", e);
             throw BusinessException.build("下单失败:" + e.getMessage());
         }

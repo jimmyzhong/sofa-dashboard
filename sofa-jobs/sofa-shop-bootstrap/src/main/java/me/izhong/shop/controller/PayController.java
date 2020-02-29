@@ -43,7 +43,7 @@ public class PayController {
 
     @PostMapping(path="/alipay", consumes = "application/json")
     @ResponseBody
-    @RequireUserLogin
+    //@RequireUserLogin
     @ApiOperation(value="发起支付请求", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
