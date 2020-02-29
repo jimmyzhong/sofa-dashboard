@@ -11,6 +11,6 @@ public class ConfigService {
     private SysConfigService sysConfigService;
 
     public String getKey(String key) {
-        return  sysConfigService.selectConfigByKey(key);
+        return  sysConfigService.selectNormalConfigByKey(key);
     }
 }

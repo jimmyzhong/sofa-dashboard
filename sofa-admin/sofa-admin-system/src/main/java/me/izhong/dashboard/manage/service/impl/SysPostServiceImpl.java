@@ -2,7 +2,7 @@ package me.izhong.dashboard.manage.service.impl;
 
 import me.izhong.dashboard.manage.dao.UserPostDao;
 import me.izhong.dashboard.manage.service.SysUserService;
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.dashboard.manage.dao.PostDao;
 import me.izhong.dashboard.manage.entity.SysPost;
 import me.izhong.dashboard.manage.entity.SysUser;
@@ -10,7 +10,7 @@ import me.izhong.dashboard.manage.entity.SysUserPost;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysPostService;
 import me.izhong.common.util.Convert;
-import me.izhong.db.common.util.CriteriaUtil;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.dashboard.manage.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;

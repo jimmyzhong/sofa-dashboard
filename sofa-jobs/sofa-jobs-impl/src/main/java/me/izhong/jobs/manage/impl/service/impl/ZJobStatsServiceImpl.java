@@ -1,7 +1,7 @@
 package me.izhong.jobs.manage.impl.service.impl;
 
 import com.mongodb.client.result.DeleteResult;
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.jobs.manage.impl.core.model.ZJobStats;
 import me.izhong.jobs.manage.impl.service.ZJobStatsService;
 import org.apache.commons.lang3.StringUtils;

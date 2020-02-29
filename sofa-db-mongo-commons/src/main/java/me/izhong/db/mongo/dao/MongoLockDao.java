@@ -1,6 +1,6 @@
-package me.izhong.db.common.dao;
+package me.izhong.db.mongo.dao;
 
-import me.izhong.db.common.domain.MongoLock;
+import me.izhong.db.mongo.domain.MongoLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.MongoTemplate;

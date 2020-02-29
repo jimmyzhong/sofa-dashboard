@@ -1,6 +1,6 @@
 package me.izhong.dashboard.web.demo.controller;
 
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import com.fasterxml.jackson.annotation.JsonFormat;

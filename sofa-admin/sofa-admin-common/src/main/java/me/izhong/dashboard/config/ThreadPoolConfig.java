@@ -1,4 +1,4 @@
-package me.izhong.dashboard.manage.config;
+package me.izhong.dashboard.config;
 
 import me.izhong.dashboard.manage.util.ThreadUtil;
 import org.apache.commons.lang3.concurrent.BasicThreadFactory;

@@ -1,4 +1,4 @@
-package me.izhong.dashboard.manage.config;
+package me.izhong.db.common.config;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 

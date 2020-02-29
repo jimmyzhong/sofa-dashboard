@@ -6,18 +6,18 @@ import me.izhong.dashboard.manage.entity.SysConfig;
 public interface SysConfigService extends CrudBaseService<Long,SysConfig> {
 
     /**
-     * 根据键名查询参数配置信息
-     *
-     * @param configKey 参数键名
-     * @return 参数键值
+     * 只查询正常的config
+     * @param key
+     * @return
      */
-    public String selectConfigByKey(String configKey);
+    String selectNormalConfigByKey(String key);
 
     /**
-     * 校验参数键名是否唯一
-     *
-     * @param sysConfig 参数信息
-     * @return 结果
+     * 查询包含删除的config
+     * @param configKey
+     * @return
      */
-    public boolean checkConfigKeyUnique(SysConfig sysConfig);
+    String selectConfigByKey(String configKey);
+
+    boolean checkConfigKeyUnique(SysConfig sysConfig);
 }

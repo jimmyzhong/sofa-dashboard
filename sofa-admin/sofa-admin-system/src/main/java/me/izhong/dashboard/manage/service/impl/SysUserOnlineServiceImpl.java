@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.service.impl;
 
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.dao.UserOnlineDao;
 import me.izhong.dashboard.manage.entity.SysUserOnline;

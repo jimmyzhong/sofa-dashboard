@@ -1,6 +1,7 @@
 package me.izhong.jobs.manage.impl.service.impl;
 
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.jobs.manage.impl.core.model.ZJobConfig;
 import me.izhong.jobs.manage.impl.service.ZJobConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +23,10 @@ public class ZJobConfigServiceImpl extends CrudBaseServiceImpl<Long,ZJobConfig> 
      * @return 参数键值
      */
     @Override
-    public String selectConfigByKey(String configKey) {
+    public String selectNormalConfigByKey(String configKey) {
         Query query = new Query();
         query.addCriteria(Criteria.where("configKey").is(configKey));
+        query.addCriteria(CriteriaUtil.notDeleteCriteria());
         ZJobConfig sysConfig = mongoTemplate.findOne(query, ZJobConfig.class);
         if (sysConfig == null) {
             return null;

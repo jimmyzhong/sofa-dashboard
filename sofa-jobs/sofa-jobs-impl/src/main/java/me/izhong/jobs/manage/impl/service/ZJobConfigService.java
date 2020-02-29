@@ -11,6 +11,6 @@ public interface ZJobConfigService extends CrudBaseService<Long,ZJobConfig> {
      * @param configKey 参数键名
      * @return 参数键值
      */
-    String selectConfigByKey(String configKey);
+    String selectNormalConfigByKey(String configKey);
 
 }

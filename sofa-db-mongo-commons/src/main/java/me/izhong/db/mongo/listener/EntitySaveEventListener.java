@@ -1,4 +1,4 @@
-package me.izhong.db.common.listener;
+package me.izhong.db.mongo.listener;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AutoId;

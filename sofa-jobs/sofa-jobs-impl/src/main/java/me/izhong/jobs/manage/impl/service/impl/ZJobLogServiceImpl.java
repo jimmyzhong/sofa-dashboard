@@ -3,10 +3,12 @@ package me.izhong.jobs.manage.impl.service.impl;
 import com.mongodb.client.result.DeleteResult;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import com.mongodb.client.result.UpdateResult;
 import me.izhong.jobs.manage.impl.core.model.ZJobLog;
 import me.izhong.jobs.manage.impl.service.ZJobLogService;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.FindAndModifyOptions;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -129,16 +132,31 @@ public class ZJobLogServiceImpl extends CrudBaseServiceImpl<Long,ZJobLog> implem
         mongoTemplate.findAndModify(query, update, ZJobLog.class);
     }
 
+    /**
+     * job执行结束了执行
+     * handleCode 为null 保证只更新一次
+     * @param jobLogId
+     * @param handleCode
+     * @param handleMsg
+     */
     @Override
-    public void updateHandleDoneMessage(Long jobLogId, Integer handleCode, String handleMsg) {
+    public void updateHandleDoneMessage(Long jobLogId, Integer handleCode, String handleMsg,Date finishHandleTime) {
         Assert.notNull(jobLogId,"");
         Query query = new Query();
         query.addCriteria(Criteria.where("jobLogId").is(jobLogId));
+        query.addCriteria(Criteria.where("handleCode").is(null));
 
         Update update = new Update();
         update.set("handleCode",handleCode);
         update.set("handleMsg",handleMsg);
         update.set("updateTime",new Date());
+        if(finishHandleTime != null) {
+            long second1 = DateUtils.getFragmentInMilliseconds(finishHandleTime, Calendar.YEAR);
+            long second2 = DateUtils.getFragmentInMilliseconds(finishHandleTime,Calendar.YEAR);
+            String dur = DurationFormatUtils.formatPeriod(second1,second2,"HH:mm:ss");
+            update.set("finishHandleTime",finishHandleTime);
+            update.set("costHandleTime",dur);
+        }
         mongoTemplate.findAndModify(query, update, ZJobLog.class);
     }
 

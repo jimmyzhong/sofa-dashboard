@@ -1,4 +1,4 @@
-package me.izhong.dashboard.manage.config;
+package me.izhong.dashboard.config;
 
 import me.izhong.dashboard.manage.util.ServletUtil;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class ServerConfig
      * 
      * @return 服务地址
      */
-    public String getUrl()
+    public String getRequestUrl()
     {
         HttpServletRequest request = ServletUtil.getRequest();
         return getDomain(request);

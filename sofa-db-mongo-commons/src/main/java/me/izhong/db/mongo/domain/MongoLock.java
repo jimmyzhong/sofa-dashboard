@@ -1,4 +1,4 @@
-package me.izhong.db.common.domain;
+package me.izhong.db.mongo.domain;
 
 import lombok.Getter;
 import lombok.Setter;

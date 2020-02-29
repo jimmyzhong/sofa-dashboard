@@ -27,32 +27,8 @@ com:
     sofa:
       rpc:
         registry:
-          address: zookeeper://172.30.251.92:2181
-        bolt-port: 13303
----
-spring:
-  profiles: zz
-
-com:
-  alipay:
-    sofa:
-      rpc:
-        registry:
           address: zookeeper://10.10.51.212:2181
-jobs:
-  log:
-    dir: /Users/jimmy/space/tianru/log/agent
-  script:
-    dir: /Users/jimmy/space/tianru/sofa-dashboard/sofa-jobs/sofa-jobs-agent-bootstrap/src/main/resources
----
-spring:
-  profiles: dev
-
-jobs:
-  log:
-    dir: /home/nuis/jobs/logs/agent
-  script:
-    dir: /home/nuis/jobs/bin
+        bolt-port: 13303
 
 ---
 spring:

@@ -12,6 +12,7 @@
         <module>sofa-jobs</module>
         <module>sofa-commons</module>
         <module>sofa-db-commons</module>
+        <module>sofa-db-mongo-commons</module>
     </modules>
 
     <parent>

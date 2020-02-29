@@ -54,7 +54,7 @@ public class DashboardMainApplication {
 
     @PostConstruct
     public void init() {
-        Annotation[] anns = DashboardMainApplication.class.getDeclaredAnnotations();
-        Arrays.stream(anns).forEach(e -> System.out.println(e.annotationType()));
+        //Annotation[] anns = DashboardMainApplication.class.getDeclaredAnnotations();
+        //Arrays.stream(anns).forEach(e -> System.out.println(e.annotationType()));
     }
 }

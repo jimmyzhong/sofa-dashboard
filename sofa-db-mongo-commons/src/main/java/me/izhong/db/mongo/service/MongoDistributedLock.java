@@ -1,13 +1,11 @@
-package me.izhong.db.common.service;
+package me.izhong.db.mongo.service;
 
-import me.izhong.db.common.dao.MongoLockDao;
-import me.izhong.db.common.domain.MongoLock;
-import me.izhong.db.common.domain.MongoLock;
+import me.izhong.db.mongo.dao.MongoLockDao;
+import me.izhong.db.mongo.domain.MongoLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component

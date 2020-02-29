@@ -5,7 +5,7 @@ import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.util.Convert;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.db.common.service.MongoDistributedLock;
+import me.izhong.db.mongo.service.MongoDistributedLock;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.manage.IJobMngFacade;
@@ -189,20 +189,8 @@ public class JobMngImpl implements IJobMngFacade {
         //收集agent的日志
         ZJobLog jobLog = jobLogService.selectByPId(triggerId);
         if(jobLog != null) {
-            jobLog.setFinishHandleTime(endTime);
-            Date startTime = jobLog.getHandleTime();
-            if(startTime != null){
-                long second1 = DateUtils.getFragmentInMilliseconds(startTime,Calendar.YEAR);
-                long second2 = DateUtils.getFragmentInMilliseconds(endTime,Calendar.YEAR);
-                String dur = DurationFormatUtils.formatPeriod(second1,second2,"HH:mm:ss");
-                jobLog.setCostHandleTime(dur);
-            }
-            jobLog.setHandleCode(resultStatus);
-            jobLog.setHandleMsg(message + (jobLog.getHandleMsg() == null ? "" : ":" + jobLog.getHandleMsg()));
-            jobLogService.update(jobLog);
-
+            jobLogService.updateHandleDoneMessage(triggerId,resultStatus,message == null ? "" : message,endTime);
             triggerJobFinished(jobLog);
-
         }
     }
 
@@ -502,7 +490,7 @@ public class JobMngImpl implements IJobMngFacade {
 
     @Override
     public String findConfigByKey(String configKey) {
-        return zJobConfigService.selectConfigByKey(configKey);
+        return zJobConfigService.selectNormalConfigByKey(configKey);
     }
 
 }

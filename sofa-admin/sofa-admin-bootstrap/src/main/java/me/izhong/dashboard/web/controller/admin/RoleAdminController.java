@@ -1,6 +1,6 @@
 package me.izhong.dashboard.web.controller.admin;
 
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;

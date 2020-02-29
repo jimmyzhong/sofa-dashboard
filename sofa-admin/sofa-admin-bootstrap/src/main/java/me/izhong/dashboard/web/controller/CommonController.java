@@ -3,7 +3,7 @@ package me.izhong.dashboard.web.controller;
 import me.izhong.dashboard.manage.constants.SystemConstants;
 import me.izhong.dashboard.manage.util.StringUtil;
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.dashboard.manage.config.ServerConfig;
+import me.izhong.dashboard.config.ServerConfig;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.util.FileUploadUtil;
@@ -72,7 +72,7 @@ public class CommonController {
     public Map uploadFile(MultipartFile file) throws Exception {
         // 上传并返回新文件名称
         String fileName = FileUploadUtil.upload(Global.getUploadPath(), file);
-        String url = serverConfig.getUrl() + fileName;
+        String url = serverConfig.getRequestUrl() + fileName;
         Map ajax = new HashMap();
         ajax.put("fileName", fileName);
         ajax.put("url", url);

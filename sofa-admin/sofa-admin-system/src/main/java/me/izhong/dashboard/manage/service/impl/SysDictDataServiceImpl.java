@@ -1,11 +1,11 @@
 package me.izhong.dashboard.manage.service.impl;
 
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.dao.DictDataDao;
 import me.izhong.dashboard.manage.entity.SysDictData;
 import me.izhong.dashboard.manage.service.SysDictDataService;
-import me.izhong.db.common.util.CriteriaUtil;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;

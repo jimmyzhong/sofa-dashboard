@@ -1,4 +1,4 @@
-package me.izhong.db.common.service;
+package me.izhong.db.mongo.service;
 
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
@@ -7,8 +7,9 @@ import me.izhong.common.util.Convert;
 import me.izhong.common.annotation.*;
 import me.izhong.db.common.domain.SysSeqInfo;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.db.common.util.CriteriaUtil;
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.common.service.CrudBaseService;
+import me.izhong.db.mongo.util.CriteriaUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import org.apache.commons.lang3.StringUtils;

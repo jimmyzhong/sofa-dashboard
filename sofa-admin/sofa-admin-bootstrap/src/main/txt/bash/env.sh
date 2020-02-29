@@ -14,7 +14,7 @@ export PRODUCT_MODE=t
 export RUN_ENV=agent,dev
 export TRACE_PREFIX=X0
 export ZOOKEEPER_IP=zookeeper://10.10.51.212:2181
-export MONGO_URI=mongodb://10.10.51.212:27017/training
+export MONGO_URI=mongodb://10.10.51.212:27017/jobs
 
 export JAVA_HOME=/usr/local/jdk1.8.0_121
 export PATH=$JAVA_HOME/bin:$PATH

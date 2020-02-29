@@ -1,7 +1,7 @@
 package me.izhong.jobs.manage.impl.core.thread;
 
 import lombok.extern.slf4j.Slf4j;
-import me.izhong.db.common.service.MongoDistributedLock;
+import me.izhong.db.mongo.service.MongoDistributedLock;
 import me.izhong.jobs.manage.impl.JobAgentServiceReference;
 import me.izhong.jobs.manage.impl.core.model.ZJobInfo;
 import me.izhong.jobs.manage.impl.core.model.ZJobLog;
@@ -166,7 +166,7 @@ public class JobStateMonitorHelper {
     }
 
     private void setJobLogResult(ZJobLog jobLog, Integer code, String message){
-        jobLogService.updateHandleDoneMessage(jobLog.getJobLogId(), code, message);
+        jobLogService.updateHandleDoneMessage(jobLog.getJobLogId(), code, message,null);
         ZJobInfo jobInfo = jobInfoService.selectByPId(jobLog.getJobId());
         if (jobInfo.getRunningTriggerIds() != null && jobInfo.getRunningTriggerIds().contains(jobLog.getJobLogId())) {
             jobInfo.getRunningTriggerIds().remove(jobLog.getJobLogId());

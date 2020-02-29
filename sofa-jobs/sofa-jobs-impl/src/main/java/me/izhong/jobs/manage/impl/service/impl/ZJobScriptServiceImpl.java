@@ -1,6 +1,6 @@
 package me.izhong.jobs.manage.impl.service.impl;
 
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.jobs.manage.impl.core.model.ZJobScript;
 import me.izhong.jobs.manage.impl.service.ZJobScriptService;
 import org.springframework.data.domain.Sort;

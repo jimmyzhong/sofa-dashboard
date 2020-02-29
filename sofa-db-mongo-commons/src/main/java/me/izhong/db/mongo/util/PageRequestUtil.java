@@ -1,4 +1,4 @@
-package me.izhong.db.common.util;
+package me.izhong.db.mongo.util;
 
 import me.izhong.common.util.TimeUtil;
 import me.izhong.common.domain.PageRequest;

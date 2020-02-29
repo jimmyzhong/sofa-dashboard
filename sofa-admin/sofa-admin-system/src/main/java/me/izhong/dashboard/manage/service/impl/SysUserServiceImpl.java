@@ -1,9 +1,9 @@
 package me.izhong.dashboard.manage.service.impl;
 
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.Global;
 import me.izhong.dashboard.manage.dao.*;
@@ -15,7 +15,7 @@ import me.izhong.dashboard.manage.service.SysPostService;
 import me.izhong.dashboard.manage.service.SysRoleService;
 import me.izhong.dashboard.manage.service.SysUserService;
 import me.izhong.common.util.Convert;
-import me.izhong.db.common.util.CriteriaUtil;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.dashboard.manage.util.MD5Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -135,7 +135,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         Assert.notNull(user, "用户不能为空");
         try {
             boolean isNew = true;
-            SysUser dbuser = null;
+            SysUser dbuser;
             if (user.getUserId() != null) {
                 dbuser = userDao.findByUserId(user.getUserId());
                 if(dbuser != null) {
@@ -275,15 +275,13 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             }
             checkUserAllowed(new SysUser(userId));
             deleteAllUserInfoByUserId(userId);
-            return userIds.length;
         }
-        return 0;
+        return userIds.length;
     }
 
     @Transactional
     @Override
     public void deleteAllUserInfoByUserId(Long userId) {
-        SysUser sysUser = findUser(userId);
         if (SysUser.isAdmin(userId)) {
             throw BusinessException.build("不允许删除超级管理员用户");
         }
@@ -293,7 +291,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         long delPostCount = sysPostService.deleteAuthUsers(userId);
         //逻辑删除用户信息
         long delUserCount = deleteByPId(userId);
-        log.info("删除用户{},删除用户角色数量{}, 删除用户岗位数量{}",delUserCount,delRoleCount,delPostCount);
+        log.info("删除用户Id{},删除用户角色数量{}, 删除用户岗位数量{}, 数据库删除记录数量{}",userId,delRoleCount,delPostCount,delUserCount);
     }
 
     /**
@@ -346,12 +344,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         if (StringUtils.isBlank(newPassword)) {
             throw BusinessException.build("password不能为空");
         }
-        //if (passwordService.matches(dbUser, newPassword)) {
-        //    throw BusinessException.build("密码不能和以前一样");
-        //}
-        //dbUser.setSalt(Global.getSalt());
-        //String en = passwordService.encryptPassword(newPassword, dbUser.getSalt());
-        //dbUser.setPassword(en);
         dbUser.setSalt(salt);
         dbUser.setPassword(newPassword);
         dbUser.setPasswordUpdateTime(new Date());
@@ -404,7 +396,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         }
         return successMsg.toString();
     }
-
 
     /**
      * 给用户授予角色

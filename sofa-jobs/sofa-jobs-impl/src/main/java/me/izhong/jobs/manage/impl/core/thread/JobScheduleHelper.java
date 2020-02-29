@@ -2,7 +2,7 @@ package me.izhong.jobs.manage.impl.core.thread;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.util.DateUtil;
-import me.izhong.db.common.service.MongoDistributedLock;
+import me.izhong.db.mongo.service.MongoDistributedLock;
 import me.izhong.jobs.manage.impl.core.cron.CronExpression;
 import me.izhong.jobs.manage.impl.core.model.ZJobInfo;
 import me.izhong.jobs.type.TriggerTypeEnum;

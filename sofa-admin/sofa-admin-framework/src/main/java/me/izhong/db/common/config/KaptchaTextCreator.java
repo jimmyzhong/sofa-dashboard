@@ -1,4 +1,4 @@
-package me.izhong.dashboard.manage.config;
+package me.izhong.db.common.config;
 
 import com.google.code.kaptcha.text.impl.DefaultTextCreator;
 

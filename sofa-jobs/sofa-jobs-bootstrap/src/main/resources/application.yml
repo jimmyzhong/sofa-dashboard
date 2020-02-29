@@ -5,7 +5,7 @@ spring:
     web-application-type: NONE
   data:
     mongodb:
-      uri: mongodb://xxx:27017/uis?readPreference=primaryPreferred
+      uri: mongodb://10.10.51.212:27017/jobs?readPreference=primaryPreferred
   output:
     ansi:
       enabled: ALWAYS
@@ -27,20 +27,8 @@ com:
     sofa:
       rpc:
         registry:
-          address: zookeeper://xxx:2181
-        bolt-port: 13302
----
-spring:
-  profiles: zz
-  data:
-    mongodb:
-      uri: mongodb://10.10.51.212:27017/training?readPreference=primaryPreferred
-com:
-  alipay:
-    sofa:
-      rpc:
-        registry:
           address: zookeeper://10.10.51.212:2181
+        bolt-port: 13302
 
 ---
 spring:
@@ -48,7 +36,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://10.10.51.212:27017/training?readPreference=primaryPreferred
+      uri: mongodb://10.10.51.212:27017/jobs?readPreference=primaryPreferred
 
 com:
   alipay:

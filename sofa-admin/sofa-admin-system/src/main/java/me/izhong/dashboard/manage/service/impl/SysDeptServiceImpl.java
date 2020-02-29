@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.service.impl;
 
-import me.izhong.db.common.service.CrudBaseServiceImpl;
+import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.constants.UserConstants;
 import me.izhong.dashboard.manage.dao.DeptDao;
@@ -9,7 +9,7 @@ import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.entity.SysUser;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysDeptService;
-import me.izhong.db.common.util.CriteriaUtil;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.dashboard.manage.domain.Ztree;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

@@ -1,7 +1,7 @@
 package me.izhong.jobs.admin.controller;
 
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.jobs.admin.config.JobPermissions;
 import me.izhong.jobs.admin.service.JobServiceReference;

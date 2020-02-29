@@ -15,7 +15,7 @@
 
     <dependencies>
 		<dependency>
-			<artifactId>sofa-db-commons</artifactId>
+			<artifactId>sofa-db-mongo-commons</artifactId>
 			<groupId>me.izhong.sofa</groupId>
 			<version>${project.version}</version>
 		</dependency>

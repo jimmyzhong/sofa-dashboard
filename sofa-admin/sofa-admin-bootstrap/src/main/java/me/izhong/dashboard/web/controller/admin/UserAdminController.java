@@ -2,7 +2,7 @@ package me.izhong.dashboard.web.controller.admin;
 
 import me.izhong.common.util.TimeUtil;
 import me.izhong.dashboard.manage.service.*;
-import me.izhong.db.common.util.PageRequestUtil;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.model.UserInfo;

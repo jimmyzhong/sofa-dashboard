@@ -1,0 +1,29 @@
+init:
+rsconf = {
+  _id: "rs0",
+  members: [
+    {
+     _id: 0,
+     host: "10.10.51.212:27017"
+    }
+   ]
+}
+
+rs.initiate(rsconf)
+
+rs.conf()
+
+start:
+numactl --interleave=all  bin/mongod -f mongo.conf
+
+mongo.conf
+dbpath=/home/server/servers/middleware/mongo42/data
+logpath=/home/server/servers/middleware/mongo42/log/mongo.log
+pidfilepath=/home/server/servers/middleware/mongo42/log/mongo.pid
+replSet=rs0
+oplogSize=64
+bind_ip=0.0.0.0
+port=27017
+fork=true
+wiredTigerCacheSizeGB=1
+wiredTigerDirectoryForIndexes=true
