@@ -27,6 +27,8 @@ public class CartItem {
     private Long userId;
     @Column(name = "PRODUCT_ID")
     private Long productId;
+    @Column(name = "PRODUCT__ATTR_ID")
+    private Long productAttributeId; // 购物车存放的也可能是具体某个商品规格
     @Column(name = "QUANTITY")
     private Integer quantity;
     @Column(name = "PRICE")

@@ -12,6 +12,7 @@ public class CartItemParam {
     private Long id;
     private Long userId;
     private Long productId;
+    private Long productAttrId;
     private Integer quantity;
     private BigDecimal price;
     private String rsv1;
