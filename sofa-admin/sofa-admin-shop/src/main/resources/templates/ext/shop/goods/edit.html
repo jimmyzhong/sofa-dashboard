@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('修改商品信息')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-shop-user-edit" th:object="${goods}">
+			<input id="id" name="id" type="hidden" th:field="*{id}"/>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">标题：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="username" id="nickName" th:field="*{productName}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">价格：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="phone" id="phone" th:field="*{price}">
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript">
+        var prefix = ctx + "ext/shop/goods";
+		function submitHandler() {
+	        if ($.validate.form()) {
+	        	$.operate.save(prefix + "/edit", $('#form-shop-user-edit').serialize());
+	        }
+	    }
+	</script>
+</body>
+</html>
