@@ -69,8 +69,8 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	}
 
 	@Override
-	public void updateShowStatus(List<Long> ids, Integer publishStatus) {
-		goodsCategoryService.updateShowStatusByIds(ids, publishStatus);
+	public void updateShowStatus(List<Long> ids, Integer showStatus) {
+		goodsCategoryService.updateShowStatusByIds(ids, showStatus);
 	}
 
 	@Override

@@ -36,8 +36,8 @@ public class ShopReceiveAddressMngFacadeImpl implements IShopReceiveAddressMngFa
 	@Override
 	public PageModel<ShopReceiveAddress> pageList(PageRequest request, String phone, String name) {
 		UserReceiveAddress address = new UserReceiveAddress();
-		address.setPhone(phone);
-		address.setName(name);
+		address.setUserPhone(phone);
+		address.setUserName(name);
 
         Example<UserReceiveAddress> example = Example.of(address);
         Sort sort = Sort.unsorted();
