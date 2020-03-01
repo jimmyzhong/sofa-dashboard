@@ -62,7 +62,7 @@ public class CartItemConroller {
 	@PostMapping(value = "/delete")
     @ResponseBody
 	@RequireUserLogin
-	@ApiOperation(value="删除购物车商品",httpMethod = "POSTS")
+	@ApiOperation(value="删除购物车商品",httpMethod = "POST")
 	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
 	public void delete(@RequestParam("ids") List<Long> ids, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
@@ -72,7 +72,7 @@ public class CartItemConroller {
 	@PostMapping(value = "/clear")
     @ResponseBody
 	@RequireUserLogin
-	@ApiOperation(value="清空购物车",httpMethod = "POSTS")
+	@ApiOperation(value="清空购物车",httpMethod = "POST")
 	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION, value = "登录成功后response Authorization header", required = true)
 	public void clear(HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
