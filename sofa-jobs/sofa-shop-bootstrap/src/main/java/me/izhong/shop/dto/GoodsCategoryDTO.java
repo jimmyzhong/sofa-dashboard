@@ -11,7 +11,6 @@ public class GoodsCategoryDTO {
     private Integer level;
     private Integer productCount;
     private String productUnit;
-    private Integer navStatus;
     private Integer show_status;
     private Integer sort;
     private String icon;

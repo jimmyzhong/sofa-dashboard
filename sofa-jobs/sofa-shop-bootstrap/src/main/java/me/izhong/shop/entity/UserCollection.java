@@ -24,8 +24,8 @@ public class UserCollection {
     private Long id;
     @Column(name = "USER_ID")
     private Long userId;
-    @Column(name = "NICK_NAME")
-    private String nickName;
+    @Column(name = "USER_NAME")
+    private String userName;
     @Column(name = "PRODUCT_ID")
     private Long productId;
     @Column(name = "PRODUCT_NAME")

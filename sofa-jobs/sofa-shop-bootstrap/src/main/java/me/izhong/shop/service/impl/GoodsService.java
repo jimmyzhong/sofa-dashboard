@@ -64,19 +64,19 @@ public class GoodsService implements IGoodsService {
 
 	@Override
     public void checkGoodsName(Goods goods, String goodsName) {
-        if (!StringUtils.isEmpty(goodsName) && !StringUtils.equals(goods.getName(), goodsName)) {
+        if (!StringUtils.isEmpty(goodsName) && !StringUtils.equals(goods.getProductName(), goodsName)) {
             if (goodsDao.findByName(goodsName) != null ) {
                 throw BusinessException.build(goodsName  + "已经存在");
             }
         }
-        goods.setName(goodsName);
+        goods.setProductName(goodsName);
     }
 
 	@Override
 	public PageModel<GoodsDTO> list(PageQueryParamDTO queryParam) {
 		Goods goods = new Goods();
 		if (!StringUtils.isEmpty(queryParam.getQuery())) {
-			goods.setName(queryParam.getQuery());
+			goods.setProductName(queryParam.getQuery());
 		}
 
 		ExampleMatcher matcher = ExampleMatcher.matchingAny()
@@ -95,9 +95,9 @@ public class GoodsService implements IGoodsService {
 				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
 		Page<Goods> page = goodsDao.findAll(example, pageableReq);
 		List<GoodsDTO> dtoList = page.getContent().stream().map(g->GoodsDTO.builder()
-				.id(g.getId()).name(g.getName()).price(g.getPrice())
+				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
 				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
-				.pic(g.getPic()).build())
+				.productPic(g.getProductPic()).build())
 				.collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
 	}

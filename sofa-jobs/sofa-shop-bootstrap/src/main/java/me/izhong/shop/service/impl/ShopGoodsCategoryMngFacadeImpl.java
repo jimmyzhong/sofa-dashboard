@@ -56,16 +56,7 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 		GoodsCategory goodsCategory = new GoodsCategory();
 		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
 		setCategoryLevel(goodsCategory);
-		GoodsCategory obj = goodsCategoryService.findById(shopGoodsCategory.getId());
-		if (!StringUtils.isEmpty(goodsCategory.getName()) && !StringUtils.equals(goodsCategory.getName(), obj.getName())) {
-			if (obj.getParentId() != 0L) {
-				Goods goods = new Goods();
-				goods.setProductCategoryId(obj.getId());
-				goods.setProductCategoryName(obj.getName());
-				goodsService.saveOrUpdate(goods);
-			}
-		}
-		goodsCategoryService.saveOrUpdate(obj);
+		goodsCategoryService.saveOrUpdate(goodsCategory);
 	}
 
 	@Override
