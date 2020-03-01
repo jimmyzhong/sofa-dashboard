@@ -5,7 +5,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
-import me.izhong.shop.config.Constants;
+import me.izhong.shop.consts.Constants;
 import me.izhong.shop.config.JWTProperties;
 import me.izhong.shop.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

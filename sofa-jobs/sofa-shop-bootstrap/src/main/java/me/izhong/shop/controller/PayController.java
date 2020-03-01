@@ -1,6 +1,5 @@
 package me.izhong.shop.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.sofa.rpc.common.utils.JSONUtils;
 import io.swagger.annotations.Api;
@@ -11,8 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
-import me.izhong.shop.config.Constants;
-import me.izhong.shop.dto.AlipayDTO;
+import me.izhong.shop.consts.Constants;
+import me.izhong.shop.dto.PayInfoDTO;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.impl.AliPayService;
@@ -28,6 +27,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static me.izhong.shop.consts.PayForTypeEnum.GOODS_ORDER;
+import static me.izhong.shop.consts.PayMethodEnum.ALIPAY;
+import static me.izhong.shop.consts.PayStatusEnum.*;
 
 @Controller
 @AjaxWrapper
@@ -47,19 +50,19 @@ public class PayController {
     @ApiOperation(value="发起支付请求", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public AlipayDTO pay(
+    public PayInfoDTO pay(
             @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
                     "  \"orderNo\": \"00001\"" +
                     "}")
-            @RequestBody AlipayDTO params) {
+            @RequestBody PayInfoDTO params) {
         if(StringUtils.isEmpty(params.getOrderNo())) {
             throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
         }
 
         Long orderNo = Long.valueOf(params.getOrderNo());
-        // TODO comment for test Order order  = orderService.findById(orderNo);
+        // TODO comment for test Order order  = orderService.findByOrderNo(orderNo);
         Order order = new Order();
-        order.setId(orderNo);
+        order.setOrderSn(params.getOrderNo());
         order.setSubject("Test商品");
         order.setDescription("11");
         order.setTotalAmount(BigDecimal.valueOf(0.01));
@@ -67,10 +70,7 @@ public class PayController {
 
         String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
                 order.getTotalAmount());
-
-        orderService.saveOrUpdate(order);
-
-        AlipayDTO res = new AlipayDTO();
+        PayInfoDTO res = new PayInfoDTO();
         res.setPayInfo(payMaterials);
         return res;
     }
@@ -81,31 +81,68 @@ public class PayController {
     @ApiOperation(value="查询支付状态", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public AlipayDTO query(@ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+    public PayInfoDTO query(@ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
             "  \"orderNo\": \"00001\"" +
-            "}")@RequestBody AlipayDTO params){
+            "}")@RequestBody PayInfoDTO params){
         if(StringUtils.isEmpty(params.getOrderNo())) {
             throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
         }
 
-        Long orderNo = Long.valueOf(params.getOrderNo());
-        Order order  = orderService.findById(orderNo);
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
 
-        AlipayDTO res = new AlipayDTO();
-        res.setOrderNo(orderNo.toString());
-        res.setAlipayTradeNo(order.getPayTradeNo());
+        PayInfoDTO res = new PayInfoDTO();
+        res.setOrderNo(orderNo);
 
-        AlipayTradeQueryResponse response = aliPayService.queryOrder(order.getId().toString(), order.getPayTradeNo());
+        AlipayTradeQueryResponse response = aliPayService.queryOrder(orderNo, order.getPayTradeNo());
+
         if (!response.isSuccess()) {
             log.warn("order does not succeed." + orderNo + "," + response.getSubMsg());
             res.setTradeStatus(response.getTradeStatus());
             return res;
         }
+        res.setExternalTradeNo(response.getTradeNo());
+        if (!StringUtils.equals(order.getOrderSn(), response.getOutTradeNo())){
+            log.warn("order number mismatch." + order.getOrderSn() + ", VS " + response.getOutTradeNo());
+            res.setTradeStatus("内部订单号不一致:" + order.getOrderSn() + ", VS " + response.getOutTradeNo());
+            return res;
+        }
 
-        String status = response.getTradeStatus();
+        BigDecimal totalAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getTotalAmount()));
+        if (!order.getTotalAmount().equals(totalAmountInResponse)) {
+            log.warn("order total amount mismatch." + order.getTotalAmount() + ", VS " + response.getTotalAmount());
+            res.setTradeStatus("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
+            return res;
+        }
+
+        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getPayAmount()));
+        String status = getPayStatus(response);
+        String comment = getMessage(response);
         order.setPayStatus(status);
-        orderService.saveOrUpdate(order);
+        order.setPayTradeNo(response.getTradeNo());
+        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+                order.getTotalAmount(), status, comment);
         return res;
+    }
+
+    private String getMessage(AlipayTradeQueryResponse response) {
+        String comment = null;
+        if (!StringUtils.isEmpty(response.getMsg())) {
+            comment = response.getMsg();
+        }
+        return comment;
+    }
+
+    private String getPayStatus(AlipayTradeQueryResponse response) {
+        String status = response.getTradeStatus();
+        if ("WAIT_BUYER_PAY".equalsIgnoreCase(status)) {
+            status = NOT_PAID.name();
+        } else if ("TRADE_SUCCESS".equalsIgnoreCase(status)) {
+            status = SUCCESS.name();
+        } else if ("TRADE_CLOSED".equalsIgnoreCase(status)) {
+            status = CLOSE.name();
+        }
+        return status;
     }
 
     @PostMapping(path="/alipay/notify")
@@ -131,15 +168,12 @@ public class PayController {
             throw BusinessException.build("支付宝支付结果校验失败");
         }
         String orderNo = params.get("out_trade_no");
-        Order order = orderService.findById(Long.valueOf(orderNo));
+        Order order = orderService.findByOrderNo(orderNo);
 
-        // TODO amount verify
-        if (params.containsKey("total_amount")) {
-            String totalAmount = params.get("total_amount");
-            if (!order.getTotalAmount().equals(BigDecimal.valueOf(Double.valueOf(totalAmount)))) {
-                log.error("total amount mismatch. local:" + order.getTotalAmount().toString() + ", alipay:" + totalAmount);
-                throw BusinessException.build("订单金额不相等");
-            }
+        String totalAmount = params.get("total_amount");
+        if (!order.getTotalAmount().equals(BigDecimal.valueOf(Double.valueOf(totalAmount)))) {
+            log.error("total amount mismatch. local:" + order.getTotalAmount().toString() + ", alipay:" + totalAmount);
+            throw BusinessException.build("订单金额不相等");
         }
 
 

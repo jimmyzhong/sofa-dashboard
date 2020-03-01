@@ -12,7 +12,9 @@ import me.izhong.shop.entity.Order;
 
 @Repository
 public interface OrderDao extends JpaRepository<Order, Long> {
-	
+
+	Order findFirstByOrderSn(String orderSn);
+
 	@Modifying
 	@Query(value = "update order t set t.status = ?2 where t.id in ?1", nativeQuery = true)
 	void updateOrderStatus(List<Long> ids, Integer orderStatus);

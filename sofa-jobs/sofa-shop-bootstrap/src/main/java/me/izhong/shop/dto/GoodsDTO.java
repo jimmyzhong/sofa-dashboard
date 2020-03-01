@@ -1,10 +1,12 @@
 package me.izhong.shop.dto;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
+import me.izhong.shop.entity.GoodsAttributes;
 
 @Data
 @Builder
@@ -36,4 +38,5 @@ public class GoodsDTO {
     private String detailDesc;
     private String reducePriceCount;
     private String productCategoryName;
+    private List<GoodsAttributes> attributes;
 }

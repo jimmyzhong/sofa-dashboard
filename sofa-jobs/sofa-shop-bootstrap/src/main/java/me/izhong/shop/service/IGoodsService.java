@@ -24,4 +24,6 @@ public interface IGoodsService {
 	void checkGoodsName(Goods goods, String goodsName);
 
 	PageModel<GoodsDTO> list(PageQueryParamDTO queryParam);
+
+	GoodsDTO findGoodsWithAttrById(Long goodsId);
 }

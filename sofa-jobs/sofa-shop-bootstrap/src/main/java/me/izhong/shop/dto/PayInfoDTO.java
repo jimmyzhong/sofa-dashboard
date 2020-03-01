@@ -3,9 +3,9 @@ package me.izhong.shop.dto;
 import lombok.Data;
 
 @Data
-public class AlipayDTO {
+public class PayInfoDTO {
     private String orderNo;
-    private String alipayTradeNo;
+    private String externalTradeNo;
     private String tradeStatus;
     private String payInfo;
 }

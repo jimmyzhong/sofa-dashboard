@@ -9,7 +9,7 @@ import me.izhong.common.model.UserInfo;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
-import me.izhong.shop.config.Constants;
+import me.izhong.shop.consts.Constants;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AuthService;

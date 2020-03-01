@@ -36,9 +36,6 @@ public class GoodsController {
     @ResponseBody
     @ApiOperation(value="获取商品详情", httpMethod = "GET")
     public GoodsDTO detail(@PathVariable("id") Long id) {
-        Goods goods = goodsService.findById(id);
-        GoodsDTO dto = new GoodsDTO();
-        BeanUtils.copyProperties(goods, dto);
-        return dto;
+        return goodsService.findGoodsWithAttrById(id);
     }
 }

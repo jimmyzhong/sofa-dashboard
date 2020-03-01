@@ -4,10 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import me.izhong.common.domain.PageModel;
+import me.izhong.shop.dao.GoodsAttributesDao;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.entity.GoodsAttributes;
 import me.izhong.shop.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class GoodsService implements IGoodsService {
 
 	@Autowired
 	private GoodsDao goodsDao;
+	@Autowired
+	private GoodsAttributesDao attributesDao;
 
 	@Override
 	@Transactional
@@ -95,5 +100,15 @@ public class GoodsService implements IGoodsService {
 				.pic(g.getPic()).build())
 				.collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
+	}
+
+	@Override
+	public GoodsDTO findGoodsWithAttrById(Long goodsId) {
+		Goods goods = findById(goodsId);
+		List<GoodsAttributes> attributes = attributesDao.findGoodsAttributesByProductId(goodsId);
+		GoodsDTO dto = new GoodsDTO();
+		BeanUtils.copyProperties(goods, dto);
+		dto.setAttributes(attributes);
+		return dto;
 	}
 }

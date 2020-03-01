@@ -14,17 +14,13 @@ import com.aliyuncs.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.config.AliPayProperties;
+import me.izhong.shop.dao.PayRecordDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -33,6 +29,8 @@ public class AliPayService {
     AlipayClient alipayClient;
     @Autowired
     AliPayProperties alipayProperties;
+    @Autowired
+    PayRecordDao payRecordDao;
 
     /**
      *

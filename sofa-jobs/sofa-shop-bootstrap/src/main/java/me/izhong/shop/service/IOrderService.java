@@ -1,5 +1,6 @@
 package me.izhong.shop.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import me.izhong.jobs.model.ShopReceiverInfo;
@@ -19,5 +20,8 @@ public interface IOrderService {
 
 	void updateNoteById(Long id, String note);
 
+	Order findByOrderNo(String orderNo);
 
+	void updatePayInfo(Order order, String externalOrderNo, String payMethod, String payType,
+					   BigDecimal payAmount, BigDecimal totalAmount, String state, String comment);
 }
