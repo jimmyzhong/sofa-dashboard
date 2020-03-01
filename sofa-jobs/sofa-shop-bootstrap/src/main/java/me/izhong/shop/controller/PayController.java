@@ -98,26 +98,24 @@ public class PayController {
 
         if (!response.isSuccess()) {
             log.warn("order does not succeed." + orderNo + "," + response.getSubMsg());
-            res.setTradeStatus(response.getTradeStatus());
-            return res;
+            throw BusinessException.build("交易失败:" + response.getMsg());
         }
+
         res.setExternalTradeNo(response.getTradeNo());
         if (!StringUtils.equals(order.getOrderSn(), response.getOutTradeNo())){
             log.warn("order number mismatch." + order.getOrderSn() + ", VS " + response.getOutTradeNo());
-            res.setTradeStatus("内部订单号不一致:" + order.getOrderSn() + ", VS " + response.getOutTradeNo());
-            return res;
+            throw BusinessException.build("内部订单号不一致:" + order.getOrderSn() + ", VS " + response.getOutTradeNo());
         }
 
         BigDecimal totalAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getTotalAmount()));
         if (!order.getTotalAmount().equals(totalAmountInResponse)) {
             log.warn("order total amount mismatch." + order.getTotalAmount() + ", VS " + response.getTotalAmount());
-            res.setTradeStatus("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
-            return res;
+            throw BusinessException.build("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
         }
 
         BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getPayAmount()));
-        String status = getPayStatus(response);
-        String comment = getMessage(response);
+        String status = getPayStatus(response.getTradeStatus());
+        String comment = getMessage(response.getMsg());
         order.setPayStatus(status);
         order.setPayTradeNo(response.getTradeNo());
         orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
@@ -125,21 +123,22 @@ public class PayController {
         return res;
     }
 
-    private String getMessage(AlipayTradeQueryResponse response) {
+    private String getMessage(String msgInResponse) {
         String comment = null;
-        if (!StringUtils.isEmpty(response.getMsg())) {
-            comment = response.getMsg();
+        if (!StringUtils.isEmpty(msgInResponse)) {
+            comment = msgInResponse;
         }
         return comment;
     }
 
-    private String getPayStatus(AlipayTradeQueryResponse response) {
-        String status = response.getTradeStatus();
-        if ("WAIT_BUYER_PAY".equalsIgnoreCase(status)) {
+    private String getPayStatus(String statusInResponse) {
+        String status = "";
+        if ("WAIT_BUYER_PAY".equalsIgnoreCase(statusInResponse)) {
             status = NOT_PAID.name();
-        } else if ("TRADE_SUCCESS".equalsIgnoreCase(status)) {
+        } else if ("TRADE_SUCCESS".equalsIgnoreCase(statusInResponse)) {
             status = SUCCESS.name();
-        } else if ("TRADE_CLOSED".equalsIgnoreCase(status)) {
+        } else if ("TRADE_CLOSED".equalsIgnoreCase(statusInResponse)
+                || "TRADE_FINISHED".equalsIgnoreCase(statusInResponse)) {
             status = CLOSE.name();
         }
         return status;
@@ -169,6 +168,10 @@ public class PayController {
         }
         String orderNo = params.get("out_trade_no");
         Order order = orderService.findByOrderNo(orderNo);
+        if (order == null) {
+            log.error("notify out_trade_no does not exist." + orderNo);
+            throw BusinessException.build("商品订单不存在." + orderNo);
+        }
 
         String totalAmount = params.get("total_amount");
         if (!order.getTotalAmount().equals(BigDecimal.valueOf(Double.valueOf(totalAmount)))) {
@@ -177,11 +180,12 @@ public class PayController {
         }
 
 
-        String tradeStatus = params.get("trade_status");
-        if (!StringUtils.equals(tradeStatus, order.getPayStatus())) {
-            order.setPayStatus(tradeStatus);
-            orderService.saveOrUpdate(order);
-        }
+        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(params.get("")));
+        String status = getPayStatus(params.get("trade_status"));
+        order.setPayStatus(status);
+        order.setPayTradeNo(params.get("trade_no"));
+        orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+                order.getTotalAmount(), status, null);
     }
 
     private void expectMandatoryFieldForAlipay(Order order) {
