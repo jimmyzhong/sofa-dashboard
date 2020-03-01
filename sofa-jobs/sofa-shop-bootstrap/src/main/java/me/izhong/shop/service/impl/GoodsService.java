@@ -65,7 +65,7 @@ public class GoodsService implements IGoodsService {
 	@Override
     public void checkGoodsName(Goods goods, String goodsName) {
         if (!StringUtils.isEmpty(goodsName) && !StringUtils.equals(goods.getProductName(), goodsName)) {
-            if (goodsDao.findByName(goodsName) != null ) {
+            if (goodsDao.findByProductName(goodsName) != null ) {
                 throw BusinessException.build(goodsName  + "已经存在");
             }
         }

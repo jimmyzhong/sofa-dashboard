@@ -12,7 +12,7 @@ import me.izhong.shop.entity.Goods;
 @Repository
 public interface GoodsDao extends JpaRepository<Goods, Long> {
 
-	Goods findByName(String name);
+	Goods findByProductName(String name);
 
 	@Modifying
 	@Query(value = "update product t set t.publish_status = ?2 where t.id in ?1", nativeQuery = true)
