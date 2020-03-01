@@ -124,9 +124,50 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     @Transactional
     @Override
     public SysUser saveUserAndPerms(SysUser user) throws BusinessException {
+        checkUserAllowed(user,"操作");
         user = saveUser(user);
         doUserPerms(user);
         return user;
+    }
+
+    @Transactional
+    @Override
+    public SysUser recordLoginIp(Long userId, String loginIp) throws BusinessException {
+        Assert.notNull(userId, "用户不能为空");
+        SysUser dbuser = userDao.findByUserId(userId);
+        if(dbuser != null) {
+            dbuser.setLoginIp(loginIp);
+            dbuser.setLoginDate(new Date());
+            dbuser = userDao.save(dbuser);
+        }
+        return dbuser;
+    }
+
+    @Transactional
+    @Override
+    public SysUser updateMyInfos(Long userId,String userName,String email,String phoneNumber,String sex) throws BusinessException {
+        Assert.notNull(userId, "用户不能为空");
+        SysUser dbuser = userDao.findByUserId(userId);
+        if(dbuser != null) {
+            dbuser.setUserName(userName);
+            dbuser.setEmail(email);
+            dbuser.setPhoneNumber(phoneNumber);
+            dbuser.setSex(sex);
+            dbuser = userDao.save(dbuser);
+        }
+        return dbuser;
+    }
+
+    @Transactional
+    @Override
+    public SysUser updateMyAvatar(Long userId,String avatar) throws BusinessException {
+        Assert.notNull(userId, "用户不能为空");
+        SysUser dbuser = userDao.findByUserId(userId);
+        if(dbuser != null) {
+            dbuser.setAvatar(avatar);
+            dbuser = userDao.save(dbuser);
+        }
+        return dbuser;
     }
 
     @Transactional
@@ -158,33 +199,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 throw e;
             throw BusinessException.build("用户保存失败" + e.getMessage(), e);
         }
-    }
-
-
-    @Override
-    public List<SysUser> getTop(int size, String order, SysUser searchUser) {
-        return null;
-    }
-
-    @Override
-    public List<SysUser> getList(int pageNum, int pageSize, String orderByColumn, String isAsc, SysUser searchUser, Date bTime, Date eTime) {
-//        Query query = new Query();
-////
-////        addSearchToQuery(searchUser, query);
-////
-////        if (StringUtils.isNotBlank(orderByColumn)) {
-////            query.with(new Sort(Sort.Direction.fromOptionalString(isAsc).orElse(Sort.Direction.ASC), orderByColumn));
-////        }
-////        if(pageNum < 1)
-////            pageNum = 1;
-////        if (pageSize > 100)
-////            pageSize = 100;
-////        Pageable pageableRequest = PageRequest.of(pageNum - 1, pageSize);
-////        query.with(pageableRequest);
-////
-////        List<SysUser> users = mongoTemplate.find(query, SysUser.class);
-////        return users;
-        return null;
     }
 
     @Override
@@ -270,10 +284,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     public long deleteUserByIds(String ids) throws BusinessException {
         Long[] userIds = Convert.toLongArray(ids);
         for (Long userId : userIds) {
-            if (SysUser.isAdmin(userId)) {
-                throw BusinessException.build("不允许删除超级管理员用户");
-            }
-            checkUserAllowed(new SysUser(userId));
             deleteAllUserInfoByUserId(userId);
         }
         return userIds.length;
@@ -282,9 +292,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
     @Transactional
     @Override
     public void deleteAllUserInfoByUserId(Long userId) {
-        if (SysUser.isAdmin(userId)) {
-            throw BusinessException.build("不允许删除超级管理员用户");
-        }
+        checkUserAllowed(new SysUser(userId),"删除");
         //删除用户角色
         long delRoleCount = sysRoleService.deleteAuthUsers(userId);
         //删除用户岗位
@@ -365,6 +373,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
             try {
                 // 验证是否存在这个用户
                 SysUser u = userDao.findByLoginName(user.getLoginName());
+                checkUserAllowed(u,"导入");
                 if (u == null) {
                     user.setSalt(Global.getSalt());
                     user.setPassword(MD5Util.encode(Global.getSalt() + password));
@@ -500,7 +509,6 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         insertUserPost(user);
     }
 
-
     private PageModel<SysUser> doGetUserAllocatedList(PageRequest request,
                                                       Long roleId, SysUser user, List<Long> deptIds, boolean inRoles) {
         Assert.notNull(roleId, "roleId cant null");
@@ -575,11 +583,10 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
      *
      * @param user 用户信息
      */
-    public void checkUserAllowed(SysUser user)
-    {
-        if (user.getUserId() != null && user.isAdmin())
-        {
-            throw BusinessException.build("不允许操作超级管理员用户");
+    @Override
+    public void checkUserAllowed(SysUser user,String actionName) {
+        if (user.getUserId() != null && user.isAdmin()) {
+            throw BusinessException.build("不允许" + StringUtils.defaultIfBlank(actionName,"操作") + "超级管理员用户" + StringUtils.defaultIfBlank(user.getLoginName(),""));
         }
     }
 }

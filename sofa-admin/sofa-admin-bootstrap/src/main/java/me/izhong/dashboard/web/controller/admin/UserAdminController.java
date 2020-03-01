@@ -163,11 +163,8 @@ public class UserAdminController {
     @PostMapping("edit")
     @AjaxWrapper
     public UserInfo editUser(SysUser user) {
-        sysUserService.checkUserAllowed(user);
-
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,user.getDeptId());
-
-        SysUser dbUser = null;
+        SysUser dbUser;
         if (user == null) {
             throw BusinessException.build("user不能为空");
         }
@@ -189,15 +186,6 @@ public class UserAdminController {
         if (!sysUserService.checkPhoneUnique(user)) {
             throw BusinessException.build("手机号已经存在");
         }
-//        修改没有密码输入框，需要使用密码重置按钮
-//        if (StringUtils.isNotBlank(user.getPassword())) {
-//            String enPass = passwordService.encryptPassword(user.getPassword(),dbUser.getSalt());
-//            if(!StringUtils.equals(enPass,dbUser.getPassword())) {
-//                dbUser.setPassword(enPass);
-//                dbUser.setPasswordUpdateTime(new Date());
-//            }
-//        }
-
         dbUser.setStatus(user.getStatus());
         dbUser.setAvatar(user.getAvatar());
         dbUser.setPhoneNumber(user.getPhoneNumber());
@@ -214,6 +202,7 @@ public class UserAdminController {
         dbUser.setRemark(user.getRemark());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
+        sysUserService.checkUserAllowed(user,"修改");
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
 
@@ -320,7 +309,6 @@ public class UserAdminController {
     @PostMapping("/resetPwd")
     @AjaxWrapper
     public void resetPwd(SysUser user) {
-        sysUserService.checkUserAllowed(user);
 
         SysUser dbUser = sysUserService.findUser(user.getUserId());
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.RESET_PWD,dbUser.getDeptId());
@@ -332,6 +320,7 @@ public class UserAdminController {
 
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
+        sysUserService.checkUserAllowed(user,"重置");
         sysUserService.resetUserPwd(user.getUserId(), user.getPassword(),user.getSalt());
     }
 
@@ -343,7 +332,7 @@ public class UserAdminController {
     @PostMapping("/changeStatus")
     @AjaxWrapper
     public int changeStatus(SysUser user) {
-        sysUserService.checkUserAllowed(user);
+        sysUserService.checkUserAllowed(user,"修改状态");
         SysUser u = sysUserService.findUser(user.getUserId());
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,u.getDeptId());
         //解锁账户

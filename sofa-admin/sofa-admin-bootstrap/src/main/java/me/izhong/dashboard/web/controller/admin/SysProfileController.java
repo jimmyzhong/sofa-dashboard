@@ -85,9 +85,8 @@ public class SysProfileController {
         }
 
         if (passwordService.matches(user, oldPassword)) {
-            user.setSalt(Global.getSalt());
-            user.setPassword(passwordService.encryptPassword(newPassword, user.getSalt()));
-            sysUserService.resetUserPwd(user.getUserId(), user.getPassword(),user.getSalt());
+            String newPass = passwordService.encryptPassword(newPassword, Global.getSalt());
+            sysUserService.resetUserPwd(user.getUserId(), newPass,Global.getSalt());
             return "修改密码成功";
         } else {
             throw BusinessException.build("修改密码失败，旧密码输入错误");
@@ -125,18 +124,12 @@ public class SysProfileController {
     @AjaxWrapper
     public void update(String userName, String phoneNumber, String email, String sex) {
         UserInfo loginUser = UserInfoContextHelper.getSubjectUser();
-        SysUser dbUser = sysUserService.findUser(loginUser.getUserId());
-        dbUser.setUserName(userName);
-        dbUser.setEmail(email);
-        dbUser.setPhoneNumber(phoneNumber);
-        dbUser.setSex(sex);
-        sysUserService.saveUser(dbUser);
+        sysUserService.updateMyInfos(loginUser.getUserId(),userName,email,phoneNumber,sex);
 
         loginUser.setUserName(userName);
         loginUser.setEmail(email);
         loginUser.setPhoneNumber(phoneNumber);
         loginUser.setSex(sex);
-
         UserRealm.refreshUserScope();
     }
 
@@ -152,13 +145,11 @@ public class SysProfileController {
         try {
             if (!file.isEmpty()) {
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);
-                SysUser dbUser = sysUserService.findUser(loginUser.getUserId());
-                dbUser.setAvatar(avatar);
-                sysUserService.saveUser(dbUser);
+                sysUserService.updateMyAvatar(loginUser.getUserId(),avatar);
 
                 String conextpath = ServletUtil.getRequest().getContextPath();
                 String avatorUrl = Global.getAvatarMapping();
-                loginUser.setAvatar(avatorUrl + dbUser.getAvatar());
+                loginUser.setAvatar(avatorUrl + avatar);
                 UserInfoContextHelper.setUser(loginUser);
             } else {
                 throw BusinessException.build("头像为空");
