@@ -30,8 +30,6 @@ public class GoodsCategory {
     private Integer productCount;
     @Column(name = "PRODUCT_UNIT")
     private String productUnit;
-    @Column(name = "NAV_STATUS")
-    private Integer navStatus;
     @Column(name = "SHOW_STATUS")
     private Integer showStatus;
     @Column(name = "SORT")

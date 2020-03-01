@@ -14,7 +14,7 @@ public interface IGoodsCategoryService {
 
 	List<GoodsCategory> findByLevel1();
 
-	void updateShowStatusByIds(List<Long> ids, Integer publishStatus);
+	void updateShowStatusByIds(List<Long> ids, Integer showStatus);
 
 	void deleteById(Long categoryId);
 

@@ -14,6 +14,6 @@ public class ShopReceiverInfo {
     private String receiverDetailAddress;
     private String receiverProvince;
     private String receiverCity;
-    private String receiverRegion;
+    private String receiverDistrict;
     private Integer status;
 }

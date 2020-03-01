@@ -19,7 +19,6 @@ public class ShopGoodsCategory implements Serializable {
 	private Integer level;
 	private Integer productCount;
 	private String productUnit;
-	private Integer navStatus;
 	private Integer showStatus;
 	private Integer sort;
 	private String icon;

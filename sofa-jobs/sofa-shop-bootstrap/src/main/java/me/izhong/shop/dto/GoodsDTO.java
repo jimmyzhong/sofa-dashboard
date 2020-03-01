@@ -15,28 +15,27 @@ public class GoodsDTO {
     public GoodsDTO() {
 
     }
-    private Long id;
-    private Long productCategoryId;
-    private Long productAttributeCategoryId;
-    private String name;
-    private String pic;
+	private Long id;
     private String productSn;
-    private Integer productType;
-    private Integer isDelete;
-    private Integer publishStatus;
-    private Integer recommandStatus;
-    private Integer sort;
-    private Integer sale;
-    private BigDecimal price;
+    private String productName;
+    private String productPic;
+	private Integer productType;
+	private Long productCategoryId;
+	private BigDecimal price;
     private BigDecimal promotionPrice;
-    private String description;
-    private Integer stock;
-    private String unit;
-    private String keywords;
-    private String note;
-    private String albumPics;
-    private String detailDesc;
-    private String reducePriceCount;
-    private String productCategoryName;
+	private Integer publishStatus;
+	private Integer recommandStatus;
+	private Integer sort;
+	private Integer sale;
+	private String description;
+	private Integer stock;
+	private String unit;
+	private String tips;
+	private String keywords;
+	private String note;
+	private String albumPics;
+	private String detailDesc;
+	private Integer reducePriceCount;
+	private Integer isDelete;
     private List<GoodsAttributes> attributes;
 }

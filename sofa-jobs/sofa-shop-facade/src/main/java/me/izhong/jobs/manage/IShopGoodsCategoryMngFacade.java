@@ -13,7 +13,7 @@ public interface IShopGoodsCategoryMngFacade {
 
     void edit(ShopGoodsCategory goodsCategory);
 
-    void updateShowStatus(List<Long> ids, Integer publishStatus);
+    void updateShowStatus(List<Long> ids, Integer showStatus);
 
     PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type);
 
