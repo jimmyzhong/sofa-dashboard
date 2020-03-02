@@ -59,16 +59,12 @@ public class PayController {
             throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
         }
 
-        Long orderNo = Long.valueOf(params.getOrderNo());
+        String orderNo = params.getOrderNo();
         // TODO comment for test Order order  = orderService.findByOrderNo(orderNo);
-        Order order = new Order();
-        order.setOrderSn(params.getOrderNo());
-        order.setSubject("Test商品");
-        order.setDescription("11");
-        order.setTotalAmount(BigDecimal.valueOf(0.01));
+        Order order = getOrderForTest(params.getOrderNo());
         expectMandatoryFieldForAlipay(order);
 
-        String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo.toString(),
+        String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo,
                 order.getTotalAmount());
         PayInfoDTO res = new PayInfoDTO();
         res.setPayInfo(payMaterials);
@@ -89,12 +85,13 @@ public class PayController {
         }
 
         String orderNo = params.getOrderNo();
-        Order order  = orderService.findByOrderNo(orderNo);
+        // TODO commet for test Order order  = orderService.findByOrderNo(orderNo);
+        Order order = getOrderForTest(orderNo);
 
         PayInfoDTO res = new PayInfoDTO();
         res.setOrderNo(orderNo);
 
-        AlipayTradeQueryResponse response = aliPayService.queryOrder(orderNo, order.getPayTradeNo());
+        AlipayTradeQueryResponse response = aliPayService.queryOrder(orderNo, params.getExternalTradeNo());
 
         if (!response.isSuccess()) {
             log.warn("order does not succeed." + orderNo + "," + response.getSubMsg());
@@ -121,6 +118,15 @@ public class PayController {
         orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
                 order.getTotalAmount(), status, comment);
         return res;
+    }
+
+    private Order getOrderForTest(String orderNo) {
+        Order order = new Order();
+        order.setOrderSn(orderNo);
+        order.setSubject("Test商品");
+        order.setDescription("11");
+        order.setTotalAmount(BigDecimal.valueOf(0.01));
+        return order;
     }
 
     private String getMessage(String msgInResponse) {
@@ -160,14 +166,15 @@ public class PayController {
             //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
             params.put(name, valueStr);
         }
-
+        log.info("notify content:" + JSONUtils.toJSONString(params));
         boolean verified = aliPayService.verify(params);
         if (!verified) {
             log.error("verify failed, " + JSONUtils.toJSONString(params));
             throw BusinessException.build("支付宝支付结果校验失败");
         }
         String orderNo = params.get("out_trade_no");
-        Order order = orderService.findByOrderNo(orderNo);
+        //TODO comment for test Order order = orderService.findByOrderNo(orderNo);
+        Order order = getOrderForTest(orderNo);
         if (order == null) {
             log.error("notify out_trade_no does not exist." + orderNo);
             throw BusinessException.build("商品订单不存在." + orderNo);
