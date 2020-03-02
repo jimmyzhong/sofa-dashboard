@@ -191,8 +191,9 @@ public class PayController {
         String status = getPayStatus(params.get("trade_status"));
         order.setPayStatus(status);
         order.setPayTradeNo(params.get("trade_no"));
-        orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
-                order.getTotalAmount(), status, null);
+// TODO comment for test       orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+//                order.getTotalAmount(), status, null);
+        log.info("trade status " + status + ", tradeNo:" + order.getPayTradeNo());
     }
 
     private void expectMandatoryFieldForAlipay(Order order) {
