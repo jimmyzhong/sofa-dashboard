@@ -1,4 +1,4 @@
-package me.izhong.db.common.config;
+package me.izhong.dashboard.manage.config;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 
@@ -235,6 +235,10 @@ public class ShiroConfig {
         filterChainDefinitionMap.put("/ruoyi/**", "anon");
         filterChainDefinitionMap.put("/druid/**", "anon");
         filterChainDefinitionMap.put("/captcha/captchaImage**", "anon");
+
+//        filterChainDefinitionMap.put("/profile/upload/**", "anon");
+//        filterChainDefinitionMap.put("/profile/avatar/**", "anon");
+
         // 退出 logout地址，shiro去清除session
         filterChainDefinitionMap.put("/logout", "logout");
         // 不需要拦截的访问

@@ -96,7 +96,7 @@ public class SysUser extends TimedBasedEntity {
     /**
      * 部门ID
      */
-    @Excel(name = "部门编号", type = Excel.Type.IMPORT)
+    @Excel(name = "部门编号", type = Excel.Type.ALL)
     //@Search
     private Long deptId;
 

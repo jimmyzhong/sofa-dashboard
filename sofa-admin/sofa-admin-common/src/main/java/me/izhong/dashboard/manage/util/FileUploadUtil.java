@@ -1,5 +1,6 @@
 package me.izhong.dashboard.manage.util;
 
+import me.izhong.common.util.AliOssUploadUtil;
 import me.izhong.common.util.DateUtil;
 import me.izhong.common.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
@@ -29,35 +30,7 @@ public class FileUploadUtil {
      */
     public static final int DEFAULT_FILE_NAME_LENGTH = 100;
 
-    /**
-     * 默认上传的地址
-     */
-    private static String defaultBaseDir = Global.getDefaultUploadDir();
-
     private static int counter = 0;
-
-    public static void setDefaultBaseDir(String defaultBaseDir) {
-        FileUploadUtil.defaultBaseDir = defaultBaseDir;
-    }
-
-    public static String getDefaultBaseDir() {
-        return defaultBaseDir;
-    }
-
-    /**
-     * 以默认配置进行文件上传
-     *
-     * @param file 上传的文件
-     * @return 文件名称
-     * @throws Exception
-     */
-    public static final String upload(MultipartFile file) throws IOException {
-        try {
-            return upload(getDefaultBaseDir(), file, MimeTypeUtil.DEFAULT_ALLOWED_EXTENSION);
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
-        }
-    }
 
     /**
      * 根据文件路径上传
@@ -67,12 +40,8 @@ public class FileUploadUtil {
      * @return 文件名称
      * @throws IOException
      */
-    public static final String upload(String baseDir, MultipartFile file) throws IOException {
-        try {
-            return upload(baseDir, file, MimeTypeUtil.DEFAULT_ALLOWED_EXTENSION);
-        } catch (Exception e) {
-            throw new IOException(e.getMessage(), e);
-        }
+    public static final String upload(String baseDir, MultipartFile file) throws Exception {
+        return upload(baseDir, file, MimeTypeUtil.DEFAULT_ALLOWED_EXTENSION);
     }
 
     /**
@@ -88,11 +57,9 @@ public class FileUploadUtil {
      * @throws InvalidExtensionException            文件校验异常
      */
     public static final String upload(String baseDir, MultipartFile file, String[] allowedExtension)
-            throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
-            InvalidExtensionException {
+            throws Exception {
         log.info("上传文件，保存路径:{},文件名称:{},原始文件名称:{}",baseDir,file.getName(),file.getOriginalFilename());
-        String lastChar = baseDir.substring(baseDir.length()-1);
-        if(!StringUtils.equals(lastChar,"/")){
+        if(!baseDir.endsWith("/")){
             baseDir += "/";
         }
         int fileNamelength = file.getOriginalFilename().length();
@@ -104,10 +71,25 @@ public class FileUploadUtil {
 
         String fileName = extractFilename(file);
 
-        File desc = getAbsoluteFile(baseDir, fileName);
-        log.info("上传文件路径:{}",desc.getAbsolutePath());
-        file.transferTo(desc);
-        return fileName;
+        if(Global.isUploadOssEnable()) {
+            String url = AliOssUploadUtil.putOssObj(Global.getAliOssAccessKey(),Global.getAliOssAccessSecret(),Global.getAliOssBucket(),Global.getAliOssEndpoint(),
+                    baseDir + fileName ,file.getBytes(),file.getContentType());
+            log.info("oss上传文件http地址:{}",url);
+            return url;
+        } else {
+            File desc = getAbsoluteFile(baseDir, fileName);
+            log.info("上传文件路径:{}", desc.getAbsolutePath());
+            file.transferTo(desc);
+            String requestMaping = Global.getUploadMapping();
+            if(baseDir.startsWith(Global.getAvatarPath())){
+                requestMaping =  Global.getAvatarMapping();
+            } else if(baseDir.startsWith(Global.getExportPath())){
+                requestMaping =  Global.getExportMapping();
+            }
+            String url = requestMaping + fileName;
+            log.info("本地上传文件http地址:{}",url);
+            return url;
+        }
     }
 
     /**

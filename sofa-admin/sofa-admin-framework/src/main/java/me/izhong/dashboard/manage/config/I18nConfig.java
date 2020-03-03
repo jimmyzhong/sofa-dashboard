@@ -1,4 +1,4 @@
-package me.izhong.db.common.config;
+package me.izhong.dashboard.manage.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

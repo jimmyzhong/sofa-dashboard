@@ -358,7 +358,7 @@ var table = {
                     }
                     $.post(table.options.exportUrl, postData, function (result) {
                         if (result.code == web_status.SUCCESS) {
-                            window.location.href = ctx + "common/download?fileName=" + encodeURI(result.data) + "&delete=" + true;
+                            window.location.href = ctx + "profile/export?fileName=" + encodeURI(result.data) + "&delete=" + true;
                         } else if (result.code == web_status.WARNING) {
                             $.modal.alertWarning(result.msg)
                         } else {
@@ -373,7 +373,7 @@ var table = {
                 table.set();
                 $.get(table.options.importTemplateUrl, function (result) {
                     if (result.code == web_status.SUCCESS) {
-                        window.location.href = ctx + "common/download?fileName=" + encodeURI(result.data) + "&delete=" + true;
+                        window.location.href = ctx + "profile/export?fileName=" + encodeURI(result.data) + "&delete=" + true;
                     } else if (result.code == web_status.WARNING) {
                         $.modal.alertWarning(result.msg)
                     } else {

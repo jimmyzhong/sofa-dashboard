@@ -114,7 +114,7 @@
             $(window).bind('mouseup', imgMouseUp);
             el.bind('mousewheel DOMMouseScroll', zoomImage);
         };
-        obj.image.crossOrigin = 'Anonymous';
+        //obj.image.crossOrigin = 'Anonymous';
         obj.image.src = options.imgSrc;
         el.on('remove', function () {
             $(window).unbind('mouseup', imgMouseUp)

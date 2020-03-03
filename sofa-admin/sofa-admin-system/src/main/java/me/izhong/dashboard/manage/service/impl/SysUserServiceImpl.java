@@ -359,6 +359,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         return dbUser;
     }
 
+    @Transactional
     @Override
     public String importUser(List<SysUser> userList, boolean isUpdateSupport, String operName) {
         if (userList == null || userList.size() == 0) {
@@ -585,7 +586,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
      */
     @Override
     public void checkUserAllowed(SysUser user,String actionName) {
-        if (user.getUserId() != null && user.isAdmin()) {
+        if (user != null && user.getUserId() != null && user.isAdmin()) {
             throw BusinessException.build("不允许" + StringUtils.defaultIfBlank(actionName,"操作") + "超级管理员用户" + StringUtils.defaultIfBlank(user.getLoginName(),""));
         }
     }

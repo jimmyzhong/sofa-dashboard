@@ -14,7 +14,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -47,6 +51,8 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
 //
         registry.addResourceHandler("/profile/avatar/**")
                 .addResourceLocations("file:" + Global.getAvatarPath());
+        registry.addResourceHandler("/profile/upload/**")
+                .addResourceLocations("file:" + Global.getUploadPath());
     }
 
     @Override
@@ -133,5 +139,12 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
         return resolver;
     }
 
-
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/**")
+//                .allowedOrigins("*")
+//                .allowCredentials(true)
+//                .allowedMethods("GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS", "HEAD")
+//                .maxAge(3600 * 24);
+//    }
 }

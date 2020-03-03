@@ -147,9 +147,7 @@ public class SysProfileController {
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);
                 sysUserService.updateMyAvatar(loginUser.getUserId(),avatar);
 
-                String conextpath = ServletUtil.getRequest().getContextPath();
-                String avatorUrl = Global.getAvatarMapping();
-                loginUser.setAvatar(avatorUrl + avatar);
+                loginUser.setAvatar(avatar);
                 UserInfoContextHelper.setUser(loginUser);
             } else {
                 throw BusinessException.build("头像为空");
