@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import me.izhong.shop.dao.CartItemDao;
@@ -24,9 +25,17 @@ public class CartItemService implements ICartItemService {
 	@Override
 	@Transactional
 	public void add(CartItemParam cartItemParam) {
-		CartItem cartItem = new CartItem();
-		BeanUtils.copyProperties(cartItemParam, cartItem);
-		//TODO 判断商品是否已存在购物车，若是则增加数量
+		CartItem cartItem = cartItemDao.findFirstByUserIdAndProductAttributeIdAndProductId(
+				cartItemParam.getUserId(),
+				cartItemParam.getProductAttrId(),
+				cartItemParam.getProductId()
+				);
+		if (cartItem == null) {
+			cartItem = new CartItem();
+			BeanUtils.copyProperties(cartItemParam, cartItem);
+		} else {
+			cartItem.setQuantity(cartItem.getQuantity() + 1);
+		}
 		cartItemDao.save(cartItem);
 	}
 

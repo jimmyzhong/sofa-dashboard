@@ -38,7 +38,7 @@ alipay:
   signType: RSA2
   productCode: QUICK_MSECURITY_PAY
   orderExpire: 30m
-  notifyUrl: http://127.0.0.1:52185/api/
+  notifyUrl: http://lpp.izhong.me:52185/api/pay/alipay/notify
 
 
 spring:
