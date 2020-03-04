@@ -5,33 +5,33 @@
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<form class="form-horizontal m" id="form-shop-user-edit" th:object="${goods}">
-			<input id="id" name="id" type="hidden" th:field="*{id}"/>
+		<form class="form-horizontal m" id="form-shop-goods-add">
+			<input id="id" name="id" type="hidden"/>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">标题：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="productName" id="productName" th:field="*{productName}">
+					<input class="form-control" type="text" name="productName" id="productName">
 				</div>
 			</div>
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">封面图：</label>
 				<div class="col-sm-8">
-					<img class="img-circle img-lg" th:src="${goods.productPic}">
+					<img class="img-circle img-lg">
 					<label>
-						<input th:field="*{productPic}" onchange ="uploadImg()" type="file" class="" name="productPic" id="productPic" accept="image/*"/>
+						<input onchange ="uploadImg()" type="file" class="" name="productPic" id="productPic" accept="image/*"/>
 					</label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">价格：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="price" id="price" th:field="*{price}">
+					<input class="form-control" type="text" name="price" id="price">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryId" name="productCategoryId" th:field="*{productCategoryId}" onChange="productCategoryChange(this)">
+					<select class="form-control" id="productCategoryId" name="productCategoryId"  onChange="productCategoryChange(this)">
 						<option value="">--请选择商品类别--</option>
 					</select>
 				</div>
@@ -41,8 +41,13 @@
 				<div class="col-sm-8">
 					<select class="form-control" id="productSubCategoryId" name="productSubCategoryId">
 						<option value="">--请选择商品子类别--</option>
-
 					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<button type="button" class="btn btn-w-m btn-primary" onclick="submitHandler()">提交</button>
 				</div>
 			</div>
 		</form>
@@ -50,24 +55,16 @@
 	<th:block th:include="include :: footer" />
 	<script type="text/javascript" th:inline="javascript">
 
-		var productCategoryId = '[[${goods.productCategoryId}]]';
-		console.log("productCategoryId",productCategoryId)
-		var goods = '[[${goods}]]';
-		console.log("goods1",goods);
-		goods=goods.replace(/[\r\n]/g,"")
-		console.log("goods2",goods);
-		var goodsObj=JSON.parse(goods)
-		console.log("productName",goodsObj.productName)
-
 		var prefix = ctx + "ext/shop/goods";
         var _categoryAll=[];
         $(function () {
 			fetchGoodsCategory();
 		})
 		function submitHandler() {
-	        if ($.validate.form()) {
-	        	$.operate.save(prefix + "/edit", $('#form-shop-user-edit').serialize());
-	        }
+			var data = $("#form-shop-goods-add").serializeArray();
+			console.log(JSON.stringify(data))
+			$.operate.saveTab(prefix + "/add", data);
+			// $.operate.save(prefix + "/add", $('#form-shop-goods-add').serialize());
 	    }
 	    function uploadImg(){
 			var formdata = new FormData();
