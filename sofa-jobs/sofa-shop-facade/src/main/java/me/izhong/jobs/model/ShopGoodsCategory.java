@@ -1,18 +1,12 @@
 package me.izhong.jobs.model;
 
-import java.io.Serializable;
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ShopGoodsCategory implements Serializable {
+public class ShopGoodsCategory {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private Long id;
 	private Long parentId;
 	private String name;

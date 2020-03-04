@@ -3,6 +3,7 @@ package me.izhong.shop.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
@@ -68,6 +69,14 @@ public class CartItemService implements ICartItemService {
 	@Transactional
 	public void clear(Long userId) {
 		cartItemDao.deleteCartItemsByUserId(userId);
+	}
+
+	@Override
+	public CartItemParam findByCartId(Long cartId) {
+		CartItem cartItem = cartItemDao.findById(cartId).orElseThrow(()->new RuntimeException("unable to find cart by " + cartId));
+		CartItemParam param = new CartItemParam();
+		BeanUtils.copyProperties(cartItem, param);
+		return param;
 	}
 	
 }

@@ -2,18 +2,24 @@ package me.izhong.shop.service.impl;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
-import me.izhong.shop.dao.PayRecordDao;
-import me.izhong.shop.entity.PayRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.alibaba.fastjson.JSONObject;
+
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.dao.OrderDao;
+import me.izhong.shop.dao.PayRecordDao;
+import me.izhong.shop.dao.UserReceiveAddressDao;
+import me.izhong.shop.dto.CartItemParam;
+import me.izhong.shop.dto.ReceiveAddressParam;
 import me.izhong.shop.entity.Order;
+import me.izhong.shop.entity.PayRecord;
+import me.izhong.shop.entity.UserReceiveAddress;
 import me.izhong.shop.service.IOrderService;
 
 @Slf4j
@@ -24,6 +30,10 @@ public class OrderService implements IOrderService {
 	private OrderDao orderDao;
 	@Autowired
 	private PayRecordDao payRecordDao;
+	@Autowired
+	private UserReceiveAddressDao userReceiveAddressDao;
+	@Autowired
+	private CartItemService cartItemService;
 
 	@Override
 	@Transactional
@@ -88,5 +98,28 @@ public class OrderService implements IOrderService {
 
 		payRecordDao.save(record);
 		orderDao.save(order);
+	}
+
+	/**
+	 * 1.创建订单和订单明细
+	 * 2.清空购物车
+	 * 3.减库存
+	 */
+	@Override
+	@Transactional
+	public Object submit(Long userId, String body) {
+		JSONObject json = JSONObject.parseObject(body);
+		Long cartId = json.getLong("cartId");
+        Long addressId = json.getLong("addressId");
+        UserReceiveAddress address = userReceiveAddressDao.findByUserIdAndId(userId, addressId);
+        if (address == null) {
+        	throw BusinessException.build("地址不存在");
+        }
+        BigDecimal price = new BigDecimal(0);
+        CartItemParam cartItemParam = cartItemService.findByCartId(cartId);
+        if (cartItemParam == null) {
+        	throw BusinessException.build("购物车为空");
+        }
+        return null;
 	}
 }

@@ -1,5 +1,6 @@
 package me.izhong.shop.service.impl;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,7 +12,9 @@ import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.util.AliOssUploadUtil;
 import me.izhong.jobs.manage.IShopFileUploadMngFacade;
+import me.izhong.shop.config.AliCloudProperties;
 
 @Slf4j
 @Service
@@ -19,12 +22,14 @@ import me.izhong.jobs.manage.IShopFileUploadMngFacade;
 public class ShopFileUploadMngFacadeImpl implements IShopFileUploadMngFacade {
 
     @Autowired
-    private ThirdPartyService thirdService;
+    private AliCloudProperties properties;
 
     @Override
-    public String uploadFile(Map<String, Object> map) {
+    public String uploadFile(Map<String, Object> map) throws Exception {
     	String fileName = UUID.randomUUID().toString().replace("-", "");
-    	MultipartFile file = (MultipartFile) map.get("file");
-        return thirdService.uploadFile(fileName, file);
+    	byte[] b = (byte[]) map.get("fileBytes");
+    	String c = (String) map.get("contentType");
+    	return AliOssUploadUtil.putOssObj(properties.getOssAccessKey(), properties.getOssAccessSecret(),
+    			properties.getOssPicBucket(), properties.getOssEndpoint(), "/"+fileName + ".jpg", b, c);
     }
 }
