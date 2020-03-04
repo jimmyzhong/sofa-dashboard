@@ -26,17 +26,17 @@ import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.model.ShopGoodsCategory;
 
 @Controller
-@RequestMapping("/ext/shop/goods/category")
+@RequestMapping("/ext/shop/category")
 public class ShopGoodsCategoryController {
 
-	private String prefix = "ext/shop/goods/category";
+	private String prefix = "ext/shop/category";
 
 	@Autowired(required = false)
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
 	public String category() {
-		return prefix + "/goods/category";
+		return prefix + "/category";
 	}
 
 	@PostMapping("/list")
