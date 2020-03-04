@@ -13,8 +13,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
@@ -44,6 +46,11 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 		Goods goods = goodsService.findById(goodsId);
 		ShopGoods shopGoods = new ShopGoods();
         BeanUtils.copyProperties(goods, shopGoods);
+        if (StringUtils.isNotEmpty(goods.getAlbumPics())) {
+            shopGoods.setAlbumPics(JSON.parseArray(goods.getAlbumPics(), String.class));
+        } else {
+            shopGoods.setAlbumPics(Lists.newArrayList());
+        }
         return shopGoods;
 	}
 

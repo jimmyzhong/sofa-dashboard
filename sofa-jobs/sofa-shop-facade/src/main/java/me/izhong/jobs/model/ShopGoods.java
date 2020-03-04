@@ -2,6 +2,7 @@ package me.izhong.jobs.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +40,7 @@ public class ShopGoods implements Serializable {
 	private String tips;
 	private String keywords;
 	private String note;
-	private String albumPics;
+	private List<String> albumPics;
 	private String detailDesc;
 	//降价次数
 	private Integer reducePriceCount;
