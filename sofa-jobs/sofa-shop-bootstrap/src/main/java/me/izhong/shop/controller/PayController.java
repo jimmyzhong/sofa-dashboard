@@ -110,13 +110,14 @@ public class PayController {
             throw BusinessException.build("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
         }
 
-        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getPayAmount()));
+        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getBuyerPayAmount()));
         String status = getPayStatus(response.getTradeStatus());
         String comment = getMessage(response.getMsg());
         order.setPayStatus(status);
         order.setPayTradeNo(response.getTradeNo());
-        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
-                order.getTotalAmount(), status, comment);
+//        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+//                order.getTotalAmount(), status, comment);
+        res.setTradeStatus(status);
         return res;
     }
 
@@ -187,7 +188,7 @@ public class PayController {
         }
 
 
-        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(params.get("")));
+        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(params.get("buyer_pay_amount")));
         String status = getPayStatus(params.get("trade_status"));
         order.setPayStatus(status);
         order.setPayTradeNo(params.get("trade_no"));
