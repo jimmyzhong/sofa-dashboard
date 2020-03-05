@@ -10,6 +10,8 @@ public interface IGoodsCategoryService {
 
 	GoodsCategory findById(Long categoryId);
 
+	GoodsCategory findByChildrenId(Long categoryId);
+
 	List<GoodsCategory> findByParentId(Long parentId);
 
 	List<GoodsCategory> findByLevel1();

@@ -12,6 +12,9 @@ import me.izhong.shop.entity.GoodsCategory;
 @Repository
 public interface GoodsCategoryDao extends JpaRepository<GoodsCategory, Long> {
 
+	@Query(value = "select t1.* from product_category t1 left join product_category t2 on t2.parent_id = t1.id where t2.id = ?1", nativeQuery = true)
+	GoodsCategory findByChildrenId(Long categoryId);
+
 	List<GoodsCategory> findByParentId(Long parentId);
 
 	List<GoodsCategory> findByLevelAndShowStatus(Integer level, Integer showStatus);

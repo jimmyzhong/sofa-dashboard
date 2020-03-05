@@ -90,7 +90,7 @@ public class UserRealm extends AuthorizingRealm {
             password = new String(upToken.getPassword());
         }
 
-        SysUser user = null;
+        SysUser user;
         try {
             user = loginService.login(username, password);
         } catch (CaptchaException e) {

@@ -24,16 +24,8 @@ public class UserCollection {
     private Long id;
     @Column(name = "USER_ID")
     private Long userId;
-    @Column(name = "USER_NAME")
-    private String userName;
     @Column(name = "PRODUCT_ID")
     private Long productId;
-    @Column(name = "PRODUCT_NAME")
-    private String productName;
-    @Column(name = "PRODUCT_PIC")
-    private String productPic;
-    @Column(name = "PRODUCT_PRICE")
-    private String productPrice;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

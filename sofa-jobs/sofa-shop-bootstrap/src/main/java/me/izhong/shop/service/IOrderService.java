@@ -24,4 +24,6 @@ public interface IOrderService {
 
 	void updatePayInfo(Order order, String externalOrderNo, String payMethod, String payType,
 					   BigDecimal payAmount, BigDecimal totalAmount, String state, String comment);
+
+	Object submit(Long userId, String body);
 }

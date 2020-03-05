@@ -94,47 +94,131 @@ public class Global {
         return StringUtils.defaultIfBlank(getConfig("dashboard.demoEnabled"), "true");
     }
 
-    /**
-     * 获取ip地址开关
-     */
-    public static Boolean isAddressEnabled() {
-        return Boolean.valueOf(getConfig("dashboard.ip.addressEnabled"));
-    }
 
     /**
      * 获取文件上传路径
      */
     public static String getProfile() {
-        return getConfig("dashboard.profile");
+        return getConfig("dashboard.filepath");
     }
 
-    public static String getDefaultUploadDir() {
-        return getConfig("dashboard.profile") + "/default";
+
+
+    public static String getAvatarMapping() {
+        return "/profile/avatar/";
+    }
+
+    public static String getUploadMapping() {
+        return "/profile/upload/";
+    }
+
+    public static String getExportMapping() {
+        return "/profile/export/";
     }
 
     /**
      * 获取头像上传路径
      */
     public static String getAvatarPath() {
-        return getConfig("dashboard.profile") + "/avatar/";
-    }
-
-    public static String getAvatarMapping() {
-        return getConfig("dashboard.avator.mapping");
+        String avatar = getConfig("dashboard.avatar.filepath");
+        if(StringUtils.isNotBlank(avatar)) {
+            if(!avatar.startsWith("/"))
+                throw BusinessException.build("dashboard.avatar.filepath需要配置以/开始");
+            if(!avatar.endsWith("/")) {
+                avatar += "/";
+            }
+            return avatar;
+        } else {
+            String dashPath = getConfig("dashboard.filepath");
+            if(StringUtils.isBlank(dashPath)) {
+                throw BusinessException.build("filepath没有配置");
+            }
+            if(!dashPath.startsWith("/"))
+                throw BusinessException.build("dashboard.filepath需要配置以/开始");
+            if(!dashPath.endsWith("/")) {
+                dashPath += "/";
+            }
+            return dashPath + "avatar/";
+        }
     }
 
     /**
      * 获取下载路径
      */
-    public static String getDownloadPath() {
-        return getConfig("dashboard.profile") + "download/";
+    public static String getExportPath() {
+        String export = getConfig("dashboard.export.filepath");
+        if(StringUtils.isNotBlank(export)) {
+            if(!export.startsWith("/"))
+                throw BusinessException.build("dashboard.export.filepath需要配置以/开始");
+            if(!export.endsWith("/")) {
+                export += "/";
+            }
+            return export;
+        } else {
+            String dashPath = getConfig("dashboard.filepath");
+            if(StringUtils.isBlank(dashPath)) {
+                throw BusinessException.build("filepath没有配置");
+            }
+            if(!dashPath.startsWith("/"))
+                throw BusinessException.build("dashboard.filepath需要配置以/开始");
+            if(!dashPath.endsWith("/")) {
+                dashPath += "/";
+            }
+            return dashPath + "export/";
+        }
     }
 
     /**
      * 获取上传路径
      */
     public static String getUploadPath() {
-        return getConfig("dashboard.profile") + "upload/";
+        String upload = getConfig("dashboard.upload.filepath");
+        if(StringUtils.isNotBlank(upload)) {
+            if(!upload.startsWith("/"))
+                throw BusinessException.build("dashboard.upload.filepath需要配置以/开始");
+            if(!upload.endsWith("/")) {
+                upload += "/";
+            }
+            return upload;
+        } else {
+            String dashPath = getConfig("dashboard.filepath");
+            if(StringUtils.isBlank(dashPath)) {
+                throw BusinessException.build("filepath没有配置");
+            }
+            if(!dashPath.startsWith("/"))
+                throw BusinessException.build("dashboard.filepath需要配置以/开始");
+            if(!dashPath.endsWith("/")) {
+                dashPath += "/";
+            }
+            return dashPath + "upload/";
+        }
+    }
+
+    public static boolean isUploadOssEnable() {
+        return StringUtils.equals(getConfig("dashboard.ali.oss.enable"),"true");
+    }
+
+    public static String getAliOssBucket() {
+        return getConfig("dashboard.ali.oss.bucket");
+    }
+
+    public static String getAliOssEndpoint() {
+        return getConfig("dashboard.ali.oss.endpoint");
+    }
+
+    public static String getAliOssAccessKey() {
+        return getConfig("dashboard.ali.oss.accessKey");
+    }
+
+    public static String getAliOssAccessSecret() {
+        return getConfig("dashboard.ali.oss.accessSecret");
+    }
+
+    /**
+     * 获取ip地址开关
+     */
+    public static Boolean isAddressEnabled() {
+        return Boolean.valueOf(getConfig("dashboard.ip.addressEnabled"));
     }
 
 

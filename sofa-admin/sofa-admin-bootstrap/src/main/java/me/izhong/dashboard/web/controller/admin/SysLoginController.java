@@ -1,5 +1,6 @@
 package me.izhong.dashboard.web.controller.admin;
 
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.util.ServletUtil;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
  * 登录验证
  */
 @Controller
+@Slf4j
 public class SysLoginController {
 
     @GetMapping("/login")
@@ -39,6 +41,7 @@ public class SysLoginController {
             subject.login(token);
             return "登陆成功";
         } catch (AuthenticationException e) {
+            log.error("用户登陆异常",e);
             String msg = "用户或密码错误";
             if (StringUtils.isNotEmpty(e.getMessage())) {
                 msg = e.getMessage();

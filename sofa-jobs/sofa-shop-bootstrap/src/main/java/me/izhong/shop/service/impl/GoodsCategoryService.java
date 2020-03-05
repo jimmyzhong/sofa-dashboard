@@ -29,6 +29,11 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	}
 
 	@Override
+	public GoodsCategory findByChildrenId(Long categoryId) {
+		return goodsCategoryDao.findByChildrenId(categoryId);
+	}
+
+	@Override
 	public List<GoodsCategory> findByParentId(Long parentId) {
 		return goodsCategoryDao.findByParentId(parentId);
 	}

@@ -78,7 +78,9 @@
             dataType: 'json',
             success: function (result) {
                 if (result.code == web_status.SUCCESS) {
-                    $(obj).summernote('editor.insertImage', result.url, result.fileName);
+                    var url = result.data.url;
+                    url = $.common.startWith(url,"http") ? url : ctx + url
+                    $(obj).summernote('editor.insertImage', url, result.data.fileName);
                 } else {
                     $.modal.alertError(result.msg);
                 }

@@ -26,23 +26,23 @@ import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.model.ShopGoodsCategory;
 
 @Controller
-@RequestMapping("/ext/shop/goods/category")
+@RequestMapping("/ext/shop/category")
 public class ShopGoodsCategoryController {
 
-	private String prefix = "ext/shop/goods/category";
+	private String prefix = "ext/shop/category";
 
 	@Autowired(required = false)
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
 	public String category() {
-		return prefix + "/goods/category";
+		return prefix + "/category";
 	}
 
 	@PostMapping("/list")
     @AjaxWrapper
-	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @RequestParam(value = "type", defaultValue = "0") Long type) {
-		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), type);
+	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @RequestParam(value = "parentId", defaultValue = "0") Long parentId) {
+		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), parentId);
 		return page;
 	}
 
@@ -80,7 +80,7 @@ public class ShopGoodsCategoryController {
 		if (categoryId == null) {
 			throw BusinessException.build("categoryId不能为空");
 		}
-		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.find(categoryId);
+		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
 		if (goodsCategory == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
 		}
@@ -91,7 +91,7 @@ public class ShopGoodsCategoryController {
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoodsCategory goodsCategory) {
-		ShopGoodsCategory obj = shopServiceReference.goodsCategoryService.find(goodsCategory.getId());
+		ShopGoodsCategory obj = shopServiceReference.goodsCategoryService.findById(goodsCategory.getId());
 		if (obj == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", goodsCategory.getId()));
 		}

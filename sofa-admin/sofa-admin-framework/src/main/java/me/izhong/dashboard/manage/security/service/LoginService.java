@@ -12,7 +12,6 @@ import me.izhong.dashboard.manage.expection.user.UserPasswordNotMatchException;
 import me.izhong.dashboard.manage.service.SysUserService;
 import me.izhong.dashboard.manage.factory.AsyncManager;
 import me.izhong.dashboard.manage.factory.AsyncFactory;
-import me.izhong.common.util.DateUtil;
 import me.izhong.dashboard.manage.util.MessageUtil;
 import me.izhong.dashboard.manage.util.ServletUtil;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
@@ -88,7 +87,7 @@ public class LoginService {
         passwordService.validate(user, password);
 
         AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_SUCCESS, MessageUtil.message("user.login.success")));
-        recordLoginInfo(user);
+        user = sysUserService.recordLoginIp(user.getUserId(),UserInfoContextHelper.getIp());
         return user;
     }
 
@@ -106,12 +105,4 @@ public class LoginService {
         return true;
     }
 
-    /**
-     * 记录登录信息
-     */
-    public void recordLoginInfo(SysUser user) {
-        user.setLoginIp(UserInfoContextHelper.getIp());
-        user.setLoginDate(DateUtil.getNowDate());
-        sysUserService.saveUser(user);
-    }
 }

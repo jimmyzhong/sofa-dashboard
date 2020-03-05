@@ -9,19 +9,21 @@ import me.izhong.jobs.model.ShopGoodsCategory;
 
 public interface IShopGoodsCategoryMngFacade {
 
-	ShopGoodsCategory find(Long id);
+	ShopGoodsCategory findById(Long id);
+
+	ShopGoodsCategory findLv1(Long id);
+
+    void create(ShopGoodsCategory goodsCategory);
 
     void edit(ShopGoodsCategory goodsCategory);
 
     void updateShowStatus(List<Long> ids, Integer showStatus);
 
-    PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type);
+    boolean remove(Long id);
+
+    PageModel<ShopGoodsCategory> pageList(PageRequest request, Long parentId);
 
 	List<CategoryDTO> queryLevel1();
 
 	List<CategoryDTO> queryAll();
-
-    boolean remove(Long jobId);
-
-    void create(ShopGoodsCategory goodsCategory);
 }

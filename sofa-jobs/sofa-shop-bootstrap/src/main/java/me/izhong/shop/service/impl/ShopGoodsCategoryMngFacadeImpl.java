@@ -25,10 +25,8 @@ import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.manage.IShopGoodsCategoryMngFacade;
 import me.izhong.jobs.model.ShopGoodsCategory;
 import me.izhong.shop.dao.GoodsCategoryDao;
-import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.service.IGoodsCategoryService;
-import me.izhong.shop.service.IGoodsService;
 
 @Slf4j
 @Service
@@ -39,16 +37,34 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	private GoodsCategoryDao goodsCategoryDao;
 
 	@Autowired
-	private IGoodsService goodsService;
-	@Autowired
 	private IGoodsCategoryService goodsCategoryService;
 
 	@Override
-	public ShopGoodsCategory find(Long goodsId) {
-		GoodsCategory goodsCategory = goodsCategoryService.findById(goodsId);
+	public ShopGoodsCategory findById(Long categoryId) {
+		GoodsCategory goodsCategory = goodsCategoryService.findById(categoryId);
 		ShopGoodsCategory obj = new ShopGoodsCategory();
         BeanUtils.copyProperties(goodsCategory, obj);
         return obj;
+	}
+
+	@Override
+	public ShopGoodsCategory findLv1(Long categoryId) {
+		GoodsCategory goodsCategory = goodsCategoryService.findByChildrenId(categoryId);
+		if (goodsCategory != null) {
+			ShopGoodsCategory obj = new ShopGoodsCategory();
+	        BeanUtils.copyProperties(goodsCategory, obj);
+	        return obj;
+		}
+		return null;
+	}
+
+	@Override
+	public void create(ShopGoodsCategory shopGoodsCategory) {
+		GoodsCategory goodsCategory = new GoodsCategory();
+		goodsCategory.setProductCount(0);
+		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
+		setCategoryLevel(goodsCategory);
+		goodsCategoryService.saveOrUpdate(goodsCategory);
 	}
 
 	@Override
@@ -65,9 +81,19 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	}
 
 	@Override
-	public PageModel<ShopGoodsCategory> pageList(PageRequest request, Long type) {
+	public boolean remove(Long categoryId) {
+		try {
+			goodsCategoryService.deleteById(categoryId);
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	@Override
+	public PageModel<ShopGoodsCategory> pageList(PageRequest request, Long parentId) {
 		GoodsCategory goodsCategory = new GoodsCategory();
-		goodsCategory.setParentId(type == 0L ? 0L : 1L);
+		goodsCategory.setParentId(parentId);
         Example<GoodsCategory> example = Example.of(goodsCategory);
         Sort sort = Sort.unsorted();
         if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
@@ -116,25 +142,6 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
             dto.setChildren(children);
             return dto;
         }).collect(Collectors.toList());
-	}
-
-	@Override
-	public boolean remove(Long goodsId) {
-		try {
-			goodsCategoryService.deleteById(goodsId);
-			return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-
-	@Override
-	public void create(ShopGoodsCategory shopGoodsCategory) {
-		GoodsCategory goodsCategory = new GoodsCategory();
-		goodsCategory.setProductCount(0);
-		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
-		setCategoryLevel(goodsCategory);
-		goodsCategoryService.saveOrUpdate(goodsCategory);
 	}
 
     private void setCategoryLevel(GoodsCategory goodsCategory) {

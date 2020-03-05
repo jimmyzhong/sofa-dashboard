@@ -50,7 +50,7 @@ logging:
     me.izhong: INFO
     org.springframework: INFO
     org.springframework.data: INFO
-#   org.springframework.security: DEBUG
+    org.springframework.security: INFO
     org.springframework.beans.factory.support.DefaultListableBeanFactory: INFO
     org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener: INFO
 #    org.mongodb: DEBUG
@@ -102,12 +102,21 @@ xss:
 dashboard:
   version: 4.0.0
   salt: salt@defalut
-  profile: ${BASE_DIR:/Users/jimmy/tmp}/data/job
+  filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
+  ali:
+    oss:
+      enable: false
+      bucket:
+      endpoint:
+      accessKey:
+      accessSecret:
   upload:
-    filepath: ${dashboard.profile}/upload
-  avator:
-    filepath: ${dashboard.profile}/avator
-    mapping: /profile/avatar/
+    filepath: ${dashboard.filepath}/upload/
+    #filepath: /oss/upload
+  avatar:
+    filepath: ${dashboard.filepath}/avatar/
+  export:
+    filepath: ${dashboard.filepath}/export/
   ip:
     addressEnabled: true
     userLocalDatabase: true

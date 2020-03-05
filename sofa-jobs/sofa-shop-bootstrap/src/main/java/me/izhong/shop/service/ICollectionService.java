@@ -6,7 +6,7 @@ import me.izhong.shop.dto.GoodsCollectionParam;
 
 public interface ICollectionService {
 
-	void add(GoodsCollectionParam param);
+	void add(Long userId, Long productId);
 
 	void delete(Long userId, Long productId);
 

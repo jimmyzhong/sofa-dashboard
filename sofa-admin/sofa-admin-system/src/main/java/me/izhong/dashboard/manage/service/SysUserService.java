@@ -3,6 +3,7 @@ package me.izhong.dashboard.manage.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.entity.SysUser;
 
 import java.util.Date;
@@ -20,13 +21,15 @@ public interface SysUserService {
 
     SysUser findUserByPhoneNumber(String phoneNumber);
 
+    SysUser recordLoginIp(Long userId, String loginIp);
+
+    SysUser updateMyInfos(Long userId,String userName,String email,String phoneNumber,String sex);
+
+    SysUser updateMyAvatar(Long userId,String avatar);
+
     SysUser saveUser(SysUser user);
 
     SysUser saveUserAndPerms(SysUser user);
-
-    List<SysUser> getTop(int size, String order, SysUser searchUser);
-
-    List<SysUser> getList(int pageNum, int pageSize, String order, String isAsc, SysUser searchUser, Date bTime, Date eTime);
 
     List<SysUser> findUsersByUserIds(Long[] id);
 
@@ -56,5 +59,5 @@ public interface SysUserService {
 
     String importUser(List<SysUser> userList, boolean updateSupport, String operName);
 
-    void checkUserAllowed(SysUser user);
+    void checkUserAllowed(SysUser user,String actionName);
 }

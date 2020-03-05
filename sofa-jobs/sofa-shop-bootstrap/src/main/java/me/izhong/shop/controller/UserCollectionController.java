@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -31,10 +30,9 @@ public class UserCollectionController {
 	 */
 	@PostMapping(value = "/add")
     @ResponseBody
-	public void add(@RequestBody GoodsCollectionParam param, HttpServletRequest request) {
+	public void add(@RequestParam Long productId, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
-		param.setUserId(userId);
-		collectionService.add(param);
+		collectionService.add(userId, productId);
 	}
 
 	/**

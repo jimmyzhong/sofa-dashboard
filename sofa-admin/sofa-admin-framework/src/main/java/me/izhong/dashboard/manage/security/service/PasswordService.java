@@ -75,10 +75,6 @@ public class PasswordService {
         }
         return MD5Util.hash(password + salt);
     }
-//    public String randomSalt()
-//    {
-//        return  RandomStringUtils.randomAscii(8);
-//    }
 
     public void clearLoginRecordCache(String username) {
         loginRecordCache.remove(username);
