@@ -11,8 +11,6 @@ public interface IShopGoodsCategoryMngFacade {
 
 	ShopGoodsCategory findById(Long id);
 
-	ShopGoodsCategory findLv1(Long id);
-
     void create(ShopGoodsCategory goodsCategory);
 
     void edit(ShopGoodsCategory goodsCategory);

@@ -1,5 +1,7 @@
 package me.izhong.shop.service.impl;
 
+import static org.springframework.data.domain.PageRequest.of;
+
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,10 +27,10 @@ import me.izhong.jobs.manage.IShopGoodsMngFacade;
 import me.izhong.jobs.model.ShopGoods;
 import me.izhong.shop.dao.GoodsDao;
 import me.izhong.shop.entity.Goods;
+import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.entity.User;
+import me.izhong.shop.service.IGoodsCategoryService;
 import me.izhong.shop.service.IGoodsService;
-
-import static org.springframework.data.domain.PageRequest.of;
 
 @Slf4j
 @Service
@@ -40,6 +42,8 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	
 	@Autowired
 	private IGoodsService goodsService;
+	@Autowired
+	private IGoodsCategoryService goodsCategoryService;
 
 	@Override
 	public ShopGoods find(Long goodsId) {
@@ -50,6 +54,14 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
             shopGoods.setAlbumPics(JSON.parseArray(goods.getAlbumPics(), String.class));
         } else {
             shopGoods.setAlbumPics(Lists.newArrayList());
+        }
+        GoodsCategory categorySecondary = goodsCategoryService.findByChildrenId(goods.getProductCategoryId());
+        if (categorySecondary != null) {
+        	shopGoods.setProductCategorySecondaryId(categorySecondary.getId());
+        	shopGoods.setProductCategorySecondaryName(categorySecondary.getName());
+        } else {
+        	shopGoods.setProductCategorySecondaryId(0L);
+        	shopGoods.setProductCategorySecondaryName("");
         }
         return shopGoods;
 	}
