@@ -78,7 +78,7 @@
 		function submitHandler() {
 			var data = $("#form-shop-goods-add").serializeArray();
 			var sHTML = $('.summernote').summernote('code');
-			data.push({"name": "detail_desc", "value": sHTML});
+			data.push({"name": "detailDesc", "value": sHTML});
 			$.operate.saveTab(prefix + "/add", data);
 	    }
 	    function uploadImg(){

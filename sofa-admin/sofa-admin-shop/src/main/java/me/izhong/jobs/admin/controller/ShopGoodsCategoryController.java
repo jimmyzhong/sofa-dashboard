@@ -39,11 +39,20 @@ public class ShopGoodsCategoryController {
 		return prefix + "/category";
 	}
 
-	@GetMapping("/list/{parentId}")
+	@PostMapping("/list/{parentId}")
     @AjaxWrapper
 	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @PathVariable Long parentId) {
 		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), parentId);
 		return page;
+	}
+
+	@GetMapping("/subCategory/{categoryId}")
+	public String subCategory(@PathVariable("categoryId") Long categoryId, Model model) {
+		if (categoryId == null) {
+			throw BusinessException.build("categoryId不能为空");
+		}
+		model.addAttribute("categoryId", categoryId);
+		return prefix+"/subCategory";
 	}
 
 	@GetMapping("/queryLv1")
@@ -64,8 +73,9 @@ public class ShopGoodsCategoryController {
 		return data;
 	}
 
-    @GetMapping("/add")
-    public String add() {
+    @GetMapping("/add/{parentId}")
+    public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
+		model.addAttribute("parentId", parentId);
         return prefix + "/add";
     }
 
