@@ -2,6 +2,7 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
 	<th:block th:include="include :: header('修改商品信息')" />
+	<th:block th:include="include :: summernote-css" />
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
@@ -31,7 +32,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryId" name="productCategoryId"  onChange="productCategoryChange(this)">
+					<select class="form-control" id="productCategoryIds" name="productCategoryIds"  onChange="productCategoryChange(this)">
 						<option value="">--请选择商品类别--</option>
 					</select>
 				</div>
@@ -39,9 +40,23 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">子类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productSubCategoryId" name="productSubCategoryId">
+					<select class="form-control" id="productCategoryId" name="productCategoryId">
 						<option value="">--请选择商品子类别--</option>
 					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">商品描述：</label>
+				<div class="col-sm-8">
+					<textarea class="form-control" name="description">
+
+					</textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">商品详情：</label>
+				<div class="col-sm-8">
+					<div class="summernote"></div>
 				</div>
 			</div>
 			<div class="form-group">
@@ -53,8 +68,8 @@
 		</form>
 	</div>
 	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
-
 		var prefix = ctx + "ext/shop/goods";
         var _categoryAll=[];
         $(function () {
@@ -62,9 +77,9 @@
 		})
 		function submitHandler() {
 			var data = $("#form-shop-goods-add").serializeArray();
-			console.log(JSON.stringify(data))
+			var sHTML = $('.summernote').summernote('code');
+			data.push({"name": "detail_desc", "value": sHTML});
 			$.operate.saveTab(prefix + "/add", data);
-			// $.operate.save(prefix + "/add", $('#form-shop-goods-add').serialize());
 	    }
 	    function uploadImg(){
 			var formdata = new FormData();
@@ -87,25 +102,61 @@
 				success: function (result){
 					_categoryAll=result.categoryList;
 					for(var i=0;i<_categoryAll.length;i++){
-						$("#productCategoryId").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
+						$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
 					}
 				}
 			})
 		}
 		function productCategoryChange(obj) {
-			$("#productSubCategoryId").val("");
-			$("#productSubCategoryId").html('<option value="">--请选择商品子类别--</option>');
+			$("#productCategoryId").val("");
+			$("#productCategoryId").html('<option value="">--请选择商品子类别--</option>');
 			for(var i=0;i<_categoryAll.length;i++){
 				if(_categoryAll[i].value==$(obj).val()){
 					for(var y=0;i<_categoryAll[i].children.length;i++){
 						var _subItem=_categoryAll[i].children[y];
-						$("#productSubCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
+						$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
 					}
 				}
 				break;
 			}
 		}
-
+		$('.summernote').summernote({
+			placeholder: '请输入商品详情',
+			height : 192,
+			lang : 'zh-CN',
+			followingToolbar: false,
+			callbacks: {
+				onImageUpload: function (files) {
+					sendFile(files[0], this);
+				}
+			}
+		});
+		// 上传文件
+		function sendFile(file, obj) {
+			var data = new FormData();
+			data.append("file", file);
+			$.ajax({
+				type: "POST",
+				url: ctx + "common/upload",
+				data: data,
+				cache: false,
+				contentType: false,
+				processData: false,
+				dataType: 'json',
+				success: function(result) {
+					if (result.code == web_status.SUCCESS) {
+						var url = result.data.url;
+						url = $.common.startWith(url,"http") ? url : ctx + url
+						$(obj).summernote('editor.insertImage', url, result.data.fileName);
+					} else {
+						$.modal.alertError(result.msg);
+					}
+				},
+				error: function(error) {
+					$.modal.alertWarning("图片上传失败。");
+				}
+			});
+		}
 	</script>
 </body>
 </html>
