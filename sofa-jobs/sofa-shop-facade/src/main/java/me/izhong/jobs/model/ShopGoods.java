@@ -21,6 +21,8 @@ public class ShopGoods implements Serializable {
     private String productPic;
 	private Integer productType;
 	private Long productCategoryId;
+	private Long productCategorySecondaryId;
+	private String productCategorySecondaryName;
 	private BigDecimal price;
 	//促销价格
     private BigDecimal promotionPrice;

@@ -20,7 +20,6 @@ import me.izhong.common.util.Convert;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopGoods;
-import me.izhong.jobs.model.ShopGoodsCategory;
 
 @Controller
 @RequestMapping("/ext/shop/goods")
@@ -63,9 +62,7 @@ public class ShopGoodsController {
 		if (goods == null) {
 			throw BusinessException.build(String.format("商品不存在%s", goodsId));
 		}
-		ShopGoodsCategory category = shopServiceReference.goodsCategoryService.findLv1(goods.getProductCategoryId());
 		model.addAttribute("goods", goods);
-		model.addAttribute("category", category);
 		return prefix + "/edit";
 	}
 

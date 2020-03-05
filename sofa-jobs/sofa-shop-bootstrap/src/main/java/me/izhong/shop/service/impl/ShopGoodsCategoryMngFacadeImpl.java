@@ -48,17 +48,6 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	}
 
 	@Override
-	public ShopGoodsCategory findLv1(Long categoryId) {
-		GoodsCategory goodsCategory = goodsCategoryService.findByChildrenId(categoryId);
-		if (goodsCategory != null) {
-			ShopGoodsCategory obj = new ShopGoodsCategory();
-	        BeanUtils.copyProperties(goodsCategory, obj);
-	        return obj;
-		}
-		return null;
-	}
-
-	@Override
 	public void create(ShopGoodsCategory shopGoodsCategory) {
 		GoodsCategory goodsCategory = new GoodsCategory();
 		goodsCategory.setProductCount(0);
