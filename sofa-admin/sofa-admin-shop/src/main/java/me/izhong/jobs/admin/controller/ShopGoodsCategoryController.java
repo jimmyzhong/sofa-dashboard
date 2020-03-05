@@ -39,9 +39,9 @@ public class ShopGoodsCategoryController {
 		return prefix + "/category";
 	}
 
-	@PostMapping("/list")
+	@GetMapping("/list/{parentId}")
     @AjaxWrapper
-	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @RequestParam(value = "parentId", defaultValue = "0") Long parentId) {
+	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @PathVariable Long parentId) {
 		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), parentId);
 		return page;
 	}
