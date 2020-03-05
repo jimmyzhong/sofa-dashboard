@@ -46,6 +46,10 @@ public class CartItemService implements ICartItemService {
 		if (items == null) {
 			return new ArrayList<>();
 		}
+		return convertDTO(items);
+	}
+
+	private List<CartItemParam> convertDTO(List<CartItem> items) {
 		return items.stream().map(item->{
 			CartItemParam param = new CartItemParam();
 			BeanUtils.copyProperties(item, param);
@@ -74,9 +78,19 @@ public class CartItemService implements ICartItemService {
 	@Override
 	public CartItemParam findByCartId(Long cartId) {
 		CartItem cartItem = cartItemDao.findById(cartId).orElseThrow(()->new RuntimeException("unable to find cart by " + cartId));
+		// TODO update latest product price
 		CartItemParam param = new CartItemParam();
 		BeanUtils.copyProperties(cartItem, param);
 		return param;
 	}
-	
+
+	@Override
+	public List<CartItemParam> list(List<Long> cartIds) {
+		List<CartItem> res = cartItemDao.findAllById(cartIds);
+		if (res == null) {
+			return new ArrayList<>();
+		}
+		return convertDTO(res);
+	}
+
 }

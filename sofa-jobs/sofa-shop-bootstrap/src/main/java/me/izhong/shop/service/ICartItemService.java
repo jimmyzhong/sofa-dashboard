@@ -18,4 +18,6 @@ public interface ICartItemService {
 	void clear(Long userId);
 
 	CartItemParam findByCartId(Long cartId);
+
+	List<CartItemParam> list(List<Long> cartIds);
 }

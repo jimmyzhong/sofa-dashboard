@@ -14,7 +14,7 @@ public class CartItemParam {
     private Long productId;
     private Long productAttrId;
     private Integer quantity;
-    private BigDecimal price;
+    private BigDecimal price; // unit price
     private String rsv1;
     private String rsv2;
     private String rsv3;

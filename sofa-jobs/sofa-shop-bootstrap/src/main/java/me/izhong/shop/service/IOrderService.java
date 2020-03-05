@@ -26,4 +26,7 @@ public interface IOrderService {
 					   BigDecimal payAmount, BigDecimal totalAmount, String state, String comment);
 
 	Object submit(Long userId, String body);
+
+
+	Order submit(Long userId, Long addressId, List<Long> cartIds);
 }
