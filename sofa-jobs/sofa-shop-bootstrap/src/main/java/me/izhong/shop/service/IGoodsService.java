@@ -9,9 +9,7 @@ import me.izhong.shop.entity.Goods;
 
 public interface IGoodsService {
 
-	Goods saveOrUpdate(Goods goods);
-
-	Goods findById(Long goodsId);
+	void saveOrUpdate(Goods goods);
 
 	void updatePublishStatusByIds(List<Long> ids, Integer publishStatus);
 
@@ -24,6 +22,8 @@ public interface IGoodsService {
 	void checkGoodsName(Goods goods, String goodsName);
 
 	PageModel<GoodsDTO> list(PageQueryParamDTO queryParam);
+
+	GoodsDTO findById(Long goodsId);
 
 	GoodsDTO findGoodsWithAttrById(Long goodsId);
 }

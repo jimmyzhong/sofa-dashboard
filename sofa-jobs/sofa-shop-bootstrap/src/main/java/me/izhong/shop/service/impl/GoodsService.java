@@ -3,23 +3,30 @@ package me.izhong.shop.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.izhong.common.domain.PageModel;
-import me.izhong.shop.dao.GoodsAttributesDao;
-import me.izhong.shop.dto.GoodsDTO;
-import me.izhong.shop.dto.PageQueryParamDTO;
-import me.izhong.shop.entity.GoodsAttributes;
-import me.izhong.shop.entity.User;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
+import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.shop.dao.GoodsAttributesDao;
 import me.izhong.shop.dao.GoodsDao;
+import me.izhong.shop.dto.GoodsDTO;
+import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Goods;
+import me.izhong.shop.entity.GoodsAttributes;
 import me.izhong.shop.service.IGoodsService;
 
 @Slf4j
@@ -33,13 +40,8 @@ public class GoodsService implements IGoodsService {
 
 	@Override
 	@Transactional
-	public Goods saveOrUpdate(Goods goods) {
-		return goodsDao.save(goods);
-	}
-
-	@Override
-	public Goods findById(Long goodsId) {
-		return goodsDao.findById(goodsId).orElseThrow(() -> new RuntimeException("unable to find goods by " + goodsId));
+	public void saveOrUpdate(Goods goods) {
+		goodsDao.save(goods);
 	}
 
 	@Override
@@ -103,12 +105,18 @@ public class GoodsService implements IGoodsService {
 	}
 
 	@Override
-	public GoodsDTO findGoodsWithAttrById(Long goodsId) {
-		Goods goods = findById(goodsId);
-		List<GoodsAttributes> attributes = attributesDao.findGoodsAttributesByProductId(goodsId);
+	public GoodsDTO findById(Long goodsId) {
+		Goods goods = goodsDao.findById(goodsId).orElseThrow(() -> new RuntimeException("unable to find goods by " + goodsId));
 		GoodsDTO dto = new GoodsDTO();
 		BeanUtils.copyProperties(goods, dto);
-		dto.setAttributes(attributes);
+		return dto;
+	}
+
+	@Override
+	public GoodsDTO findGoodsWithAttrById(Long goodsId) {
+		GoodsDTO dto = findById(goodsId);
+		List<GoodsAttributes> attributes = attributesDao.findGoodsAttributesByProductId(goodsId);
+		dto.setAttributes(CollectionUtils.isEmpty(attributes) ? Lists.newArrayList() : attributes);
 		return dto;
 	}
 }

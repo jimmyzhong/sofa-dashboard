@@ -1,60 +1,67 @@
 package me.izhong.shop.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 import me.izhong.shop.dao.CartItemDao;
+import me.izhong.shop.dao.GoodsDao;
 import me.izhong.shop.dto.CartItemParam;
 import me.izhong.shop.entity.CartItem;
+import me.izhong.shop.entity.Goods;
 import me.izhong.shop.service.ICartItemService;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CartItemService implements ICartItemService {
 
 	@Autowired
 	private CartItemDao cartItemDao;
+	@Autowired
+	private GoodsDao goodsDao;
 
 	@Override
 	@Transactional
 	public void add(CartItemParam cartItemParam) {
-		CartItem cartItem = cartItemDao.findFirstByUserIdAndProductAttributeIdAndProductId(
-				cartItemParam.getUserId(),
-				cartItemParam.getProductAttrId(),
-				cartItemParam.getProductId()
-				);
-		if (cartItem == null) {
-			cartItem = new CartItem();
-			BeanUtils.copyProperties(cartItemParam, cartItem);
-		} else {
-			cartItem.setQuantity(cartItem.getQuantity() + 1);
-		}
+		CartItem cartItem = new CartItem();
+		BeanUtils.copyProperties(cartItemParam, cartItem);
+		cartItem.setUpdateTime(LocalDateTime.now());
 		cartItemDao.save(cartItem);
 	}
 
 	@Override
 	public List<CartItemParam> list(Long userId) {
 		List<CartItem> items = cartItemDao.findCartItemsByUserId(userId);
-		if (items == null) {
-			return new ArrayList<>();
+		if (items != null) {
+			return convertDTO(items);
 		}
-		return convertDTO(items);
+		return Lists.newArrayList();
 	}
 
 	private List<CartItemParam> convertDTO(List<CartItem> items) {
-		return items.stream().map(item->{
-			CartItemParam param = new CartItemParam();
-			BeanUtils.copyProperties(item, param);
-			return param;
-		}).collect(Collectors.toList());
+		List<CartItemParam> cartItemList = Lists.newArrayList();
+		items.stream().forEach(item -> {
+			Optional<Goods> optionalGoods = goodsDao.findById(item.getProductId());
+			if (optionalGoods.isPresent()) {
+				Goods goods = optionalGoods.get();
+				CartItemParam param = new CartItemParam();
+				BeanUtils.copyProperties(item, param);
+				param.setPrice(goods.getPrice());
+				param.setProductPic(goods.getProductPic());
+				param.setProductName(goods.getProductName());
+				param.setProductSn(goods.getProductSn());
+				cartItemList.add(param);
+			}
+		});
+		return cartItemList;
 	}
 
 	@Override
@@ -76,6 +83,15 @@ public class CartItemService implements ICartItemService {
 	}
 
 	@Override
+	public List<CartItemParam> list(List<Long> cartIds) {
+		List<CartItem> res = cartItemDao.findAllById(cartIds);
+		if (res == null) {
+			return new ArrayList<>();
+		}
+		return convertDTO(res);
+	}
+
+	@Override
 	public CartItemParam findByCartId(Long cartId) {
 		CartItem cartItem = cartItemDao.findById(cartId).orElseThrow(()->new RuntimeException("unable to find cart by " + cartId));
 		// TODO update latest product price
@@ -85,12 +101,14 @@ public class CartItemService implements ICartItemService {
 	}
 
 	@Override
-	public List<CartItemParam> list(List<Long> cartIds) {
-		List<CartItem> res = cartItemDao.findAllById(cartIds);
-		if (res == null) {
-			return new ArrayList<>();
+	public CartItemParam findFirstByUserIdAndProductAttributeIdAndProductId(Long userId, Long productId, Long productAttrId) {
+		CartItem cartItem = cartItemDao.findFirstByUserIdAndProductAttributeIdAndProductId(userId, productAttrId, productId);
+		if (cartItem != null) {
+			CartItemParam param = new CartItemParam();
+			BeanUtils.copyProperties(cartItem, param);
+			return param;
 		}
-		return convertDTO(res);
+		return null;
 	}
 
 }

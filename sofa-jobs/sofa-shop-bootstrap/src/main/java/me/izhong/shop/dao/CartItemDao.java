@@ -13,7 +13,9 @@ import java.util.Set;
 
 @Repository
 public interface CartItemDao extends JpaRepository<CartItem, Long> {
+
     CartItem findFirstByUserIdAndProductAttributeIdAndProductId(Long userId, Long productAttrId, Long productId);
+
     List<CartItem> findCartItemsByUserId(Long userId);
 
     @Modifying
