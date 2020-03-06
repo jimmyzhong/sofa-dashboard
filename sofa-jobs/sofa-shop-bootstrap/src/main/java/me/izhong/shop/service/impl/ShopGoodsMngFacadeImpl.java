@@ -58,7 +58,8 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         }
         GoodsCategory categorySecondary = goodsCategoryService.findByChildrenId(goods.getProductCategoryId());
         if (categorySecondary != null) {
-        	shopGoods.setProductCategorySecondaryId(categorySecondary.getId());
+        	shopGoods.setProductCategoryId(categorySecondary.getId());
+        	shopGoods.setProductCategorySecondaryId(goods.getProductCategoryId());
         	shopGoods.setProductCategorySecondaryName(categorySecondary.getName());
         } else {
         	shopGoods.setProductCategorySecondaryId(0L);
