@@ -14,7 +14,7 @@ public interface IShopAdMngFacade {
 
 	void updateShowStatus(List<Long> ids, Integer showStatus);
 
-    boolean remove(Long adId);
+    boolean remove(String ids);
 
 	PageModel<ShopAd> pageList(PageRequest fromRequest, String name, String content);
 

@@ -2,13 +2,11 @@ package me.izhong.shop.service.impl;
 
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.izhong.shop.dao.AdDao;
-import me.izhong.shop.dto.AdDTO;
 import me.izhong.shop.entity.Ad;
 import me.izhong.shop.service.IAdService;
 
@@ -37,11 +35,8 @@ public class AdService implements IAdService {
 	}
 
 	@Override
-	public AdDTO findById(Long adId) {
-		Ad ad = adDao.findById(adId).orElseThrow(()->new RuntimeException("unable to find Ad by " + adId));
-		AdDTO adDTO = new AdDTO();
-		BeanUtils.copyProperties(ad, adDTO);
-		return adDTO;
+	public Ad findById(Long adId) {
+		return adDao.findById(adId).orElseThrow(()->new RuntimeException("unable to find Ad by " + adId));
 	}
 
 }

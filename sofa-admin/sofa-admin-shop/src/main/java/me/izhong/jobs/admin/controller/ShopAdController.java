@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.common.util.Convert;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopAd;
@@ -84,12 +83,9 @@ public class ShopAdController {
     @PostMapping("/remove")
     @AjaxWrapper
     public void remove(String ids) {
-    	Long[] uids = Convert.toLongArray(ids);
-		for (Long uid : uids) {
-			boolean rt = shopServiceReference.adService.remove(uid);
-			if (!rt) {
-				throw BusinessException.build("删除失败");
-			}
-		}
+    	boolean result = shopServiceReference.adService.remove(ids);
+    	if (!result) {
+    		throw BusinessException.build("删除失败");
+    	}
     }
 }

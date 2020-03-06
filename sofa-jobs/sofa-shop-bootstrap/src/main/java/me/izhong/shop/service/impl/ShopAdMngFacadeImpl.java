@@ -20,10 +20,10 @@ import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.common.util.Convert;
 import me.izhong.jobs.manage.IShopAdMngFacade;
 import me.izhong.jobs.model.ShopAd;
 import me.izhong.shop.dao.AdDao;
-import me.izhong.shop.dto.AdDTO;
 import me.izhong.shop.entity.Ad;
 import me.izhong.shop.service.IAdService;
 
@@ -47,7 +47,7 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 
 	@Override
 	public void edit(ShopAd shopAd) {
-		Ad ad = new Ad();
+		Ad ad = adService.findById(shopAd.getId());
 		BeanUtils.copyProperties(shopAd, ad);
 		adService.saveOrUpdate(ad);
 	}
@@ -58,9 +58,12 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 	}
 
 	@Override
-	public boolean remove(Long adId) {
+	public boolean remove(String ids) {
 		try {
-			adService.deleteById(adId);
+	    	Long[] uids = Convert.toLongArray(ids);
+			for (Long uid : uids) {
+				adService.deleteById(uid);
+			}
 			return true;
 		} catch (Exception e) {
 			return false;
@@ -96,9 +99,9 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 
 	@Override
 	public ShopAd find(Long adId) {
-		AdDTO adDTO = adService.findById(adId);
+		Ad ad = adService.findById(adId);
 		ShopAd shopAd = new ShopAd();
-        BeanUtils.copyProperties(adDTO, shopAd);
+        BeanUtils.copyProperties(ad, shopAd);
         return shopAd;
 	}
 

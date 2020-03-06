@@ -2,7 +2,6 @@ package me.izhong.shop.service;
 
 import java.util.List;
 
-import me.izhong.shop.dto.AdDTO;
 import me.izhong.shop.entity.Ad;
 
 public interface IAdService {
@@ -13,5 +12,5 @@ public interface IAdService {
 
 	void updateStatus(List<Long> ids, Integer status);
 
-    AdDTO findById(Long adId);
+    Ad findById(Long adId);
 }
