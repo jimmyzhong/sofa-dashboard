@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.alipay.sofa.runtime.api.annotation.SofaReference;
 import com.alipay.sofa.runtime.api.annotation.SofaReferenceBinding;
 
+import me.izhong.jobs.manage.IShopAdMngFacade;
 import me.izhong.jobs.manage.IShopGoodsCategoryMngFacade;
 import me.izhong.jobs.manage.IShopGoodsMngFacade;
 import me.izhong.jobs.manage.IShopOrderMngFacade;
@@ -50,4 +51,10 @@ public class ShopServiceReference {
     		jvmFirst = false,
     		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
     public IShopRegionMngFacade regionService;
+
+    @SofaReference(interfaceType = IShopAdMngFacade.class,
+    		uniqueId = "${service.unique.id}",
+    		jvmFirst = false,
+    		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
+    public IShopAdMngFacade adService;
 }
