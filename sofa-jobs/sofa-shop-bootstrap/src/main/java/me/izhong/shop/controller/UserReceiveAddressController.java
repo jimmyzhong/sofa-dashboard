@@ -2,6 +2,10 @@ package me.izhong.shop.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import me.izhong.shop.annotation.RequireUserLogin;
+import me.izhong.shop.consts.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +29,10 @@ public class UserReceiveAddressController {
 
 	@PostMapping("/add")
     @ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="添加收货地址", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
 	public void add(@RequestBody ReceiveAddressParam param, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
 		param.setUserId(userId);
@@ -33,6 +41,10 @@ public class UserReceiveAddressController {
 
 	@PostMapping("/delete/{id}")
     @ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="删除收货地址", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
 	public void delete(@PathVariable Long id, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
 		receiveAddressService.delete(userId, id);
@@ -40,6 +52,10 @@ public class UserReceiveAddressController {
 
     @PostMapping("/update/{id}")
     @ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="更新收货地址", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
 	public void update(@RequestBody ReceiveAddressParam param, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
     	receiveAddressService.update(userId, param);
@@ -47,6 +63,10 @@ public class UserReceiveAddressController {
 
     @GetMapping("/list")
     @ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="当前登录用户的收货地址", httpMethod = "GET")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
     public void list(HttpServletRequest request) {
     	Long userId = getCurrentUserId(request);
     	receiveAddressService.list(userId);

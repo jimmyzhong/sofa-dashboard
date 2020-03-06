@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 
 import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import me.izhong.shop.dao.OrderItemDao;
+import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.entity.OrderItem;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,8 @@ import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.UserReceiveAddress;
 import me.izhong.shop.service.IOrderService;
+
+import static me.izhong.shop.consts.OrderStateEnum.*;
 
 @Slf4j
 @Service
@@ -54,6 +58,17 @@ public class OrderService implements IOrderService {
 	@Override
 	public Order findById(Long orderId) {
 		return orderDao.findById(orderId).orElseThrow(() -> new RuntimeException("unable to find order by " + orderId));
+	}
+
+	@Override
+	public OrderFullDTO findFullOrderByOrderNo(String orderNo) {
+		Order order = findByOrderNo(orderNo);
+		List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
+
+		OrderFullDTO dto = new OrderFullDTO();
+		BeanUtils.copyProperties(order, dto);
+		dto.setItems(items);
+		return dto;
 	}
 
 	@Override
@@ -148,12 +163,20 @@ public class OrderService implements IOrderService {
 
 		// TODO 校验库存，能否购买，预减库存
 		Order order = new Order();
+		order.setReceiverCity(address.getCity());
+		order.setReceiverProvince(address.getProvince());
+		order.setReceiverPostCode(address.getPostCode());
+		order.setReceiverDetailAddress(address.getDetailAddress());
+		order.setReceiverName(address.getUserName());
+		order.setReceiverPhone(address.getUserPhone());
+
 		List<OrderItem> orderItems = new ArrayList<>();
 		BigDecimal totalAmount = BigDecimal.ZERO;
 		StringBuilder desBuilder = new StringBuilder(carts.size() * 4);
 		for (CartItemParam cart: carts) {
 			OrderItem item = new OrderItem();
 			orderItems.add(item);
+			item.setName(cart.getProductName());
 			item.setQuantity(cart.getQuantity());
 			item.setPrice(cart.getPrice());
 			item.setProductId(cart.getProductId());
@@ -162,10 +185,14 @@ public class OrderService implements IOrderService {
 			totalAmount = totalAmount.add(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
 			desBuilder.append(cart.getProductName()).append(":x").append(item.getQuantity()).append("\n");
 		}
+		order.setUserId(userId);
+		order.setCount(orderItems.size());
 		order.setTotalAmount(totalAmount);
 		order.setOrderSn(generateOrderNo());
-		order.setSubject(userId + order.getOrderSn());
+		order.setSubject(order.getOrderSn() + ", 共有品类" + order.getCount());
 		order.setDescription(desBuilder.toString());
+		order.setStatus(WAIT_PAYING.getState());
+		order.setCreateTime(LocalDateTime.now());
 
 		order = orderDao.save(order);
 		Long orderId = order.getId();
@@ -174,6 +201,26 @@ public class OrderService implements IOrderService {
 
 		cartItemService.delete(userId,
 				carts.stream().map(CartItemParam::getId).collect(Collectors.toList()));
+		return order;
+	}
+
+	@Override
+	@Transactional
+	public Order confirm(Long userId, String orderNo) {
+		Order order = orderDao.findFirstByOrderSn(orderNo);
+		order.setStatus(CONFIRMED.getState());
+		// TODO 减库存
+		orderDao.save(order);
+		return order;
+	}
+
+	@Override
+	@Transactional
+	public Order cancel(Long currentUserId, String orderNo) {
+		Order order = orderDao.findFirstByOrderSn(orderNo);
+		order.setStatus(CANCELED.getState());
+		// TODO 恢复预扣库存
+		orderDao.save(order);
 		return order;
 	}
 
