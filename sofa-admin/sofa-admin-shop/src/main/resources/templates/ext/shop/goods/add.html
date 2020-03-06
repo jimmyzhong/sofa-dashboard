@@ -17,9 +17,10 @@
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">封面图：</label>
 				<div class="col-sm-8">
-					<img class="img-circle img-lg">
+					<img id="productPic_img" class="img-circle img-lg">
 					<label>
-						<input onchange ="uploadImg()" type="file" class="" name="productPic" id="productPic" accept="image/*"/>
+						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
+						<input name="productPic" id="productPicInput"  type="hidden"/>
 					</label>
 				</div>
 			</div>
@@ -91,7 +92,8 @@
 				processData: false,
 				contentType: false,
 				success: function (result) {
-					console.log(JSON.stringify(result))
+					$("#productPicInput").val(result.data.pictureUrl)
+					$("#productPic_img").attr("src",result.data.pictureUrl)
 				}
 			})
 		}
@@ -112,7 +114,7 @@
 			$("#productCategoryId").html('<option value="">--请选择商品子类别--</option>');
 			for(var i=0;i<_categoryAll.length;i++){
 				if(_categoryAll[i].value==$(obj).val()){
-					for(var y=0;i<_categoryAll[i].children.length;i++){
+					for(var y=0;y<_categoryAll[i].children.length;y++){
 						var _subItem=_categoryAll[i].children[y];
 						$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
 					}
@@ -137,20 +139,21 @@
 			data.append("file", file);
 			$.ajax({
 				type: "POST",
-				url: ctx + "common/upload",
+				url: ctx + "ext/shop/oss/upload",
 				data: data,
 				cache: false,
 				contentType: false,
 				processData: false,
 				dataType: 'json',
 				success: function(result) {
-					if (result.code == web_status.SUCCESS) {
-						var url = result.data.url;
-						url = $.common.startWith(url,"http") ? url : ctx + url
-						$(obj).summernote('editor.insertImage', url, result.data.fileName);
-					} else {
-						$.modal.alertError(result.msg);
-					}
+					$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
+					// if (result.code == web_status.SUCCESS) {
+					// 	var url = result.data.url;
+					// 	url = $.common.startWith(url,"http") ? url : ctx + url
+					// 	$(obj).summernote('editor.insertImage', url, result.data.fileName);
+					// } else {
+					// 	$.modal.alertError(result.msg);
+					// }
 				},
 				error: function(error) {
 					$.modal.alertWarning("图片上传失败。");

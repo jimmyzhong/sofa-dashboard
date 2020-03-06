@@ -7,7 +7,7 @@
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
 		<form class="form-horizontal m" id="form-shop-category-add">
 			<input id="id" name="id" type="hidden"/>
-			<input id="parentIds" name="parentIds" type="hidden" th:value="${categoryId}"/>
+			<input id="parentId" name="parentId" type="hidden" th:value="${parentId}"/>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别名称：</label>
 				<div class="col-sm-8">
@@ -28,7 +28,7 @@
 		var prefix = ctx + "ext/shop/category";
 		function submitHandler() {
 			var data = $("#form-shop-category-add").serializeArray();
-			data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
+			// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
 			$.operate.save(prefix + "/add", data);
 		}
 	</script>

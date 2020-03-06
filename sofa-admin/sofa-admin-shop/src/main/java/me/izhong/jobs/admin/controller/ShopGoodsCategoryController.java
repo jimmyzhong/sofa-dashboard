@@ -7,6 +7,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import me.izhong.db.mongo.util.PageRequestUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,7 +30,7 @@ import me.izhong.jobs.model.ShopGoodsCategory;
 @Controller
 @RequestMapping("/ext/shop/category")
 public class ShopGoodsCategoryController {
-
+	private static Logger logger = LoggerFactory.getLogger(ShopGoodsCategoryController.class);
 	private String prefix = "ext/shop/category";
 
 	@Autowired(required = false)
@@ -75,6 +77,7 @@ public class ShopGoodsCategoryController {
 
     @GetMapping("/add/{parentId}")
     public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
+		logger.info("forward categotyAdd by parentId=>{}",parentId);
 		model.addAttribute("parentId", parentId);
         return prefix + "/add";
     }
@@ -82,11 +85,13 @@ public class ShopGoodsCategoryController {
     @PostMapping("/add")
     @AjaxWrapper
     public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
+		logger.info("do add category by=>{}",goodsCategory);
     	shopServiceReference.goodsCategoryService.create(goodsCategory);
     }
 
 	@GetMapping("/edit/{categoryId}")
 	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
+		logger.info("edit categoryId==>{}",categoryId);
 		if (categoryId == null) {
 			throw BusinessException.build("categoryId不能为空");
 		}
@@ -94,6 +99,7 @@ public class ShopGoodsCategoryController {
 		if (goodsCategory == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
 		}
+		logger.info("goodsCategoryDetail =>{}",goodsCategory);
 		model.addAttribute("goodsCategory", goodsCategory);
 		return prefix + "/edit";
 	}

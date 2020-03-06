@@ -17,9 +17,10 @@
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">封面图：</label>
 				<div class="col-sm-8">
-					<img class="img-circle img-lg" th:src="${goods.productPic}">
+					<img id="productPic_img" class="img-circle img-lg" th:src="${goods.productPic}">
 					<label>
-						<input th:field="*{productPic}" onchange ="uploadImg()" type="file" class="" name="productPic" id="productPic" accept="image/*"/>
+						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
+						<input name="productPic" id="productPicInput"  type="hidden"/>
 					</label>
 				</div>
 			</div>
@@ -32,15 +33,16 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryIds" name="productCategoryIds" th:field="*{productCategoryId}"  onChange="productCategoryChange(this)">
+					<select class="form-control" id="productCategoryIds" name="productCategoryIds"  onChange="productCategoryChange()">
 						<option value="">--请选择商品类别--</option>
+
 					</select>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">子类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryId" name="productCategoryId" th:field="*{productCategoryId}">
+					<select class="form-control" id="productCategoryId" name="productCategoryId">
 						<option value="">--请选择商品子类别--</option>
 
 					</select>
@@ -61,24 +63,19 @@
 					<div class="summernote" id="editor"></div>
 				</div>
 			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<button type="button" class="btn btn-w-m btn-primary" onclick="submitHandler()">提交</button>
+				</div>
+			</div>
 		</form>
+		<input id="category" type="hidden" th:value="${goods.productCategoryId}"/>
+		<input id="subCategory" type="hidden" th:value="${goods.productCategorySecondaryId}"/>
 	</div>
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
-		// var category = '[[${category}]]';
-		// category=category.replace(/[\r\n]/g,"");
-		// console.log("category",category)
-		//
-		// var productCategoryId = '[[${goods.productCategoryId}]]';
-		// console.log("productCategoryId",productCategoryId)
-		// var goods = '[[${goods}]]';
-		// console.log("goods1",goods);
-		// goods=goods.replace(/[\r\n]/g,"")
-		// console.log("goods2",goods);
-		// var goodsObj=JSON.parse(goods)
-		// console.log("productName",goodsObj.productName)
-
 		var prefix = ctx + "ext/shop/goods";
         var _categoryAll=[];
 		$(function () {
@@ -98,13 +95,13 @@
 			$('#editor').summernote('code', content);
 		});
 		function submitHandler() {
-	        if ($.validate.form()) {
-				var sHTML = $('.summernote').summernote('code');
-				$("#detail_desc").val(sHTML);
-	        	$.operate.save(prefix + "/edit", $('#form-shop-goods-edit').serialize());
-	        }
+			var data = $("#form-shop-goods-edit").serializeArray();
+			var sHTML = $('.summernote').summernote('code');
+			data.push({"name": "detailDesc", "value": sHTML});
+			JSON.stringify("商品编辑的数据"+data)
+			$.operate.saveTab(prefix + "/edit", data);
 	    }
-	    function uploadImg(){
+		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#productPic")[0].files[0]);
 			$.ajax({
@@ -114,30 +111,45 @@
 				processData: false,
 				contentType: false,
 				success: function (result) {
-					console.log(JSON.stringify(result))
+					$("#productPicInput").val(result.data.pictureUrl)
+					$("#productPic_img").attr("src",result.data.pictureUrl)
 				}
 			})
 		}
 		function fetchGoodsCategory() {
+			var categoryId=$("#category").val()
+			console.log("categoryId",categoryId)
 			$.ajax({
 				url: ctx + "ext/shop/category/queryAll",
 				type: "get",
 				success: function (result){
 					_categoryAll=result.categoryList;
 					for(var i=0;i<_categoryAll.length;i++){
-						$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
+						if(categoryId==_categoryAll[i].value){
+							$("#productCategoryIds").append('<option selected value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
+						}else{
+							$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
+						}
+					}
+					if(categoryId){
+						productCategoryChange(categoryId)
 					}
 				}
 			})
 		}
-		function productCategoryChange(obj) {
+		function productCategoryChange(categoryId) {
+			console.log("init sub categoryId",categoryId)
 			$("#productSubCategoryId").val("");
 			$("#productSubCategoryId").html('<option value="">--请选择商品子类别--</option>');
 			for(var i=0;i<_categoryAll.length;i++){
-				if(_categoryAll[i].value==$(obj).val()){
-					for(var y=0;i<_categoryAll[i].children.length;i++){
+				if(_categoryAll[i].value==$("#productCategoryIds").val()){
+					for(var y=0;y<_categoryAll[i].children.length;y++){
 						var _subItem=_categoryAll[i].children[y];
-						$("#productSubCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
+						if(categoryId&&($("#subCategory").value()==_subItem.value)){
+							$("#productCategoryId").append('<option selected value="'+_subItem.value+'">'+_subItem.label+'</option>')
+						}else{
+							$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
+						}
 					}
 				}
 				break;
@@ -160,20 +172,15 @@
 			data.append("file", file);
 			$.ajax({
 				type: "POST",
-				url: ctx + "common/upload",
+				url: ctx + "ext/shop/oss/upload",
 				data: data,
 				cache: false,
 				contentType: false,
 				processData: false,
 				dataType: 'json',
 				success: function(result) {
-					if (result.code == web_status.SUCCESS) {
-						var url = result.data.url;
-						url = $.common.startWith(url,"http") ? url : ctx + url
-						$(obj).summernote('editor.insertImage', url, result.data.fileName);
-					} else {
-						$.modal.alertError(result.msg);
-					}
+					console.log("富文本图片上传成功", result.data.fileName)
+					$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.fileName);
 				},
 				error: function(error) {
 					$.modal.alertWarning("图片上传失败。");
