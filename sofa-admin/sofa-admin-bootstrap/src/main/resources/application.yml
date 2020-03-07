@@ -93,7 +93,7 @@ xss:
 dashboard:
   version: 4.0.0
   salt: salt@defalut
-  filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
+  filepath: /shop/dashboard
   ali:
     oss:
       enable: true
