@@ -1,6 +1,8 @@
 package me.izhong.shop.service.impl;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -117,6 +119,16 @@ public class GoodsService implements IGoodsService {
 		GoodsDTO dto = findById(goodsId);
 		List<GoodsAttributes> attributes = attributesDao.findGoodsAttributesByProductId(goodsId);
 		dto.setAttributes(CollectionUtils.isEmpty(attributes) ? Lists.newArrayList() : attributes);
+		return dto;
+	}
+
+	@Override
+	public GoodsDTO findGoodsWithAttrById(Long goodsId, Long goodsAttrId) {
+		GoodsDTO dto = findById(goodsId);
+		if (goodsAttrId != null) {
+			Optional<GoodsAttributes> attr = attributesDao.findById(goodsAttrId);
+			dto.setAttributes(attr.isPresent() ? Arrays.asList(attr.get()) : Lists.newArrayList());
+		}
 		return dto;
 	}
 }

@@ -9,7 +9,9 @@ public enum OrderStateEnum {
     PAID(1, "已支付"),
     EXPIRED(2,"超时未支付"),
     CONFIRMED(3, "确认收货"),
-    CANCELED(4, "用户取消");
+    CANCELED(4, "用户取消"),
+    WAIT_DELIVER(5, "待发货"),
+    DELIVERED(6, "已发货");
 
     int state;
     String comment;

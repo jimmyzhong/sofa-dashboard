@@ -102,6 +102,22 @@ public class ShopGoodsCategoryController {
 		return prefix + "/edit";
 	}
 
+	@PostMapping("/detail/{categoryId}")
+	@AjaxWrapper
+	public ShopGoodsCategory detail(@PathVariable("categoryId") Long categoryId, Model model) {
+		if (categoryId == null) {
+			throw BusinessException.build("categoryId不能为空");
+		}
+		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
+		if (goodsCategory == null) {
+			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
+		}
+		log.info("goodsCategoryDetail =>{}", goodsCategory);
+		return goodsCategory;
+	}
+
+
+
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoodsCategory goodsCategory) {

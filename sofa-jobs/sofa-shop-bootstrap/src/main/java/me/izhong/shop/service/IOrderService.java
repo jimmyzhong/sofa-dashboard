@@ -3,7 +3,10 @@ package me.izhong.shop.service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import me.izhong.common.domain.PageModel;
 import me.izhong.jobs.model.ShopReceiverInfo;
+import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.entity.Order;
 
@@ -28,8 +31,24 @@ public interface IOrderService {
 	void updatePayInfo(Order order, String externalOrderNo, String payMethod, String payType,
 					   BigDecimal payAmount, BigDecimal totalAmount, String state, String comment);
 
-	Object submit(Long userId, String body);
+	PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam);
 
+	/**
+	 * 直接购买某个商品
+	 * @param userId
+	 * @param productId
+	 * @param quantity
+	 * @return
+	 */
+	Order submit(Long userId,  Long addressId, Long productId, Long productAttrId, Integer quantity);
+
+	/**
+	 * 购买购物车里的商品
+	 * @param userId
+	 * @param addressId
+	 * @param cartIds
+	 * @return
+	 */
 	Order submit(Long userId, Long addressId, List<Long> cartIds);
 
 	Order confirm(Long userId, String orderNo);

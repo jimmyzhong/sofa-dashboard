@@ -1,9 +1,6 @@
 package me.izhong.shop.dto.order;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.Setter;
-import lombok.experimental.Tolerate;
 import me.izhong.shop.entity.OrderItem;
 
 import java.math.BigDecimal;
@@ -25,6 +22,7 @@ public class OrderFullDTO {
     private Integer payType;
     private Integer sourceType;
     private Integer status;
+    private String statusComment;
     private Integer orderType;
     private String deliveryCompany;
     private String deliverySn;

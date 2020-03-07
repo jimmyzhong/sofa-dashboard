@@ -15,4 +15,6 @@ public interface UserReceiveAddressDao extends JpaRepository<UserReceiveAddress,
     List<UserReceiveAddress> findByUserId(Long userId);
 
     UserReceiveAddress findByUserIdAndId(Long userId, Long id);
+
+    UserReceiveAddress findByUserIdAndIsDefault(Long userId, Integer isDefault);
 }

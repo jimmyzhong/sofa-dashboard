@@ -7,9 +7,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import me.izhong.common.domain.PageModel;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.consts.Constants;
 import me.izhong.shop.consts.OrderStateEnum;
+import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.dto.order.SubmitOrderRequest;
 import me.izhong.shop.dto.order.SubmitOrderResponse;
@@ -27,8 +30,7 @@ import me.izhong.shop.service.IOrderService;
 
 import java.time.LocalDateTime;
 
-import static me.izhong.shop.consts.OrderStateEnum.EXPIRED;
-import static me.izhong.shop.consts.OrderStateEnum.getCommentByState;
+import static me.izhong.shop.consts.OrderStateEnum.*;
 
 @Slf4j
 @Controller
@@ -42,7 +44,7 @@ public class OrderController {
     @PostMapping(value = "/submitOrder")
     @ResponseBody
 	@RequireUserLogin
-	@ApiOperation(value="下单", httpMethod = "POST")
+	@ApiOperation(value="购物车下单", httpMethod = "POST")
 	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
 			value = "登录成功后response Authorization header", required = true)
     public SubmitOrderResponse submitOrder(@ApiParam(required = true, type = "object", value = "下单请求, like: \n{" +
@@ -52,17 +54,32 @@ public class OrderController {
     	if (submitOrder.getCartItems() == null || submitOrder.getCartItems().size() == 0) {
     		throw BusinessException.build("订单内容为空");
 		}
-    	if (submitOrder.getAddressId() == null) {
-    		throw BusinessException.build("请指定送货地址");
-		}
+
     	Long userId = getCurrentUserId(request);
     	Order order = orderService.submit(userId, submitOrder.getAddressId(), submitOrder.getCartItems());
-		if (LocalDateTime.now().isAfter(order.getCreateTime().plusMinutes(30))) {
-			order.setStatus(EXPIRED.getState());
-		}
 		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
 				.status(getCommentByState(order.getStatus())).build();
     }
+
+	@PostMapping(value = "/submitOrder/goods")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="直接购买", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public SubmitOrderResponse buy(@ApiParam(required = true, type = "object", value = "下单请求, like: \n{" +
+			"  \"productId\": 0001," +
+			"  \"productAttrId\": 0001," +
+			"  \"quantity\": 2," +
+			"  \"addressId\": 0001" +
+			"}") @RequestBody SubmitOrderRequest submitOrder, HttpServletRequest request) {
+		Long userId = getCurrentUserId(request);
+		Order order = orderService.submit(userId, submitOrder.getAddressId(), submitOrder.getProductId(),
+				submitOrder.getAddressId(), submitOrder.getQuantity());
+
+		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
+				.status(getCommentByState(order.getStatus())).build();
+	}
 
     @PostMapping(value = "/confirmOrder")
     @ResponseBody
@@ -89,6 +106,16 @@ public class OrderController {
 		}
 		orderService.cancel(getCurrentUserId(request), orderRequest.getOrderNo());
     }
+
+	@PostMapping(value = "/list")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="用户订单列表", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public PageModel<OrderDTO> list(@RequestBody PageQueryParamDTO query, HttpServletRequest request) {
+		return orderService.list(getCurrentUserId(request), query);
+	}
 
 	@GetMapping(value = "/detail/{orderNo}")
 	@ResponseBody
