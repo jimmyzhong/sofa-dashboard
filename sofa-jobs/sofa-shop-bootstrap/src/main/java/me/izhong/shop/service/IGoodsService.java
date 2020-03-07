@@ -26,4 +26,6 @@ public interface IGoodsService {
 	GoodsDTO findById(Long goodsId);
 
 	GoodsDTO findGoodsWithAttrById(Long goodsId);
+
+	GoodsDTO findGoodsWithAttrById(Long goodsId, Long goodsAttrId);
 }

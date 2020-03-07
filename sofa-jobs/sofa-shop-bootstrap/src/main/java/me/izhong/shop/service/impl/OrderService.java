@@ -1,36 +1,35 @@
 package me.izhong.shop.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.exception.BusinessException;
+import me.izhong.jobs.model.ShopReceiverInfo;
+import me.izhong.shop.dao.OrderDao;
+import me.izhong.shop.dao.OrderItemDao;
+import me.izhong.shop.dao.PayRecordDao;
+import me.izhong.shop.dao.UserReceiveAddressDao;
+import me.izhong.shop.dto.CartItemParam;
+import me.izhong.shop.dto.GoodsDTO;
+import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.dto.order.OrderDTO;
+import me.izhong.shop.dto.order.OrderFullDTO;
+import me.izhong.shop.entity.*;
+import me.izhong.shop.service.IGoodsService;
+import me.izhong.shop.service.IOrderService;
+import me.izhong.shop.service.IReceiveAddressService;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
-
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
-import me.izhong.shop.dao.OrderItemDao;
-import me.izhong.shop.dto.order.OrderFullDTO;
-import me.izhong.shop.entity.OrderItem;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.alibaba.fastjson.JSONObject;
-
-import lombok.extern.slf4j.Slf4j;
-import me.izhong.common.exception.BusinessException;
-import me.izhong.jobs.model.ShopReceiverInfo;
-import me.izhong.shop.dao.OrderDao;
-import me.izhong.shop.dao.PayRecordDao;
-import me.izhong.shop.dao.UserReceiveAddressDao;
-import me.izhong.shop.dto.CartItemParam;
-import me.izhong.shop.dto.ReceiveAddressParam;
-import me.izhong.shop.entity.Order;
-import me.izhong.shop.entity.PayRecord;
-import me.izhong.shop.entity.UserReceiveAddress;
-import me.izhong.shop.service.IOrderService;
 
 import static me.izhong.shop.consts.OrderStateEnum.*;
 
@@ -47,7 +46,11 @@ public class OrderService implements IOrderService {
 	@Autowired
 	private UserReceiveAddressDao userReceiveAddressDao;
 	@Autowired
+	private IReceiveAddressService addressService;
+	@Autowired
 	private CartItemService cartItemService;
+	@Autowired
+	private IGoodsService goodsService;
 
 	@Override
 	@Transactional
@@ -64,6 +67,12 @@ public class OrderService implements IOrderService {
 	public OrderFullDTO findFullOrderByOrderNo(String orderNo) {
 		Order order = findByOrderNo(orderNo);
 		List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
+
+		if (Integer.valueOf(WAIT_PAYING.getState()).equals(order.getStatus()) &&
+				LocalDateTime.now().isAfter(order.getCreateTime().plusMinutes(30))) {
+			order.setStatus(EXPIRED.getState());
+			order = saveOrUpdate(order);
+		}
 
 		OrderFullDTO dto = new OrderFullDTO();
 		BeanUtils.copyProperties(order, dto);
@@ -127,49 +136,151 @@ public class OrderService implements IOrderService {
 	}
 
 	/**
+	 * 直接买
 	 * 1.创建订单和订单明细
 	 * 2.清空购物车
 	 * 3.减库存
 	 */
 	@Override
 	@Transactional
-	public Object submit(Long userId, String body) {
-		JSONObject json = JSONObject.parseObject(body);
-		Long cartId = json.getLong("cartId");
-        Long addressId = json.getLong("addressId");
-        UserReceiveAddress address = userReceiveAddressDao.findByUserIdAndId(userId, addressId);
-        if (address == null) {
-        	throw BusinessException.build("地址不存在");
-        }
-        BigDecimal price = new BigDecimal(0);
-        CartItemParam cartItemParam = cartItemService.findByCartId(cartId);
-        if (cartItemParam == null) {
-        	throw BusinessException.build("购物车为空");
-        }
-        return null;
-	}
-
-	@Override
-	@Transactional
-	public Order submit(Long userId, Long addressId, List<Long> cartIds) {
-		UserReceiveAddress address = userReceiveAddressDao.findByUserIdAndId(userId, addressId);
+	public Order submit(Long userId, Long addressId, Long productId, Long productAttrId, Integer quantity) {
+		UserReceiveAddress address = getUserReceiveAddress(userId, addressId);
 		if (address == null) {
 			throw BusinessException.build("地址不存在");
 		}
+
+		//TODO 预减库存
+		GoodsDTO goods = goodsService.findGoodsWithAttrById(productId, productAttrId);
+		if (goods == null) {
+			throw BusinessException.build("商品不存在");
+		}
+
+		Order order = new Order();
+		setReceiverInfoOfOrder(address, order);
+
+		OrderItem item = new OrderItem();
+		item.setProductId(goods.getId());
+		item.setQuantity(quantity); // TODO
+		if (goods.getAttributes()!=null && !goods.getAttributes().isEmpty()){
+			GoodsAttributes attributes = goods.getAttributes().get(0);
+			item.setName(attributes.getName());
+			item.setPrice(getSalePrice(attributes));
+			item.setProductAttributeId(attributes.getId());
+		} else {
+			item.setName(goods.getProductName());
+			item.setPrice(getSalePrice(goods));
+		}
+		order.setTotalAmount(item.getPrice().multiply(BigDecimal.valueOf(item.getQuantity())));
+
+		order.setUserId(userId);
+		order.setCount(1);
+		order.setOrderSn(generateOrderNo());
+		order.setDescription(item.getName() +":x"+ item.getQuantity());
+		order.setSubject(order.getOrderSn() + ", 共有品类" + order.getCount());
+		order.setStatus(WAIT_PAYING.getState());
+		order.setCreateTime(LocalDateTime.now());
+
+		order = orderDao.save(order);
+		item.setOrderId(order.getId());
+		orderItemDao.save(item);
+        return order;
+	}
+
+	/**
+	 * 购物车
+	 * @param userId
+	 * @param addressId
+	 * @param cartIds
+	 * @return
+	 */
+	@Override
+	@Transactional
+	public Order submit(Long userId, Long addressId, List<Long> cartIds) {
+		UserReceiveAddress address = getUserReceiveAddress(userId, addressId);
+		if (address == null) {
+			throw BusinessException.build("地址不存在");
+		}
+		// TODO 校验库存，能否购买，预减库存
+		Order order = new Order();
+		setReceiverInfoOfOrder(address, order);
+
 		List<CartItemParam> carts = cartItemService.list(cartIds);
 		if (carts.isEmpty()) {
 			throw BusinessException.build("找不到订单内容");
 		}
+		List<OrderItem> orderItems = generateOrderDetailFromCart(userId, carts, order);
 
-		// TODO 校验库存，能否购买，预减库存
+		order.setOrderSn(generateOrderNo());
+		order.setStatus(WAIT_PAYING.getState());
+		order.setCreateTime(LocalDateTime.now());
+
+		order = orderDao.save(order);
+		Long orderId = order.getId();
+		orderItems.forEach(o->o.setOrderId(orderId));
+		orderItemDao.saveAll(orderItems);
+		cartItemService.delete(userId,
+				carts.stream().map(CartItemParam::getId).collect(Collectors.toList()));
+		return order;
+	}
+
+	@Override
+	@Transactional
+	public Order confirm(Long userId, String orderNo) {
+		Order order = orderDao.findFirstByOrderSn(orderNo);
+		order.setStatus(CONFIRMED.getState());
+		orderDao.save(order);
+		return order;
+	}
+
+	@Override
+	@Transactional
+	public Order cancel(Long currentUserId, String orderNo) {
+		Order order = orderDao.findFirstByOrderSn(orderNo);
+		order.setStatus(CANCELED.getState());
+		// TODO 恢复预扣库存
+		orderDao.save(order);
+		return order;
+	}
+
+	public PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam) {
 		Order order = new Order();
-		order.setReceiverCity(address.getCity());
-		order.setReceiverProvince(address.getProvince());
-		order.setReceiverPostCode(address.getPostCode());
-		order.setReceiverDetailAddress(address.getDetailAddress());
-		order.setReceiverName(address.getUserName());
-		order.setReceiverPhone(address.getUserPhone());
+		order.setUserId(userId);
+		ExampleMatcher matcher = ExampleMatcher.matchingAny()
+				.withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact());
 
+		Example<Order> example = Example.of(order, matcher);
+		Sort sort = Sort.by(Sort.Direction.DESC, "orderSn");
+
+		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),
+				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
+		Page<Order> orders = orderDao.findAll(example, pageableReq);
+		List<OrderDTO> dtos = orders.getContent().stream().map(o->OrderDTO.builder()
+				.orderSn(o.getOrderSn()).id(o.getId()).count(o.getCount())
+				.totalAmount(o.getTotalAmount()).statusComment(getCommentByState(o.getStatus()))
+				.subject(o.getSubject()).description(o.getDescription()).build())
+				.collect(Collectors.toList());
+		return PageModel.instance(orders.getTotalElements(), dtos);
+	}
+
+	private BigDecimal getSalePrice(GoodsDTO goods) {
+		return goods.getPromotionPrice() != null ? goods.getPromotionPrice() : goods.getPrice();
+	}
+
+	private BigDecimal getSalePrice(GoodsAttributes attributes) {
+		return attributes.getPromotionPrice() != null ? attributes.getPromotionPrice() : attributes.getPrice();
+	}
+
+	private UserReceiveAddress getUserReceiveAddress(Long userId, Long addressId) {
+		UserReceiveAddress address = null;
+		if (addressId == null) {
+			address = addressService.defaultAddress(userId);
+		} else {
+			address = userReceiveAddressDao.findByUserIdAndId(userId, addressId);
+		}
+		return address;
+	}
+
+	private List<OrderItem> generateOrderDetailFromCart(Long userId, List<CartItemParam> carts, Order order) {
 		List<OrderItem> orderItems = new ArrayList<>();
 		BigDecimal totalAmount = BigDecimal.ZERO;
 		StringBuilder desBuilder = new StringBuilder(carts.size() * 4);
@@ -188,45 +299,24 @@ public class OrderService implements IOrderService {
 		order.setUserId(userId);
 		order.setCount(orderItems.size());
 		order.setTotalAmount(totalAmount);
-		order.setOrderSn(generateOrderNo());
-		order.setSubject(order.getOrderSn() + ", 共有品类" + order.getCount());
 		order.setDescription(desBuilder.toString());
-		order.setStatus(WAIT_PAYING.getState());
-		order.setCreateTime(LocalDateTime.now());
-
-		order = orderDao.save(order);
-		Long orderId = order.getId();
-		orderItems.forEach(o->o.setOrderId(orderId));
-		orderItemDao.saveAll(orderItems);
-
-		cartItemService.delete(userId,
-				carts.stream().map(CartItemParam::getId).collect(Collectors.toList()));
-		return order;
+		order.setSubject(order.getOrderSn() + ", 共有品类" + order.getCount());
+		return orderItems;
 	}
 
-	@Override
-	@Transactional
-	public Order confirm(Long userId, String orderNo) {
-		Order order = orderDao.findFirstByOrderSn(orderNo);
-		order.setStatus(CONFIRMED.getState());
-		// TODO 减库存
-		orderDao.save(order);
-		return order;
-	}
-
-	@Override
-	@Transactional
-	public Order cancel(Long currentUserId, String orderNo) {
-		Order order = orderDao.findFirstByOrderSn(orderNo);
-		order.setStatus(CANCELED.getState());
-		// TODO 恢复预扣库存
-		orderDao.save(order);
-		return order;
+	private void setReceiverInfoOfOrder(UserReceiveAddress address, Order order) {
+		order.setReceiverCity(address.getCity());
+		order.setReceiverProvince(address.getProvince());
+		order.setReceiverPostCode(address.getPostCode());
+		order.setReceiverDetailAddress(address.getDetailAddress());
+		order.setReceiverName(address.getUserName());
+		order.setReceiverPhone(address.getUserPhone());
 	}
 
 	private String generateOrderNo() {
 		// TODO use redis increase
 		LocalDateTime localDateTime = LocalDateTime.now();
-		return localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
+		String rand = RandomStringUtils.randomNumeric(4);
+		return localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + rand;
 	}
 }

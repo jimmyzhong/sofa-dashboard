@@ -1,8 +1,10 @@
 package me.izhong.shop.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import me.izhong.common.exception.BusinessException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,5 +68,25 @@ public class ReceiveAddressService implements IReceiveAddressService {
 		BeanUtils.copyProperties(address, param);
 		return param;
 	}
-	
+
+	@Override
+	@Transactional
+	public void setDefault(Long userId, Long id) {
+		UserReceiveAddress addr = userReceiveAddressDao.findByUserIdAndId(userId, id);
+		if (addr == null) {
+			throw BusinessException.build("收货地址不存在");
+		}
+		addr.setIsDefault(1);
+		userReceiveAddressDao.save(addr);
+	}
+
+	@Override
+	public UserReceiveAddress defaultAddress(Long userId) {
+		UserReceiveAddress addr = userReceiveAddressDao.findByUserIdAndIsDefault(userId, 1);
+		if (addr == null) {
+			throw BusinessException.build("收货地址不存在");
+		}
+		return addr;
+	}
+
 }
