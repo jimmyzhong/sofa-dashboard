@@ -6,9 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.izhong.db.mongo.util.PageRequestUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,18 +16,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.Convert;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.model.ShopGoodsCategory;
 
+@Slf4j
 @Controller
 @RequestMapping("/ext/shop/category")
 public class ShopGoodsCategoryController {
-	private static Logger logger = LoggerFactory.getLogger(ShopGoodsCategoryController.class);
+
 	private String prefix = "ext/shop/category";
 
 	@Autowired(required = false)
@@ -54,7 +54,7 @@ public class ShopGoodsCategoryController {
 			throw BusinessException.build("categoryId不能为空");
 		}
 		model.addAttribute("categoryId", categoryId);
-		return prefix+"/subCategory";
+		return prefix + "/subCategory";
 	}
 
 	@GetMapping("/queryLv1")
@@ -77,7 +77,6 @@ public class ShopGoodsCategoryController {
 
     @GetMapping("/add/{parentId}")
     public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
-		logger.info("forward categotyAdd by parentId=>{}",parentId);
 		model.addAttribute("parentId", parentId);
         return prefix + "/add";
     }
@@ -85,13 +84,12 @@ public class ShopGoodsCategoryController {
     @PostMapping("/add")
     @AjaxWrapper
     public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
-		logger.info("do add category by=>{}",goodsCategory);
+    	log.info("add category =>{}", goodsCategory);
     	shopServiceReference.goodsCategoryService.create(goodsCategory);
     }
 
 	@GetMapping("/edit/{categoryId}")
 	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
-		logger.info("edit categoryId==>{}",categoryId);
 		if (categoryId == null) {
 			throw BusinessException.build("categoryId不能为空");
 		}
@@ -99,7 +97,7 @@ public class ShopGoodsCategoryController {
 		if (goodsCategory == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
 		}
-		logger.info("goodsCategoryDetail =>{}",goodsCategory);
+		log.info("goodsCategoryDetail =>{}", goodsCategory);
 		model.addAttribute("goodsCategory", goodsCategory);
 		return prefix + "/edit";
 	}
@@ -111,7 +109,7 @@ public class ShopGoodsCategoryController {
 		if (obj == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", goodsCategory.getId()));
 		}
-		shopServiceReference.goodsCategoryService.edit(obj);
+		shopServiceReference.goodsCategoryService.edit(goodsCategory);
 	}
 
 	@PostMapping("/edit/showStatus")

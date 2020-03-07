@@ -9,6 +9,6 @@ public class CaptchaException extends BusinessException {
     private static final long serialVersionUID = 1L;
 
     public CaptchaException() {
-        super(400, null);
+        super(400, "验证码错误");
     }
 }

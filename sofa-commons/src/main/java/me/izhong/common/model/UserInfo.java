@@ -12,6 +12,8 @@ import java.util.*;
 @Setter
 public class UserInfo implements Serializable {
 
+    static final long serialVersionUID = 1L;
+
     private Long userId;
     private String loginName;
     private String loginIp;
@@ -33,6 +35,11 @@ public class UserInfo implements Serializable {
     @JSONField(serialize = false,deserialize = false)
     private boolean hasAllDeptPerm = false;
 
+    @JSONField(serialize = false,deserialize = false)
+    private Set<String> roles;
+
+    @JSONField(serialize = false,deserialize = false)
+    private Set<String> perms;
 
     public UserInfo() {
 

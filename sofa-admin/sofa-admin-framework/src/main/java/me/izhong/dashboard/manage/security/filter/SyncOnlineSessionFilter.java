@@ -26,7 +26,7 @@ public class SyncOnlineSessionFilter extends PathMatchingFilter {
         // 如果session stop了 也不同步
         // session停止时间，如果stopTimestamp不为null，则代表已停止
         if (session != null && session.getUserId() != null && session.getStopTimestamp() == null) {
-            onlineSessionDAO.syncToDb(session);
+            //onlineSessionDAO.syncToDb(session);
         }
         return true;
     }

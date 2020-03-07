@@ -1,11 +1,9 @@
 package me.izhong.dashboard.manage.security.filter;
 
-import me.izhong.common.model.UserInfo;
-import me.izhong.dashboard.manage.constants.ShiroConstants;
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.security.session.OnlineSessionDAO;
-import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
@@ -17,6 +15,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class OnlineSessionFilter extends AccessControlFilter {
     /**
      * 强制退出后重定向的地址
@@ -40,22 +39,9 @@ public class OnlineSessionFilter extends AccessControlFilter {
         Session session = onlineSessionDAO.readSession(subject.getSession().getId());
         if (session != null && session instanceof OnlineSession) {
             OnlineSession onlineSession = (OnlineSession) session;
-            request.setAttribute(ShiroConstants.ONLINE_SESSION, onlineSession);
-            // 把user对象设置进去
-            boolean isGuest = onlineSession.getUserId() == null || onlineSession.getUserId() == 0L;
-            if (isGuest == true) {
-                UserInfo user = UserInfoContextHelper.getLoginUser();
-                if (user != null) {
-                    onlineSession.setUserId(user.getUserId());
-                    onlineSession.setLoginName(user.getLoginName());
-                    onlineSession.setAvatar(user.getAvatar());
-                    onlineSession.setDeptName(user.getDeptName());
-                    onlineSession.markAttributeChanged();
-                }
-            }
-
             //当前对象下线
             if (onlineSession.getStatus() == SysUserOnline.OnlineStatus.off_line) {
+                log.info("用户{}被强制下线",onlineSession.getLoginName());
                 return false;
             }
         }

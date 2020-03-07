@@ -4,24 +4,22 @@ import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.security.service.SysShiroService;
 import me.izhong.dashboard.manage.factory.AsyncManager;
 import me.izhong.dashboard.manage.factory.AsyncFactory;
+import me.izhong.dashboard.manage.service.SysUserOnlineService;
+import me.izhong.dashboard.manage.util.SerializeUtil;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
+import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 
 /**
  * 针对自定义的ShiroSession的db操作
  */
-public class OnlineSessionDAO extends EnterpriseCacheSessionDAO {
-    /**
-     * 同步session到数据库的周期 单位为毫秒（默认1分钟）
-     */
-    @Value("${shiro.session.dbSyncPeriod:1}")
-    private int dbSyncPeriod;
+public class OnlineSessionDAO extends AbstractSessionDAO {
 
     /**
      * 上次同步数据库的时间戳
@@ -35,60 +33,34 @@ public class OnlineSessionDAO extends EnterpriseCacheSessionDAO {
         super();
     }
 
-    /**
-     * 根据会话ID获取会话
-     *
-     * @param sessionId 会话ID
-     * @return ShiroSession
-     */
     @Override
     protected Session doReadSession(Serializable sessionId) {
         return sysShiroService.getSession(sessionId);
     }
 
     @Override
-    public void update(Session session) throws UnknownSessionException {
-        super.update(session);
+    public Collection<Session> getActiveSessions() {
+        return sysShiroService.getActiveSessions();
     }
 
-    /**
-     * 更新会话；如更新会话最后访问时间/停止会话/设置超时时间/设置移除属性等会调用
-     */
-    public void syncToDb(OnlineSession onlineSession) {
-        Date lastSyncTimestamp = (Date) onlineSession.getAttribute(LAST_SYNC_DB_TIMESTAMP);
-        if (lastSyncTimestamp != null) {
-            boolean needSync = true;
-            long deltaTime = onlineSession.getLastAccessTime().getTime() - lastSyncTimestamp.getTime();
-            if (deltaTime < dbSyncPeriod * 60 * 1000) {
-                // 时间差不足 无需同步
-                needSync = false;
-            }
-            // isGuest = true 访客
-            boolean isGuest = onlineSession.getUserId() == null || onlineSession.getUserId() == 0L;
+    @Override
+    protected Serializable doCreate(Session session) {
+        Serializable sessionId = this.generateSessionId(session);
+        this.assignSessionId(session, sessionId);
+        sysShiroService.saveSession(session);
+        return sessionId;
+    }
 
-            // session 数据变更了 同步
-            if (isGuest == false && onlineSession.isAttributeChanged()) {
-                needSync = true;
-            }
-
-            if (needSync == false) {
-                return;
-            }
-        }
-        // 更新上次同步数据库时间
-        onlineSession.setAttribute(LAST_SYNC_DB_TIMESTAMP, onlineSession.getLastAccessTime());
-        // 更新完后 重置标识
-        if (onlineSession.isAttributeChanged()) {
-            onlineSession.resetAttributeChanged();
-        }
-        AsyncManager.me().execute(AsyncFactory.syncSessionToDb(onlineSession));
+    @Override
+    public void update(Session session) throws UnknownSessionException {
+        sysShiroService.saveSession(session);
     }
 
     /**
      * 当会话过期/停止（如用户退出时）属性等会调用
      */
     @Override
-    protected void doDelete(Session session) {
+    public void delete(Session session) {
         OnlineSession onlineSession = (OnlineSession) session;
         if (null == onlineSession) {
             return;
@@ -96,4 +68,5 @@ public class OnlineSessionDAO extends EnterpriseCacheSessionDAO {
         onlineSession.setStatus(SysUserOnline.OnlineStatus.off_line);
         sysShiroService.deleteSession(onlineSession);
     }
+
 }

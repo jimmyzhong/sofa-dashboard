@@ -19,6 +19,7 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	private GoodsCategoryDao goodsCategoryDao;
 
 	@Override
+	@Transactional
 	public GoodsCategory saveOrUpdate(GoodsCategory goodsCategory) {
 		return goodsCategoryDao.save(goodsCategory);
 	}
@@ -50,6 +51,7 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	}
 
 	@Override
+	@Transactional
 	public void deleteById(Long categoryId) {
 		goodsCategoryDao.deleteById(categoryId);
 	}

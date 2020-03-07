@@ -17,3 +17,4 @@
 {"_id":{"$oid":"5d557418b61bb0ceb20d4e40"},"collectionName":"SysDictType|dictId","seqId":1000}
 {"_id":{"$oid":"5dd8cd13a89f5e0fa5945105"},"collectionName":"SysRole|roleId","seqId":1000}
 {"_id":{"$oid":"5ddce743771878189a3982f2"},"collectionName":"SysDept|deptId","seqId":1000}
+{"_id":{"$oid":"5ddce743771878189a3982f2"},"collectionName":"SysNotice|noticeId","seqId":1000}

@@ -4,11 +4,8 @@ import eu.bitwalker.useragentutils.UserAgent;
 import me.izhong.dashboard.manage.constants.SystemConstants;
 import me.izhong.dashboard.manage.entity.SysLoginInfo;
 import me.izhong.dashboard.manage.entity.SysOperLog;
-import me.izhong.dashboard.manage.entity.SysUserOnline;
-import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.service.SysLoginInfoService;
 import me.izhong.dashboard.manage.service.SysOperLogService;
-import me.izhong.dashboard.manage.service.SysUserOnlineService;
 import me.izhong.dashboard.manage.util.IpUtil;
 import me.izhong.dashboard.manage.util.LogUtil;
 import me.izhong.dashboard.manage.util.ServletUtil;
@@ -22,35 +19,6 @@ import java.util.TimerTask;
 
 public class AsyncFactory {
     private static final Logger sys_user_logger = LoggerFactory.getLogger("sys-user");
-
-    /**
-     * 同步session到数据库
-     *
-     * @param session 在线用户会话
-     * @return 任务task
-     */
-    public static TimerTask syncSessionToDb(final OnlineSession session) {
-        return new TimerTask() {
-            @Override
-            public void run() {
-                SysUserOnline online = new SysUserOnline();
-                online.setSessionId(String.valueOf(session.getId()));
-                online.setDeptName(session.getDeptName());
-                online.setLoginName(session.getLoginName());
-                online.setStartTimestamp(session.getStartTimestamp());
-                online.setLastAccessTime(session.getLastAccessTime());
-                online.setExpireTime(session.getTimeout());
-                online.setIpAddr(session.getHost());
-                online.setLoginLocation(IpUtil.getRealAddressByIP(session.getHost()));
-                online.setBrowser(session.getBrowser());
-                online.setOs(session.getOs());
-                online.setStatus(session.getStatus());
-                SpringUtil.getBean(SysUserOnlineService.class).saveOnline(online);
-
-            }
-        };
-    }
-
     /**
      * 操作日志记录
      *

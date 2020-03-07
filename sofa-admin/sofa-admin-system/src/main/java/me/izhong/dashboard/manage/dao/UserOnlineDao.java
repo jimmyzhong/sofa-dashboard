@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserOnlineDao extends MongoRepository<SysUserOnline, Long> {
+public interface UserOnlineDao extends MongoRepository<SysUserOnline, String> {
 
     SysUserOnline findBySessionId(String sessionId);
 

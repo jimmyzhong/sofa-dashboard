@@ -1,28 +1,28 @@
 package me.izhong.dashboard.manage.entity;
 
-import me.izhong.db.common.domain.TimedBasedEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import me.izhong.common.annotation.PrimaryId;
 import me.izhong.common.annotation.Search;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = false)
 @Document(collection = "sys_user_online")
 @Data
-public class SysUserOnline extends TimedBasedEntity {
+public class SysUserOnline implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
      * 用户会话id
      */
-    @PrimaryId
-    @Indexed(unique = true)
+    @Id
     private String sessionId;
 
     /**
@@ -80,6 +80,7 @@ public class SysUserOnline extends TimedBasedEntity {
      */
     private OnlineStatus status = OnlineStatus.on_line;
 
+    private byte[] session;
     /**
      * 备份的当前用户会话
      */

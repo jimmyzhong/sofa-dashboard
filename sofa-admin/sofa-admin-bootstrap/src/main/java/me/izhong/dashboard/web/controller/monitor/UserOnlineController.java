@@ -1,6 +1,7 @@
 package me.izhong.dashboard.web.controller.monitor;
 
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.dashboard.manage.security.service.SysShiroService;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.dashboard.manage.annotation.Log;
@@ -9,7 +10,6 @@ import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.security.session.OnlineSession;
-import me.izhong.dashboard.manage.security.session.OnlineSessionDAO;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -32,8 +32,7 @@ public class UserOnlineController {
     private SysUserOnlineService sysUserOnlineService;
 
     @Autowired
-    private OnlineSessionDAO onlineSessionDAO;
-
+    private SysShiroService sysShiroService;
 
     @RequiresPermissions(PermissionConstants.UserOnline.VIEW)
     @GetMapping
@@ -64,22 +63,26 @@ public class UserOnlineController {
     @PostMapping("/forceLogout")
     @AjaxWrapper
     public boolean forceLogout(String sessionId) {
-        SysUserOnline online = sysUserOnlineService.selectByPId(sessionId);
         if (sessionId.equals(UserInfoContextHelper.getSessionId())) {
             //throw BusinessException.build("当前登陆用户无法强退");
         }
-        if (online == null) {
-            throw BusinessException.build("用户已下线");
+
+        SysUserOnline sysUserOnline = sysUserOnlineService.selectByPId(sessionId);
+        if(sysUserOnline !=null){
+            sysUserOnline.setStatus(SysUserOnline.OnlineStatus.off_line);
+            sysUserOnlineService.saveOnline(sysUserOnline);
         }
 
-        OnlineSession onlineSession = (OnlineSession) onlineSessionDAO.readSession(online.getSessionId());
-        if (onlineSession == null) {
-            throw BusinessException.build("用户已下线");
+        OnlineSession session = (OnlineSession) sysShiroService.getSession(sessionId);
+        if(session != null) {
+            session.setStatus(SysUserOnline.OnlineStatus.off_line);
+            sysShiroService.saveSession(session);
         }
-        onlineSession.setStatus(SysUserOnline.OnlineStatus.off_line);
-        onlineSessionDAO.update(onlineSession);
-        online.setStatus(SysUserOnline.OnlineStatus.off_line);
-        sysUserOnlineService.saveOnline(online);
+
+//        if (session == null) {
+//            throw BusinessException.build("用户已下线");
+//        }
+
         return true;
     }
 }

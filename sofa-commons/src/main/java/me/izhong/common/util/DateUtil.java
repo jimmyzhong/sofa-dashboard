@@ -80,12 +80,9 @@ public class DateUtil extends org.apache.commons.lang3.time.DateUtils {
         return DateFormatUtils.format(now, "yyyy/MM/dd");
     }
 
-    /**
-     * 日期路径 即年/月/日 如20180808
-     */
     public static final String dateTime() {
         Date now = new Date();
-        return DateFormatUtils.format(now, "yyyyMMdd");
+        return DateFormatUtils.format(now, "yyyy-MM-dd HH:mm:ss");
     }
 
     /**

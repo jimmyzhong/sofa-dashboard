@@ -1,7 +1,4 @@
 spring:
-#  jackson:
-#    date-format: yyyy-MM-dd HH:mm:ss
-#    time-zone: GMT+8
   main:
     banner-mode: "OFF"
   data:
@@ -81,15 +78,9 @@ shiro:
     maxAge: 3
   session:
     # Session超时时间，-1代表永不过期（默认30分钟）
-    expireTime: 60
-    # 同步session到数据库的周期（默认1分钟）
-    dbSyncPeriod: 1
+    expireTime: 30
     # 相隔多久检查一次session的有效性，默认就是10分钟
     validationInterval: 1
-    # 同一个用户最大会话数，比如2的意思是同一个账号允许最多同时两个人登录（默认-1不限制）
-    maxSession: -1
-    # 踢出之前登录的/之后登录的用户，默认踢出之前登录的用户
-    kickoutAfter: false
 
 # 防止XSS攻击
 xss:
