@@ -29,7 +29,6 @@ import me.izhong.shop.dao.GoodsDao;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
-import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IGoodsCategoryService;
 import me.izhong.shop.service.IGoodsService;
 
@@ -126,7 +125,7 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	}
 
     private void removeWhiteSpaceParam(Goods goods) {
-        Field[] fields = User.class.getDeclaredFields();
+        Field[] fields = Goods.class.getDeclaredFields();
         try {
             for (Field field : fields) {
                 if (field.getType() == String.class) {
