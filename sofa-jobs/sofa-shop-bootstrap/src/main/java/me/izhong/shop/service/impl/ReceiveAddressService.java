@@ -41,10 +41,11 @@ public class ReceiveAddressService implements IReceiveAddressService {
 	}
 
 	@Override
-	public void update(Long userId, ReceiveAddressParam param) {
+	public void update(Long userId, Long addressId, ReceiveAddressParam param) {
 		UserReceiveAddress address = new UserReceiveAddress();
 		BeanUtils.copyProperties(param, address);
 		address.setUserId(userId);
+		address.setId(addressId);
 		userReceiveAddressDao.save(address);
 	}
 

@@ -20,6 +20,8 @@ import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.dto.ReceiveAddressParam;
 import me.izhong.shop.service.IReceiveAddressService;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/api/address")
 public class UserReceiveAddressController {
@@ -56,9 +58,10 @@ public class UserReceiveAddressController {
 	@ApiOperation(value="更新收货地址", httpMethod = "POST")
 	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
 			value = "登录成功后response Authorization header", required = true)
-	public void update(@RequestBody ReceiveAddressParam param, HttpServletRequest request) {
+	public void update(@PathVariable("id") Long addressId,
+					   @RequestBody ReceiveAddressParam param, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
-    	receiveAddressService.update(userId, param);
+    	receiveAddressService.update(userId, addressId, param);
 	}
 
     @GetMapping("/list")
@@ -67,16 +70,20 @@ public class UserReceiveAddressController {
 	@ApiOperation(value="当前登录用户的收货地址", httpMethod = "GET")
 	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
 			value = "登录成功后response Authorization header", required = true)
-    public void list(HttpServletRequest request) {
+    public List<ReceiveAddressParam> list(HttpServletRequest request) {
     	Long userId = getCurrentUserId(request);
-    	receiveAddressService.list(userId);
+    	return receiveAddressService.list(userId);
     }
 
     @GetMapping(value = "/{id}")
     @ResponseBody
-    public void detail(@PathVariable Long id, HttpServletRequest request) {
+	@RequireUserLogin
+	@ApiOperation(value="收货地址详情", httpMethod = "GET")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+    public ReceiveAddressParam detail(@PathVariable Long id, HttpServletRequest request) {
     	Long userId = getCurrentUserId(request);
-    	receiveAddressService.detail(userId, id);
+    	return receiveAddressService.detail(userId, id);
     }
 
     /**

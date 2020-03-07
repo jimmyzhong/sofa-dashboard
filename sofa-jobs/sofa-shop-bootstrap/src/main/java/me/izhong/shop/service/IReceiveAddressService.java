@@ -11,7 +11,7 @@ public interface IReceiveAddressService {
 
 	void delete(Long userId, Long id);
 
-	void update(Long userId, ReceiveAddressParam param);
+	void update(Long userId, Long addressId, ReceiveAddressParam param);
 
 	List<ReceiveAddressParam> list(Long userId);
 
