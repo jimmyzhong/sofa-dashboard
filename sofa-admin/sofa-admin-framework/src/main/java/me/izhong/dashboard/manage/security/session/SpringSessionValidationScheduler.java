@@ -87,8 +87,6 @@ public class SpringSessionValidationScheduler implements SessionValidationSchedu
                 }
             }, 1000, sessionValidationInterval * 60 * 1000, TimeUnit.MILLISECONDS);
 
-            this.enabled = true;
-
             if (log.isDebugEnabled()) {
                 log.debug("Session validation job successfully scheduled with Spring Scheduler.");
             }

@@ -1,6 +1,11 @@
 package me.izhong.dashboard.manage.security;
 
+import eu.bitwalker.useragentutils.UserAgent;
+import me.izhong.dashboard.manage.security.service.SysShiroService;
+import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.service.SysUserService;
+import me.izhong.dashboard.manage.util.IpUtil;
+import me.izhong.dashboard.manage.util.ServletUtil;
 import me.izhong.dashboard.manage.util.SpringUtil;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.model.UserInfo;
@@ -24,6 +29,7 @@ import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -32,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,26 +62,38 @@ public class UserRealm extends AuthorizingRealm {
 
     @Autowired
     private SysDeptService sysDeptService;
-
+    @Autowired
+    private SysShiroService shiroService;
     /**
      * 授权
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection arg0) {
         UserInfo user = UserInfoContextHelper.getLoginUser();
-        // 角色列表
-        Set<String> roles = new HashSet<String>();
-        // 菜单，按钮权限列表
-        Set<String> menus = new HashSet<String>();
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-        roles = sysRoleService.selectRoleKeys(user.getUserId());
-        menus = sysMenuService.selectPermsByUserId(user.getUserId());
+
+        // 角色列表
+        Set<String> roles;
+        // 菜单，按钮权限列表
+        Set<String> menus;
+        if(user.getPerms() !=null) {
+            roles = user.getRoles();
+            menus = user.getPerms();
+            log.debug("用户[{}]从session加载权限成功", UserInfoContextHelper.getCurrentLoginName());
+        } else {
+            roles = sysRoleService.selectRoleKeys(user.getUserId());
+            menus = sysMenuService.selectPermsByUserId(user.getUserId());
+            user.setRoles(roles);
+            user.setPerms(menus);
+            UserInfoContextHelper.setUser(user);
+            log.debug("用户[{}]从数据库加载权限成功", UserInfoContextHelper.getCurrentLoginName());
+        }
+
         // 角色加入AuthorizationInfo认证对象
         info.setRoles(roles);
         // 权限加入AuthorizationInfo认证对象
         info.setStringPermissions(menus);
 
-        log.info("用户[{}]从数据库加载权限成功", UserInfoContextHelper.getCurrentLoginName());
         return info;
     }
 
@@ -116,6 +135,8 @@ public class UserRealm extends AuthorizingRealm {
             loginUser.setAvatar(avatarUrl + user.getAvatar());
         }
 
+        log.info("用户[{}]登陆成功", user.getLoginName());
+
         SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(loginUser, password, getName());
         setUserScope(loginUser);
         return info;
@@ -149,6 +170,27 @@ public class UserRealm extends AuthorizingRealm {
             log.info("用户没有登录");
             return;
         }
+
+        Subject subject = SecurityUtils.getSubject();
+        Session session = shiroService.getSession(subject.getSession().getId());
+        OnlineSession onlineSession = (OnlineSession)session;
+
+        HttpServletRequest request = ServletUtil.getRequest();
+        if (request != null) {
+            UserAgent userAgent = UserAgent.parseUserAgentString(ServletUtil.getRequest().getHeader("User-Agent"));
+            // 获取客户端操作系统
+            String os = userAgent.getOperatingSystem().getName();
+            // 获取客户端浏览器
+            String browser = userAgent.getBrowser().getName();
+            onlineSession.setHost(IpUtil.getIpAddr(request));
+            onlineSession.setBrowser(browser);
+            onlineSession.setOs(os);
+        }
+        onlineSession.setLoginName(loginUser.getLoginName());
+        onlineSession.setUserId(loginUser.getUserId());
+        onlineSession.setDeptName(loginUser.getDeptName());
+        onlineSession.setAvatar(loginUser.getAvatar());
+        shiroService.saveSession(session);
 
         List<SysRole> rs = sysRoleService.selectRolesByUserId(loginUser.getUserId());
         // 实体名称 -> deptIds

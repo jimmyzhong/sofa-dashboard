@@ -10,20 +10,16 @@ import me.izhong.dashboard.manage.security.session.OnlineSessionFactory;
 import me.izhong.dashboard.manage.security.session.OnlineWebSessionManager;
 import me.izhong.dashboard.manage.security.session.SpringSessionValidationScheduler;
 import me.izhong.dashboard.manage.security.filter.CaptchaValidateFilter;
-import me.izhong.dashboard.manage.security.filter.KickoutSessionFilter;
 import me.izhong.dashboard.manage.security.filter.OnlineSessionFilter;
 import me.izhong.dashboard.manage.util.SpringUtil;
-import org.apache.commons.io.IOUtils;
-import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
-import org.apache.shiro.config.ConfigurationException;
-import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,16 +44,16 @@ public class ShiroConfig {
     private int expireTime;
 
     // 相隔多久检查一次session的有效性，单位毫秒，默认就是10分钟
-    @Value("${shiro.session.validationInterval}")
-    private int validationInterval;
+//    @Value("${shiro.session.validationInterval}")
+//    private int validationInterval;
 
-    // 同一个用户最大会话数
-    @Value("${shiro.session.maxSession}")
-    private int maxSession;
+//    // 同一个用户最大会话数
+//    @Value("${shiro.session.maxSession}")
+//    private int maxSession;
 
     // 踢出之前登录的/之后登录的用户，默认踢出之前登录的用户
-    @Value("${shiro.session.kickoutAfter}")
-    private boolean kickoutAfter;
+//    @Value("${shiro.session.kickoutAfter}")
+//    private boolean kickoutAfter;
 
     // 验证码开关
     @Value("${shiro.user.captchaEnabled}")
@@ -91,51 +87,12 @@ public class ShiroConfig {
     @Value("${shiro.user.unauthorizedUrl}")
     private String unauthorizedUrl;
 
-    @Autowired
-    private SpringSessionValidationScheduler springSessionValidationScheduler;
-
-    /**
-     * 缓存管理器 使用Ehcache实现
-     */
-    @Bean
-    public EhCacheManager getEhCacheManager() {
-        net.sf.ehcache.CacheManager cacheManager = net.sf.ehcache.CacheManager.getCacheManager("dashboard");
-        EhCacheManager em = new EhCacheManager();
-        if (cacheManager == null) {
-            em.setCacheManager(new net.sf.ehcache.CacheManager(getCacheManagerConfigFileInputStream()));
-            return em;
-        } else {
-            em.setCacheManager(cacheManager);
-            return em;
-        }
-    }
-
-    /**
-     * 返回配置文件流 避免ehcache配置文件一直被占用，无法完全销毁项目重新部署
-     */
-    protected InputStream getCacheManagerConfigFileInputStream() {
-        String configFile = "classpath:ehcache/ehcache-shiro.xml";
-        InputStream inputStream = null;
-        try {
-            inputStream = ResourceUtils.getInputStreamForPath(configFile);
-            byte[] b = IOUtils.toByteArray(inputStream);
-            InputStream in = new ByteArrayInputStream(b);
-            return in;
-        } catch (IOException e) {
-            throw new ConfigurationException(
-                    "Unable to obtain input stream for cacheManagerConfigFile [" + configFile + "]", e);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-        }
-    }
-
     /**
      * 自定义Realm
      */
     @Bean
-    public UserRealm userRealm(EhCacheManager cacheManager) {
+    public UserRealm userRealm() {
         UserRealm userRealm = new UserRealm();
-        userRealm.setCacheManager(cacheManager);
         return userRealm;
     }
 
@@ -161,10 +118,8 @@ public class ShiroConfig {
      * 会话管理器
      */
     @Bean
-    public OnlineWebSessionManager sessionManager() {
+    public DefaultWebSessionManager sessionManager() {
         OnlineWebSessionManager manager = new OnlineWebSessionManager();
-        // 加入缓存管理器
-        manager.setCacheManager(getEhCacheManager());
         // 删除过期的session
         manager.setDeleteInvalidSessions(true);
         // 设置全局session超时时间
@@ -192,8 +147,6 @@ public class ShiroConfig {
         securityManager.setRealm(userRealm);
         // 记住我
         securityManager.setRememberMeManager(rememberMeManager());
-        // 注入缓存管理器;
-        securityManager.setCacheManager(getEhCacheManager());
         // session管理器
         securityManager.setSessionManager(sessionManager());
         return securityManager;
@@ -204,7 +157,6 @@ public class ShiroConfig {
      */
     public LogoutFilter logoutFilter() {
         LogoutFilter logoutFilter = new LogoutFilter();
-        logoutFilter.setCacheManager(getEhCacheManager());
         logoutFilter.setLoginUrl(loginUrl);
         return logoutFilter;
     }
@@ -249,13 +201,12 @@ public class ShiroConfig {
         filters.put("onlineSession", onlineSessionFilter());
         filters.put("syncOnlineSession", syncOnlineSessionFilter());
         filters.put("captchaValidate", captchaValidateFilter());
-        filters.put("kickout", kickoutSessionFilter());
         // 注销成功，则跳转到指定页面
         filters.put("logout", logoutFilter());
         shiroFilterFactoryBean.setFilters(filters);
 
         // 所有请求需要认证
-        filterChainDefinitionMap.put("/**", "user,kickout,onlineSession,syncOnlineSession");
+        filterChainDefinitionMap.put("/**", "user,onlineSession,syncOnlineSession");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
 
         return shiroFilterFactoryBean;
@@ -311,22 +262,6 @@ public class ShiroConfig {
         cookieRememberMeManager.setCookie(rememberMeCookie());
         cookieRememberMeManager.setCipherKey(Base64.decode("fCq+/xW488hMTCE+cmJ3FF=="));
         return cookieRememberMeManager;
-    }
-
-    /**
-     * 同一个用户多设备登录限制
-     */
-    public KickoutSessionFilter kickoutSessionFilter() {
-        KickoutSessionFilter kickoutSessionFilter = new KickoutSessionFilter();
-        kickoutSessionFilter.setCacheManager(getEhCacheManager());
-        kickoutSessionFilter.setSessionManager(sessionManager());
-        // 同一个用户最大的会话数，默认-1无限制；比如2的意思是同一个用户允许最多同时两个人登录
-        kickoutSessionFilter.setMaxSession(maxSession);
-        // 是否踢出后来登录的，默认是false；即后者登录的用户踢出前者登录的用户；踢出顺序
-        kickoutSessionFilter.setKickoutAfter(kickoutAfter);
-        // 被踢出后重定向到的地址；
-        kickoutSessionFilter.setKickoutUrl("/login?kickout=1");
-        return kickoutSessionFilter;
     }
 
     /**

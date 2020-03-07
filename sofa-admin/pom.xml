@@ -74,13 +74,6 @@
                 <version>${shiro.version}</version>
             </dependency>
 
-            <!-- Shiro使用EhCache缓存框架 -->
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-ehcache</artifactId>
-                <version>${shiro.version}</version>
-            </dependency>
-
             <!-- thymeleaf模板引擎和shiro框架的整合 -->
             <dependency>
                 <groupId>com.github.theborakompanioni</groupId>

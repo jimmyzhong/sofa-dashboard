@@ -1,5 +1,6 @@
 package me.izhong.dashboard.manage.security.session;
 
+import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.constants.ShiroConstants;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
@@ -11,6 +12,8 @@ import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.DefaultSessionKey;
 import org.apache.shiro.session.mgt.SessionKey;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +38,15 @@ public class OnlineWebSessionManager extends DefaultWebSessionManager {
             OnlineSession s = getOnlineSession(sessionKey);
             s.markAttributeChanged();
         }
+//        if(DefaultSubjectContext.PRINCIPALS_SESSION_KEY.equals(attributeKey)) {
+//            OnlineSession s = getOnlineSession(sessionKey);
+//            if(s.getUserId() == null) {
+//                UserInfo userInfo = (UserInfo)((SimplePrincipalCollection)value).getPrimaryPrincipal();
+//                log.info("设置userInfo {} set {}={}",sessionKey.getSessionId(),attributeKey,value);
+//                s.setUserId(userInfo.getUserId());
+//                s.setLoginName(userInfo.getLoginName());
+//            }
+//        }
     }
 
     private boolean needMarkAttributeChanged(Object attributeKey) {
@@ -66,16 +78,9 @@ public class OnlineWebSessionManager extends DefaultWebSessionManager {
         return removed;
     }
 
-    public OnlineSession getOnlineSession(SessionKey sessionKey)
-    {
-        OnlineSession session = null;
-        Object obj = doGetSession(sessionKey);
-        if (obj != null)
-        {
-            session = new OnlineSession();
-            BeanUtils.copyProperties(obj,session);
-        }
-        return session;
+    public OnlineSession getOnlineSession(SessionKey sessionKey) {
+        Session obj = doGetSession(sessionKey);
+        return (OnlineSession)obj;
     }
 
     /**

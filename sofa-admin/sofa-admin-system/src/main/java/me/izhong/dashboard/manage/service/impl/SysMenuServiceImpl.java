@@ -107,6 +107,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
 
     @Override
     public Set<String> selectPermsByUserId(Long userId) {
+        //查询用户所有的权限 String格式
         List<SysMenu> perms = doSelectPermsByUserId(userId, false);
         Set<String> permsSet = new HashSet<>();
         for (SysMenu perm : perms) {
@@ -332,7 +333,6 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
                 foreignField("menuId").
                 as("sys_role_menu");
         aggregationOperations.add(lookupOperation);
-
 
         String sys_user_role_prefix = "sys_user_role.";
         LookupOperation lookupOperationUserMenu = LookupOperation.newLookup().

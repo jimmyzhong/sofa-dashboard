@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Component
 public class PasswordService {
 
-    @Autowired
+    @Autowired(required = false)
     private CacheManager cacheManager;
 
     private Cache<String, AtomicInteger> loginRecordCache;
@@ -33,19 +33,20 @@ public class PasswordService {
 
     @PostConstruct
     public void init() {
-        loginRecordCache = cacheManager.getCache(ShiroConstants.LOGINRECORDCACHE);
+        if(cacheManager != null)
+            loginRecordCache = cacheManager.getCache(ShiroConstants.LOGINRECORDCACHE);
     }
 
 
     public void validate(SysUser user, String password) {
         String loginName = user.getLoginName();
+        AtomicInteger retryCount = new AtomicInteger(0);
+        //AtomicInteger retryCount = loginRecordCache.get(loginName);
 
-        AtomicInteger retryCount = loginRecordCache.get(loginName);
-
-        if (retryCount == null) {
-            retryCount = new AtomicInteger(0);
-            loginRecordCache.put(loginName, retryCount);
-        }
+//        if (retryCount == null) {
+//            retryCount = new AtomicInteger(0);
+//            loginRecordCache.put(loginName, retryCount);
+//        }
         if (retryCount.incrementAndGet() > Integer.valueOf(maxRetryCount).intValue()) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.exceed", maxRetryCount)));
             throw new UserPasswordRetryLimitExceedException(Integer.valueOf(maxRetryCount).intValue());
@@ -53,7 +54,7 @@ public class PasswordService {
 
         if (!matches(user, password)) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.retry.limit.count", retryCount)));
-            loginRecordCache.put(loginName, retryCount);
+          //  loginRecordCache.put(loginName, retryCount);
             throw new UserPasswordNotMatchException();
         } else {
             clearLoginRecordCache(loginName);
@@ -77,11 +78,11 @@ public class PasswordService {
     }
 
     public void clearLoginRecordCache(String username) {
-        loginRecordCache.remove(username);
+        //loginRecordCache.remove(username);
     }
 
 
     public void unlock(String loginName){
-        loginRecordCache.remove(loginName);
+        //loginRecordCache.remove(loginName);
     }
 }

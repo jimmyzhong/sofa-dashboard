@@ -2,6 +2,7 @@ package me.izhong.dashboard.manage.security.session;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import org.apache.shiro.session.mgt.SimpleSession;
 
@@ -10,6 +11,7 @@ import org.apache.shiro.session.mgt.SimpleSession;
  */
 @Getter
 @Setter
+@ToString
 public class OnlineSession extends SimpleSession {
     private static final long serialVersionUID = 1L;
 

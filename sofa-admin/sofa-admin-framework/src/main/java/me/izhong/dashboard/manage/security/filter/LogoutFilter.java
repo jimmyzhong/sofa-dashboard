@@ -1,5 +1,6 @@
 package me.izhong.dashboard.manage.security.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.constants.ShiroConstants;
 import me.izhong.dashboard.manage.constants.SystemConstants;
@@ -12,19 +13,14 @@ import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.session.SessionException;
 import org.apache.shiro.subject.Subject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.Serializable;
 import java.util.Deque;
 
-/**
- * 退出过滤器
- */
+@Slf4j
 public class LogoutFilter extends org.apache.shiro.web.filter.authc.LogoutFilter {
-    private static final Logger log = LoggerFactory.getLogger(LogoutFilter.class);
 
     /**
      * 退出后重定向的地址
@@ -53,7 +49,8 @@ public class LogoutFilter extends org.apache.shiro.web.filter.authc.LogoutFilter
                     // 记录用户退出日志
                     AsyncManager.me().execute(AsyncFactory.recordLoginInfo(loginName, SystemConstants.LOGOUT, MessageUtil.message("user.logout.success")));
                     // 清理缓存
-                    cache.remove(loginName);
+                    if(cache != null)
+                        cache.remove(loginName);
                 }
                 // 退出登录
                 subject.logout();

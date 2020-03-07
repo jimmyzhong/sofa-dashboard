@@ -27,7 +27,7 @@ import java.util.Arrays;
 @SpringBootApplication(exclude = {JacksonAutoConfiguration.class,
         DataSourceAutoConfiguration.class})
 //,MongoAutoConfiguration.class
-@EnableCaching
+//@EnableCaching
 @ComponentScan(value = {"me.izhong"})
 @Slf4j
 public class DashboardMainApplication {
