@@ -84,7 +84,7 @@ public class GoodsService implements IGoodsService {
 		}
 
 		ExampleMatcher matcher = ExampleMatcher.matchingAny()
-				.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
+				.withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains());
 
 		Example<Goods> example = Example.of(goods, matcher);
 
