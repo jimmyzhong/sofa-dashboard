@@ -44,7 +44,7 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 		Ad ad = new Ad();
 		BeanUtils.copyProperties(shopAd, ad);
 		ad.setPosition(1);
-		ad.setStatus(1);
+		ad.setStatus(shopAd.getStatus() == null ? 1 : shopAd.getStatus());
 		ad.setCreateTime(LocalDateTime.now());
 		ad.setUpdateTime(LocalDateTime.now());
 		adService.saveOrUpdate(ad);
@@ -53,7 +53,17 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 	@Override
 	public void edit(ShopAd shopAd) {
 		Ad ad = adService.findById(shopAd.getId());
-		BeanUtils.copyProperties(shopAd, ad);
+		ad.setAdName(shopAd.getAdName());
+		ad.setAdLink(shopAd.getAdLink());
+		ad.setStatus(shopAd.getStatus());
+		if (!StringUtils.isEmpty(shopAd.getImageUrl())) {
+			ad.setImageUrl(shopAd.getImageUrl());
+		}
+		if (!StringUtils.isEmpty(shopAd.getContent())) {
+			ad.setContent(shopAd.getContent());
+		}
+		ad.setSort(shopAd.getSort());
+		ad.setUpdateTime(LocalDateTime.now());
 		adService.saveOrUpdate(ad);
 	}
 
@@ -76,12 +86,18 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 	}
 
 	@Override
-	public PageModel<ShopAd> pageList(PageRequest request, String name, String content) {
+	public PageModel<ShopAd> pageList(PageRequest request, String name, String content, String status) {
 		Ad ad = new Ad();
-		ad.setAdName(name);
-		ad.setContent(content);
 		ad.setPosition(1);
-		ad.setStatus(1);
+		if (!StringUtils.isEmpty(name)) {
+			ad.setAdName(name);
+		}
+		if (!StringUtils.isEmpty(content)) {
+			ad.setContent(content);
+		}
+		if (!StringUtils.isEmpty(status)) {
+			ad.setStatus(Integer.valueOf(status));
+		}
 
         Example<Ad> example = Example.of(ad);
         Sort sort = Sort.unsorted();
@@ -109,5 +125,4 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
         BeanUtils.copyProperties(ad, shopAd);
         return shopAd;
 	}
-
 }
