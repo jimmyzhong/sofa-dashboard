@@ -8,6 +8,16 @@
 		<form class="form-horizontal m" id="form-shop-category-add">
 			<input id="id" name="id" type="hidden"/>
 			<input id="parentId" name="parentId" type="hidden" th:value="${parentId}"/>
+			<div class="form-group tc">
+				<label class="col-sm-3 control-label">图标：</label>
+				<div class="col-sm-8">
+					<img id="imageFile_img" class="img-circle img-lg">
+					<label>
+						<input onchange ="uploadImg()" type="file" class="" id="imageFile" accept="image/*"/>
+						<input name="icon" id="icon"  type="hidden"/>
+					</label>
+				</div>
+			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别名称：</label>
 				<div class="col-sm-8">
@@ -26,6 +36,21 @@
 	<th:block th:include="include :: footer" />
 	<script type="text/javascript" th:inline="javascript">
 		var prefix = ctx + "ext/shop/category";
+		function uploadImg(){
+			var formdata = new FormData();
+			formdata.append("file", $("#imageFile")[0].files[0]);
+			$.ajax({
+				url: ctx + "ext/shop/oss/upload",
+				data: formdata,
+				type: "post",
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					$("#icon").val(result.data.pictureUrl)
+					$("#imageFile_img").attr("src",result.data.pictureUrl)
+				}
+			})
+		}
 		function submitHandler() {
 			var data = $("#form-shop-category-add").serializeArray();
 			// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});

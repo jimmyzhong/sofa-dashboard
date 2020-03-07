@@ -61,6 +61,13 @@
                     sortable: true
                 },
                 {
+                    field: 'icon',
+                    title: '图标',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
                     field: 'name',
                     title: '名称',
                 },
