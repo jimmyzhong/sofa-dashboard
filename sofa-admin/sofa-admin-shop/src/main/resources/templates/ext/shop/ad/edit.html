@@ -39,8 +39,10 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">是否启用状态：</label>
 				<div class="col-sm-8">
-					<span class="form-control"><input type="radio" name="status" value="1" th:field="*{status}">启用</span>
-					<span class="form-control" style="margin-left: 10px"><input type="radio" name="status" value="0" th:field="*{status}">不启用</span>
+					<div class="form-control">
+						<span><input type="radio" name="status" value="1" th:field="*{status}">启用</span>
+						<span style="margin-left: 10px"><input type="radio" name="status" value="0" th:field="*{status}">不启用</span>
+					</div>
 				</div>
 			</div>
 			<div class="form-group">
