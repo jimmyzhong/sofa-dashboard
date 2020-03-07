@@ -60,8 +60,8 @@ public class PayController {
         }
 
         String orderNo = params.getOrderNo();
-        // TODO comment for test Order order  = orderService.findByOrderNo(orderNo);
-        Order order = getOrderForTest(params.getOrderNo());
+        Order order  = orderService.findByOrderNo(orderNo);
+//        Order order = getOrderForTest(params.getOrderNo());
         expectMandatoryFieldForAlipay(order);
 
         String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo,
@@ -85,8 +85,8 @@ public class PayController {
         }
 
         String orderNo = params.getOrderNo();
-        // TODO commet for test Order order  = orderService.findByOrderNo(orderNo);
-        Order order = getOrderForTest(orderNo);
+        Order order  = orderService.findByOrderNo(orderNo);
+//        Order order = getOrderForTest(orderNo);
 
         PayInfoDTO res = new PayInfoDTO();
         res.setOrderNo(orderNo);
@@ -110,24 +110,25 @@ public class PayController {
             throw BusinessException.build("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
         }
 
-        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getPayAmount()));
+        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getBuyerPayAmount()));
         String status = getPayStatus(response.getTradeStatus());
         String comment = getMessage(response.getMsg());
         order.setPayStatus(status);
         order.setPayTradeNo(response.getTradeNo());
         orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
                 order.getTotalAmount(), status, comment);
+        res.setTradeStatus(status);
         return res;
     }
 
-    private Order getOrderForTest(String orderNo) {
-        Order order = new Order();
-        order.setOrderSn(orderNo);
-        order.setSubject("Test商品");
-        order.setDescription("11");
-        order.setTotalAmount(BigDecimal.valueOf(0.01));
-        return order;
-    }
+//    private Order getOrderForTest(String orderNo) {
+//        Order order = new Order();
+//        order.setOrderSn(orderNo);
+//        order.setSubject("Test商品");
+//        order.setDescription("11");
+//        order.setTotalAmount(BigDecimal.valueOf(0.01));
+//        return order;
+//    }
 
     private String getMessage(String msgInResponse) {
         String comment = null;
@@ -173,8 +174,8 @@ public class PayController {
             throw BusinessException.build("支付宝支付结果校验失败");
         }
         String orderNo = params.get("out_trade_no");
-        //TODO comment for test Order order = orderService.findByOrderNo(orderNo);
-        Order order = getOrderForTest(orderNo);
+        Order order = orderService.findByOrderNo(orderNo);
+//        Order order = getOrderForTest(orderNo);
         if (order == null) {
             log.error("notify out_trade_no does not exist." + orderNo);
             throw BusinessException.build("商品订单不存在." + orderNo);
@@ -187,12 +188,12 @@ public class PayController {
         }
 
 
-        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(params.get("")));
+        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(params.get("buyer_pay_amount")));
         String status = getPayStatus(params.get("trade_status"));
         order.setPayStatus(status);
         order.setPayTradeNo(params.get("trade_no"));
-// TODO comment for test       orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
-//                order.getTotalAmount(), status, null);
+         orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+                order.getTotalAmount(), status, null);
         log.info("trade status " + status + ", tradeNo:" + order.getPayTradeNo());
     }
 

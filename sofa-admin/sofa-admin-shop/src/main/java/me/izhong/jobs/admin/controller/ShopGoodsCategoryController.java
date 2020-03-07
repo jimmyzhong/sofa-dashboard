@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.izhong.db.mongo.util.PageRequestUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,14 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.Convert;
+import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.model.ShopGoodsCategory;
 
+@Slf4j
 @Controller
 @RequestMapping("/ext/shop/category")
 public class ShopGoodsCategoryController {
@@ -39,11 +41,20 @@ public class ShopGoodsCategoryController {
 		return prefix + "/category";
 	}
 
-	@PostMapping("/list")
+	@PostMapping("/list/{parentId}")
     @AjaxWrapper
-	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @RequestParam(value = "parentId", defaultValue = "0") Long parentId) {
+	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @PathVariable Long parentId) {
 		PageModel<ShopGoodsCategory> page = shopServiceReference.goodsCategoryService.pageList(PageRequestUtil.fromRequest(request), parentId);
 		return page;
+	}
+
+	@GetMapping("/subCategory/{categoryId}")
+	public String subCategory(@PathVariable("categoryId") Long categoryId, Model model) {
+		if (categoryId == null) {
+			throw BusinessException.build("categoryId不能为空");
+		}
+		model.addAttribute("categoryId", categoryId);
+		return prefix + "/subCategory";
 	}
 
 	@GetMapping("/queryLv1")
@@ -64,14 +75,16 @@ public class ShopGoodsCategoryController {
 		return data;
 	}
 
-    @GetMapping("/add")
-    public String add() {
+    @GetMapping("/add/{parentId}")
+    public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
+		model.addAttribute("parentId", parentId);
         return prefix + "/add";
     }
 
     @PostMapping("/add")
     @AjaxWrapper
     public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
+    	log.info("add category =>{}", goodsCategory);
     	shopServiceReference.goodsCategoryService.create(goodsCategory);
     }
 
@@ -84,6 +97,7 @@ public class ShopGoodsCategoryController {
 		if (goodsCategory == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
 		}
+		log.info("goodsCategoryDetail =>{}", goodsCategory);
 		model.addAttribute("goodsCategory", goodsCategory);
 		return prefix + "/edit";
 	}
@@ -95,7 +109,7 @@ public class ShopGoodsCategoryController {
 		if (obj == null) {
 			throw BusinessException.build(String.format("商品类目不存在%s", goodsCategory.getId()));
 		}
-		shopServiceReference.goodsCategoryService.edit(obj);
+		shopServiceReference.goodsCategoryService.edit(goodsCategory);
 	}
 
 	@PostMapping("/edit/showStatus")

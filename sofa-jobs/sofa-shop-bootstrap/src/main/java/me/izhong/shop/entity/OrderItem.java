@@ -23,6 +23,8 @@ public class OrderItem {
     private Long productId;
     @Column(name = "PRODUCT__ATTR_ID")
     private Long productAttributeId;
+    @Column(name = "NAME")
+    private String name;
     @Column(name = "ORDER_ID")
     private Long orderId;
     @Column(name = "QUANTITY")

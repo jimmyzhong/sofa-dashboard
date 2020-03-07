@@ -97,4 +97,6 @@ public class Order {
     private String payTradeNo;
     @Column(name = "PAY_STATUS", length = 10)
     private String payStatus;
+    @Column(name = "COUNT")
+    private Integer count;
 }

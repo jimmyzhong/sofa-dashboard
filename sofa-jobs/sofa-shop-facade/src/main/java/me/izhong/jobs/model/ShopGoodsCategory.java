@@ -2,9 +2,11 @@ package me.izhong.jobs.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class ShopGoodsCategory {
 
 	private Long id;

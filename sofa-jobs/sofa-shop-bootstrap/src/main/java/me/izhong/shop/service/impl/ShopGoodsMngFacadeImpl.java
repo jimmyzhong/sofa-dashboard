@@ -26,6 +26,7 @@ import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.manage.IShopGoodsMngFacade;
 import me.izhong.jobs.model.ShopGoods;
 import me.izhong.shop.dao.GoodsDao;
+import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.entity.User;
@@ -47,7 +48,7 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 
 	@Override
 	public ShopGoods find(Long goodsId) {
-		Goods goods = goodsService.findById(goodsId);
+		GoodsDTO goods = goodsService.findById(goodsId);
 		ShopGoods shopGoods = new ShopGoods();
         BeanUtils.copyProperties(goods, shopGoods);
         if (StringUtils.isNotEmpty(goods.getAlbumPics())) {
@@ -57,7 +58,8 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         }
         GoodsCategory categorySecondary = goodsCategoryService.findByChildrenId(goods.getProductCategoryId());
         if (categorySecondary != null) {
-        	shopGoods.setProductCategorySecondaryId(categorySecondary.getId());
+        	shopGoods.setProductCategoryId(categorySecondary.getId());
+        	shopGoods.setProductCategorySecondaryId(goods.getProductCategoryId());
         	shopGoods.setProductCategorySecondaryName(categorySecondary.getName());
         } else {
         	shopGoods.setProductCategorySecondaryId(0L);
@@ -67,10 +69,10 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	}
 
 	@Override
-	public void edit(ShopGoods goods) {
-		Goods dbGoods = goodsService.findById(goods.getId());
-		BeanUtils.copyProperties(goods, dbGoods);
-		goodsService.saveOrUpdate(dbGoods);
+	public void edit(ShopGoods shopGoods) {
+		Goods goods = new Goods();
+		BeanUtils.copyProperties(shopGoods, goods);
+		goodsService.saveOrUpdate(goods);
 	}
 
 	@Override

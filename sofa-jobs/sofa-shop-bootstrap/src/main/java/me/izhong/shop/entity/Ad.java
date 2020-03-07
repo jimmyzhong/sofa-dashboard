@@ -16,24 +16,24 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Entity
-@Table(name = "CART_ITEM")
-public class CartItem {
+@Table(name = "AD")
+public class Ad {
 
 	@Id
     @GeneratedValue
     private Long id;
-    @Column(name = "USER_ID")
-    private Long userId;
-    @Column(name = "PRODUCT_ID")
-    private Long productId;
-    @Column(name = "PRODUCT_ATTR_ID")
-    private Long productAttributeId; // 购物车存放的也可能是具体某个商品规格
-    @Column(name = "QUANTITY")
-    private Integer quantity;
-    @Column(name = "CHECKED")
-    private Integer checked;
-    @Column(name = "IS_DELETE")
-    private Integer isDelete;
+    @Column(name = "AD_NAME")
+    private String adName;
+    @Column(name = "AD_LINK")
+    private String adLink;
+    @Column(name = "IMAGE_URL")
+    private String imageUrl; 
+    @Column(name = "POSITION")
+    private Integer position;
+    @Column(name = "CONTENT")
+    private String content;
+    @Column(name = "STATUS")
+    private Integer status;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

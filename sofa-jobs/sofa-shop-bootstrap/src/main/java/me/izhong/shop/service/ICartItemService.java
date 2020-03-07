@@ -3,7 +3,6 @@ package me.izhong.shop.service;
 import java.util.List;
 
 import me.izhong.shop.dto.CartItemParam;
-import me.izhong.shop.entity.CartItem;
 
 public interface ICartItemService {
 
@@ -17,5 +16,10 @@ public interface ICartItemService {
 
 	void clear(Long userId);
 
+	List<CartItemParam> list(List<Long> cartIds);
+
 	CartItemParam findByCartId(Long cartId);
+
+	CartItemParam findFirstByUserIdAndProductAttributeIdAndProductId(Long userId, Long productId, Long productAttrId);
+
 }

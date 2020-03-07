@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +26,7 @@ import me.izhong.jobs.model.ShopGoods;
 @Controller
 @RequestMapping("/ext/shop/goods")
 public class ShopGoodsController {
-
+	private static Logger logger = LoggerFactory.getLogger(ShopGoodsController.class);
 	private String prefix = "ext/shop/goods";
 
 	@Autowired(required = false)
@@ -59,11 +61,28 @@ public class ShopGoodsController {
 			throw BusinessException.build("goodsId不能为空");
 		}
 		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
+		logger.info("forward goods detail =>{}",goods);
 		if (goods == null) {
 			throw BusinessException.build(String.format("商品不存在%s", goodsId));
 		}
+
 		model.addAttribute("goods", goods);
 		return prefix + "/edit";
+	}
+
+	@GetMapping("/detail/{goodsId}")
+	public String detail(@PathVariable("goodsId") Long goodsId, Model model) {
+		if (goodsId == null) {
+			throw BusinessException.build("goodsId不能为空");
+		}
+		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
+		logger.info("forward goods detail =>{}",goods);
+		if (goods == null) {
+			throw BusinessException.build(String.format("商品不存在%s", goodsId));
+		}
+
+		model.addAttribute("goods", goods);
+		return prefix + "/detail";
 	}
 
 	@PostMapping("/edit")
@@ -73,6 +92,7 @@ public class ShopGoodsController {
 		if (obj == null) {
 			throw BusinessException.build(String.format("商品不存在%s", goods.getId()));
 		}
+		logger.info("goods detail =>{}",obj);
 		shopServiceReference.goodsService.edit(obj);
 	}
 
