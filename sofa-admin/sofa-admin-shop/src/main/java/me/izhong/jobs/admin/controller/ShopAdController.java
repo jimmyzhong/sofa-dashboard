@@ -41,7 +41,7 @@ public class ShopAdController {
     		HttpServletRequest request,
 			@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "content", required = false) String content,
-			@RequestParam(value = "status", required = false, defaultValue = "1") String status) {
+			@RequestParam(value = "status", required = false) String status) {
 		PageModel<ShopAd> page = shopServiceReference.adService.pageList(PageRequestUtil.fromRequest(request), name, content, status);
 		return page;
     }
