@@ -70,6 +70,21 @@ public class ShopGoodsController {
 		return prefix + "/edit";
 	}
 
+	@GetMapping("/detail/{goodsId}")
+	public String detail(@PathVariable("goodsId") Long goodsId, Model model) {
+		if (goodsId == null) {
+			throw BusinessException.build("goodsId不能为空");
+		}
+		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
+		logger.info("forward goods detail =>{}",goods);
+		if (goods == null) {
+			throw BusinessException.build(String.format("商品不存在%s", goodsId));
+		}
+
+		model.addAttribute("goods", goods);
+		return prefix + "/detail";
+	}
+
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoods goods) {
