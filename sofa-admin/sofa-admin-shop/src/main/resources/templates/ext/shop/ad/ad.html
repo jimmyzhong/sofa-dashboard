@@ -46,7 +46,7 @@
     var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
     var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
-    var prefix = ctx + "ext/shop/goods";
+    var prefix = ctx + "ext/shop/ad";
 
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
@@ -97,6 +97,10 @@
                 }, {
                     field: 'price',
                     title: '价格'
+                },
+                {
+                    field: 'isDelete',
+                    title: 'isDelete'
                 },
                 {
                     title: '操作',

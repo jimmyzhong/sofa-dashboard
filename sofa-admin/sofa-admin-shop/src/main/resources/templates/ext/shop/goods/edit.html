@@ -145,7 +145,7 @@
 				if(_categoryAll[i].value==$("#productCategoryIds").val()){
 					for(var y=0;y<_categoryAll[i].children.length;y++){
 						var _subItem=_categoryAll[i].children[y];
-						if(categoryId&&($("#subCategory").value()==_subItem.value)){
+						if(categoryId&&($("#subCategory").val()==_subItem.value)){
 							$("#productCategoryId").append('<option selected value="'+_subItem.value+'">'+_subItem.label+'</option>')
 						}else{
 							$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
