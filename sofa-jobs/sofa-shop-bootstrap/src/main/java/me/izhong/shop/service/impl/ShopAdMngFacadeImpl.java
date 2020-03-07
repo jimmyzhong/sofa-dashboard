@@ -2,6 +2,7 @@ package me.izhong.shop.service.impl;
 
 import static org.springframework.data.domain.PageRequest.of;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,10 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 	public void create(ShopAd shopAd) {
 		Ad ad = new Ad();
 		BeanUtils.copyProperties(shopAd, ad);
+		ad.setPosition(1);
+		ad.setStatus(1);
+		ad.setCreateTime(LocalDateTime.now());
+		ad.setUpdateTime(LocalDateTime.now());
 		adService.saveOrUpdate(ad);
 	}
 

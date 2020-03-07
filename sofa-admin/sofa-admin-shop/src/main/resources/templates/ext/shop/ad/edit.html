@@ -1,27 +1,32 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
-	<th:block th:include="include :: header('新增类别')" />
+	<th:block th:include="include :: header('编辑广告')" />
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<form class="form-horizontal m" id="form-shop-category-add">
-			<input id="id" name="id" type="hidden"/>
-			<input id="parentId" name="parentId" type="hidden" th:value="${parentId}"/>
+		<form class="form-horizontal m" id="form-shop-ad-edit" th:object="${ad}">
+			<input id="id" name="id" type="hidden" th:field="*{id}"/>
 			<div class="form-group tc">
-				<label class="col-sm-3 control-label">图标：</label>
+				<label class="col-sm-3 control-label">广告图：</label>
 				<div class="col-sm-8">
-					<img id="imageFile_img" class="img-circle img-lg">
+					<img id="imageUrlCover" class="img-lg"  th:src="${ad.imageUrl}">
 					<label>
 						<input onchange ="uploadImg()" type="file" class="" id="imageFile" accept="image/*"/>
-						<input name="icon" id="icon"  type="hidden"/>
+						<input name="imageUrl" id="imageUrl"  type="hidden" th:field="*{imageUrl}"/>
 					</label>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">类别名称：</label>
+				<label class="col-sm-3 control-label">广告标题：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="name" id="name">
+					<input class="form-control" type="text" name="adName" id="adName" th:field="*{adName}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">广告链接：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="adLink" id="adLink" th:field="*{adLink}">
 				</div>
 			</div>
 			<div class="form-group">
@@ -35,7 +40,7 @@
 	</div>
 	<th:block th:include="include :: footer" />
 	<script type="text/javascript" th:inline="javascript">
-		var prefix = ctx + "ext/shop/category";
+		var prefix = ctx + "ext/shop/ad";
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#imageFile")[0].files[0]);
@@ -46,15 +51,15 @@
 				processData: false,
 				contentType: false,
 				success: function (result) {
-					$("#icon").val(result.data.pictureUrl)
-					$("#imageFile_img").attr("src",result.data.pictureUrl)
+					$("#imageUrl").val(result.data.pictureUrl)
+					$("#imageUrlCover").attr("src",result.data.pictureUrl)
 				}
 			})
 		}
 		function submitHandler() {
-			var data = $("#form-shop-category-add").serializeArray();
+			var data = $("#form-shop-ad-edit").serializeArray();
 			// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
-			$.operate.save(prefix + "/add", data);
+			$.operate.save(prefix + "/edit", data);
 		}
 	</script>
 </body>
