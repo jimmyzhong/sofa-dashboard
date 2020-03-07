@@ -5,29 +5,28 @@
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<form class="form-horizontal m" id="form-shop-ad-add">
-			<input id="id" name="id" type="hidden" th:value="${ad.id}"/>
-			<input id="parentId" name="parentId" type="hidden"/>
+		<form class="form-horizontal m" id="form-shop-ad-edit" th:object="${ad}">
+			<input id="id" name="id" type="hidden" th:field="*{id}"/>
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">广告图：</label>
 				<div class="col-sm-8">
-					<img id="imageUrlCover" class="img-lg" th:src="${ad.imageUrl}">
+					<img id="imageUrlCover" class="img-lg"  th:src="${ad.imageUrl}">
 					<label>
 						<input onchange ="uploadImg()" type="file" class="" id="imageFile" accept="image/*"/>
-						<input name="imageUrl" id="imageUrl"  type="hidden" th:value="${ad.imageUrl}" />
+						<input name="imageUrl" id="imageUrl"  type="hidden" th:field="*{imageUrl}"/>
 					</label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">广告标题：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="adName" id="adName" th:value="${ad.adName}">
+					<input class="form-control" type="text" name="adName" id="adName" th:field="*{adName}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">广告链接：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="adLink" id="adLink" th:value="${ad.adLink}">
+					<input class="form-control" type="text" name="adLink" id="adLink" th:field="*{adLink}">
 				</div>
 			</div>
 			<div class="form-group">
@@ -58,7 +57,7 @@
 			})
 		}
 		function submitHandler() {
-			var data = $("#form-shop-ad-add").serializeArray();
+			var data = $("#form-shop-ad-edit").serializeArray();
 			// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
 			$.operate.save(prefix + "/edit", data);
 		}
