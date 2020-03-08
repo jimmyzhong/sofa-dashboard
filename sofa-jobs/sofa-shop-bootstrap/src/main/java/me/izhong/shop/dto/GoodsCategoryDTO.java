@@ -16,4 +16,5 @@ public class GoodsCategoryDTO {
     private String icon;
     private String keywords;
     private String description;
+    private String path;
 }

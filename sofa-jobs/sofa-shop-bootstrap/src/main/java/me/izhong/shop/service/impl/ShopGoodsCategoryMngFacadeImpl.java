@@ -53,7 +53,7 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 		goodsCategory.setProductCount(0);
 		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
 		setCategoryLevel(goodsCategory);
-		goodsCategoryService.saveOrUpdate(goodsCategory);
+		goodsCategoryService.saveOrUpdateWithPathInfo(goodsCategory);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 		GoodsCategory goodsCategory = new GoodsCategory();
 		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
 		setCategoryLevel(goodsCategory);
-		goodsCategoryService.saveOrUpdate(goodsCategory);
+		goodsCategoryService.saveOrUpdateWithPathInfo(goodsCategory);
 	}
 
 	@Override

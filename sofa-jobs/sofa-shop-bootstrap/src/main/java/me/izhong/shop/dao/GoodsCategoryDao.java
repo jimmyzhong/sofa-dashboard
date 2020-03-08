@@ -22,4 +22,8 @@ public interface GoodsCategoryDao extends JpaRepository<GoodsCategory, Long> {
 	@Modifying
 	@Query(value = "update product_category t set t.show_status = ?2 where t.id in ?1", nativeQuery = true)
 	void updateShowStatus(List<Long> ids, Integer showStatus);
+
+	@Modifying
+	@Query(value = "update product_category t set t.path = ?2 where t.id in ?1", nativeQuery = true)
+	void updatePath(Long id, String path);
 }

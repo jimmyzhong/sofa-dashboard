@@ -21,6 +21,7 @@ public class GoodsDTO {
     private String productPic;
 	private Integer productType;
 	private Long productCategoryId;
+	private String productCategoryPath;
 	private BigDecimal price;
     private BigDecimal promotionPrice;
 	private Integer publishStatus;

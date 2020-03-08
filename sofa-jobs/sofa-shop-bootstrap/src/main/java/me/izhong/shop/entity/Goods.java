@@ -30,6 +30,8 @@ public class Goods {
     private Integer productType;
     @Column(name = "PRODUCT_CATEGORY_ID")
     private Long productCategoryId;
+    @Column(name = "PRODUCT_CAT_PATH")
+    private String categoryPath;
     @Column(name = "PRICE")
     private BigDecimal price;
     @Column(name = "PROMOTION_PRICE")

@@ -82,9 +82,13 @@ public class GoodsService implements IGoodsService {
 		if (!StringUtils.isEmpty(queryParam.getQuery())) {
 			goods.setProductName(queryParam.getQuery());
 		}
+		if (!StringUtils.isEmpty(queryParam.getCategoryPath())) {
+			goods.setCategoryPath(queryParam.getCategoryPath());
+		}
 
-		ExampleMatcher matcher = ExampleMatcher.matchingAny()
-				.withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains());
+		ExampleMatcher matcher = ExampleMatcher.matchingAll()
+				.withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
+				.withMatcher("categoryPath", ExampleMatcher.GenericPropertyMatchers.startsWith());
 
 		Example<Goods> example = Example.of(goods, matcher);
 
@@ -101,8 +105,8 @@ public class GoodsService implements IGoodsService {
 		List<GoodsDTO> dtoList = page.getContent().stream().map(g->GoodsDTO.builder()
 				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
 				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
-				.productPic(g.getProductPic()).build())
-				.collect(Collectors.toList());
+				.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
+				.build()).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
 	}
 

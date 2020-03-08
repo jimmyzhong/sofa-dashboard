@@ -40,4 +40,6 @@ public class GoodsCategory {
     private String keywords;
     @Column(name = "DESCRIPTION")
     private String description;
+    @Column(name = "PATH")
+    private String path;
 }

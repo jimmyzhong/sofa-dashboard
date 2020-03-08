@@ -7,6 +7,7 @@ import me.izhong.common.exception.BusinessException;
 @Data
 public class PageQueryParamDTO extends PageRequest {
     private String query;
+    private String categoryPath;
 
     public boolean validRequest() {
         if (this.getPageNum()<0) {
