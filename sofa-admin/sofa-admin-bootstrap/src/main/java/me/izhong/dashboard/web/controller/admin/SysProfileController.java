@@ -123,9 +123,8 @@ public class SysProfileController {
     @PostMapping("/update")
     @AjaxWrapper
     public void update(String userName, String phoneNumber, String email, String sex) {
-        UserInfo loginUser = UserInfoContextHelper.getSubjectUser();
+        UserInfo loginUser = UserInfoContextHelper.getLoginUser();
         sysUserService.updateMyInfos(loginUser.getUserId(),userName,email,phoneNumber,sex);
-
         loginUser.setUserName(userName);
         loginUser.setEmail(email);
         loginUser.setPhoneNumber(phoneNumber);
@@ -146,9 +145,7 @@ public class SysProfileController {
             if (!file.isEmpty()) {
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);
                 sysUserService.updateMyAvatar(loginUser.getUserId(),avatar);
-
                 loginUser.setAvatar(avatar);
-                UserInfoContextHelper.setUser(loginUser);
             } else {
                 throw BusinessException.build("头像为空");
             }
