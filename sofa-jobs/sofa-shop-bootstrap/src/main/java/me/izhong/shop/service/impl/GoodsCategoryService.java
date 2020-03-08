@@ -80,14 +80,13 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	@Override
 	public PageModel<GoodsCategoryDTO> list(PageQueryParamDTO pageQuery) {
 		GoodsCategory category = new GoodsCategory();
-		if (!StringUtils.isEmpty(pageQuery.getCategoryPath())) {
-			category.setPath(pageQuery.getCategoryPath());
+		if (!StringUtils.isEmpty(pageQuery.getQuery())) {
+			category.setParentId(Long.valueOf(pageQuery.getQuery()));
+			category.setShowStatus(1);
 		}
 
-		ExampleMatcher matcher = ExampleMatcher.matchingAny()
-				.withMatcher("path", ExampleMatcher.GenericPropertyMatchers.startsWith());
+		Example<GoodsCategory> example = Example.of(category);
 
-		Example<GoodsCategory> example = Example.of(category, matcher);
 		Sort sort = Sort.unsorted();
 		if (!StringUtils.isEmpty(pageQuery.getOrderByColumn()) && !StringUtils.isEmpty(pageQuery.getIsAsc())) {
 			sort = Sort.by("asc".equalsIgnoreCase(pageQuery.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,

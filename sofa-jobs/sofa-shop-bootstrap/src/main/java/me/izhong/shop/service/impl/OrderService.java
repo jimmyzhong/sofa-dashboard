@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.jobs.model.ShopReceiverInfo;
+import me.izhong.shop.consts.OrderStateEnum;
+import me.izhong.shop.consts.PayStatusEnum;
 import me.izhong.shop.dao.OrderDao;
 import me.izhong.shop.dao.OrderItemDao;
 import me.izhong.shop.dao.PayRecordDao;
@@ -129,6 +131,9 @@ public class OrderService implements IOrderService {
 
 		order.setPayTradeNo(externalOrderNo);
 		order.setPayAmount(payAmount);
+		if (PayStatusEnum.SUCCESS.name().equals(state)) {
+			order.setStatus(PAID.getState());
+		}
 
 		payRecordDao.save(record);
 		orderDao.save(order);
