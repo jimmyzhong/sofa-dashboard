@@ -34,6 +34,8 @@ public class Ad {
     private String content;
     @Column(name = "STATUS")
     private Integer status;
+    @Column(name = "SORT")
+    private Integer sort;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

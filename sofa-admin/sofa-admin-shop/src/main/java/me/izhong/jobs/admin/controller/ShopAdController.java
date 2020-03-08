@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -39,8 +40,9 @@ public class ShopAdController {
     public PageModel<ShopAd> list(
     		HttpServletRequest request,
 			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "content", required = false) String content) {
-		PageModel<ShopAd> page = shopServiceReference.adService.pageList(PageRequestUtil.fromRequest(request), name, content);
+			@RequestParam(value = "content", required = false) String content,
+			@RequestParam(value = "status", required = false) String status) {
+		PageModel<ShopAd> page = shopServiceReference.adService.pageList(PageRequestUtil.fromRequest(request), name, content, status);
 		return page;
     }
 
@@ -52,6 +54,8 @@ public class ShopAdController {
     @PostMapping("/add")
     @AjaxWrapper
     public void add(ShopAd shopAd) {
+    	checkField(shopAd.getAdName(), "广告名称");
+    	checkField(shopAd.getAdName(), "广告链接");
     	shopServiceReference.adService.create(shopAd);
     }
 
@@ -71,6 +75,11 @@ public class ShopAdController {
     @PostMapping("/edit")
     @AjaxWrapper
     public void edit(ShopAd shopAd) {
+    	checkField(shopAd.getAdName(), "广告名称");
+    	checkField(shopAd.getAdName(), "广告链接");
+    	if (shopAd.getSort() == null) {
+    		shopAd.setSort(0);
+    	}
 		shopServiceReference.adService.edit(shopAd);
     }
 
@@ -86,6 +95,17 @@ public class ShopAdController {
     	boolean result = shopServiceReference.adService.remove(ids);
     	if (!result) {
     		throw BusinessException.build("删除失败");
+    	}
+    }
+
+    /**
+     * 
+     * @param field
+     * @param message
+     */
+    public void checkField(String field, String message) {
+    	if (StringUtils.isEmpty(field)) {
+    		throw BusinessException.build(String.format("%s不能为空", message));
     	}
     }
 }

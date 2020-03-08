@@ -11,8 +11,14 @@
                 <div class="select-list">
                     <ul>
                         <li>
-<!--                            商品名称：<input type="text" name="productName"/>-->
+                            广告名称：<input type="text" name="name"/>
                         </li>
+                        <li>
+                            广告状态：<select name="status">
+                                        <option value="">所有</option>
+                                        <option value="1">启用</option>
+                                        <option value="0">不启用</option>
+                                    </select>
                         <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
                                     class="fa fa-search"></i>&nbsp;搜索</a>
@@ -47,7 +53,6 @@
     var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
     var prefix = ctx + "ext/shop/ad";
-
     $(function () {
         var options = {
             url: prefix + "/list",
@@ -70,7 +75,7 @@
                     field: 'imageUrl',
                     title: '封面图',
                     formatter: function (value, row, index) {
-                        return $.table.imageView(value);
+                        return $.table.imageView(value,300,300);
                     }
                 },
                 {
@@ -81,6 +86,18 @@
                 {
                     field: 'adLink',
                     title: '广告链接'
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value?"启用":"不启用";
+                    }
+                },
+                {
+                    field: 'sort',
+                    title: '权重'
                 },
                 {
                     title: '操作',

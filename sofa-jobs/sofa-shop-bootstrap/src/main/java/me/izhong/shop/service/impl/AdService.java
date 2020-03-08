@@ -31,7 +31,9 @@ public class AdService implements IAdService {
 	@Override
 	@Transactional
 	public void updateStatus(List<Long> ids, Integer status) {
-		adDao.updateStatusByIds(ids, status);
+		for (Long id : ids) {
+			adDao.updateStatusById(id, status);
+		}
 	}
 
 	@Override

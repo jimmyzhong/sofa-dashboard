@@ -14,6 +14,7 @@ public class AdDTO {
     private Integer position;
     private String content;
     private Integer status;
+    private Integer sort;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
