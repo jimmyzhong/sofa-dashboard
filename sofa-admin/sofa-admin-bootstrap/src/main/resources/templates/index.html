@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
-    <title>管理系统</title>
-    <meta name="keywords" content="管理系统首页">
-    <meta name="description" content="管理系统首页">
+    <title>[[${@config.getKey('sys.main.name')?:"后台管理"}]]</title>
+    <meta name="keywords" content="[[${@config.getKey('sys.main.name')?:"后台管理"}]]">
+    <meta name="description" content="[[${@config.getKey('sys.main.name')?:"后台管理"}]]">
     <!--[if lt IE 9]>
     <meta http-equiv="refresh" content="0;ie.html"/>
     <![endif]-->
@@ -34,8 +34,9 @@
             <ul class="nav" id="side-menu">
                 <a th:href="@{/index}">
                     <li class="logo">
-                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')!=null}">[[${@config.getKey('sys.main.name')}]]</span>
-                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')==null}">后台管理</span>
+<!--                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')!=null}">[[${@config.getKey('sys.main.name')}]]</span>-->
+<!--                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')==null}">后台管理</span>-->
+                        <span class="logo-lg">[[${@config.getKey('sys.main.name')?:"后台管理"}]]</span>
                     </li>
                 </a>
                 <li>
@@ -49,8 +50,7 @@
                         <div class="pull-left info">
                             <p>[[${user.loginName}]]</p>
                             <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
-                            <a th:href="@{logout}" style="padding-left:5px;"><i class="fa fa-sign-out text-danger"></i>
-                                注销</a>
+                            <a th:href="@{logout}" style="padding-left:5px;"><i class="fa fa-sign-out text-danger"></i> 注销</a>
                         </div>
                     </div>
                 </li>

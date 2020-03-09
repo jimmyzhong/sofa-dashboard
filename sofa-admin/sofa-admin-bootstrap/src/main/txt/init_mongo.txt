@@ -27,3 +27,8 @@ port=27017
 fork=true
 wiredTigerCacheSizeGB=1
 wiredTigerDirectoryForIndexes=true
+
+//升级mongo数据库
+db.getCollection('sys_user_online').dropIndex("sessionId")
+db.getCollection('sys_user_online').remove({})
+//db.getCollection('sys_user_online').drop()

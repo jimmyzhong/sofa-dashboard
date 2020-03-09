@@ -48,14 +48,14 @@ public class UserInfoContextHelper {
         UserInfo user = null;
         Object obj = getSubject().getPrincipal();
         if (obj != null) {
-            user = new UserInfo();
-            BeanUtils.copyProperties(obj, user);
+            if(obj instanceof UserInfo) {
+                return (UserInfo)obj;
+            } else {
+                user = new UserInfo();
+                BeanUtils.copyProperties(obj, user);
+            }
         }
         return user;
-    }
-
-    public static UserInfo getSubjectUser() {
-        return  (UserInfo) getSubject().getPrincipal();
     }
 
     public static void checkScopePermission(String perm, Long deptId){

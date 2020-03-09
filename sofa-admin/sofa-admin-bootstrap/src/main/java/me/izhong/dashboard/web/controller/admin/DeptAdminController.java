@@ -89,8 +89,6 @@ public class DeptAdminController {
         sysDept.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
         sysDept.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
         int in = sysDeptService.insertDept(sysDept);
-        //刷新当前用户的部门权限
-        UserRealm.refreshUserScope();
         return in;
     }
 
