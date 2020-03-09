@@ -11,13 +11,13 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">标题：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="productName" id="productName" th:field="*{productName}">
+					<input class="form-control" type="text" name="productName" id="productName" th:field="*{productName}" required>
 				</div>
 			</div>
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">封面图：</label>
 				<div class="col-sm-8">
-					<img id="productPic_img" class="img-circle img-lg" th:src="${goods.productPic}">
+					<img id="productPic_img" class="img-circle img-lg" th:src="${goods.productPic}" >
 					<label>
 						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
 						<input name="productPic" id="productPicInput"  type="hidden"/>
@@ -27,13 +27,13 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">价格：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="price" id="price" th:field="*{price}">
+					<input class="form-control" type="text" name="price" id="price" th:field="*{price}" required>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryIds" name="productCategoryIds"  onChange="productCategoryChange()">
+					<select class="form-control" id="productCategoryIds" name="productCategoryIds"  onChange="productCategoryChange()" required>
 						<option value="">--请选择商品类别--</option>
 
 					</select>
@@ -42,7 +42,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">子类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryId" name="productCategoryId">
+					<select class="form-control" id="productCategoryId" name="productCategoryId" required>
 						<option value="">--请选择商品子类别--</option>
 
 					</select>
@@ -51,7 +51,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">商品描述：</label>
 				<div class="col-sm-8">
-					<textarea class="form-control" name="description" th:field="*{description}">
+					<textarea class="form-control" name="description" th:field="*{description}" required>
 
 					</textarea>
 				</div>
@@ -94,13 +94,23 @@
 			var content = $("#detail_desc").val();
 			$('#editor').summernote('code', content);
 		});
+		$("#form-shop-goods-edit").validate({
+			onkeyup: false,
+			focusCleanup: true
+		});
 		function submitHandler() {
-			var data = $("#form-shop-goods-edit").serializeArray();
-			var sHTML = $('.summernote').summernote('code');
-			data.push({"name": "detailDesc", "value": sHTML});
-			JSON.stringify("商品编辑的数据"+data)
-			$.operate.saveTab(prefix + "/edit", data);
-	    }
+			if(!$("#productPicInput").val()){
+				$.modal.alertWarning("封面图不能为空");
+				return;
+			}
+			if ($.validate.form()) {
+				var data = $("#form-shop-goods-edit").serializeArray();
+				var sHTML = $('.summernote').summernote('code');
+				data.push({"name": "detailDesc", "value": sHTML});
+				$.operate.saveTab(prefix + "/edit", data);
+			}
+		}
+
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#productPic")[0].files[0]);
