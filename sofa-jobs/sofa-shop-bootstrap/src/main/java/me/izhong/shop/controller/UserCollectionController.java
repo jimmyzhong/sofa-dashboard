@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import me.izhong.common.annotation.AjaxWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,6 +19,7 @@ import me.izhong.shop.dto.GoodsCollectionParam;
 import me.izhong.shop.service.ICollectionService;
 
 @Controller
+@AjaxWrapper
 @RequestMapping(value = "/api/collect")
 public class UserCollectionController {
 
