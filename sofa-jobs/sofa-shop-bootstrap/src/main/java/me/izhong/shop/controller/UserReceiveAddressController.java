@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.consts.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import me.izhong.shop.service.IReceiveAddressService;
 import java.util.List;
 
 @Controller
+@AjaxWrapper
 @RequestMapping("/api/address")
 public class UserReceiveAddressController {
 
