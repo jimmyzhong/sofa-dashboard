@@ -20,6 +20,7 @@ import me.izhong.shop.service.IGoodsService;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IReceiveAddressService;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -250,8 +251,15 @@ public class OrderService implements IOrderService {
 	public PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam) {
 		Order order = new Order();
 		order.setUserId(userId);
-		ExampleMatcher matcher = ExampleMatcher.matchingAny()
-				.withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact());
+		if (!StringUtils.isEmpty(queryParam.getStatus())) {
+			int state= OrderStateEnum.getStateByComment(queryParam.getStatus());
+			if (state >= 0) {
+				order.setStatus(state);
+			}
+		}
+		ExampleMatcher matcher = ExampleMatcher.matchingAll()
+				.withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+				.withMatcher("status", ExampleMatcher.GenericPropertyMatchers.exact());
 
 		Example<Order> example = Example.of(order, matcher);
 		Sort sort = Sort.by(Sort.Direction.DESC, "orderSn");

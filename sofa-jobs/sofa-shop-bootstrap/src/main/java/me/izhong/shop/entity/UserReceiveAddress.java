@@ -36,6 +36,8 @@ public class UserReceiveAddress {
 	private String city;
     @Column(name = "DISTRICT")
 	private String district;
+    @Column(name = "TOWN")
+    private String town;
     @Column(name = "DETAIL_ADDRESS")
 	private String detailAddress;
     @Column(name = "IS_DEFAULT")
