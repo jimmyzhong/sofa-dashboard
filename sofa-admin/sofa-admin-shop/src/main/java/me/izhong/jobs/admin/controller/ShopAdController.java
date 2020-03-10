@@ -4,9 +4,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,7 +55,11 @@ public class ShopAdController {
     @AjaxWrapper
     public void add(ShopAd shopAd) {
     	checkField(shopAd.getAdName(), "广告名称");
-    	checkField(shopAd.getAdName(), "广告链接");
+    	checkField(shopAd.getAdLink(), "广告链接");
+    	checkField(shopAd.getImageUrl(), "广告图片");
+    	if (shopAd.getStatus() == null) {
+    		shopAd.setStatus(1);
+    	}
     	shopServiceReference.adService.create(shopAd);
     }
 
@@ -76,9 +80,10 @@ public class ShopAdController {
     @AjaxWrapper
     public void edit(ShopAd shopAd) {
     	checkField(shopAd.getAdName(), "广告名称");
-    	checkField(shopAd.getAdName(), "广告链接");
-    	if (shopAd.getSort() == null) {
-    		shopAd.setSort(0);
+    	checkField(shopAd.getAdLink(), "广告链接");
+    	checkField(shopAd.getImageUrl(), "广告图片");
+    	if (shopAd.getStatus() == null) {
+    		shopAd.setStatus(1);
     	}
 		shopServiceReference.adService.edit(shopAd);
     }
@@ -87,6 +92,16 @@ public class ShopAdController {
 	@AjaxWrapper
 	public void updateRecommendStatus(@RequestParam("ids") List<Long> ids, @RequestParam("showStatus") Integer showStatus) {
 		shopServiceReference.adService.updateShowStatus(ids, showStatus);
+	}
+
+	@GetMapping("/detail/{adId}")
+	public String detail(@PathVariable("adId") Long adId, Model model) {
+		ShopAd shopAd = shopServiceReference.adService.find(adId);
+		if (shopAd == null) {
+			throw BusinessException.build(String.format("广告不存在%s", adId));
+		}
+		model.addAttribute("ad", shopAd);
+		return prefix + "/detail";
 	}
 
     @PostMapping("/remove")
@@ -103,8 +118,8 @@ public class ShopAdController {
      * @param field
      * @param message
      */
-    public void checkField(String field, String message) {
-    	if (StringUtils.isEmpty(field)) {
+    public void checkField(Object field, String message) {
+    	if (field == null) {
     		throw BusinessException.build(String.format("%s不能为空", message));
     	}
     }

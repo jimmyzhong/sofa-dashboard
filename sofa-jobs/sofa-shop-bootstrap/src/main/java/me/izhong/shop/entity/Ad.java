@@ -26,6 +26,8 @@ public class Ad {
     private String adName;
     @Column(name = "AD_LINK")
     private String adLink;
+    @Column(name = "AD_TYPE")
+    private Integer adType;
     @Column(name = "IMAGE_URL")
     private String imageUrl; 
     @Column(name = "POSITION")
