@@ -5,6 +5,7 @@ import me.izhong.common.exception.BusinessException;
 import java.util.Arrays;
 
 public enum OrderStateEnum {
+    INVALID(-1, "invalid"),
     WAIT_PAYING(0, "等待支付"),
     PAID(1, "已支付"),
     EXPIRED(2,"超时未支付"),
@@ -31,5 +32,10 @@ public enum OrderStateEnum {
     public static String getCommentByState(int state) {
         return Arrays.stream(OrderStateEnum.values()).filter(e->e.state==state).findFirst()
                 .orElseThrow(()-> BusinessException.build("")).comment;
+    }
+
+    public static int getStateByComment(String comment) {
+        return Arrays.stream(OrderStateEnum.values()).filter(e->e.comment.equalsIgnoreCase(comment)).findFirst()
+                .orElse(INVALID).state;
     }
 }

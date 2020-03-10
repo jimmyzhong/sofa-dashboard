@@ -4,8 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.entity.City;
+import me.izhong.shop.entity.County;
+import me.izhong.shop.entity.Province;
+import me.izhong.shop.entity.Town;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +29,7 @@ import me.izhong.shop.service.IReceiveAddressService;
 import java.util.List;
 
 @Controller
+@AjaxWrapper
 @RequestMapping("/api/address")
 public class UserReceiveAddressController {
 
@@ -94,5 +101,33 @@ public class UserReceiveAddressController {
 	private Long getCurrentUserId(HttpServletRequest request) {
 		SessionInfo session = CacheUtil.getSessionInfo(request);
 		return session.getId();
+	}
+
+	@PostMapping("/list/province")
+	@ResponseBody
+	@ApiOperation(value="省,直辖市", httpMethod = "POST")
+	public List<Province> listProvince(@RequestBody PageQueryParamDTO queryParamDTO) {
+		return receiveAddressService.listProvince(queryParamDTO.getQuery());
+	}
+
+	@PostMapping("/list/city")
+	@ResponseBody
+	@ApiOperation(value="市", httpMethod = "POST")
+	public List<City> listCity(@RequestBody PageQueryParamDTO queryParamDTO) {
+		return receiveAddressService.listCity(queryParamDTO.getCode(), queryParamDTO.getQuery());
+	}
+
+	@PostMapping("/list/county")
+	@ResponseBody
+	@ApiOperation(value="区县", httpMethod = "POST")
+	public List<County> listCounty(@RequestBody PageQueryParamDTO queryParamDTO) {
+		return receiveAddressService.listCounty(queryParamDTO.getCode(), queryParamDTO.getQuery());
+	}
+
+	@PostMapping("/list/town")
+	@ResponseBody
+	@ApiOperation(value="镇", httpMethod = "POST")
+	public List<Town> listTown(@RequestBody PageQueryParamDTO queryParamDTO) {
+		return receiveAddressService.listTown(queryParamDTO.getCode(), queryParamDTO.getQuery());
 	}
 }

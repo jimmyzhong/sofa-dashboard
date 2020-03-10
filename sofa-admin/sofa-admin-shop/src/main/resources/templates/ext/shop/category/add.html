@@ -21,7 +21,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">类别名称：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="name" id="name">
+					<input class="form-control" type="text" name="name" id="name" required>
 				</div>
 			</div>
 			<div class="form-group">
@@ -51,10 +51,21 @@
 				}
 			})
 		}
+		$("#form-shop-category-add").validate({
+			onkeyup: false,
+			focusCleanup: true
+		});
 		function submitHandler() {
-			var data = $("#form-shop-category-add").serializeArray();
-			// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
-			$.operate.save(prefix + "/add", data);
+			if(!$("#imageUrl").val()){
+				$.modal.alertWarning("类别图标不能为空");
+				return;
+			}
+			if ($.validate.form()) {
+				var data = $("#form-shop-category-add").serializeArray();
+				// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
+				$.operate.save(prefix + "/add", data);
+			}
+
 		}
 	</script>
 </body>

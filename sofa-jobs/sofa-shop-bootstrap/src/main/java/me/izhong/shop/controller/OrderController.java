@@ -7,6 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.consts.Constants;
@@ -34,6 +35,7 @@ import static me.izhong.shop.consts.OrderStateEnum.*;
 
 @Slf4j
 @Controller
+@AjaxWrapper
 @RequestMapping(value = "/api/order")
 @Api(value = "订单接口",description = "订单相关接口描述")
 public class OrderController {

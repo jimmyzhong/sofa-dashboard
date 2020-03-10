@@ -37,7 +37,7 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 	public GoodsCategory saveOrUpdateWithPathInfo(GoodsCategory goodsCategory) {
 		GoodsCategory category = goodsCategoryDao.save(goodsCategory);
 		String parentPath = null;
-		if (category.getParentId() != 0) {
+		if (category.getParentId() != 0L) {
 			parentPath = goodsCategoryDao.findById(category.getParentId()).orElseGet(GoodsCategory::new).getPath();
 		}
 		String path = (parentPath == null ? "" : parentPath) + category.getId() + "/";

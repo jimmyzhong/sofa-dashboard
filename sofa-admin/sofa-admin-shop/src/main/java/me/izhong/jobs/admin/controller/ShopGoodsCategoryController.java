@@ -50,11 +50,84 @@ public class ShopGoodsCategoryController {
 
 	@GetMapping("/subCategory/{categoryId}")
 	public String subCategory(@PathVariable("categoryId") Long categoryId, Model model) {
+		model.addAttribute("categoryId", categoryId);
+		return prefix + "/subCategory";
+	}
+
+    @GetMapping("/add/{parentId}")
+    public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
+		model.addAttribute("parentId", parentId);
+        return prefix + "/add";
+    }
+
+    @PostMapping("/add")
+    @AjaxWrapper
+    public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
+    	log.info("add goods category =>{}", goodsCategory);
+    	checkField(goodsCategory.getName(), "分类名称");
+    	checkField(goodsCategory.getIcon(), "分类icon");
+    	if (goodsCategory.getSort() == null) {
+    		goodsCategory.setSort(1);
+    	}
+    	shopServiceReference.goodsCategoryService.create(goodsCategory);
+    }
+
+	@GetMapping("/edit/{categoryId}")
+	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
+		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
+		if (goodsCategory == null) {
+			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
+		}
+		model.addAttribute("goodsCategory", goodsCategory);
+		return prefix + "/edit";
+	}
+
+	@PostMapping("/edit")
+	@AjaxWrapper
+	public void edit(ShopGoodsCategory goodsCategory) {
+		ShopGoodsCategory obj = shopServiceReference.goodsCategoryService.findById(goodsCategory.getId());
+		if (obj == null) {
+			throw BusinessException.build(String.format("商品类目不存在%s", goodsCategory.getId()));
+		}
+    	checkField(goodsCategory.getName(), "分类名称");
+    	checkField(goodsCategory.getIcon(), "分类icon");
+    	if (goodsCategory.getSort() == null) {
+    		goodsCategory.setSort(1);
+    	}
+		log.info("edit goods category =>{}", goodsCategory);
+		shopServiceReference.goodsCategoryService.edit(goodsCategory);
+	}
+
+	@PostMapping("/edit/showStatus")
+	@AjaxWrapper
+	public void updatePublishStatus(@RequestParam("ids") List<Long> ids, @RequestParam("showStatus") Integer showStatus) {
+		shopServiceReference.goodsCategoryService.updateShowStatus(ids, showStatus);
+	}
+
+	/** 这部分删除**/
+	@PostMapping("/detail/{categoryId}")
+	@AjaxWrapper
+	public ShopGoodsCategory detail(@PathVariable("categoryId") Long categoryId, Model model) {
 		if (categoryId == null) {
 			throw BusinessException.build("categoryId不能为空");
 		}
-		model.addAttribute("categoryId", categoryId);
-		return prefix + "/subCategory";
+		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
+		if (goodsCategory == null) {
+			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
+		}
+		return goodsCategory;
+	}
+
+	@RequestMapping("/remove")
+	@AjaxWrapper
+	public void remove(String ids) {
+		Long[] jobIds = Convert.toLongArray(ids);
+		for (Long jobId : jobIds) {
+			boolean rt = shopServiceReference.goodsCategoryService.remove(jobId);
+			if (!rt) {
+				throw BusinessException.build("删除失败");
+			}
+		}
 	}
 
 	@GetMapping("/queryLv1")
@@ -75,74 +148,14 @@ public class ShopGoodsCategoryController {
 		return data;
 	}
 
-    @GetMapping("/add/{parentId}")
-    public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
-		model.addAttribute("parentId", parentId);
-        return prefix + "/add";
+    /**
+     * 
+     * @param field
+     * @param message
+     */
+    public void checkField(Object field, String message) {
+    	if (field == null) {
+    		throw BusinessException.build(String.format("%s不能为空", message));
+    	}
     }
-
-    @PostMapping("/add")
-    @AjaxWrapper
-    public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
-    	log.info("add category =>{}", goodsCategory);
-    	shopServiceReference.goodsCategoryService.create(goodsCategory);
-    }
-
-	@GetMapping("/edit/{categoryId}")
-	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
-		if (categoryId == null) {
-			throw BusinessException.build("categoryId不能为空");
-		}
-		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
-		if (goodsCategory == null) {
-			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
-		}
-		log.info("goodsCategoryDetail =>{}", goodsCategory);
-		model.addAttribute("goodsCategory", goodsCategory);
-		return prefix + "/edit";
-	}
-
-	@PostMapping("/detail/{categoryId}")
-	@AjaxWrapper
-	public ShopGoodsCategory detail(@PathVariable("categoryId") Long categoryId, Model model) {
-		if (categoryId == null) {
-			throw BusinessException.build("categoryId不能为空");
-		}
-		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
-		if (goodsCategory == null) {
-			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
-		}
-		log.info("goodsCategoryDetail =>{}", goodsCategory);
-		return goodsCategory;
-	}
-
-
-
-	@PostMapping("/edit")
-	@AjaxWrapper
-	public void edit(ShopGoodsCategory goodsCategory) {
-		ShopGoodsCategory obj = shopServiceReference.goodsCategoryService.findById(goodsCategory.getId());
-		if (obj == null) {
-			throw BusinessException.build(String.format("商品类目不存在%s", goodsCategory.getId()));
-		}
-		shopServiceReference.goodsCategoryService.edit(goodsCategory);
-	}
-
-	@PostMapping("/edit/showStatus")
-	@AjaxWrapper
-	public void updatePublishStatus(@RequestParam("ids") List<Long> ids, @RequestParam("showStatus") Integer showStatus) {
-		shopServiceReference.goodsCategoryService.updateShowStatus(ids, showStatus);
-	}
-
-	@RequestMapping("/remove")
-	@AjaxWrapper
-	public void remove(String ids) {
-		Long[] jobIds = Convert.toLongArray(ids);
-		for (Long jobId : jobIds) {
-			boolean rt = shopServiceReference.goodsCategoryService.remove(jobId);
-			if (!rt) {
-				throw BusinessException.build("删除失败");
-			}
-		}
-	}
 }
