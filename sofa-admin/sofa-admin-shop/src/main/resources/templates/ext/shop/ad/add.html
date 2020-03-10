@@ -25,6 +25,18 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label">广告类型：</label>
+				<div class="col-sm-8">
+					<select class="form-control" id="adType" name="adType" required>
+						<option value="1">网址</option>
+						<option value="2">内部商品</option>
+						<option value="3">内部拍品</option>
+						<option value="4">内部寄售商品</option>
+						<option value="5">无链接</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label">广告内容：</label>
 				<div class="col-sm-8">
 					<textarea class="form-control" name="content" id="content" required>
@@ -34,7 +46,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">广告链接：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="adLink" id="adLink" required>
+					<input class="form-control" type="text" name="adLink" id="adLink">
 				</div>
 			</div>
 			<div class="form-group">
@@ -86,9 +98,12 @@
 			})
 		}
 		function submitHandler() {
-			console.log($("#imageUrl").val())
 			if(!$("#imageUrl").val()){
 				$.modal.alertWarning("广告图片不能为空");
+				return;
+			}
+			if($("#adType").val()!="5"&&(!$("#adLink").val())){
+				$.modal.alertWarning("广告链接不能为空");
 				return;
 			}
 			if ($.validate.form()) {

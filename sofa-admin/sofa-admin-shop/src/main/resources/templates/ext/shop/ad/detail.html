@@ -8,18 +8,6 @@
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
 		<form class="form-horizontal m" id="form-shop-ad-edit" th:object="${ad}">
 			<input name="id" type="hidden" th:field="*{id}"/>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">广告名称：</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" name="adName" th:field="*{adName}" />
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">广告类型：</label>
-				<div class="col-sm-8">
-					<input type="text" class="form-control" name="adType" th:field="*{adType}" />
-				</div>
-			</div>
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">广告图片：</label>
 				<div class="col-sm-8">
@@ -27,32 +15,45 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label">广告名称：</label>
+				<div class="col-sm-8">
+					<p type="text" name="productName" id="productName" th:text="${ad.adName}"></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">广告类型：</label>
+				<div class="col-sm-8">
+					<p id="adType_p"></p>
+					<input type="hidden" id="adType" class="form-control" name="adType" th:field="*{adType}" />
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label">广告链接：</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="adLink" th:field="*{adLink}" />
+					<p type="text" name="adLink" th:text="${ad.adLink}"></p>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">广告内容：</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="content" th:field="*{content}" />
+					<p type="text" name="content" th:text="${ad.content}"></p>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label">是否启用：</label>
 				<div class="col-sm-8">
 					<div class="radio-inline">
-			            <label><input name="status" type="radio" value="1" th:field="*{status}"/>启用</label>
+			            <label><input readonly name="status" type="radio" value="1" th:field="*{status}"/>启用</label>
 			        </div>
 			        <div class="radio-inline">
-			            <label><input name="status" type="radio" value="0" th:field="*{status}"/>不启用</label>
+			            <label><input readonly name="status" type="radio" value="0" th:field="*{status}"/>不启用</label>
 			        </div>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">排序：</label>
+				<label class="col-sm-3 control-label">权重：</label>
 				<div class="col-sm-8">
-					<input type="text" class="form-control" name="sort" th:field="*{sort}" />
+					<p type="text" name="sort" th:field="*{sort}"></p>
 				</div>
 			</div>
 		</form>
@@ -60,6 +61,11 @@
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
+		$(function () {
+			var adType=$("#adType").val();
+			var str={1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"无链接"}[adType]||"不详"
+			$("#adType_p").text(str)
+		})
 	</script>
 </body>
 </html>

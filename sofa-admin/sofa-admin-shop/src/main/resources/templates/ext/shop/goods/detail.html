@@ -56,13 +56,19 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
-					<button type="button" class="btn btn-w-m btn-primary">返回</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</button>
 				</div>
 			</div>
 		</form>
 		<input id="category" type="hidden" th:value="${goods.productCategoryId}"/>
 		<input id="subCategory" type="hidden" th:value="${goods.productCategorySecondaryId}"/>
 	</div>
+	<style>
+		#detail_desc_contain img{
+			width: 100% !important;
+		}
+	</style>
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
@@ -92,6 +98,10 @@
 				})
 			}
 		});
+		function gotoEdit() {
+			var url = prefix + '/edit/' + $("#id").val();
+			$.modal.openTab("编辑商品", url);
+		}
 	</script>
 </body>
 </html>
