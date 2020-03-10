@@ -53,7 +53,14 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">权重：</label>
 				<div class="col-sm-8">
-					<p type="text" name="sort" th:field="*{sort}"></p>
+					<p name="sort" th:text="${ad.sort}"></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</button>
 				</div>
 			</div>
 		</form>
@@ -66,6 +73,10 @@
 			var str={1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"无链接"}[adType]||"不详"
 			$("#adType_p").text(str)
 		})
+		function gotoEdit() {
+			var url = prefix + '/edit/' + $("#id").val();
+			$.modal.openTab("编辑广告", url);
+		}
 	</script>
 </body>
 </html>
