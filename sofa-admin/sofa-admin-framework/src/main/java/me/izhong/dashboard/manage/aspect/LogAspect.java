@@ -7,6 +7,7 @@ import me.izhong.dashboard.manage.constants.SystemConstants;
 import me.izhong.dashboard.manage.entity.SysOperLog;
 import me.izhong.dashboard.manage.factory.AsyncManager;
 import me.izhong.dashboard.manage.factory.AsyncFactory;
+import me.izhong.dashboard.manage.util.IpUtil;
 import me.izhong.dashboard.manage.util.ServletUtil;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +20,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -71,16 +73,20 @@ public class LogAspect {
             SysOperLog sysOperLog = new SysOperLog();
             sysOperLog.setStatus(SystemConstants.SUCCESS);
             // 请求的地址
-            String ip = currentUser.getLoginIp();
-            sysOperLog.setOperIp(ip);
+            HttpServletRequest request = ServletUtil.getRequest();
+            if (request != null) {
+                String ip = IpUtil.getIpAddr(request);
+                sysOperLog.setOperIp(ip);
+                sysOperLog.setOperLocation(IpUtil.getRealAddressByIP(ip));
+            }
             // 返回参数
-            sysOperLog.setJsonResult(JSON.toJSONString(jsonResult));
+            if(jsonResult != null) {
+                sysOperLog.setJsonResult(JSON.toJSONString(jsonResult));
+            }
             sysOperLog.setOperUrl(ServletUtil.getRequest().getRequestURI());
-            if (currentUser != null) {
-                sysOperLog.setOperName(currentUser.getLoginName());
-                if (StringUtils.isNotEmpty(currentUser.getDeptName())) {
-                    sysOperLog.setDeptName(currentUser.getDeptName());
-                }
+            sysOperLog.setOperName(currentUser.getLoginName());
+            if (StringUtils.isNotEmpty(currentUser.getDeptName())) {
+                sysOperLog.setDeptName(currentUser.getDeptName());
             }
 
             if (e != null) {

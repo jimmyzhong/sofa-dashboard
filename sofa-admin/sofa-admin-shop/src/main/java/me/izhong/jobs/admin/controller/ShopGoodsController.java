@@ -1,11 +1,10 @@
 package me.izhong.jobs.admin.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
@@ -23,10 +23,11 @@ import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopGoods;
 
+@Slf4j
 @Controller
 @RequestMapping("/ext/shop/goods")
 public class ShopGoodsController {
-	private static Logger logger = LoggerFactory.getLogger(ShopGoodsController.class);
+
 	private String prefix = "ext/shop/goods";
 
 	@Autowired(required = false)
@@ -52,37 +53,24 @@ public class ShopGoodsController {
     @PostMapping("/add")
     @AjaxWrapper
     public void addGoods(ShopGoods goods) {
+    	checkField(goods.getProductName(), "商品名称");
+    	checkField(goods.getProductPic(), "商品封面图");
+    	checkField(goods.getPrice(), "商品价格");
+    	checkField(goods.getDetailDesc(), "商品详情");
+    	if (goods.getPrice().compareTo(BigDecimal.ZERO) == 0) {
+    		throw BusinessException.build("商品价格不能为0");
+    	}
     	shopServiceReference.goodsService.create(goods);
     }
 
 	@GetMapping("/edit/{goodsId}")
 	public String edit(@PathVariable("goodsId") Long goodsId, Model model) {
-		if (goodsId == null) {
-			throw BusinessException.build("goodsId不能为空");
-		}
 		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
-		logger.info("forward goods detail =>{}",goods);
 		if (goods == null) {
 			throw BusinessException.build(String.format("商品不存在%s", goodsId));
 		}
-
 		model.addAttribute("goods", goods);
 		return prefix + "/edit";
-	}
-
-	@GetMapping("/detail/{goodsId}")
-	public String detail(@PathVariable("goodsId") Long goodsId, Model model) {
-		if (goodsId == null) {
-			throw BusinessException.build("goodsId不能为空");
-		}
-		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
-		logger.info("forward goods detail =>{}",goods);
-		if (goods == null) {
-			throw BusinessException.build(String.format("商品不存在%s", goodsId));
-		}
-
-		model.addAttribute("goods", goods);
-		return prefix + "/detail";
 	}
 
 	@PostMapping("/edit")
@@ -92,8 +80,8 @@ public class ShopGoodsController {
 		if (obj == null) {
 			throw BusinessException.build(String.format("商品不存在%s", goods.getId()));
 		}
-		logger.info("goods detail =>{}",obj);
-		shopServiceReference.goodsService.edit(obj);
+		log.info("edit goods => {}", goods);
+		shopServiceReference.goodsService.edit(goods);
 	}
 
 	@PostMapping("/edit/publishStatus")
@@ -114,6 +102,16 @@ public class ShopGoodsController {
 		shopServiceReference.goodsService.updateDeleteStatus(ids, deleteStatus);
 	}
 
+	@GetMapping("/detail/{goodsId}")
+	public String detail(@PathVariable("goodsId") Long goodsId, Model model) {
+		ShopGoods goods = shopServiceReference.goodsService.find(goodsId);
+		if (goods == null) {
+			throw BusinessException.build(String.format("商品不存在%s", goodsId));
+		}
+		model.addAttribute("goods", goods);
+		return prefix + "/detail";
+	}
+
 	@PostMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
@@ -125,4 +123,15 @@ public class ShopGoodsController {
 			}
 		}
 	}
+
+    /**
+     * 
+     * @param field
+     * @param message
+     */
+    public void checkField(Object field, String message) {
+    	if (field == null) {
+    		throw BusinessException.build(String.format("%s不能为空", message));
+    	}
+    }
 }

@@ -10,6 +10,7 @@ public class AdDTO {
     private Long id;
     private String adName;
     private String adLink;
+    private Integer adType;
     private String imageUrl; 
     private Integer position;
     private String content;

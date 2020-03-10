@@ -44,7 +44,6 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 		Ad ad = new Ad();
 		BeanUtils.copyProperties(shopAd, ad);
 		ad.setPosition(1);
-		ad.setStatus(shopAd.getStatus() == null ? 1 : shopAd.getStatus());
 		ad.setCreateTime(LocalDateTime.now());
 		ad.setUpdateTime(LocalDateTime.now());
 		adService.saveOrUpdate(ad);
@@ -81,6 +80,7 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 			}
 			return true;
 		} catch (Exception e) {
+			log.info("delete error:", e);
 			return false;
 		}
 	}

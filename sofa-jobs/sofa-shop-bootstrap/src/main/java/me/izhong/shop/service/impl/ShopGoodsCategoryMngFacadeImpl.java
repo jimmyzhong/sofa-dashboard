@@ -50,7 +50,6 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	@Override
 	public void create(ShopGoodsCategory shopGoodsCategory) {
 		GoodsCategory goodsCategory = new GoodsCategory();
-		goodsCategory.setProductCount(0);
 		BeanUtils.copyProperties(shopGoodsCategory, goodsCategory);
 		setCategoryLevel(goodsCategory);
 		goodsCategoryService.saveOrUpdateWithPathInfo(goodsCategory);

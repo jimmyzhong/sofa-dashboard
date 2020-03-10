@@ -17,6 +17,7 @@ public class ShopAd implements Serializable {
 	private Long id;
     private String adName;
     private String adLink;
+    private Integer adType;
     private String imageUrl; 
     private Integer position;
     private String content;
