@@ -9,8 +9,12 @@ import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.entity.Order;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface IOrderService {
+
+    @Transactional
+    void updateExpiredOrders();
 
     Order saveOrUpdate(Order order);
 

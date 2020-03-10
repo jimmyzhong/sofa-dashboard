@@ -1,5 +1,6 @@
 package me.izhong.shop.service.impl;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
@@ -23,15 +24,24 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceUnit;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static me.izhong.shop.consts.OrderStateEnum.*;
@@ -54,6 +64,39 @@ public class OrderService implements IOrderService {
 	private CartItemService cartItemService;
 	@Autowired
 	private IGoodsService goodsService;
+	@Value("${order.expire.time}")
+	private Long orderExpireMinutes;
+
+	@PostConstruct
+	public void setUp() {
+		ScheduledExecutorService orderStatusUpdater = Executors.newSingleThreadScheduledExecutor(
+				new ThreadFactoryBuilder()
+				.setNameFormat("order-status-updater").build());
+		orderStatusUpdater.scheduleAtFixedRate(() -> {
+			try {
+				updateExpiredOrders();
+			}catch (Throwable throwable) {
+				log.error("order update expired status error", throwable);
+			}
+		}, 1, 2, TimeUnit.MINUTES);
+	}
+
+	@Override
+	@Transactional
+	public void updateExpiredOrders() {
+		Long start = System.currentTimeMillis();
+		try {
+			List<Order> unpaidOrders = orderDao.findAllByStatusAndCreateTimeBeforeOrderByOrderSnDesc(
+					WAIT_PAYING.getState(), LocalDateTime.now().minusMinutes(orderExpireMinutes));
+			log.info("find orders : " + unpaidOrders.size());
+			if (!unpaidOrders.isEmpty()) {
+				orderDao.updateOrderStatus(unpaidOrders.stream().map(Order::getId).collect(Collectors.toList()),
+						EXPIRED.getState());
+			}
+		} finally {
+			log.info("task finish time: " + (System.currentTimeMillis() - start));
+		}
+	}
 
 	@Override
 	@Transactional
@@ -71,16 +114,21 @@ public class OrderService implements IOrderService {
 		Order order = findByOrderNo(orderNo);
 		List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
 
-		if (Integer.valueOf(WAIT_PAYING.getState()).equals(order.getStatus()) &&
-				LocalDateTime.now().isAfter(order.getCreateTime().plusMinutes(30))) {
-			order.setStatus(EXPIRED.getState());
-			order = saveOrUpdate(order);
-		}
+		checkOrderExpired(order);
 
 		OrderFullDTO dto = new OrderFullDTO();
 		BeanUtils.copyProperties(order, dto);
+		dto.setStatusComment(getCommentByState(dto.getStatus()));
 		dto.setItems(items);
 		return dto;
+	}
+
+	private Order checkOrderExpired(Order order) {
+		if (Integer.valueOf(WAIT_PAYING.getState()).equals(order.getStatus()) &&
+				LocalDateTime.now().isAfter(order.getCreateTime().plusMinutes(orderExpireMinutes))) {
+			order.setStatus(EXPIRED.getState());
+		}
+		return order;
 	}
 
 	@Override
@@ -267,7 +315,9 @@ public class OrderService implements IOrderService {
 		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),
 				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
 		Page<Order> orders = orderDao.findAll(example, pageableReq);
-		List<OrderDTO> dtos = orders.getContent().stream().map(o->OrderDTO.builder()
+		List<OrderDTO> dtos = orders.getContent().stream()
+				.map(o->checkOrderExpired(o))
+				.map(o->OrderDTO.builder()
 				.orderSn(o.getOrderSn()).id(o.getId()).count(o.getCount())
 				.totalAmount(o.getTotalAmount()).statusComment(getCommentByState(o.getStatus()))
 				.subject(o.getSubject()).description(o.getDescription()).build())

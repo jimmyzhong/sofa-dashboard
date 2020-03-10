@@ -119,6 +119,11 @@ public class OrderController {
 		return orderService.list(getCurrentUserId(request), query);
 	}
 
+	@PostMapping(value = "/updateExpires")
+	public void update() {
+    	orderService.updateExpiredOrders();
+	}
+
 	@GetMapping(value = "/detail/{orderNo}")
 	@ResponseBody
 	@RequireUserLogin
