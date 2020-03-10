@@ -5,16 +5,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.common.domain.PageModel;
+import me.izhong.shop.annotation.RequireUserLogin;
+import me.izhong.shop.consts.Constants;
+import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.dto.order.OrderDTO;
+import me.izhong.shop.entity.Ad;
+import me.izhong.shop.service.IAdService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -24,12 +30,26 @@ import me.izhong.shop.entity.Goods;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.service.IHomeService;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
+@AjaxWrapper
 @RequestMapping("/api/home")
 public class HomeController {
 
 	@Autowired
 	private IHomeService homeService;
+
+	@Autowired
+    private IAdService adService;
+
+
+    @PostMapping(value = "/ad/list")
+    @ResponseBody
+    @ApiOperation(value="广告列表", httpMethod = "POST")
+    public PageModel<Ad> list(@RequestBody PageQueryParamDTO query, HttpServletRequest request) {
+        return adService.pageList(query, null, null , null);
+    }
 
     @GetMapping(value = "/recommendProductList")
     @ResponseBody

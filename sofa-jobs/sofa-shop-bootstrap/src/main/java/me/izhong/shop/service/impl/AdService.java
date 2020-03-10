@@ -1,14 +1,23 @@
 package me.izhong.shop.service.impl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
+import me.izhong.jobs.model.ShopAd;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.izhong.shop.dao.AdDao;
 import me.izhong.shop.entity.Ad;
 import me.izhong.shop.service.IAdService;
+
+import static org.springframework.data.domain.PageRequest.of;
 
 @Service
 public class AdService implements IAdService {
@@ -39,6 +48,42 @@ public class AdService implements IAdService {
 	@Override
 	public Ad findById(Long adId) {
 		return adDao.findById(adId).orElseThrow(()->new RuntimeException("unable to find Ad by " + adId));
+	}
+
+	@Override
+	public PageModel<Ad> pageList(PageRequest request, String name, String content, String status) {
+		Ad ad = new Ad();
+		ad.setPosition(1);
+		if (!StringUtils.isEmpty(name)) {
+			ad.setAdName(name);
+		}
+		if (!StringUtils.isEmpty(content)) {
+			ad.setContent(content);
+		}
+		if (!StringUtils.isEmpty(status)) {
+			ad.setStatus(Integer.valueOf(status));
+		} else {
+			ad.setStatus(1);
+		}
+
+		ExampleMatcher matcher = ExampleMatcher.matchingAll()
+				.withMatcher("status", ExampleMatcher.GenericPropertyMatchers.exact())
+				.withMatcher("adName", ExampleMatcher.GenericPropertyMatchers.contains())
+				.withMatcher("content", ExampleMatcher.GenericPropertyMatchers.contains());
+
+		Example<Ad> example = Example.of(ad, matcher);
+		Sort sort = Sort.unsorted();
+		if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
+			sort = Sort.by("asc".equalsIgnoreCase(request.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
+					request.getOrderByColumn());
+		}
+
+		Pageable pageableReq = of(
+				Long.valueOf(request.getPageNum()-1).intValue(),
+				Long.valueOf(request.getPageSize()).intValue(), sort);
+		Page<Ad> adPage = adDao.findAll(example, pageableReq);
+
+		return PageModel.instance(adPage.getTotalElements(), adPage.getContent());
 	}
 
 }
