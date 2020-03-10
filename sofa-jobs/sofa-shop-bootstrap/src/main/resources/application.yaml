@@ -98,3 +98,6 @@ com:
         registry:
           address: zookeeper://lpp.izhong.me:52181
         bolt-port: 13304
+order:
+  expire:
+    time: 5

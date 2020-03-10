@@ -19,6 +19,7 @@ import me.izhong.shop.dto.order.SubmitOrderRequest;
 import me.izhong.shop.dto.order.SubmitOrderResponse;
 import me.izhong.shop.entity.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,9 @@ public class OrderController {
 	@Autowired
 	private IOrderService orderService;
 
+	@Value("${order.expire.time}")
+	private Long orderExpireMinutes;
+
     @PostMapping(value = "/submitOrder")
     @ResponseBody
 	@RequireUserLogin
@@ -60,7 +64,8 @@ public class OrderController {
     	Long userId = getCurrentUserId(request);
     	Order order = orderService.submit(userId, submitOrder.getAddressId(), submitOrder.getCartItems());
 		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
-				.status(getCommentByState(order.getStatus())).build();
+				.status(getCommentByState(order.getStatus()))
+				.timeToPay(String.valueOf(orderExpireMinutes)).build();
     }
 
 	@PostMapping(value = "/submitOrder/goods")
@@ -80,7 +85,8 @@ public class OrderController {
 				submitOrder.getAddressId(), submitOrder.getQuantity());
 
 		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
-				.status(getCommentByState(order.getStatus())).build();
+				.status(getCommentByState(order.getStatus()))
+				.timeToPay(String.valueOf(orderExpireMinutes)).build();
 	}
 
     @PostMapping(value = "/confirmOrder")
@@ -117,6 +123,11 @@ public class OrderController {
 			value = "登录成功后response Authorization header", required = true)
 	public PageModel<OrderDTO> list(@RequestBody PageQueryParamDTO query, HttpServletRequest request) {
 		return orderService.list(getCurrentUserId(request), query);
+	}
+
+	@PostMapping(value = "/updateExpires")
+	public void update() {
+    	orderService.updateExpiredOrders();
 	}
 
 	@GetMapping(value = "/detail/{orderNo}")

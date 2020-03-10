@@ -185,6 +185,9 @@ public class UserRealm extends AuthorizingRealm {
             onlineSession.setHost(IpUtil.getIpAddr(request));
             onlineSession.setBrowser(browser);
             onlineSession.setOs(os);
+
+            String ip = IpUtil.getIpAddr(request);
+            loginUser.setLoginIp(ip);
         }
         onlineSession.setLoginName(loginUser.getLoginName());
         onlineSession.setUserId(loginUser.getUserId());
