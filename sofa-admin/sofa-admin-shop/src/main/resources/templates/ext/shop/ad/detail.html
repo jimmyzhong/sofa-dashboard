@@ -74,6 +74,7 @@
 			var str={1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"无链接"}[adType]||"不详"
 			$("#adType_p").text(str)
 		})
+
 		function gotoEdit() {
 			var url = prefix + '/edit/' + $("#id").val();
 			$.modal.openTab("编辑广告", url);
