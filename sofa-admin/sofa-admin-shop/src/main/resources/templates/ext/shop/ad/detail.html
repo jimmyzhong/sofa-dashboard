@@ -9,7 +9,7 @@
 		<form class="form-horizontal m" id="form-shop-ad-edit" th:object="${ad}">
 			<input name="id" type="hidden" th:field="*{id}"/>
 			<div class="form-group tc">
-				<label class="col-sm-3 control-label">广告图片：</label>
+				<label class="col-sm-3 control-label">广告prefix图片：</label>
 				<div class="col-sm-8">
 					<img id="ad_img" class="img-circle img-lg" th:src="*{imageUrl}">
 				</div>
@@ -68,6 +68,7 @@
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
+		var prefix = ctx + "ext/shop/ad";
 		$(function () {
 			var adType=$("#adType").val();
 			var str={1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"无链接"}[adType]||"不详"
