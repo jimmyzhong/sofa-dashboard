@@ -28,4 +28,6 @@ public interface IGoodsService {
 	GoodsDTO findGoodsWithAttrById(Long goodsId);
 
 	GoodsDTO findGoodsWithAttrById(Long goodsId, Long goodsAttrId);
+
+	void updateStore(Long goodId, Long goodAttrId, Integer newStore);
 }

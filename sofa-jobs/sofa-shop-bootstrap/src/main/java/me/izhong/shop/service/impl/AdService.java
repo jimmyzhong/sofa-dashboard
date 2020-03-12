@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.jobs.model.ShopAd;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -47,10 +48,11 @@ public class AdService implements IAdService {
 
 	@Override
 	public Ad findById(Long adId) {
-		return adDao.findById(adId).orElseThrow(()->new RuntimeException("unable to find Ad by " + adId));
+		return adDao.findById(adId).orElseThrow(()-> BusinessException.build("找不到广告" + adId));
 	}
 
 	@Override
+	@Transactional(readOnly=true)
 	public PageModel<Ad> pageList(PageRequest request, String name, String content, String status) {
 		Ad ad = new Ad();
 		ad.setPosition(1);
@@ -82,7 +84,7 @@ public class AdService implements IAdService {
 				Long.valueOf(request.getPageNum()-1).intValue(),
 				Long.valueOf(request.getPageSize()).intValue(), sort);
 		Page<Ad> adPage = adDao.findAll(example, pageableReq);
-
+		adPage.getContent().stream().forEach(ads->ads.setContent(null));
 		return PageModel.instance(adPage.getTotalElements(), adPage.getContent());
 	}
 
