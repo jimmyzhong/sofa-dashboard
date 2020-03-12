@@ -1,14 +1,20 @@
 package me.izhong.dashboard.manage.security.service;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.model.UserInfo;
 import me.izhong.common.util.DateUtil;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
+import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
 import me.izhong.dashboard.manage.util.IpUtil;
 import me.izhong.dashboard.manage.util.SerializeUtil;
 import me.izhong.dashboard.manage.util.ServletUtil;
 import org.apache.shiro.session.Session;
+import org.apache.shiro.session.mgt.SimpleSession;
+import org.apache.shiro.subject.SimplePrincipalCollection;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -86,10 +92,28 @@ public class SysShiroService {
 
     public void saveSession(Session s) {
         OnlineSession session = (OnlineSession) s;
+
+        UserInfo user = null;
+        Long userId = null;
+        String loginName = null;
+        if(s.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY) != null) {
+            Object obj =  ((SimplePrincipalCollection)s.getAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY)).getPrimaryPrincipal();
+            if(obj instanceof UserInfo) {
+                user = (UserInfo)obj;
+            } else {
+                user = new UserInfo();
+                BeanUtils.copyProperties(obj, user);
+            }
+        }
+
         SysUserOnline online = new SysUserOnline();
         online.setSessionId(String.valueOf(session.getId()));
-        online.setDeptName(session.getDeptName());
-        online.setLoginName(session.getLoginName());
+        if(user != null) {
+            userId = user.getUserId();
+            loginName = user.getLoginName();
+            online.setDeptName(user.getDeptName());
+            online.setLoginName(loginName);
+        }
         online.setStartTimestamp(session.getStartTimestamp());
         online.setLastAccessTime(session.getLastAccessTime());
         online.setExpireTime(session.getTimeout());
@@ -99,7 +123,7 @@ public class SysShiroService {
         online.setOs(session.getOs());
         online.setStatus(session.getStatus());
         online.setSession(SerializeUtil.serialize(s));
-        log.debug("修改session {} {} {} {}",session.getId(),session.getUserId(),session.getLoginName(), DateUtil.dateTime(session.getLastAccessTime()));
+        log.debug("修改session {} {} {} {}",session.getId(),userId,loginName, DateUtil.dateTime(session.getLastAccessTime()));
         onlineService.saveOnline(online);
     }
 }

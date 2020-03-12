@@ -189,10 +189,10 @@ public class UserRealm extends AuthorizingRealm {
             String ip = IpUtil.getIpAddr(request);
             loginUser.setLoginIp(ip);
         }
-        onlineSession.setLoginName(loginUser.getLoginName());
-        onlineSession.setUserId(loginUser.getUserId());
-        onlineSession.setDeptName(loginUser.getDeptName());
-        onlineSession.setAvatar(loginUser.getAvatar());
+//        onlineSession.setLoginName(loginUser.getLoginName());
+//        onlineSession.setUserId(loginUser.getUserId());
+//        onlineSession.setDeptName(loginUser.getDeptName());
+//        onlineSession.setAvatar(loginUser.getAvatar());
         shiroService.saveSession(session);
 
         List<SysRole> rs = sysRoleService.selectRolesByUserId(loginUser.getUserId());
