@@ -2,16 +2,10 @@ package me.izhong.dashboard.manage.security.session;
 
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.security.service.SysShiroService;
-import me.izhong.dashboard.manage.factory.AsyncManager;
-import me.izhong.dashboard.manage.factory.AsyncFactory;
-import me.izhong.dashboard.manage.service.SysUserOnlineService;
-import me.izhong.dashboard.manage.util.SerializeUtil;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.UnknownSessionException;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
-import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.io.Serializable;
 import java.util.*;

@@ -3,7 +3,6 @@ package me.izhong.dashboard.manage.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
-import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.entity.SysUser;
 
 import java.util.Date;

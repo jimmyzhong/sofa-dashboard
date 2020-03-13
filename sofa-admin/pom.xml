@@ -15,7 +15,6 @@
         <module>sofa-admin-bootstrap</module>
         <module>sofa-admin-common</module>
         <module>sofa-admin-framework</module>
-        <module>sofa-admin-system</module>
         <module>sofa-admin-job</module>
     </modules>
 
@@ -117,40 +116,6 @@
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongodb-driver</artifactId>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-mongodb</artifactId>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>mongo-java-driver</artifactId>
-                        <groupId>org.mongodb</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- 核心模块-->
-            <dependency>
-                <groupId>me.izhong.sofa</groupId>
-                <artifactId>sofa-admin-framework</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- 系统模块-->
-            <dependency>
-                <groupId>me.izhong.sofa</groupId>
-                <artifactId>sofa-admin-system</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 

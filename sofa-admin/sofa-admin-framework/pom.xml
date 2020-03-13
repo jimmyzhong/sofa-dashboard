@@ -30,12 +30,6 @@
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 
-		<!--阿里数据库连接池 -->
-		<!--<dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
-        </dependency>-->
-
 		<!--验证码 -->
 		<dependency>
 			<groupId>com.github.penggle</groupId>
@@ -66,12 +60,6 @@
 			<artifactId>UserAgentUtils</artifactId>
 		</dependency>
 
-        <!-- 系统模块-->
-        <dependency>
-            <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-admin-system</artifactId>
-		</dependency>
-		
 		<!-- 获取系统信息 -->
 		<dependency>
 			<groupId>com.github.oshi</groupId>
@@ -86,6 +74,17 @@
 		<dependency>
 			<groupId>net.java.dev.jna</groupId>
 			<artifactId>jna-platform</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>me.izhong.sofa</groupId>
+			<artifactId>sofa-admin-common</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>me.izhong.sofa</groupId>
+			<artifactId>sofa-db-mongo-commons</artifactId>
+			<version>${project.version}</version>
 		</dependency>
 
 	</dependencies>

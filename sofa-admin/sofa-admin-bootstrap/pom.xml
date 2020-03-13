@@ -31,11 +31,6 @@
             <version>2.1.0.RELEASE</version>
             <optional>true</optional> <!-- 表示依赖不会传递 -->
 		</dependency>
-		<!-- 核心模块-->
-        <dependency>
-            <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-admin-framework</artifactId>
-        </dependency>
 
         <!-- 引入依赖在这里 -->
         <!--SOFARPC 依赖-->
@@ -63,7 +58,13 @@
             <groupId>com.alipay.sofa.lookout</groupId>
             <artifactId>lookout-sofa-boot-starter</artifactId>
         </dependency>-->
-        
+
+        <dependency>
+            <groupId>me.izhong.sofa</groupId>
+            <artifactId>sofa-admin-framework</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- 定时任务-->
         <dependency>
             <groupId>me.izhong.sofa</groupId>
