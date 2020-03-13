@@ -9,6 +9,9 @@ public class PageQueryParamDTO extends PageRequest {
     private String code;
     private String query;
     private String categoryPath;
+    private Integer productType;
+    private Long userId;
+
     public boolean validRequest() {
         if (this.getPageNum()<0) {
             throw BusinessException.build("请求页码应该大于0");

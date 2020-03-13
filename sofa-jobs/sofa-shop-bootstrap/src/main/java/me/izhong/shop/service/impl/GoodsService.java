@@ -105,6 +105,15 @@ public class GoodsService implements IGoodsService {
 		if (!StringUtils.isEmpty(queryParam.getCategoryPath())) {
 			goods.setCategoryPath(queryParam.getCategoryPath());
 		}
+		if (queryParam.getProductType() != null) {
+			goods.setProductType(queryParam.getProductType());
+		} else {
+			goods.setProductType(null);
+		}
+
+		if (queryParam.getUserId() != null) {
+			goods.setCreatedBy(queryParam.getUserId());
+		}
 
 		ExampleMatcher matcher = ExampleMatcher.matchingAll()
 				.withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -126,7 +135,7 @@ public class GoodsService implements IGoodsService {
 				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
 				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
 				.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
-				.build()).collect(Collectors.toList());
+				.productType(g.getProductType()).build()).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
 	}
 
