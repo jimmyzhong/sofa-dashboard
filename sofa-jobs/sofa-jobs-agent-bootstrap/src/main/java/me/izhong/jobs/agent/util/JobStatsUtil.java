@@ -1,10 +1,10 @@
 package me.izhong.jobs.agent.util;
 
-import com.alipay.lookout.common.Assert;
 import me.izhong.jobs.agent.service.JobServiceReference;
 import me.izhong.jobs.manage.IJobMngFacade;
 import me.izhong.jobs.model.JobStats;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.util.Assert;
 
 public class JobStatsUtil {
 

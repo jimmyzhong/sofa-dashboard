@@ -1,8 +1,8 @@
 package me.izhong.jobs.agent.util;
 
-import com.alipay.lookout.common.Assert;
 import me.izhong.jobs.agent.service.JobServiceReference;
 import me.izhong.jobs.manage.IJobMngFacade;
+import org.springframework.util.Assert;
 
 public class JobConfigUtil {
 
