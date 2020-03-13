@@ -11,7 +11,6 @@
 
     <artifactId>sofa-admin-job</artifactId>
 
-
     <dependencies>
         <dependency>
             <groupId>com.alipay.sofa</groupId>
