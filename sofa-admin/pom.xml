@@ -38,7 +38,6 @@
         <poi.version>3.17</poi.version>
         <velocity.version>1.7</velocity.version>
         <mongodb-driver.version>3.8.2</mongodb-driver.version>
-        <spring-data-mongodb.version>2.1.9.RELEASE</spring-data-mongodb.version>
     </properties>
 
     <dependencies>
@@ -128,7 +127,6 @@
             <dependency>
                 <groupId>org.springframework.data</groupId>
                 <artifactId>spring-data-mongodb</artifactId>
-                <version>${spring-data-mongodb.version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>mongo-java-driver</artifactId>
@@ -172,34 +170,7 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>public</id>
-            <name>aliyun nexus</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>michaelklishin</id>
-            <url>https://dl.bintray.com/michaelklishin/maven/</url>
-        </repository>
-    </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>public</id>
-            <name>aliyun nexus</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
 
 </project>

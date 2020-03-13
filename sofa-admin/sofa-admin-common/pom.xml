@@ -38,7 +38,6 @@
 			<artifactId>shiro-core</artifactId>
 		</dependency>
 
-
 		<!-- 自定义验证注解 -->
 		<dependency>
 			<groupId>javax.validation</groupId>
@@ -51,20 +50,7 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<exclusions>
-				<exclusion>
-					<artifactId>mongo-java-driver</artifactId>
-					<groupId>org.mongodb</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jcl-over-slf4j</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+		
 	</dependencies>
   
 </project>
