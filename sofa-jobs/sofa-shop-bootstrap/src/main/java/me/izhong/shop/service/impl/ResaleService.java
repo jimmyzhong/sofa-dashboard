@@ -55,7 +55,7 @@ public class ResaleService {
                         .setNameFormat("resale-price-updater").build());
         resaleGoodsPriceUpdater.scheduleAtFixedRate(() -> {
             try {
-                updateResaleGoodsPrice();
+                // TODO updateResaleGoodsPrice();
             }catch (Throwable throwable) {
                 log.error("goods price update error", throwable);
             }
@@ -71,6 +71,7 @@ public class ResaleService {
         List<Goods> decayList = new ArrayList<>();
         for (Goods g: goods) {
             BigDecimal price = g.getPrice();
+            // TODO correct to be idempotent
             BigDecimal newPrice = price.multiply(BigDecimal.valueOf(1-decayFactor));
             BigDecimal limit = g.getOriginalPrice().multiply(BigDecimal.valueOf(decayLimit));
             if (newPrice.compareTo(limit) >0) {

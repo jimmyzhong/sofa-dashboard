@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "PAY_RECORD")
 @SequenceGenerator(name = "PAY_RECORD_SEQ", sequenceName = "PAY_RECORD_SEQ", allocationSize = 1)
-public class PayRecord {
+public class PayRecord extends PersistedEntity{
     @Id
     @GeneratedValue
     private Long id;
@@ -27,10 +27,15 @@ public class PayRecord {
     private String externalId;
     @Column(name = "PAY_METHOD", length = 20)
     private String payMethod;
-    @Column(name = "PAY_FOR_TYPE", length = 20)
-    private String payForType;
+    @Column(name = "TYPE", length = 20)
+    private String type;
     @Column(name = "PAY_STATE", length = 20)
     private String state;
     @Column(name = "COMMENT", length = 200)
     private String comment;
+    @Column(name = "PAYER")
+    Long payerId;
+    @Column(name = "RECEIVER")
+    Long receiverId;
+
 }

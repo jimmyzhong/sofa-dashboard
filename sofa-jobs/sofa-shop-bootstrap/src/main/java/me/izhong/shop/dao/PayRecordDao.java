@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PayRecordDao extends JpaRepository<PayRecord, Long> {
 
-    PayRecord findFirstByInternalId(String internalOrderNo);
+    PayRecord findFirstByInternalIdAndType(String internalOrderNo, String type);
 }

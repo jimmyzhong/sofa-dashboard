@@ -1,12 +1,16 @@
 package me.izhong.shop.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.dao.UserDao;
+import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,10 +46,46 @@ public class UserService implements IUserService {
         if (userDao.findFirstByPhone(user.getPhone())!=null) {
             throw BusinessException.build("该号码已被使用:" + user.getPhone());
         }
+        if (user.getInviteUserId() != null) {
+            User invitor = userDao.getOne(user.getInviteUserId());
+            if (invitor == null) {
+                throw BusinessException.build("邀请人不存在");
+            }
+            if (invitor.getInviteUserId() != null) {
+                user.setInviteUserId2(invitor.getInviteUserId());
+            }
+        }
         user.encryptUserPassword();
         user.setRegisterTime(Timestamp.valueOf(LocalDateTime.now()));
         user.setLoginTime(user.getRegisterTime());
         return userDao.save(user);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageModel<User> list(Long userId, me.izhong.common.domain.PageRequest request) {
+        User user = this.findById(userId);
+
+        User u = new User();
+        u.setInviteUserId(user.getId());
+        u.setInviteUserId2(user.getId());
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withMatcher("inviteUserId", ExampleMatcher.GenericPropertyMatchers.exact())
+                .withMatcher("inviteUserId2", ExampleMatcher.GenericPropertyMatchers.exact());
+
+        Example<User> example = Example.of(u, matcher);
+        Sort sort = Sort.by(Sort.Direction.DESC, "registerTime");
+
+        Pageable pageableReq = org.springframework.data.domain.PageRequest.
+                of(Long.valueOf(request.getPageNum()-1).intValue(),
+                Long.valueOf(request.getPageSize()).intValue(), sort);
+        Page<User> users = userDao.findAll(example, pageableReq);
+        users.getContent().stream().forEach(uu->{
+            uu.setPassword(null);
+            uu.setSalt(null);
+        });
+        return PageModel.instance(users.getTotalElements(), users.getContent());
     }
 
     @Transactional
