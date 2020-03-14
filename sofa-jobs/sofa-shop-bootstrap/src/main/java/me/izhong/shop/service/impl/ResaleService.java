@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,6 +45,8 @@ public class ResaleService {
     @Autowired
     OrderService orderService;
 
+    @Value("${order.resale.decay.period.hours}")
+    private Integer decayPeriodHours;
     @Value("${order.resale.decay.factor}")
     private Double decayFactor;
     @Value("${order.resale.decay.limit}")
@@ -55,7 +59,7 @@ public class ResaleService {
                         .setNameFormat("resale-price-updater").build());
         resaleGoodsPriceUpdater.scheduleAtFixedRate(() -> {
             try {
-                // TODO updateResaleGoodsPrice();
+                updateResaleGoodsPrice();
             }catch (Throwable throwable) {
                 log.error("goods price update error", throwable);
             }
@@ -64,25 +68,40 @@ public class ResaleService {
 
     @Transactional
     public void updateResaleGoodsPrice() {
+        LocalDateTime now = LocalDateTime.now();
         List<Goods> goods = goodsDao.findAllByProductTypeAndCreateTimeBeforeAndCreatedByIsNotNull(
                 ProductTypeEnum.RESALE.getType(),
-                LocalDateTime.now().minusDays(1));
+                now.minusHours(decayPeriodHours));
         log.info("get resale created more than one day " + goods.size());
         List<Goods> decayList = new ArrayList<>();
         for (Goods g: goods) {
             BigDecimal price = g.getPrice();
-            // TODO correct to be idempotent
-            BigDecimal newPrice = price.multiply(BigDecimal.valueOf(1-decayFactor));
             BigDecimal limit = g.getOriginalPrice().multiply(BigDecimal.valueOf(decayLimit));
-            if (newPrice.compareTo(limit) >0) {
-                g.setPrice(newPrice);
-                decayList.add(g);
+            if (price.compareTo(limit) <= 0) {
+                continue;
             }
+            Long hours = Duration.between(g.getCreateTime(), now).toHours();
+            Long e = hours / decayPeriodHours;
+            BigDecimal newPrice = g.getOriginalPrice().multiply(BigDecimal.valueOf(1-decayFactor).pow(e.intValue()));
+
+            if (newPrice.compareTo(limit) >=0) {
+                g.setPrice(newPrice);
+            } else {
+                g.setPrice(limit);
+            }
+            decayList.add(g);
         }
         log.info("those to be decayed " + decayList.size());
         if (!decayList.isEmpty()) {
             goodsDao.saveAll(decayList);
         }
+    }
+
+    public LocalDateTime nextPriceTime(LocalDateTime createdTime) {
+        LocalDateTime now = LocalDateTime.now();
+        Long hours = Duration.between(createdTime, LocalDateTime.now()).toHours();
+        Long leftHours = decayPeriodHours - (hours % decayPeriodHours );
+        return now.plusHours(leftHours);
     }
 
     @Transactional

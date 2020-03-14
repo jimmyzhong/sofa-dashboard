@@ -108,3 +108,5 @@ order:
     decay:
       factor: 0.1
       limit: 0.1
+      period:
+        hours: 24
