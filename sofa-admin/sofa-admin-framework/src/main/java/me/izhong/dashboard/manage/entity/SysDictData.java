@@ -8,10 +8,10 @@ import me.izhong.common.annotation.Excel;
 import me.izhong.common.annotation.PrimaryId;
 import me.izhong.common.annotation.Search;
 import me.izhong.dashboard.manage.constants.UserConstants;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 @EqualsAndHashCode(callSuper = false)

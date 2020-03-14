@@ -31,11 +31,6 @@
             <version>2.1.0.RELEASE</version>
             <optional>true</optional> <!-- 表示依赖不会传递 -->
 		</dependency>
-		<!-- 核心模块-->
-        <dependency>
-            <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-admin-framework</artifactId>
-        </dependency>
 
         <!-- 引入依赖在这里 -->
         <!--SOFARPC 依赖-->
@@ -44,10 +39,10 @@
             <artifactId>rpc-sofa-boot-starter</artifactId>
         </dependency>
         <!--SOFATracer 依赖-->
-        <dependency>
+       <!-- <dependency>
             <groupId>com.alipay.sofa</groupId>
             <artifactId>tracer-sofa-boot-starter</artifactId>
-        </dependency>
+        </dependency>-->
         <!--SOFARegistry 依赖-->
         <dependency>
             <groupId>com.alipay.sofa</groupId>
@@ -59,11 +54,17 @@
             <artifactId>runtime-sofa-boot-starter</artifactId>
         </dependency>
         <!--SOFALookout 依赖-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.alipay.sofa.lookout</groupId>
             <artifactId>lookout-sofa-boot-starter</artifactId>
+        </dependency>-->
+
+        <dependency>
+            <groupId>me.izhong.sofa</groupId>
+            <artifactId>sofa-admin-framework</artifactId>
+            <version>${project.version}</version>
         </dependency>
-        
+
         <!-- 定时任务-->
         <dependency>
             <groupId>me.izhong.sofa</groupId>
@@ -95,21 +96,6 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework.data</groupId>
-            <artifactId>spring-data-mongodb</artifactId>
-            <!--<exclusions>
-                <exclusion>
-                    <artifactId>mongo-java-driver</artifactId>
-                    <groupId>org.mongodb</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jcl-over-slf4j</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>-->
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -137,18 +123,6 @@
                     <warName>${project.artifactId}</warName>
                 </configuration>   
 		   </plugin>
-            <!--<plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <dependencies>
-                    &lt;!&ndash; spring热部署 &ndash;&gt;
-                    <dependency>
-                        <groupId>org.springframework</groupId>
-                        <artifactId>springloaded</artifactId>
-                        <version>1.2.8.RELEASE</version>
-                    </dependency>
-                </dependencies>
-            </plugin>-->
         </plugins>
         <finalName>${project.artifactId}</finalName>
     </build>

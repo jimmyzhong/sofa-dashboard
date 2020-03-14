@@ -15,25 +15,25 @@ import org.apache.shiro.session.mgt.SimpleSession;
 public class OnlineSession extends SimpleSession {
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 用户ID
-     */
-    private Long userId;
-
-    /**
-     * 用户名称
-     */
-    private String loginName;
-
-    /**
-     * 部门名称
-     */
-    private String deptName;
-
-    /**
-     * 用户头像
-     */
-    private String avatar;
+//    /**
+//     * 用户ID
+//     */
+//    private Long userId;
+//
+//    /**
+//     * 用户名称
+//     */
+//    private String loginName;
+//
+//    /**
+//     * 部门名称
+//     */
+//    private String deptName;
+//
+//    /**
+//     * 用户头像
+//     */
+//    private String avatar;
 
     /**
      * 登录IP地址

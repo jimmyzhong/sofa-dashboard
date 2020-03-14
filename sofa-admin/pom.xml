@@ -15,7 +15,6 @@
         <module>sofa-admin-bootstrap</module>
         <module>sofa-admin-common</module>
         <module>sofa-admin-framework</module>
-        <module>sofa-admin-system</module>
         <module>sofa-admin-job</module>
         <module>sofa-admin-shop</module>
     </modules>
@@ -38,8 +37,6 @@
         <commons.fileupload.version>1.3.3</commons.fileupload.version>
         <poi.version>3.17</poi.version>
         <velocity.version>1.7</velocity.version>
-        <mongodb-driver.version>3.8.2</mongodb-driver.version>
-        <spring-data-mongodb.version>2.1.9.RELEASE</spring-data-mongodb.version>
     </properties>
 
     <dependencies>
@@ -120,42 +117,6 @@
                 <artifactId>poi-ooxml</artifactId>
                 <version>${poi.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mongodb</groupId>
-                <artifactId>mongodb-driver</artifactId>
-                <version>${mongodb-driver.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.springframework.data</groupId>
-                <artifactId>spring-data-mongodb</artifactId>
-                <version>${spring-data-mongodb.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>mongo-java-driver</artifactId>
-                        <groupId>org.mongodb</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jcl-over-slf4j</artifactId>
-                        <groupId>org.slf4j</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- 核心模块-->
-            <dependency>
-                <groupId>me.izhong.sofa</groupId>
-                <artifactId>sofa-admin-framework</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <!-- 系统模块-->
-            <dependency>
-                <groupId>me.izhong.sofa</groupId>
-                <artifactId>sofa-admin-system</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
         </dependencies>
     </dependencyManagement>
 
@@ -173,34 +134,7 @@
         </plugins>
     </build>
 
-    <repositories>
-        <repository>
-            <id>public</id>
-            <name>aliyun nexus</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-        </repository>
-        <repository>
-            <id>michaelklishin</id>
-            <url>https://dl.bintray.com/michaelklishin/maven/</url>
-        </repository>
-    </repositories>
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>public</id>
-            <name>aliyun nexus</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
 
 </project>

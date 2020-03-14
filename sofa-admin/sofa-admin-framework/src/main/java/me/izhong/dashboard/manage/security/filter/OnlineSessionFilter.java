@@ -2,6 +2,7 @@ package me.izhong.dashboard.manage.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
+import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.security.session.OnlineSessionDAO;
 import org.apache.shiro.session.Session;
@@ -41,7 +42,7 @@ public class OnlineSessionFilter extends AccessControlFilter {
             OnlineSession onlineSession = (OnlineSession) session;
             //当前对象下线
             if (onlineSession.getStatus() == SysUserOnline.OnlineStatus.off_line) {
-                log.info("用户{}被强制下线",onlineSession.getLoginName());
+                log.info("用户{}被强制下线",UserInfoContextHelper.getCurrentLoginName());
                 return false;
             }
         }

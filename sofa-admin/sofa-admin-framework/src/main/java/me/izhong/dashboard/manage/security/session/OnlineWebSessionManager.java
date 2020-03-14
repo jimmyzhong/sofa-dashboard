@@ -1,6 +1,5 @@
 package me.izhong.dashboard.manage.security.session;
 
-import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.constants.ShiroConstants;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
@@ -12,12 +11,9 @@ import org.apache.shiro.session.InvalidSessionException;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.DefaultSessionKey;
 import org.apache.shiro.session.mgt.SessionKey;
-import org.apache.shiro.subject.SimplePrincipalCollection;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

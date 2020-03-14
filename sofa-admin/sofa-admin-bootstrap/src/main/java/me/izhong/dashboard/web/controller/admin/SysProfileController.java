@@ -12,7 +12,6 @@ import me.izhong.dashboard.manage.service.SysUserService;
 import me.izhong.dashboard.manage.util.FileUploadUtil;
 import me.izhong.dashboard.manage.security.service.PasswordService;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
-import me.izhong.dashboard.manage.util.ServletUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.slf4j.Logger;
