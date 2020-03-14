@@ -6,11 +6,11 @@ import lombok.EqualsAndHashCode;
 import me.izhong.common.annotation.AutoId;
 import me.izhong.common.annotation.PrimaryId;
 import me.izhong.common.annotation.Search;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;

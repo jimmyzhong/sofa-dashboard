@@ -23,11 +23,6 @@
             <groupId>com.alipay.sofa</groupId>
             <artifactId>rpc-sofa-boot-starter</artifactId>
         </dependency>
-        <!--SOFATracer 依赖-->
-        <dependency>
-            <groupId>com.alipay.sofa</groupId>
-            <artifactId>tracer-sofa-boot-starter</artifactId>
-        </dependency>
         <!--SOFARegistry 依赖-->
         <dependency>
             <groupId>com.alipay.sofa</groupId>
@@ -38,11 +33,16 @@
             <groupId>com.alipay.sofa</groupId>
             <artifactId>runtime-sofa-boot-starter</artifactId>
         </dependency>
-        <!--SOFALookout 依赖-->
-        <dependency>
-            <groupId>com.alipay.sofa.lookout</groupId>
-            <artifactId>lookout-sofa-boot-starter</artifactId>
-        </dependency>
+        <!-- &lt;!&ndash;SOFATracer 依赖&ndash;&gt;
+         <dependency>
+             <groupId>com.alipay.sofa</groupId>
+             <artifactId>tracer-sofa-boot-starter</artifactId>
+         </dependency>
+         &lt;!&ndash;SOFALookout 依赖&ndash;&gt;
+         <dependency>
+             <groupId>com.alipay.sofa.lookout</groupId>
+             <artifactId>lookout-sofa-boot-starter</artifactId>
+         </dependency>-->
     </dependencies>
 
     <build>

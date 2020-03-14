@@ -33,7 +33,6 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
-import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

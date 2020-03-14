@@ -8,11 +8,11 @@ import me.izhong.common.annotation.AutoId;
 import me.izhong.common.annotation.Search;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
