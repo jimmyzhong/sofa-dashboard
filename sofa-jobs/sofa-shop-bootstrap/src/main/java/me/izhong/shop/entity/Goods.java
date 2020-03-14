@@ -8,6 +8,9 @@ import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import me.izhong.shop.consts.ProductTypeEnum;
+
+import static me.izhong.shop.consts.ProductTypeEnum.NORMAL;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,13 +30,15 @@ public class Goods {
     @Column(name = "PRODUCT_PIC")
     private String productPic;
     @Column(name = "PRODUCT_TYPE")
-    private Integer productType;
+    private Integer productType = NORMAL.getType();
     @Column(name = "PRODUCT_CATEGORY_ID")
     private Long productCategoryId;
     @Column(name = "PRODUCT_CAT_PATH")
     private String categoryPath;
     @Column(name = "PRICE")
     private BigDecimal price;
+    @Column(name = "ORIGIN_PRICE")
+    private BigDecimal originalPrice;
     @Column(name = "PROMOTION_PRICE")
     private BigDecimal promotionPrice;
     @Column(name = "PUBLISH_STATUS")
@@ -68,4 +73,6 @@ public class Goods {
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")
     private LocalDateTime updateTime;
+    @Column(name = "CREATED_BY")
+    private Long createdBy;
 }

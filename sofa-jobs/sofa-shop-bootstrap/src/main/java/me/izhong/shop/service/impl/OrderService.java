@@ -5,12 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.jobs.model.ShopReceiverInfo;
+import me.izhong.shop.annotation.NeedOptimisticLockRetry;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.consts.PayStatusEnum;
-import me.izhong.shop.dao.OrderDao;
-import me.izhong.shop.dao.OrderItemDao;
-import me.izhong.shop.dao.PayRecordDao;
-import me.izhong.shop.dao.UserReceiveAddressDao;
+import me.izhong.shop.dao.*;
 import me.izhong.shop.dto.CartItemParam;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
@@ -30,15 +28,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceUnit;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -64,6 +57,11 @@ public class OrderService implements IOrderService {
 	private CartItemService cartItemService;
 	@Autowired
 	private IGoodsService goodsService;
+	@Autowired
+	private GoodsDao goodsDao;
+	@Autowired
+	private GoodsStoreDao storeDao;
+
 	@Value("${order.expire.time}")
 	private Long orderExpireMinutes;
 
@@ -83,6 +81,7 @@ public class OrderService implements IOrderService {
 
 	@Override
 	@Transactional
+	@NeedOptimisticLockRetry
 	public void updateExpiredOrders() {
 		Long start = System.currentTimeMillis();
 		try {
@@ -90,6 +89,15 @@ public class OrderService implements IOrderService {
 					WAIT_PAYING.getState(), LocalDateTime.now().minusMinutes(orderExpireMinutes));
 			log.info("find orders : " + unpaidOrders.size());
 			if (!unpaidOrders.isEmpty()) {
+				for (Order order : unpaidOrders) {
+					List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
+					items.stream().forEach(i->{
+						GoodsStore store = storeDao.findByProductIdAndProductAttrId(i.getProductId(),
+								i.getProductAttributeId());
+						store.setPreStore(store.getPreStore() + i.getQuantity());
+						storeDao.save(store);
+					});
+				}
 				orderDao.updateOrderStatus(unpaidOrders.stream().map(Order::getId).collect(Collectors.toList()),
 						EXPIRED.getState());
 			}
@@ -158,6 +166,7 @@ public class OrderService implements IOrderService {
 
 	@Override
 	@Transactional
+	@NeedOptimisticLockRetry
 	public void updatePayInfo(Order order, String externalOrderNo, String payMethod,
 							  String payType, BigDecimal payAmount, BigDecimal totalAmount,
 							  String state, String comment) {
@@ -182,11 +191,24 @@ public class OrderService implements IOrderService {
 		order.setPayAmount(payAmount);
 		if (PayStatusEnum.SUCCESS.name().equals(state)) {
 			order.setStatus(PAID.getState());
+			List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(),order.getUserId());
+			Set<Goods> goodsSet = new HashSet<>();
+			for (OrderItem item: items) {
+				GoodsStore store = storeDao.findByProductIdAndProductAttrId(item.getProductId(), item.getProductAttributeId());
+				store.setStore(store.getStore() - item.getQuantity());
+				storeDao.save(store);
+				// TODO
+				goodsDao.findById(item.getProductId()).ifPresent(goods->{
+					goods.setStock(goods.getStock() - item.getQuantity());
+					goods.setSale(goods.getSale()==null ? 0 : goods.getSale() + item.getQuantity());
+					goodsSet.add(goods);
+				});
+			}
+			goodsDao.saveAll(goodsSet);
 		}
 
 		payRecordDao.save(record);
 		orderDao.save(order);
-		//TODO 扣减库存
 	}
 
 	/**
@@ -197,24 +219,33 @@ public class OrderService implements IOrderService {
 	 */
 	@Override
 	@Transactional
+	@NeedOptimisticLockRetry
 	public Order submit(Long userId, Long addressId, Long productId, Long productAttrId, Integer quantity) {
 		UserReceiveAddress address = getUserReceiveAddress(userId, addressId);
 		if (address == null) {
 			throw BusinessException.build("地址不存在");
 		}
 
-		//TODO 预减库存
 		GoodsDTO goods = goodsService.findGoodsWithAttrById(productId, productAttrId);
 		if (goods == null) {
 			throw BusinessException.build("商品不存在");
 		}
+
+		// 预减库存
+		GoodsStore store = storeDao.findByProductIdAndProductAttrId(productId, productAttrId);
+		if (store.getPreStore() < quantity || store.getStore() < quantity) {
+			throw BusinessException.build("库存不足");
+		}
+		store.setPreStore(store.getPreStore() - quantity);
+		storeDao.save(store);
 
 		Order order = new Order();
 		setReceiverInfoOfOrder(address, order);
 
 		OrderItem item = new OrderItem();
 		item.setProductId(goods.getId());
-		item.setQuantity(quantity); // TODO
+		item.setQuantity(quantity);
+		item.setUserId(userId);
 		if (goods.getAttributes()!=null && !goods.getAttributes().isEmpty()){
 			GoodsAttributes attributes = goods.getAttributes().get(0);
 			item.setName(attributes.getName());
@@ -237,6 +268,7 @@ public class OrderService implements IOrderService {
 		order = orderDao.save(order);
 		item.setOrderId(order.getId());
 		orderItemDao.save(item);
+
         return order;
 	}
 

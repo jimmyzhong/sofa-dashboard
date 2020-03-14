@@ -18,6 +18,7 @@ import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.dto.order.SubmitOrderRequest;
 import me.izhong.shop.dto.order.SubmitOrderResponse;
 import me.izhong.shop.entity.Order;
+import me.izhong.shop.service.impl.ResaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.jaxb.SpringDataJaxb;
@@ -43,6 +44,8 @@ public class OrderController {
 	
 	@Autowired
 	private IOrderService orderService;
+	@Autowired
+	private ResaleService resaleService;
 
 	@Value("${order.expire.time}")
 	private Long orderExpireMinutes;
@@ -82,8 +85,7 @@ public class OrderController {
 			"}") @RequestBody SubmitOrderRequest submitOrder, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
 		Order order = orderService.submit(userId, submitOrder.getAddressId(), submitOrder.getProductId(),
-				submitOrder.getAddressId(), submitOrder.getQuantity());
-
+						submitOrder.getAddressId(), submitOrder.getQuantity());
 		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
 				.status(getCommentByState(order.getStatus()))
 				.timeToPay(String.valueOf(orderExpireMinutes)).build();
@@ -100,6 +102,19 @@ public class OrderController {
 			throw BusinessException.build("订单号不能为空");
 		}
 		orderService.confirm(getCurrentUserId(request), orderRequest.getOrderNo());
+	}
+
+	@PostMapping(value = "/resaleOrder")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="申请寄售", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public void resaleOrder(@RequestBody SubmitOrderRequest orderRequest, HttpServletRequest request) {
+		if(orderRequest.getOrderNo()==null) {
+			throw BusinessException.build("订单号不能为空");
+		}
+		resaleService.resaleOrder(getCurrentUserId(request), orderRequest.getOrderNo());
 	}
 
     @PostMapping(value = "/cancelOrder")

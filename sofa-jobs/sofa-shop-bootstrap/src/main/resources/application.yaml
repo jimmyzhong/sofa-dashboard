@@ -101,3 +101,10 @@ com:
 order:
   expire:
     time: 5
+  submit:
+    retry:
+      maxtimes: 5
+  resale:
+    decay:
+      factor: 0.1
+      limit: 0.1

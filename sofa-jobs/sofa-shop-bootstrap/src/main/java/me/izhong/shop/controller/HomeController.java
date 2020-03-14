@@ -51,6 +51,13 @@ public class HomeController {
         return adService.pageList(query, null, null , null);
     }
 
+    @GetMapping(value = "/ad/{adId}")
+    @ResponseBody
+    @ApiOperation(value="广告内容", httpMethod = "GET")
+    public Ad detailAd(@PathVariable("adId") String adId) {
+        return adService.findById(Long.valueOf(adId));
+    }
+
     @GetMapping(value = "/recommendProductList")
     @ResponseBody
     public Map<String, Object> recommendProductList(

@@ -1,5 +1,6 @@
 package me.izhong.shop.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,6 +14,8 @@ import me.izhong.shop.entity.Goods;
 public interface GoodsDao extends JpaRepository<Goods, Long> {
 
 	Goods findByProductName(String name);
+
+	List<Goods> findAllByProductTypeAndCreateTimeBeforeAndCreatedByIsNotNull(Integer productType, LocalDateTime time);
 
 	@Modifying
 	@Query(value = "update product t set t.publish_status = ?2 where t.id in ?1", nativeQuery = true)

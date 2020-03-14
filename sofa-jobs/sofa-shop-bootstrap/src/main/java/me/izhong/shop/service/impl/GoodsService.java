@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import me.izhong.shop.dao.GoodsStoreDao;
+import me.izhong.shop.entity.GoodsStore;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,11 +41,29 @@ public class GoodsService implements IGoodsService {
 	private GoodsDao goodsDao;
 	@Autowired
 	private GoodsAttributesDao attributesDao;
+	@Autowired
+	private GoodsStoreDao storeDao;
 
 	@Override
 	@Transactional
 	public void saveOrUpdate(Goods goods) {
-		goodsDao.save(goods);
+		Goods g = goodsDao.save(goods);
+		saveGoodsStock(g);
+	}
+
+	private void saveGoodsStock(Goods g) {
+		GoodsStore gs = storeDao.findByProductIdAndProductAttrId(g.getId(), null);
+		if (gs == null) {
+			gs = new GoodsStore();
+		}
+		gs.setProductId(g.getId());
+		if (gs.getPreStore() != null && gs.getPreStore() > 0) {
+			gs.setPreStore(gs.getPreStore() + (gs.getStore() - g.getStock()));
+		} else {
+			gs.setPreStore(g.getStock());
+		}
+		gs.setStore(g.getStock());
+		storeDao.save(gs);
 	}
 
 	@Override
@@ -85,6 +105,15 @@ public class GoodsService implements IGoodsService {
 		if (!StringUtils.isEmpty(queryParam.getCategoryPath())) {
 			goods.setCategoryPath(queryParam.getCategoryPath());
 		}
+		if (queryParam.getProductType() != null) {
+			goods.setProductType(queryParam.getProductType());
+		} else {
+			goods.setProductType(null);
+		}
+
+		if (queryParam.getUserId() != null) {
+			goods.setCreatedBy(queryParam.getUserId());
+		}
 
 		ExampleMatcher matcher = ExampleMatcher.matchingAll()
 				.withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
@@ -101,12 +130,12 @@ public class GoodsService implements IGoodsService {
 
 		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),
 				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
-		Page<Goods> page = goodsDao.findAll(example, pageableReq);
+		Page<Goods> page = goodsDao.findAll(example, pageableReq); // TODO join goods stock table to get latest stock number
 		List<GoodsDTO> dtoList = page.getContent().stream().map(g->GoodsDTO.builder()
 				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
 				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
 				.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
-				.build()).collect(Collectors.toList());
+				.productType(g.getProductType()).build()).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
 	}
 
@@ -134,5 +163,10 @@ public class GoodsService implements IGoodsService {
 			dto.setAttributes(attr.isPresent() ? Arrays.asList(attr.get()) : Lists.newArrayList());
 		}
 		return dto;
+	}
+
+	@Override
+	public void updateStore(Long goodId, Long goodAttrId, Integer newStore) {
+
 	}
 }
