@@ -93,7 +93,7 @@ public class Order {
     private String subject; // 订单标题
     @Column(name = "DESCRIPTION", length = 500)
     private String description; // 订单的描述
-    @Column(name = "PAY_TRADE_NO", length = 20)
+    @Column(name = "PAY_TRADE_NO", length = 50)
     private String payTradeNo;
     @Column(name = "PAY_STATUS", length = 10)
     private String payStatus;
