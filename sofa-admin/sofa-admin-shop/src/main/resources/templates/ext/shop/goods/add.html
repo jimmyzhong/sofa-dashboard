@@ -161,13 +161,12 @@
 			$("#productCategoryId").val("");
 			$("#productCategoryId").html('<option value="">--请选择商品子类别--</option>');
 			for(var i=0;i<_categoryAll.length;i++){
-				if(_categoryAll[i].value==$(obj).val()){
+				if(_categoryAll[i].value==$('#productCategoryIds option:selected').val()){
 					for(var y=0;y<_categoryAll[i].children.length;y++){
 						var _subItem=_categoryAll[i].children[y];
 						$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
 					}
 				}
-				break;
 			}
 		}
 		$('.summernote').summernote({

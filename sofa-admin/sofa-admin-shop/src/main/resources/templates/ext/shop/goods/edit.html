@@ -222,11 +222,10 @@
 			})
 		}
 		function productCategoryChange(categoryId) {
-			console.log("init sub categoryId",categoryId)
-			$("#productSubCategoryId").val("");
-			$("#productSubCategoryId").html('<option value="">--请选择商品子类别--</option>');
+			$("#productCategoryId").val("");
+			$("#productCategoryId").html('<option value="">--请选择商品子类别--</option>');
 			for(var i=0;i<_categoryAll.length;i++){
-				if(_categoryAll[i].value==$("#productCategoryIds").val()){
+				if(_categoryAll[i].value==$('#productCategoryIds option:selected').val()){
 					for(var y=0;y<_categoryAll[i].children.length;y++){
 						var _subItem=_categoryAll[i].children[y];
 						if(categoryId&&($("#subCategory").val()==_subItem.value)){
@@ -236,7 +235,6 @@
 						}
 					}
 				}
-				break;
 			}
 		}
 		$('.summernote').summernote({

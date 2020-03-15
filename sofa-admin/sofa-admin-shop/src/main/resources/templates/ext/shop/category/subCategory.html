@@ -70,6 +70,13 @@
                 {
                     field: 'name',
                     title: '名称',
+                },{
+                    field: 'showStatus',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value?"启用":"不启用";
+                    }
                 }, {
                     field: 'sort',
                     title: '排序',
