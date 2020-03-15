@@ -131,7 +131,8 @@ public class ResaleService {
             goods.setSale(0);
             goods.setIsDelete(0);
             goods.setProductSn(null);
-            goods.setOriginalPrice(goods.getPrice());
+            goods.setOriginalPrice(g.getPromotionPrice()==null ? g.getPrice() : g.getPromotionPrice());
+            goods.setPromotionPrice(null);
             goods.setStock(goodsOrderItemMap.get(g.getId()).getQuantity());
             goods.setProductType(ProductTypeEnum.RESALE.getType());
             newGoods.add(goods);

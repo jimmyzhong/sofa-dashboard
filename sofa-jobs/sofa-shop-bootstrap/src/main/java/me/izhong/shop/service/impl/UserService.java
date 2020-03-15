@@ -195,14 +195,18 @@ public class UserService implements IUserService {
 
     @Override
     public UserMoney findMoneyByUserId(Long userId) {
-        return userMoneyDao.findByUserId(userId);
+        UserMoney um = userMoneyDao.findByUserId(userId);
+        if (um == null) {
+            um = new UserMoney();
+        }
+        return um;
     }
 
     @Override
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
                                                       PageRequest pageRequest) {
-        LocalDate start = convertToLocalDate(pageRequest.getBeginDate());
-        LocalDate end = convertToLocalDate(pageRequest.getEndDate());
+        LocalDate start = convertToLocalDate(pageRequest.getBeginCreateTime());
+        LocalDate end = convertToLocalDate(pageRequest.getEndCreateTime());
         Specification<PayRecord> specification = (r, q, cb) -> {
             Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
                     cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()));
