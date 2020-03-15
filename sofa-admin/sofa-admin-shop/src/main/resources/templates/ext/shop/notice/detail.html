@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('公告详情')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<div class="form-horizontal m" id="form-shop-notice-edit">
+			<input id="id" name="id" type="hidden" th:value="${notice.id}"/>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">公告标题：</label>
+				<div class="col-sm-8">
+					<p  type="text" name="title" id="title" th:text="${notice.title}" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">公告内容：</label>
+				<div class="col-sm-8">
+					<p name="content" id="content" th:text="${notice.content}" required>
+
+					</p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">是否启用状态：</label>
+				<div class="col-sm-8">
+					<div>
+						<span><input type="radio" readonly name="status" value="1" th:value="${notice.status}" checked>启用</span>
+						<span style="margin-left: 10px"><input readonly type="radio" name="status" th:value="${notice.status}" value="0">不启用</span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript" th:inline="javascript">
+		var prefix = ctx + "ext/shop/notice";
+
+		$("#form-shop-ad-add").validate({
+			onkeyup: false,
+			focusCleanup: true
+		});
+		function gotoEdit() {
+			var url = prefix + '/edit/' + $("#id").val();
+			$.modal.openTab("编辑公告", url);
+		}
+	</script>
+</body>
+</html>
