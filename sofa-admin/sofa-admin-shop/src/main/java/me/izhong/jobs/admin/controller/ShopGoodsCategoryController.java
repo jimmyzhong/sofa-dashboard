@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import me.izhong.jobs.admin.config.ShopPermissions;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -41,6 +43,7 @@ public class ShopGoodsCategoryController {
 		return prefix + "/category";
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
 	@PostMapping("/list/{parentId}")
     @AjaxWrapper
 	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @PathVariable Long parentId) {
@@ -48,19 +51,22 @@ public class ShopGoodsCategoryController {
 		return page;
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
 	@GetMapping("/subCategory/{categoryId}")
 	public String subCategory(@PathVariable("categoryId") Long categoryId, Model model) {
 		model.addAttribute("categoryId", categoryId);
 		return prefix + "/subCategory";
 	}
 
-    @GetMapping("/add/{parentId}")
+	@RequiresPermissions(ShopPermissions.GoodsCategory.ADD)
+	@GetMapping("/add/{parentId}")
     public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
 		model.addAttribute("parentId", parentId);
         return prefix + "/add";
     }
 
-    @PostMapping("/add")
+	@RequiresPermissions(ShopPermissions.GoodsCategory.ADD)
+	@PostMapping("/add")
     @AjaxWrapper
     public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
     	log.info("add goods category =>{}", goodsCategory);
@@ -75,6 +81,7 @@ public class ShopGoodsCategoryController {
     	shopServiceReference.goodsCategoryService.create(goodsCategory);
     }
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.EDIT)
 	@GetMapping("/edit/{categoryId}")
 	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
 		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
@@ -85,6 +92,7 @@ public class ShopGoodsCategoryController {
 		return prefix + "/edit";
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.EDIT)
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoodsCategory goodsCategory) {
@@ -95,7 +103,7 @@ public class ShopGoodsCategoryController {
     	checkField(goodsCategory.getName(), "分类名称");
     	checkField(goodsCategory.getIcon(), "分类icon");
     	if (goodsCategory.getSort() == null) {
-    		goodsCategory.setSort(1);
+			throw BusinessException.build("排序不能为空");
     	}
     	if (goodsCategory.getShowStatus() == null) {
     		goodsCategory.setShowStatus(1);
@@ -104,6 +112,7 @@ public class ShopGoodsCategoryController {
 		shopServiceReference.goodsCategoryService.edit(goodsCategory);
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.EDIT)
 	@PostMapping("/edit/showStatus")
 	@AjaxWrapper
 	public void updatePublishStatus(@RequestParam("ids") List<Long> ids, @RequestParam("showStatus") Integer showStatus) {
@@ -111,6 +120,7 @@ public class ShopGoodsCategoryController {
 	}
 
 	/** 这部分删除**/
+	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
 	@PostMapping("/detail/{categoryId}")
 	@AjaxWrapper
 	public ShopGoodsCategory detail(@PathVariable("categoryId") Long categoryId, Model model) {
@@ -124,6 +134,7 @@ public class ShopGoodsCategoryController {
 		return goodsCategory;
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.REMOVE)
 	@RequestMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
@@ -136,6 +147,7 @@ public class ShopGoodsCategoryController {
 		}
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
 	@GetMapping("/queryLv1")
     @ResponseBody
 	public Map<String, Object> queryLevel1() {
@@ -145,6 +157,7 @@ public class ShopGoodsCategoryController {
 		return data;
 	}
 
+	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
 	@GetMapping("/queryAll")
     @ResponseBody
 	public Map<String, Object> queryAll() {
