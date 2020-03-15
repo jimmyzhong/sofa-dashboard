@@ -69,6 +69,9 @@ public class ShopGoodsCategoryController {
     	if (goodsCategory.getSort() == null) {
     		goodsCategory.setSort(1);
     	}
+    	if (goodsCategory.getShowStatus() == null) {
+    		goodsCategory.setShowStatus(1);
+    	}
     	shopServiceReference.goodsCategoryService.create(goodsCategory);
     }
 
@@ -93,6 +96,9 @@ public class ShopGoodsCategoryController {
     	checkField(goodsCategory.getIcon(), "分类icon");
     	if (goodsCategory.getSort() == null) {
     		goodsCategory.setSort(1);
+    	}
+    	if (goodsCategory.getShowStatus() == null) {
+    		goodsCategory.setShowStatus(1);
     	}
 		log.info("edit goods category =>{}", goodsCategory);
 		shopServiceReference.goodsCategoryService.edit(goodsCategory);

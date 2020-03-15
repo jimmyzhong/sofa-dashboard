@@ -60,6 +60,7 @@ public class ShopGoodsController {
     	if (goods.getPrice().compareTo(BigDecimal.ZERO) == 0) {
     		throw BusinessException.build("商品价格不能为0");
     	}
+    	goods.setIsDelete(0);
     	shopServiceReference.goodsService.create(goods);
     }
 
