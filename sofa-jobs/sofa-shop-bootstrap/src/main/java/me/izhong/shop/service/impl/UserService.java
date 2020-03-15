@@ -4,9 +4,14 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserDao;
+import me.izhong.shop.dao.UserMoneyDao;
 import me.izhong.shop.entity.Order;
+import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
+import me.izhong.shop.entity.UserMoney;
 import me.izhong.shop.service.IUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +27,8 @@ import java.time.LocalDateTime;
 public class UserService implements IUserService {
 
     @Autowired private UserDao userDao;
+    @Autowired private UserMoneyDao userMoneyDao;
+    @Autowired private PayRecordDao payRecordDao;
     @Autowired private ThirdPartyService certifyService;
 
 
@@ -170,5 +177,14 @@ public class UserService implements IUserService {
     @Override
     public User findById(Long userId) {
         return userDao.findById(userId).orElseThrow(()->new RuntimeException("unable to find user by " + userId));
+    }
+
+    @Override
+    public UserMoney findMoneyByUserId(Long userId) {
+        return userMoneyDao.findByUserId(userId);
+    }
+
+    public PageModel<PayRecord> listMoneyRecord(Long userId, MoneyTypeEnum type, LocalDateTime start, LocalDateTime end) {
+        return null;
     }
 }

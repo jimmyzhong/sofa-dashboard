@@ -38,6 +38,8 @@ public class OptimisticLockRetryAspect {
                         log.info("retry excceed the max times..");
                         throw BusinessException.build("当前服务较忙,请稍后重试");
                     }
+                } else {
+                    throw e;
                 }
 
             }

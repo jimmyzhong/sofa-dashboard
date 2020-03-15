@@ -2,6 +2,7 @@ package me.izhong.shop.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.shop.entity.User;
+import me.izhong.shop.entity.UserMoney;
 
 public interface IUserService {
 
@@ -28,4 +29,6 @@ public interface IUserService {
     void attemptModifyLoginName(User dbUser, String loginName);
 
     void attemptModifyPassword(User dbUser, String password);
+
+    UserMoney findMoneyByUserId(Long userId);
 }
