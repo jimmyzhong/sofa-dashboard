@@ -9,6 +9,7 @@ import me.izhong.shop.dto.GoodsCategoryDTO;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.service.IGoodsCategoryService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,10 +27,13 @@ public class GoodsCategoryController {
     private IGoodsCategoryService categoryService;
 
     @PostMapping(path = "/list", consumes = "application/json")
-    @ResponseBody
     @ApiOperation(value="获取商品类别列表", httpMethod = "POST", consumes = "application/json")
     public PageModel<GoodsCategoryDTO> list(@RequestBody PageQueryParamDTO pageQuery) {
         pageQuery.validRequest();
+        if(StringUtils.isBlank(pageQuery.getOrderByColumn())) {
+            pageQuery.setIsAsc("asc");
+            pageQuery.setOrderByColumn("sort");
+        }
         return categoryService.list(pageQuery);
     }
 }
