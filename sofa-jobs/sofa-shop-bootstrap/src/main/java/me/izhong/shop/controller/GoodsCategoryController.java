@@ -31,7 +31,7 @@ public class GoodsCategoryController {
     public PageModel<GoodsCategoryDTO> list(@RequestBody PageQueryParamDTO pageQuery) {
         pageQuery.validRequest();
         if(StringUtils.isBlank(pageQuery.getOrderByColumn())) {
-            pageQuery.setIsAsc("asc");
+            pageQuery.setOrderDirection("asc");
             pageQuery.setOrderByColumn("sort");
         }
         return categoryService.list(pageQuery);
