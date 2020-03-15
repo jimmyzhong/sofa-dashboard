@@ -86,7 +86,7 @@ public class UserController {
         if (StringUtils.isNotBlank(userInfo.getAvatar())) {
             user.setAvatar(userInfo.getAvatar());
         }
-        if (StringUtils.isNotBlank(userInfo.getAvatar())) {
+        if (StringUtils.isNotBlank(userInfo.getNickName())) {
             user.setNickName(userInfo.getNickName());
         }
         userService.saveOrUpdate(user);

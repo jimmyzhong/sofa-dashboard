@@ -89,6 +89,10 @@ public class ResaleService {
             } else {
                 g.setPrice(limit);
             }
+            // 价格没有变化
+            if (price.compareTo(g.getPrice()) == 0) {
+                continue;
+            }
             decayList.add(g);
         }
         log.info("those to be decayed " + decayList.size());
