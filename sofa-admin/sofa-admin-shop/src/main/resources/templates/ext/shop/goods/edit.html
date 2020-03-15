@@ -131,7 +131,7 @@
 			});
 			var content = $("#detail_desc_s").val();
 			$('#editor').summernote('code', content);
-			var _albumPics=$("#uploadAlbumPics").val();
+			var _albumPics=$("#albumPics").val();
 			_albumPics=_albumPics.replace(/\[|]/g,'');
 			albumPics=_albumPics.split(',')
 			randerImgs()
@@ -241,7 +241,7 @@
 		}
 		$('.summernote').summernote({
 			placeholder: '请输入商品详情',
-			height : 192,
+			height : 400,
 			lang : 'zh-CN',
 			followingToolbar: false,
 			callbacks: {
