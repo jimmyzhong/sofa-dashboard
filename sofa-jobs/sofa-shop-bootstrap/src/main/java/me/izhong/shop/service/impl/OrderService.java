@@ -194,9 +194,7 @@ public class OrderService implements IOrderService {
 		record.setPayerId(order.getUserId());
 		record.setState(state);
 
-		if (comment.length() > 200) {
-			comment = comment.substring(0,200);
-		}
+		comment = StringUtils.substring(comment,0,200);
 		record.setComment(comment);
 
 		order.setPayTradeNo(externalOrderNo);
