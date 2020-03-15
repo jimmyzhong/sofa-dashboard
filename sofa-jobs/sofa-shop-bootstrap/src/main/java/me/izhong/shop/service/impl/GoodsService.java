@@ -1,10 +1,12 @@
 package me.izhong.shop.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import me.izhong.shop.consts.ProductTypeEnum;
 import me.izhong.shop.dao.GoodsStoreDao;
 import me.izhong.shop.entity.GoodsStore;
 import org.apache.commons.lang.StringUtils;
@@ -43,6 +45,8 @@ public class GoodsService implements IGoodsService {
 	private GoodsAttributesDao attributesDao;
 	@Autowired
 	private GoodsStoreDao storeDao;
+	@Autowired
+	private ResaleService resaleService;
 
 	@Override
 	@Transactional
@@ -135,8 +139,15 @@ public class GoodsService implements IGoodsService {
 				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
 				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
 				.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
-				.productType(g.getProductType()).build()).collect(Collectors.toList());
+				.productType(g.getProductType()).nextPriceTime(generateNextPriceTime(g)).build()).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
+	}
+
+	private LocalDateTime generateNextPriceTime(Goods g) {
+		if (g.getProductType() != null && ProductTypeEnum.RESALE.getType() == g.getProductType()) {
+			return resaleService.nextPriceTime(g.getCreateTime());
+		}
+		return null;
 	}
 
 	@Override
@@ -144,6 +155,7 @@ public class GoodsService implements IGoodsService {
 		Goods goods = goodsDao.findById(goodsId).orElseThrow(() -> new RuntimeException("unable to find goods by " + goodsId));
 		GoodsDTO dto = new GoodsDTO();
 		BeanUtils.copyProperties(goods, dto);
+		dto.setNextPriceTime(generateNextPriceTime(goods));
 		return dto;
 	}
 

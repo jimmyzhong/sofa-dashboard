@@ -4,13 +4,17 @@ import com.alibaba.fastjson.JSONObject;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.model.UserInfo;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.User;
+import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.impl.ThirdPartyService;
@@ -36,6 +40,7 @@ import java.util.UUID;
 public class UserController {
 
     @Autowired private IUserService userService;
+    @Autowired private IOrderService orderService;
     @Autowired private AuthService authService;
     @Autowired private ThirdPartyService thirdService;
 
@@ -165,6 +170,8 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
             @ApiImplicitParam(name = "token", value = "token", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", dataType = "string"),
+            @ApiImplicitParam(name = "invitationId", value = "邀请人ID", dataType = "string"),
+            @ApiImplicitParam(name = "orderNo", value = "邀请人订单号", dataType = "string"),
     })
     public Map register(@RequestBody Map<String,String> params) {
         String phone = params.get("phone");
@@ -172,12 +179,26 @@ public class UserController {
         String password = params.get("password");
         String code = params.get("code");
         String nickName = params.get("nickName");
+        String invitationId = params.get("invitationId");
+        String orderNo = params.get("orderNo");
 
         User user = new User();
         user.setPhone(phone);
         user.setPassword(password);
         user.setNickName(nickName);
         ensureRequiredFieldWhenRegistering(user);
+        if (StringUtils.isEmpty(invitationId) && StringUtils.isEmpty(orderNo)) {
+            // TODO
+            log.warn("no invitation info specified");
+        }
+        if (!StringUtils.isEmpty(orderNo)) {
+            Order order = orderService.findByOrderNo(orderNo);
+            if (order == null) throw BusinessException.build(orderNo + "订单不存在ß");
+
+            user.setInviteUserId(order.getUserId());
+        } else if (!StringUtils.isEmpty(invitationId)){
+            user.setInviteUserId(Long.valueOf(invitationId));
+        }
 
         verifyPhoneCode(token,phone,code);
         final User dbUser = userService.registerUser(user);
@@ -279,6 +300,18 @@ public class UserController {
         user.setEmail(phoneNumber);
         user.setLoginName(phoneNumber);
         userService.expectNew(user);
+    }
+
+
+    @PostMapping("/list")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PageModel<User> list(@RequestBody PageRequest pageRequest, HttpServletRequest request) {
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
+        return userService.list(userId, pageRequest);
     }
 
     private void verifyPhoneCode( String token, String phone , String code) {

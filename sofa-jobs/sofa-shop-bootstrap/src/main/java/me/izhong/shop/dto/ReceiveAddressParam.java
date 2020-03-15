@@ -15,6 +15,7 @@ public class ReceiveAddressParam {
     private String province;
     private String city;
     private String district;
+    private String town;
     private String detailAddress;
     private Integer isDefault;
 }

@@ -71,6 +71,17 @@ public class UserReceiveAddressController {
     	receiveAddressService.update(userId, addressId, param);
 	}
 
+	@PostMapping("/default/{id}")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="更新收货地址", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public void defaultAddress(@PathVariable("id") Long addressId, HttpServletRequest request) {
+		Long userId = getCurrentUserId(request);
+		receiveAddressService.setDefault(userId, addressId);
+	}
+
     @GetMapping("/list")
     @ResponseBody
 	@RequireUserLogin

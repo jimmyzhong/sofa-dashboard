@@ -1,6 +1,7 @@
 package me.izhong.shop.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Builder;
@@ -38,5 +39,6 @@ public class GoodsDTO {
 	private String detailDesc;
 	private Integer reducePriceCount;
 	private Integer isDelete;
+	private LocalDateTime nextPriceTime; // 寄售商品下一次降价时间
     private List<GoodsAttributes> attributes;
 }

@@ -1,8 +1,11 @@
 package me.izhong.shop.service;
 
+import me.izhong.common.domain.PageModel;
 import me.izhong.shop.entity.User;
 
 public interface IUserService {
+
+    PageModel<User> list(Long userId, me.izhong.common.domain.PageRequest request);
 
     User saveOrUpdate(User user);
 

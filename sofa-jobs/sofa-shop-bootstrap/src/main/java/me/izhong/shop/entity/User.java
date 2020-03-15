@@ -45,6 +45,11 @@ public class User extends EditableEntity {
     private Timestamp registerTime;
     @Column(name = "loginTime")
     private Timestamp loginTime;
+    @Column(name = "INVITE_USER")
+    private Long inviteUserId;
+    @Column(name = "INVITE_USER2")
+    private Long inviteUserId2;
+
 
     public void encryptUserPassword() {
         setSalt(PasswordUtils.generateSalt(8));

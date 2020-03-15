@@ -18,7 +18,10 @@ import me.izhong.shop.service.impl.AliPayService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
@@ -28,7 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static me.izhong.shop.consts.PayForTypeEnum.GOODS_ORDER;
+import static me.izhong.shop.consts.MoneyTypeEnum.getDescriptionByState;
 import static me.izhong.shop.consts.PayMethodEnum.ALIPAY;
 import static me.izhong.shop.consts.PayStatusEnum.*;
 
@@ -115,7 +118,7 @@ public class PayController {
         String comment = getMessage(response.getMsg());
         order.setPayStatus(status);
         order.setPayTradeNo(response.getTradeNo());
-        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), getDescriptionByState(order.getOrderType()), payAmountInResponse,
                 order.getTotalAmount(), status, comment);
         res.setTradeStatus(status);
         return res;
@@ -192,7 +195,7 @@ public class PayController {
         String status = getPayStatus(params.get("trade_status"));
         order.setPayStatus(status);
         order.setPayTradeNo(params.get("trade_no"));
-         orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), GOODS_ORDER.name(), payAmountInResponse,
+         orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), getDescriptionByState(order.getOrderType()), payAmountInResponse,
                 order.getTotalAmount(), status, null);
         log.info("trade status " + status + ", tradeNo:" + order.getPayTradeNo());
     }
