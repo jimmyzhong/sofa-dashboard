@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.annotation.NeedOptimisticLockRetry;
 import me.izhong.shop.consts.MoneyTypeEnum;
@@ -458,5 +459,15 @@ public class OrderService implements IOrderService {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		String rand = RandomStringUtils.randomNumeric(4);
 		return localDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS")) + rand;
+	}
+
+	@Override
+	public void delivery(List<OrderDeliveryParam> deliveryParamList) {
+		
+	}
+
+	@Override
+	public void update(Order order) {
+		
 	}
 }

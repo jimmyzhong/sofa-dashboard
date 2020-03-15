@@ -23,8 +23,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,6 +71,9 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	public void edit(ShopGoods shopGoods) {
 		Goods goods = new Goods();
 		BeanUtils.copyProperties(shopGoods, goods);
+		if (!CollectionUtils.isEmpty(shopGoods.getAlbumPics())) {
+			goods.setAlbumPics(StringUtils.join(shopGoods.getAlbumPics().toArray(), ","));
+		}
 		setCategoryPathInfo(goods);
 		goodsService.saveOrUpdate(goods);
 	}
@@ -144,6 +149,9 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	public void create(ShopGoods shopGoods) {
 		Goods goods = new Goods();
 		BeanUtils.copyProperties(shopGoods, goods);
+		if (!CollectionUtils.isEmpty(shopGoods.getAlbumPics())) {
+			goods.setAlbumPics(StringUtils.join(shopGoods.getAlbumPics().toArray(), ","));
+		}
 		setCategoryPathInfo(goods);
 		goodsService.saveOrUpdate(goods);
 	}

@@ -4,20 +4,24 @@ import java.util.List;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.jobs.dto.OrderDeliveryParam;
+import me.izhong.jobs.dto.OrderQueryParam;
+import me.izhong.jobs.dto.ReceiverInfoParam;
 import me.izhong.jobs.model.ShopOrder;
-import me.izhong.jobs.model.ShopReceiverInfo;
 
 public interface IShopOrderMngFacade {
 
-	ShopOrder find(Long orderId);
+    PageModel<ShopOrder> pageList(PageRequest request, OrderQueryParam param);
 
-    void updateOrderStatus(List<Long> ids, Integer orderStatus);
+	void delivery(List<OrderDeliveryParam> deliveryParamList);
 
-	void updateReceiverInfo(ShopReceiverInfo shopReceiverInfo);
+	void close(List<Long> ids, String note);
 
-	void updateNote(Long id, String note);
+	void delete(List<Long> ids);
 
-    PageModel<ShopOrder> pageList(PageRequest request, ShopOrder order);
+	ShopOrder detail(Long id);
 
-    boolean remove(Long orderId);
+	void updateReceiverInfo(ReceiverInfoParam receiverInfoParam);
+
+	void updateNote(Long id, String note, Integer status);
 }

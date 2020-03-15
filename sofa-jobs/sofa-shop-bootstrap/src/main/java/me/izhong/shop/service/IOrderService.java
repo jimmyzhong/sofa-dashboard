@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import me.izhong.common.domain.PageModel;
+import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
@@ -58,4 +59,8 @@ public interface IOrderService {
 	Order confirm(Long userId, String orderNo);
 
 	Order cancel(Long currentUserId, String orderNo);
+
+	void delivery(List<OrderDeliveryParam> deliveryParamList);
+
+	void update(Order order);
 }
