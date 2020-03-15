@@ -147,7 +147,7 @@ var table = {
                     pageNum: params.offset / params.limit + 1,
                     searchValue: params.search,
                     orderByColumn: params.sort,
-                    isAsc: params.order
+                    orderDirection: params.order
                 };
                 var currentId = $.common.isEmpty(table.options.formId) ? $('form').attr('id') : table.options.formId;
                 return $.extend(curParams, $.common.formToJSON(currentId));
@@ -334,7 +334,7 @@ var table = {
                     search.pageNum = params.offset / params.limit + 1;
                     search.searchValue = params.search;
                     search.orderByColumn = params.sort;
-                    search.isAsc = params.order;
+                    search.orderDirection = params.order;
                     return search;
                 }
                 if($.common.isNotEmpty(tableId)){
@@ -354,7 +354,7 @@ var table = {
                     var postData = $("#" + currentId).serializeArray();
                     if($.common.isNotEmpty(params.sortName)) {
                         postData.push({"name": "orderByColumn", "value": params.sortName});
-                        postData.push({"name": "isAsc", "value": params.sortOrder});
+                        postData.push({"name": "orderDirection", "value": params.sortOrder});
                     }
                     $.post(table.options.exportUrl, postData, function (result) {
                         if (result.code == web_status.SUCCESS) {
