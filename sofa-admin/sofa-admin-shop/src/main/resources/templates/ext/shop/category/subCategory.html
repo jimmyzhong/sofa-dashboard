@@ -7,15 +7,12 @@
 <div class="container-div">
     <div class="row">
         <div class="btn-group-sm" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:role:add">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="ext:shop:category:add">
                 <i class="fa fa-plus"></i> 新增
             </a>
             <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
-               shiro:hasPermission="system:role:remove">
+               shiro:hasPermission="ext:shop:category:remove">
                 <i class="fa fa-remove"></i> 删除
-            </a>
-            <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:role:export">
-                <i class="fa fa-download"></i> 导出
             </a>
             <a class="btn btn-warning" onclick="$.modal.closeTab();">
                 <i class="fa fa-backward"></i> 返回
@@ -30,9 +27,9 @@
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
-    var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
+    var detailFlag = [[${@permission.hasPermi('ext:shop:category:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:category:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:category:remove')}]];
     var prefix = ctx + "ext/shop/category";
 
     function gotoSubCategory(id) {
@@ -54,7 +51,7 @@
             removeUrl: prefix + "/remove",
             sortName: "id",
             sortOrder: "asc",
-            modalName: "执行器",
+            modalName: "商品子类别",
             columns: [{
                 checkbox: true
             },
