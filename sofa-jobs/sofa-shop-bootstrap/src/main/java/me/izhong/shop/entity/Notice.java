@@ -36,6 +36,12 @@ public class Notice {
     private String content;
 
     /**
+     * 公告链接
+     */
+    @Column(name = "LINK")
+    private String link;
+
+    /**
      * 状态(1:公布;0:不发布)
      * 
      */
