@@ -58,21 +58,21 @@ public class PageRequestUtil {
         if (StringUtils.isNotBlank(orderByColumn)) {
             pageRequest.orderBy(orderByColumn);
         }
-        String isAsc = request.getParameter("isAsc");
-        if (StringUtils.isNotBlank(isAsc)) {
-            pageRequest.isAsc(isAsc);
+        String orderDirection = request.getParameter("orderDirection");
+        if (StringUtils.isNotBlank(orderDirection)) {
+            pageRequest.orderDirection(orderDirection);
         }
         String status = request.getParameter("status");
         if (StringUtils.isNotBlank(status)) {
             pageRequest.status(status);
         }
 
-        String beginTime = request.getParameter("beginTime");
+        String beginTime = request.getParameter("beginCreateTime");
         if (StringUtils.isNotBlank(beginTime)) {
             pageRequest.beginDate(TimeUtil.parseDate_yyyyMMdd_hl(beginTime));
         }
 
-        String endTime = request.getParameter("endTime");
+        String endTime = request.getParameter("endCreateTime");
         if (StringUtils.isNotBlank(endTime)) {
             pageRequest.endDate(TimeUtil.parseDate_yyyyMMdd_hl(endTime));
         }
@@ -89,18 +89,21 @@ public class PageRequestUtil {
         //    query.addCriteria(Criteria.where("status").is(status));
         //}
 
-        if (request.getBeginDate() != null && request.getEndDate() != null) {
-            query.addCriteria(Criteria.where("createTime").gte(request.getBeginDate()).lte(request.getEndDate() ));
-        } else if (request.getBeginDate() != null) {
-            query.addCriteria(Criteria.where("createTime").gte(request.getBeginDate()));
-        } else if (request.getEndDate()  != null) {
-            query.addCriteria(Criteria.where("createTime").lte(request.getEndDate() ));
+        if (request.getBeginCreateTime() != null && request.getEndCreateTime() != null) {
+            //query.addCriteria(Criteria.where("createTime").gte(request.getBeginCreateTime()).lte(request.getEndCreateTime() ));
+            CriteriaUtil.addCriteria(query,Criteria.where("createTime").gte(request.getBeginCreateTime()).lte(request.getEndCreateTime() ));
+        } else if (request.getBeginCreateTime() != null) {
+            //query.addCriteria(Criteria.where("createTime").gte(request.getBeginCreateTime()));
+            CriteriaUtil.addCriteria(query,Criteria.where("createTime").gte(request.getBeginCreateTime()));
+        } else if (request.getEndCreateTime()  != null) {
+            //query.addCriteria(Criteria.where("createTime").lte(request.getEndCreateTime() ));
+            CriteriaUtil.addCriteria(query,Criteria.where("createTime").lte(request.getEndCreateTime() ));
         }
 
         if (StringUtils.isNotBlank(request.getOrderByColumn())) {
             query.with(
                     new Sort(
-                            Sort.Direction.fromOptionalString(request.getIsAsc()).orElse(Sort.Direction.ASC), request.getOrderByColumn()));
+                            Sort.Direction.fromOptionalString(request.getOrderDirection()).orElse(Sort.Direction.ASC), request.getOrderByColumn()));
         }
         if (request.getPageNum() < 1)
             request.setPageNum(1);
@@ -158,8 +161,8 @@ public class PageRequestUtil {
         if (StringUtils.isNotBlank(request.getStatus())) {
             aggregationOperations.add(Aggregation.match(Criteria.where("status").is(request.getStatus())));
         }
-        Date beginDate = request.getBeginDate();
-        Date endDate = request.getEndDate();
+        Date beginDate = request.getBeginCreateTime();
+        Date endDate = request.getEndCreateTime();
         if (beginDate != null && endDate != null) {
             aggregationOperations.add(Aggregation.match(Criteria.where("createTime").gte(beginDate).lte(endDate)));
         } else if (beginDate != null) {
@@ -177,7 +180,7 @@ public class PageRequestUtil {
 
         if (StringUtils.isNotBlank(request.getOrderByColumn())) {
             aggregationOperations.add(Aggregation.sort(
-                    new Sort(Sort.Direction.fromOptionalString(request.getIsAsc()).orElse(Sort.Direction.ASC), request.getOrderByColumn())));
+                    new Sort(Sort.Direction.fromOptionalString(request.getOrderDirection()).orElse(Sort.Direction.ASC), request.getOrderByColumn())));
         }
         long pageNum = request.getPageNum();
         long pageSize = request.getPageSize();

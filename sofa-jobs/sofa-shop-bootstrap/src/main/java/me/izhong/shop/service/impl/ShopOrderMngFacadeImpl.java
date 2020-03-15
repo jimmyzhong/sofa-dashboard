@@ -47,8 +47,8 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
 		BeanUtils.copyProperties(param, order);
         Example<Order> example = Example.of(order);
         Sort sort = Sort.unsorted();
-        if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getIsAsc())) {
-            sort = Sort.by("asc".equalsIgnoreCase(request.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
+        if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getOrderDirection())) {
+            sort = Sort.by("asc".equalsIgnoreCase(request.getOrderDirection()) ? Sort.Direction.ASC: Sort.Direction.DESC,
                     request.getOrderByColumn());
         }
 

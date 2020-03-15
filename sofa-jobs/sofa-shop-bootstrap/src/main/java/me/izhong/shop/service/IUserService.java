@@ -1,8 +1,12 @@
 package me.izhong.shop.service;
 
 import me.izhong.common.domain.PageModel;
+import me.izhong.common.domain.PageRequest;
+import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
+
+import java.time.LocalDate;
 
 public interface IUserService {
 
@@ -31,4 +35,6 @@ public interface IUserService {
     void attemptModifyPassword(User dbUser, String password);
 
     UserMoney findMoneyByUserId(Long userId);
+
+    PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageRequest pageRequest);
 }

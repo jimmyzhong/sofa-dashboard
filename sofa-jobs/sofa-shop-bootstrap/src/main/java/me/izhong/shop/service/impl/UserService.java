@@ -21,9 +21,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -68,7 +71,15 @@ public class UserService implements IUserService {
         user.encryptUserPassword();
         user.setRegisterTime(Timestamp.valueOf(LocalDateTime.now()));
         user.setLoginTime(user.getRegisterTime());
-        return userDao.save(user);
+        user =  userDao.save(user);
+        // TODO create money score table
+        UserMoney money = new UserMoney();
+        money.setUserId(user.getId());
+        money.setAvailableAmount(BigDecimal.ZERO);
+        money.setUnavailableAmount(BigDecimal.ZERO);
+        money.setCreateTime(LocalDateTime.now());
+        userMoneyDao.save(money);
+        return user;
     }
 
     @Override
@@ -187,9 +198,11 @@ public class UserService implements IUserService {
         return userMoneyDao.findByUserId(userId);
     }
 
+    @Override
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
-                                                      LocalDate start, LocalDate end,
                                                       PageRequest pageRequest) {
+        LocalDate start = convertToLocalDate(pageRequest.getBeginDate());
+        LocalDate end = convertToLocalDate(pageRequest.getEndDate());
         Specification<PayRecord> specification = (r, q, cb) -> {
             Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
                     cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()));
@@ -211,5 +224,9 @@ public class UserService implements IUserService {
 
         Page<PayRecord> page = payRecordDao.findAll(specification, pageableReq);
         return PageModel.instance(page.getTotalElements(), page.getContent());
+    }
+
+    private LocalDate convertToLocalDate(Date date) {
+        return date == null ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }
