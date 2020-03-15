@@ -20,7 +20,7 @@
 					<img id="productPic_img" class="img-circle img-lg" th:src="${goods.productPic}" >
 					<label>
 						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
-						<input name="productPic" id="productPicInput"  type="hidden"/>
+						<input name="productPic" id="productPicInput"  type="hidden" th:field="*{productPic}"/>
 					</label>
 				</div>
 			</div>
@@ -35,7 +35,7 @@
 				<div class="col-sm-8">
 					<select class="form-control" id="productCategoryIds" name="productCategoryIds"  onChange="productCategoryChange()" required>
 						<option value="">--请选择商品类别--</option>
-
+						
 					</select>
 				</div>
 			</div>
@@ -57,9 +57,22 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">缩略图：</label>
+				<div class="col-sm-8">
+					<label>
+						<a>添加图片</a>
+						<input style="visibility: hidden" onchange ="upAlbumPics()" id="uploadAlbumPics" type="file"  accept="image/*"/>
+					</label>
+					<div id="upAlbumPics_content">
+
+					</div>
+				</div>
+				<input type="hidden" id="albumPics" th:field="*{albumPics}">
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">商品详情：</label>
 				<div class="col-sm-8">
-					<input id="detail_desc" name="detail_desc" th:field="*{detailDesc}" type="hidden">
+					<input id="detail_desc" th:value="${goods.detailDesc}" type="hidden">
 					<div class="summernote" id="editor"></div>
 				</div>
 			</div>
@@ -73,11 +86,25 @@
 		<input id="category" type="hidden" th:value="${goods.productCategoryId}"/>
 		<input id="subCategory" type="hidden" th:value="${goods.productCategorySecondaryId}"/>
 	</div>
+
+	<style>
+		#upAlbumPics_content>div{
+			width: 100px;
+			height:50px;
+			display: inline-block;
+			margin-right: 10px;
+		}
+		#upAlbumPics_content>div>img{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
 		var prefix = ctx + "ext/shop/goods";
         var _categoryAll=[];
+        var albumPics=[];
 		$(function () {
 			fetchGoodsCategory();
 			$('.summernote').summernote({
@@ -107,6 +134,7 @@
 				var data = $("#form-shop-goods-edit").serializeArray();
 				var sHTML = $('.summernote').summernote('code');
 				data.push({"name": "detailDesc", "value": sHTML});
+				data.push({"name": "albumPics", "value": albumPics});
 				$.operate.saveTab(prefix + "/edit", data);
 			}
 		}
@@ -126,6 +154,30 @@
 				}
 			})
 		}
+
+		function upAlbumPics(){
+			var formdata = new FormData();
+			formdata.append("file", $("#uploadAlbumPics")[0].files[0]);
+			$.ajax({
+				url: ctx + "ext/shop/oss/upload",
+				data: formdata,
+				type: "post",
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					albumPics.push(result.data.pictureUrl)
+					$("#upAlbumPics_content").append('<div><img  src="'+result.data.pictureUrl+'"></div>')
+					// $("#albumPics").val(albumPics)
+					// $("#albumPics").attr("src",result.data.pictureUrl)
+				}
+			})
+		}
+		function randerImgs() {
+			for(var i =0;i<albumPics.length;i++){
+
+			}
+		}
+
 		function fetchGoodsCategory() {
 			var categoryId=$("#category").val()
 			console.log("categoryId",categoryId)
