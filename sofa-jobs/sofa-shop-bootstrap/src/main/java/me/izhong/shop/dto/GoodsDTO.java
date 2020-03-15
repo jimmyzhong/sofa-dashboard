@@ -24,6 +24,7 @@ public class GoodsDTO {
 	private Long productCategoryId;
 	private String productCategoryPath;
 	private BigDecimal price;
+	private BigDecimal originalPrice;
     private BigDecimal promotionPrice;
 	private Integer publishStatus;
 	private Integer recommandStatus;

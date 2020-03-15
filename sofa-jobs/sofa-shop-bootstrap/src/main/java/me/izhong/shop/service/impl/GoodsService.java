@@ -139,7 +139,8 @@ public class GoodsService implements IGoodsService {
 				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
 				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
 				.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
-				.productType(g.getProductType()).nextPriceTime(generateNextPriceTime(g)).build()).collect(Collectors.toList());
+				.productType(g.getProductType()).originalPrice(g.getOriginalPrice())
+				.nextPriceTime(generateNextPriceTime(g)).build()).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
 	}
 

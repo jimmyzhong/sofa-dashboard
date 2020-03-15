@@ -8,17 +8,19 @@ import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.dao.UserMoneyDao;
-import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.PayRecord;
+import me.izhong.shop.entity.PayRecord_;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
 import me.izhong.shop.service.IUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
@@ -184,7 +186,20 @@ public class UserService implements IUserService {
         return userMoneyDao.findByUserId(userId);
     }
 
-    public PageModel<PayRecord> listMoneyRecord(Long userId, MoneyTypeEnum type, LocalDateTime start, LocalDateTime end) {
-        return null;
+    public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
+                                                LocalDateTime start, LocalDateTime end,
+                                                PageRequest pageRequest) {
+        Specification<PayRecord> specification = (r, q, cb) -> {
+            Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
+                    cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()));
+            if (start != null) {
+            }
+
+            return null;
+        };
+
+        Pageable pageable = null;
+//         payRecordDao.findAll(specification, pageable);
+         return null;
     }
 }
