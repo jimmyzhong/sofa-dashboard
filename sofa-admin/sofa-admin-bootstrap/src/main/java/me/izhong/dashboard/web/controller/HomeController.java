@@ -3,8 +3,10 @@ package me.izhong.dashboard.web.controller;
 import me.izhong.common.model.UserInfo;
 import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
+import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.service.SysMenuService;
 import me.izhong.dashboard.manage.domain.Message;
+import me.izhong.dashboard.web.service.ConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,9 +20,11 @@ import java.util.List;
 @Controller
 public class HomeController {
 
-
     @Autowired
     private SysMenuService sysMenuService;
+
+    @Autowired
+    private ConfigService configService;
 
     @RequestMapping("/")
     public String index(Model model) {
@@ -51,7 +55,8 @@ public class HomeController {
 //        m2.setVisible("0");
 //        m1.getChildren().add(m2);
 
-        model.addAttribute("demoEnabled", StringUtils.equals(user.getLoginName(),"admin"));
+        String demoUser = configService.getKey("sys.main.demoEnableUser");
+        model.addAttribute("demoEnabled", StringUtils.equals(user.getLoginName(),demoUser));
 
         List<SysMenu> menus2 = sysMenuService.selectVisibleMenusByUser(user.getUserId());
         if(menus2 !=null && menus2.size() > 0) {

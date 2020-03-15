@@ -206,22 +206,22 @@ public class UserAdminController {
         return UserConvertUtil.convert(sysUserService.saveUserAndPerms(dbUser));
     }
 
-    @RequiresPermissions(PermissionConstants.User.VIEW)
-    @RequestMapping("count")
-    public long count(@RequestParam(value = "loginName", required = false) String username,
-                      @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
-                      @RequestParam(value = "deptId", required = false) Long deptId,
-                      @RequestParam(value = "beginTime", required = false) String beginTime,
-                      @RequestParam(value = "endTime", required = false) String endTime) {
-        SysUser searchUser = new SysUser();
-        searchUser.setPhoneNumber(phoneNumber);
-        searchUser.setLoginName(username);
-        searchUser.setDeptId(deptId);
-        Date bTime = TimeUtil.parseDate_yyyyMMdd_hl(beginTime);
-        Date eTime = TimeUtil.parseDate_yyyyMMdd_hl(endTime);
-
-        return sysUserService.getListSize(searchUser, bTime, eTime);
-    }
+//    @RequiresPermissions(PermissionConstants.User.VIEW)
+//    @RequestMapping("count")
+//    public long count(@RequestParam(value = "loginName", required = false) String username,
+//                      @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+//                      @RequestParam(value = "deptId", required = false) Long deptId,
+//                      @RequestParam(value = "beginTime", required = false) String beginTime,
+//                      @RequestParam(value = "endTime", required = false) String endTime) {
+//        SysUser searchUser = new SysUser();
+//        searchUser.setPhoneNumber(phoneNumber);
+//        searchUser.setLoginName(username);
+//        searchUser.setDeptId(deptId);
+//        Date bTime = TimeUtil.parseDate_yyyyMMdd_hl(beginTime);
+//        Date eTime = TimeUtil.parseDate_yyyyMMdd_hl(endTime);
+//
+//        return sysUserService.getListSize(searchUser, bTime, eTime);
+//    }
 
     @Log(title = "用户管理", businessType = BusinessType.EXPORT)
     @RequiresPermissions(PermissionConstants.User.EXPORT)

@@ -88,8 +88,8 @@ public class GoodsCategoryService implements IGoodsCategoryService {
 		Example<GoodsCategory> example = Example.of(category);
 
 		Sort sort = Sort.unsorted();
-		if (!StringUtils.isEmpty(pageQuery.getOrderByColumn()) && !StringUtils.isEmpty(pageQuery.getIsAsc())) {
-			sort = Sort.by("asc".equalsIgnoreCase(pageQuery.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
+		if (!StringUtils.isEmpty(pageQuery.getOrderByColumn()) && !StringUtils.isEmpty(pageQuery.getOrderDirection())) {
+			sort = Sort.by("asc".equalsIgnoreCase(pageQuery.getOrderDirection()) ? Sort.Direction.ASC: Sort.Direction.DESC,
 					pageQuery.getOrderByColumn());
 		}
 		Pageable pageableReq = PageRequest.of(Long.valueOf(pageQuery.getPageNum()-1).intValue(),

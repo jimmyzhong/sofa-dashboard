@@ -27,6 +27,18 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">折扣价：</label>
+				<div class="col-sm-8">
+					<p th:text="${goods.promotionPrice}"></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">库存：</label>
+				<div class="col-sm-8">
+					<p th:text="${goods.stock}"></p>
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label">类别：</label>
 				<div class="col-sm-8">
 					<p id="category_name"></p>

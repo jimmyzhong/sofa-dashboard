@@ -130,8 +130,8 @@ public class GoodsService implements IGoodsService {
 
 		Sort sort = Sort.unsorted();
 		// TODO 限制排序的列名
-		if (!StringUtils.isEmpty(queryParam.getOrderByColumn()) && !StringUtils.isEmpty(queryParam.getIsAsc())) {
-			sort = Sort.by("asc".equalsIgnoreCase(queryParam.getIsAsc()) ? Sort.Direction.ASC: Sort.Direction.DESC,
+		if (!StringUtils.isEmpty(queryParam.getOrderByColumn()) && !StringUtils.isEmpty(queryParam.getOrderDirection())) {
+			sort = Sort.by("asc".equalsIgnoreCase(queryParam.getOrderDirection()) ? Sort.Direction.ASC: Sort.Direction.DESC,
 					queryParam.getOrderByColumn());
 		}
 
