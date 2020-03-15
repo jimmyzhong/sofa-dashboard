@@ -36,7 +36,7 @@ public class GoodsDTO {
 	private String tips;
 	private String keywords;
 	private String note;
-	private String albumPics;
+	private List<String> albumPics;
 	private String detailDesc;
 	private Integer reducePriceCount;
 	private Integer isDelete;

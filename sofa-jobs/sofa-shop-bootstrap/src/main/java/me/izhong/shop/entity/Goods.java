@@ -61,7 +61,7 @@ public class Goods {
     private String keywords;
     @Column(name = "NOTE")
     private String note;
-    @Column(name = "ALBUM_PICS")
+    @Column(name = "ALBUM_PICS", length = 1024)
     private String albumPics;
     @Column(name = "DETAIL_DESC")
     private String detailDesc;

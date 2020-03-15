@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import io.jsonwebtoken.lang.Collections;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +52,8 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 		GoodsDTO goods = goodsService.findById(goodsId);
 		ShopGoods shopGoods = new ShopGoods();
         BeanUtils.copyProperties(goods, shopGoods);
-        if (StringUtils.isNotEmpty(goods.getAlbumPics())) {
-            shopGoods.setAlbumPics(JSON.parseArray(goods.getAlbumPics(), String.class));
+        if (!Collections.isEmpty(goods.getAlbumPics())) {
+            shopGoods.setAlbumPics(goods.getAlbumPics());
         } else {
             shopGoods.setAlbumPics(Lists.newArrayList());
         }

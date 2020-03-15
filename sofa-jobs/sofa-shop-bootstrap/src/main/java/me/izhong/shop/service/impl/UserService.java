@@ -209,7 +209,7 @@ public class UserService implements IUserService {
                 of(Long.valueOf(pageRequest.getPageNum()-1).intValue(),
                         Long.valueOf(pageRequest.getPageSize()).intValue(), sort);
 
-        payRecordDao.findAll(specification, pageableReq);
-        return null;
+        Page<PayRecord> page = payRecordDao.findAll(specification, pageableReq);
+        return PageModel.instance(page.getTotalElements(), page.getContent());
     }
 }
