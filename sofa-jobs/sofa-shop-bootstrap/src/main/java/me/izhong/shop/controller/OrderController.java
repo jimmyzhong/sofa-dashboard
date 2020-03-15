@@ -85,7 +85,7 @@ public class OrderController {
 			"}") @RequestBody SubmitOrderRequest submitOrder, HttpServletRequest request) {
 		Long userId = getCurrentUserId(request);
 		Order order = orderService.submit(userId, submitOrder.getAddressId(), submitOrder.getProductId(),
-						submitOrder.getAddressId(), submitOrder.getQuantity());
+						submitOrder.getProductAttrId(), submitOrder.getQuantity());
 		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
 				.status(getCommentByState(order.getStatus()))
 				.timeToPay(String.valueOf(orderExpireMinutes)).build();

@@ -13,7 +13,8 @@ public enum OrderStateEnum {
     CANCELED(4, "用户取消"),
     WAIT_DELIVER(5, "待发货"),
     DELIVERED(6, "已发货"),
-    RESALED(7, "已申请寄售");;
+    RESALED(7, "已申请寄售"),
+    FINISHED(8, "已完成");
 
     int state;
     String comment;
