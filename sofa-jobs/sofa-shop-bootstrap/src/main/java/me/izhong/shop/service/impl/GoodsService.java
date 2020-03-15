@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alipay.sofa.rpc.common.utils.JSONUtils;
+import io.jsonwebtoken.lang.Collections;
 import me.izhong.shop.consts.ProductTypeEnum;
 import me.izhong.shop.dao.GoodsStoreDao;
 import me.izhong.shop.entity.GoodsStore;
@@ -155,8 +158,11 @@ public class GoodsService implements IGoodsService {
 	public GoodsDTO findById(Long goodsId) {
 		Goods goods = goodsDao.findById(goodsId).orElseThrow(() -> new RuntimeException("unable to find goods by " + goodsId));
 		GoodsDTO dto = new GoodsDTO();
-		BeanUtils.copyProperties(goods, dto);
+		BeanUtils.copyProperties(goods, dto, "albumPics");
 		dto.setNextPriceTime(generateNextPriceTime(goods));
+		if(!StringUtils.isEmpty(goods.getAlbumPics())) {
+			dto.setAlbumPics(JSONArray.parseArray(goods.getAlbumPics(), String.class));
+		}
 		return dto;
 	}
 

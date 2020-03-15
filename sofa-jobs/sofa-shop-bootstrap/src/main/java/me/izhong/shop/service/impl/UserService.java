@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Service
@@ -187,19 +188,28 @@ public class UserService implements IUserService {
     }
 
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
-                                                LocalDateTime start, LocalDateTime end,
-                                                PageRequest pageRequest) {
+                                                      LocalDate start, LocalDate end,
+                                                      PageRequest pageRequest) {
         Specification<PayRecord> specification = (r, q, cb) -> {
             Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
                     cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()));
             if (start != null) {
+                predicate = cb.and(predicate, cb.greaterThan(r.get(PayRecord_.createTime), start.atStartOfDay()));
+            }
+            if (end != null) {
+                predicate = cb.and(predicate, cb.lessThanOrEqualTo(r.get(PayRecord_.createTime), end.atStartOfDay()));
             }
 
-            return null;
+            return predicate;
         };
 
-        Pageable pageable = null;
-//         payRecordDao.findAll(specification, pageable);
-         return null;
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+
+        Pageable pageableReq = org.springframework.data.domain.PageRequest.
+                of(Long.valueOf(pageRequest.getPageNum()-1).intValue(),
+                        Long.valueOf(pageRequest.getPageSize()).intValue(), sort);
+
+        Page<PayRecord> page = payRecordDao.findAll(specification, pageableReq);
+        return PageModel.instance(page.getTotalElements(), page.getContent());
     }
 }
