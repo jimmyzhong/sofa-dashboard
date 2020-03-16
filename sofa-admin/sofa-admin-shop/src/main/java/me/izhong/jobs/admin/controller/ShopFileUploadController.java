@@ -3,6 +3,7 @@ package me.izhong.jobs.admin.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.izhong.dashboard.manage.constants.Global;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +30,7 @@ public class ShopFileUploadController {
 		}
 		String pictureUrl = null;
 		try {
-			pictureUrl = FileUploadUtil.upload("/oss/upload", file, MimeTypeUtil.IMAGE_EXTENSION);
+			pictureUrl = FileUploadUtil.upload(Global.getUploadPath(), file, MimeTypeUtil.IMAGE_EXTENSION);
 		} catch (Exception e) {
 			log.error("上传图片失败", e);
 		}
