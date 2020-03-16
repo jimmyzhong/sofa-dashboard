@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.experimental.Tolerate;
 import me.izhong.shop.entity.GoodsAttributes;
 
+import javax.persistence.Column;
+
 @Data
 @Builder
 public class GoodsDTO {
@@ -41,5 +43,8 @@ public class GoodsDTO {
 	private Integer reducePriceCount;
 	private Integer isDelete;
 	private LocalDateTime nextPriceTime; // 寄售商品下一次降价时间
+	private LocalDateTime createTime;
+	private LocalDateTime updateTime;
+	private Long createdBy;
     private List<GoodsAttributes> attributes;
 }

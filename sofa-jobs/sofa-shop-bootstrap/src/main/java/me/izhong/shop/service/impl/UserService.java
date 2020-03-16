@@ -34,7 +34,7 @@ public class UserService implements IUserService {
 
     @Autowired private UserDao userDao;
     @Autowired private UserMoneyDao userMoneyDao;
-    @Autowired private PayRecordDao payRecordDao;
+    @Autowired private PayRecordService payRecordService;
     @Autowired private ThirdPartyService certifyService;
 
 
@@ -205,32 +205,6 @@ public class UserService implements IUserService {
     @Override
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
                                                       PageRequest pageRequest) {
-        LocalDate start = convertToLocalDate(pageRequest.getBeginCreateTime());
-        LocalDate end = convertToLocalDate(pageRequest.getEndCreateTime());
-        Specification<PayRecord> specification = (r, q, cb) -> {
-            Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
-                    cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()));
-            if (start != null) {
-                predicate = cb.and(predicate, cb.greaterThan(r.get(PayRecord_.createTime), start.atStartOfDay()));
-            }
-            if (end != null) {
-                predicate = cb.and(predicate, cb.lessThanOrEqualTo(r.get(PayRecord_.createTime), end.atStartOfDay()));
-            }
-
-            return predicate;
-        };
-
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-
-        Pageable pageableReq = org.springframework.data.domain.PageRequest.
-                of(Long.valueOf(pageRequest.getPageNum()-1).intValue(),
-                        Long.valueOf(pageRequest.getPageSize()).intValue(), sort);
-
-        Page<PayRecord> page = payRecordDao.findAll(specification, pageableReq);
-        return PageModel.instance(page.getTotalElements(), page.getContent());
-    }
-
-    private LocalDate convertToLocalDate(Date date) {
-        return date == null ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        return payRecordService.listMoneyReturnRecord(userId, pageRequest);
     }
 }

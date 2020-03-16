@@ -99,4 +99,6 @@ public class Order {
     private String payStatus;
     @Column(name = "COUNT")
     private Integer count;
+    @Column(name = "RESALE_USER")
+    private Long resaleUser;
 }

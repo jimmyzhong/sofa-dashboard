@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,9 +68,9 @@ public class ResaleService {
     @Transactional
     public void updateResaleGoodsPrice() {
         LocalDateTime now = LocalDateTime.now();
-        List<Goods> goods = goodsDao.findAllByProductTypeAndCreateTimeBeforeAndCreatedByIsNotNull(
+        List<Goods> goods = goodsDao.findAllByProductTypeAndCreateTimeBeforeAndCreatedByIsNotNullAndStockGreaterThan(
                 ProductTypeEnum.RESALE.getType(),
-                now.minusHours(decayPeriodHours));
+                now.minusHours(decayPeriodHours), 0);
         log.info("get resale created more than one day " + goods.size());
         List<Goods> decayList = new ArrayList<>();
         for (Goods g: goods) {
@@ -94,11 +93,12 @@ public class ResaleService {
                 continue;
             }
             decayList.add(g);
+            goodsDao.updateProductPrice(g.getId(), g.getPrice());
         }
         log.info("those to be decayed " + decayList.size());
-        if (!decayList.isEmpty()) {
-            goodsDao.saveAll(decayList);
-        }
+//        if (!decayList.isEmpty()) {
+//            goodsDao.saveAll(decayList);
+//        }
     }
 
     public LocalDateTime nextPriceTime(LocalDateTime createdTime) {

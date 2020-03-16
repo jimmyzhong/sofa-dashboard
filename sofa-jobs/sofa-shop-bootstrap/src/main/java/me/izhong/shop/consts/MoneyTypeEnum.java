@@ -6,9 +6,12 @@ import java.util.Arrays;
 
 public enum MoneyTypeEnum {
     UNKNOWN (-1, "未知类型"),
+    // 订单类型和付款类型
     NORMAL_GOODS (0, "普通商品"),
     DEPOSIT_MONEY (1, "充值余额"),
-    RETURN_MONEY (2, "返现");
+    RESALE_GOODS (2, "寄售商品"),
+    // 仅付款类型
+    RETURN_MONEY (10, "返现");
 
     int type;
     String description;

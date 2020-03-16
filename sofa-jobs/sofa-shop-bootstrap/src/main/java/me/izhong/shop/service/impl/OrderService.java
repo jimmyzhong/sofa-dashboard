@@ -10,6 +10,7 @@ import me.izhong.shop.annotation.NeedOptimisticLockRetry;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.consts.PayStatusEnum;
+import me.izhong.shop.consts.ProductTypeEnum;
 import me.izhong.shop.dao.*;
 import me.izhong.shop.dto.CartItemParam;
 import me.izhong.shop.dto.GoodsDTO;
@@ -33,15 +34,13 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import static me.izhong.shop.consts.MoneyTypeEnum.RESALE_GOODS;
 import static me.izhong.shop.consts.OrderStateEnum.*;
 import static me.izhong.shop.consts.MoneyTypeEnum.NORMAL_GOODS;
 
@@ -180,9 +179,11 @@ public class OrderService implements IOrderService {
 	public void updatePayInfo(Order order, String externalOrderNo, String payMethod,
 							  String payType, BigDecimal payAmount, BigDecimal totalAmount,
 							  String state, String comment) {
+		// 付款记录
 		PayRecord record = payRecordDao.findFirstByInternalIdAndType(order.getOrderSn(), payType);
 		if (record == null) {
 			record = new PayRecord();
+			record.setSysState(0);
 			record.setCreateTime(LocalDateTime.now());
 		}
 		record.setInternalId(order.getOrderSn());
@@ -192,18 +193,20 @@ public class OrderService implements IOrderService {
 		record.setPayMethod(payMethod);
 		record.setType(payType);
 		record.setPayerId(order.getUserId());
-		record.setState(state);
+		record.setPayState(state);
 
 		comment = StringUtils.substring(comment,0,200);
 		record.setComment(comment);
 
 		order.setPayTradeNo(externalOrderNo);
 		order.setPayAmount(payAmount);
+
 		if (PayStatusEnum.SUCCESS.name().equals(state) && order.getStatus() < PAID.getState()) {
 			order.setStatus(PAID.getState());
 			List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(),order.getUserId());
-			// update stock/sale info
-			Set<Goods> goodsSet = new HashSet<>();
+			// 更新库存、销售量信息
+			Set<Goods> goodsSetToUpdateStockAndSale = new HashSet<>();
+			Map<OrderItem, Goods> resaleItems = new HashMap<>();
 			for (OrderItem item: items) {
 				GoodsStore store = storeDao.findByProductIdAndProductAttrId(item.getProductId(), item.getProductAttributeId());
 				store.setStore(store.getStore() - item.getQuantity());
@@ -211,18 +214,23 @@ public class OrderService implements IOrderService {
 				goodsDao.findById(item.getProductId()).ifPresent(goods->{
 					goods.setStock(goods.getStock() - item.getQuantity());
 					goods.setSale((goods.getSale()==null ? 0 : goods.getSale()) + item.getQuantity());
-					goodsSet.add(goods);
+					goodsSetToUpdateStockAndSale.add(goods);
 				});
 			}
-			goodsDao.saveAll(goodsSet);
+			goodsDao.saveAll(goodsSetToUpdateStockAndSale);
 
-			// update user money back
+			// 返现记录
 			User user = userService.findById(order.getUserId());
 			if (user.getInviteUserId() != null) {
 				recordMoneyReturn(order, user.getId(), user.getInviteUserId(), 0.03);  //TODO externalize
 			}
 			if (user.getInviteUserId2() != null) {
 				recordMoneyReturn(order, user.getId(), user.getInviteUserId2(), 0.02);  //TODO externalize
+			}
+
+			// 寄售商品付款到寄售人
+			if (payType != null && payType.equalsIgnoreCase(RESALE_GOODS.getDescription())) {
+				record.setReceiverId(order.getResaleUser());
 			}
 		}
 
@@ -238,19 +246,20 @@ public class OrderService implements IOrderService {
 		moneyReturn.setReceiverId(receiverId);
 		moneyReturn.setTotalAmount(order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor)));
 		moneyReturn.setInternalId(order.getOrderSn());
+		moneyReturn.setSysState(0);
 		payRecordDao.save(moneyReturn);
 
-		UserMoney userMoney = userMoneyDao.findByUserId(receiverId);
-		if (userMoney == null) {
-			userMoney = new UserMoney();
-			userMoney.setUserId(order.getUserId());
-			userMoney.setCreateTime(LocalDateTime.now());
-			userMoney.setAvailableAmount(moneyReturn.getTotalAmount());
-		} else {
-			userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getTotalAmount()));
-			userMoney.setUpdateTime(LocalDateTime.now());
-		}
-		userMoneyDao.save(userMoney);
+//		UserMoney userMoney = userMoneyDao.findByUserId(receiverId);
+//		if (userMoney == null) {
+//			userMoney = new UserMoney();
+//			userMoney.setUserId(order.getUserId());
+//			userMoney.setCreateTime(LocalDateTime.now());
+//			userMoney.setAvailableAmount(moneyReturn.getTotalAmount());
+//		} else {
+//			userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getTotalAmount()));
+//			userMoney.setUpdateTime(LocalDateTime.now());
+//		}
+//		userMoneyDao.save(userMoney);
 	}
 
 	/**
@@ -282,7 +291,12 @@ public class OrderService implements IOrderService {
 		storeDao.save(store);
 
 		Order order = new Order();
-		order.setOrderType(NORMAL_GOODS.getType());
+		if (goods.getProductType() == ProductTypeEnum.NORMAL.getType()) {
+			order.setOrderType(NORMAL_GOODS.getType());
+		} else if (goods.getProductType() == ProductTypeEnum.RESALE.getType()) {
+			order.setOrderType(RESALE_GOODS.getType());
+			order.setResaleUser(goods.getCreatedBy());
+		}
 		setReceiverInfoOfOrder(address, order);
 
 		OrderItem item = new OrderItem();

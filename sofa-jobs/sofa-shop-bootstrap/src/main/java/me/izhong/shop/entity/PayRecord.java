@@ -30,7 +30,9 @@ public class PayRecord extends PersistedEntity{
     @Column(name = "TYPE", length = 20)
     private String type;
     @Column(name = "PAY_STATE", length = 20)
-    private String state;
+    private String payState;
+    @Column(name = "SYS_STATE")
+    private Integer sysState;
     @Column(name = "COMMENT", length = 200)
     private String comment;
     @Column(name = "PAYER")
