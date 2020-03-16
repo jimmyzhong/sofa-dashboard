@@ -1,4 +1,4 @@
-package me.izhong.shop.service.impl;
+package me.izhong.shop.service.mng;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
@@ -11,7 +11,7 @@ import me.izhong.jobs.model.ShopUser;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
-import me.izhong.shop.service.impl.UserService;
+import me.izhong.shop.util.PageableConvertUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,16 +83,7 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
 
         Example<User> example = Example.of(user, userMatcher);
 
-        Sort sort = Sort.unsorted();
-        if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getOrderDirection())) {
-            sort = Sort.by("asc".equalsIgnoreCase(request.getOrderDirection()) ? Sort.Direction.ASC: Sort.Direction.DESC,
-                    request.getOrderByColumn());
-        }
-
-        Pageable pageableReq = org.springframework.data.domain.PageRequest.of(
-                Long.valueOf(request.getPageNum()-1).intValue(),
-                Long.valueOf(request.getPageSize()).intValue(), sort);
-        Page<User> userPage = userDao.findAll(example, pageableReq);
+        Page<User> userPage = userDao.findAll(example, PageableConvertUtil.toDataPageable(request));
         List<ShopUser> shopUsers = userPage.getContent().stream().map(u->{
             ShopUser suser = new ShopUser();
             BeanUtils.copyProperties(u, suser);
