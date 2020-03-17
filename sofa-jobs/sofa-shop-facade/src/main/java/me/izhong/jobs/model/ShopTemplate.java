@@ -7,15 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ShopNotice {
+public class ShopTemplate {
 
     private Long id;
     private String title;
+    private Integer type;
     private String content;
-    private String desc;
-    private String link;
-    private Integer status;
-    private Integer isTop;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }

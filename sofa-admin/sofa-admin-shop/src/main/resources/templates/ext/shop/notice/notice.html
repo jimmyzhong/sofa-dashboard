@@ -31,7 +31,7 @@
         </div>
 
         <div class="btn-group-sm" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:role:add">
+            <a class="btn btn-success" onclick="add()" shiro:hasPermission="system:role:add">
                 <i class="fa fa-plus"></i> 新增
             </a>
             <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
@@ -50,6 +50,10 @@
     var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
     var prefix = ctx + "ext/shop/notice";
+    function add() {
+        var url = prefix + '/add';
+        $.modal.openTab("新增公告", url);
+    }
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
         $.modal.openTab("公告详情", url);

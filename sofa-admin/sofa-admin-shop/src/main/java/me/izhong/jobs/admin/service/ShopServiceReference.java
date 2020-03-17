@@ -13,6 +13,7 @@ import me.izhong.jobs.manage.IShopNoticeMngFacade;
 import me.izhong.jobs.manage.IShopOrderMngFacade;
 import me.izhong.jobs.manage.IShopReceiveAddressMngFacade;
 import me.izhong.jobs.manage.IShopRegionMngFacade;
+import me.izhong.jobs.manage.IShopTemplateMngFacade;
 import me.izhong.jobs.manage.IShopUserMngFacade;
 
 @Service
@@ -71,4 +72,10 @@ public class ShopServiceReference {
     		jvmFirst = false,
     		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
     public IShopNoticeMngFacade noticeService;
+
+    @SofaReference(interfaceType = IShopTemplateMngFacade.class,
+    		uniqueId = "${service.unique.id}",
+    		jvmFirst = false,
+    		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
+    public IShopTemplateMngFacade templateService;
 }
