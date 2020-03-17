@@ -169,7 +169,8 @@ public class GoodsService implements IGoodsService {
 					.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
 					.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
 					.productType(g.getProductType()).originalPrice(g.getOriginalPrice())
-					.nextPriceTime(formatDateTime(generateNextPriceTime(g))).description(g.getDescription())
+					.stock(g.getStock()).nextPriceTime(formatDateTime(generateNextPriceTime(g)))
+					.description(g.getDescription())
 					.createdBy(createdByUser.getId()).avatarOfCreatedBy(createdByUser.getAvatar())
 					.nameOfCreatedBy(createdByUser.getName())
 					.build();
