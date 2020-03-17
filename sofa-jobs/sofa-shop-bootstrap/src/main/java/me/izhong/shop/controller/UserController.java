@@ -331,7 +331,7 @@ public class UserController {
         return userService.findMoneyByUserId(userId);
     }
 
-    @PostMapping("/money/return/detail")
+    @PostMapping("/money/detail")
     @RequireUserLogin
     @ResponseBody
     @ApiOperation(value = "获取当前登录用户返现明细", httpMethod = "POST")
