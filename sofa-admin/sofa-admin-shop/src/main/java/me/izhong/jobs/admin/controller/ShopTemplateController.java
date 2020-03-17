@@ -86,6 +86,16 @@ public class ShopTemplateController {
 		return prefix + "/detail";
 	}
 
+	@PostMapping("/detail/{id}")
+	@AjaxWrapper
+	public ShopTemplate detailAjax(@PathVariable("id") Long id, Model model) {
+		ShopTemplate shopTemplate = shopServiceReference.templateService.find(id);
+		if (shopTemplate == null) {
+			throw BusinessException.build(String.format("模板不存在%s", id));
+		}
+		return shopTemplate;
+	}
+
     @PostMapping("/remove")
     @AjaxWrapper
     public void remove(String ids) {

@@ -6,18 +6,20 @@
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<form class="form-horizontal m" id="form-shop-goods-add">
+		<form class="form-horizontal m" id="form-shop-template-add">
 			<input id="id" name="id" type="hidden"/>
+			<input id="type" name="type" type="hidden" value="1"/>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">选择模版</label>
+				<label class="col-sm-3 control-label is-required">商品模版名称：</label>
 				<div class="col-sm-8">
-					<p id="templateContent"></p>
+					<input class="form-control" type="text" name="title" id="title" required>
 				</div>
 			</div>
+
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">标题：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="productName" id="productName" required>
+					<input class="form-control" type="text" id="productName" required>
 				</div>
 			</div>
 			<div class="form-group tc">
@@ -26,14 +28,14 @@
 					<img id="productPic_img" class="img-circle img-lg">
 					<label>
 						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
-						<input name="productPic" id="productPicInput"  type="hidden"/>
+						<input id="productPicInput"  type="hidden"/>
 					</label>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">价格：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="price" id="price" required>
+					<input class="form-control" type="text" id="price" required>
 				</div>
 			</div>
 			<div class="form-group">
@@ -45,13 +47,13 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">库存：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="stock" id="stock" required>
+					<input class="form-control" type="text"  id="stock" required>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryIds" name="productCategoryIds"  onChange="productCategoryChange(this)" required>
+					<select class="form-control" id="productCategoryIds"  onChange="productCategoryChange(this)" required>
 						<option value="">--请选择商品类别--</option>
 					</select>
 				</div>
@@ -59,7 +61,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">子类别：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="productCategoryId" name="productCategoryId" required>
+					<select class="form-control" id="productCategoryId" required>
 						<option value="">--请选择商品子类别--</option>
 					</select>
 				</div>
@@ -67,7 +69,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">商品描述：</label>
 				<div class="col-sm-8">
-					<textarea class="form-control" id="description" name="description" required>
+					<textarea class="form-control" id="description" required>
 
 					</textarea>
 				</div>
@@ -87,7 +89,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">商品详情：</label>
 				<div class="col-sm-8">
-					<div id="editor" class="summernote"></div>
+					<div class="summernote"></div>
 				</div>
 			</div>
 			<div class="form-group">
@@ -113,77 +115,37 @@
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
-		var prefix = ctx + "ext/shop/goods";
+		var prefix = ctx + "ext/shop/template";
         var _categoryAll=[];
 		var albumPics=[];
         $(function () {
 			fetchGoodsCategory();
-			fetchGoodsTemplate();
 		})
 		$("#form-shop-goods-add").validate({
 			onkeyup: false,
 			focusCleanup: true
 		});
-		function fetchGoodsTemplate() {
-			var formdata = new FormData();
-			formdata.append("pageNum", 1);
-			formdata.append("pageSize", 10);
-			$.ajax({
-				url: ctx + "ext/shop/template/list",
-				type: "post",
-				data: formdata,
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					var _templates=result.data.rows;
-					for(var i=0;i<_templates.length;i++){
-						$('#templateContent').append("<a onclick=chooseTemplate('"+_templates[i].id+"')>"+_templates[i].title+"</a>")
-					}
-				}
-			})
-		}
-        function chooseTemplate(id) {
-			$.ajax({
-				url: ctx + "ext/shop/template/detail/"+id,
-				type: "post",
-				success: function (result) {
-					var goodsContent=JSON.parse(result.data.content);
-					$("#productName").val(goodsContent.productName)
-					$("#productPicInput").val(goodsContent.productPicInput)
-					$("#price").val(goodsContent.price)
-					$("#promotionPrice").val(goodsContent.promotionPrice)
-					$("#stock").val(goodsContent.stock)
-					$("#productCategoryIds").val(goodsContent.productCategoryIds)
-					$("#productCategoryId").val(goodsContent.productCategoryId)
-					$("#description").val(goodsContent.description)
-					$("#productPic_img").attr("src",goodsContent.productPicInput)
-					albumPics=goodsContent.upAlbumPics;
-					$('#editor').summernote('code', goodsContent.detailDesc);
-					if(goodsContent.productCategoryId){productCategoryChange(goodsContent.productCategoryId)}
-					if(albumPics.length>0){
-						randerImgs()
-					}
-
-				}
-			})
-		}
-		function randerImgs() {
-			for(var i =0;i<albumPics.length;i++){
-				console.log("albumPics==>",albumPics[i])
-				$("#upAlbumPics_content").append("<div class='pic'><img src='"+albumPics[i]+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+albumPics[i]+"')>删除</a></p></div>")
-			}
-		}
 		function submitHandler() {
-			if(!$("#productPicInput").val()){
-				$.modal.alertWarning("封面图不能为空");
-				return;
-			}
+			// if(!$("#productPicInput").val()){
+			// 	$.modal.alertWarning("封面图不能为空");
+			// 	return;
+			// }
+			var contentObj={};
+			contentObj.productName=$("#productName").val()
+			contentObj.productPicInput=$("#productPicInput").val()
+			contentObj.price=$("#price").val()
+			contentObj.promotionPrice=$("#promotionPrice").val()
+			contentObj.stock=$("#stock").val()
+			contentObj.productCategoryIds=$("#productCategoryIds").val()
+			contentObj.productCategoryId=$("#productCategoryId").val()
+			contentObj.description=$("#description").val()
+			contentObj.upAlbumPics=albumPics;
+			var sHTML = $('.summernote').summernote('code');
+			contentObj.detailDesc=sHTML;
 			if ($.validate.form()) {
-				var data = $("#form-shop-goods-add").serializeArray();
-				var sHTML = $('.summernote').summernote('code');
-				data.push({"name": "detailDesc", "value": sHTML});
-				data.push({"name": "albumPics", "value": JSON.stringify(albumPics)});
-				$.operate.saveTab(prefix + "/add", data);
+				var data = $("#form-shop-template-add").serializeArray();
+				data.push({"name": "content", "value": JSON.stringify(contentObj)});
+				$.operate.saveTab(prefix + "/add",data);
 			}
 		}
 	    function uploadImg(){
@@ -213,18 +175,14 @@
 				}
 			})
 		}
-		function productCategoryChange(categoryId) {
+		function productCategoryChange(obj) {
 			$("#productCategoryId").val("");
 			$("#productCategoryId").html('<option value="">--请选择商品子类别--</option>');
 			for(var i=0;i<_categoryAll.length;i++){
 				if(_categoryAll[i].value==$('#productCategoryIds option:selected').val()){
 					for(var y=0;y<_categoryAll[i].children.length;y++){
 						var _subItem=_categoryAll[i].children[y];
-						if(categoryId&&(categoryId==_subItem.value)){
-							$("#productCategoryId").append('<option selected value="'+_subItem.value+'">'+_subItem.label+'</option>')
-						}else{
-							$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
-						}
+						$("#productCategoryId").append('<option value="'+_subItem.value+'">'+_subItem.label+'</option>')
 					}
 				}
 			}
