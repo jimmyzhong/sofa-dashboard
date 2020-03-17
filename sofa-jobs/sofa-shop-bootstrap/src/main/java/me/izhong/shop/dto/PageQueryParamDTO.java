@@ -11,6 +11,7 @@ public class PageQueryParamDTO extends PageRequest {
     private String categoryPath;
     private Integer productType;
     private Long userId;
+    private Boolean onIndexPage;
 
     public boolean validRequest() {
         if (this.getPageNum()<0) {

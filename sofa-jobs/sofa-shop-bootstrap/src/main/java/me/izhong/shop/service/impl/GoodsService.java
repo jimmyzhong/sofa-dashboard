@@ -1,6 +1,7 @@
 package me.izhong.shop.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,8 @@ import io.jsonwebtoken.lang.Collections;
 import me.izhong.shop.consts.ProductTypeEnum;
 import me.izhong.shop.dao.GoodsStoreDao;
 import me.izhong.shop.entity.GoodsStore;
+import me.izhong.shop.entity.User;
+import me.izhong.shop.service.IUserService;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,10 +53,19 @@ public class GoodsService implements IGoodsService {
 	private GoodsStoreDao storeDao;
 	@Autowired
 	private ResaleService resaleService;
+	@Autowired private IUserService userService;
 
 	@Override
 	@Transactional
 	public void saveOrUpdate(Goods goods) {
+		// 默认普通商品
+		if (goods.getProductType() == null) {
+			goods.setProductType(ProductTypeEnum.NORMAL.getType());
+		}
+		// 默认非首页商品
+		if (goods.getOnIndexPage() == null) {
+			goods.setOnIndexPage(false);
+		}
 		Goods g = goodsDao.save(goods);
 		saveGoodsStock(g);
 	}
@@ -117,6 +129,12 @@ public class GoodsService implements IGoodsService {
 		} else {
 			goods.setProductType(null);
 		}
+		if (queryParam.getOnIndexPage() != null) {
+			goods.setOnIndexPage(queryParam.getOnIndexPage());
+		} else {
+			goods.setOnIndexPage(null);
+		}
+
 
 		if (queryParam.getUserId() != null) {
 			goods.setCreatedBy(queryParam.getUserId());
@@ -138,15 +156,33 @@ public class GoodsService implements IGoodsService {
 		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),
 				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
 		Page<Goods> page = goodsDao.findAll(example, pageableReq); // TODO join goods stock table to get latest stock number
-		List<GoodsDTO> dtoList = page.getContent().stream().map(g->GoodsDTO.builder()
-				.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
-				.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
-				.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
-				.productType(g.getProductType()).originalPrice(g.getOriginalPrice())
-				.nextPriceTime(generateNextPriceTime(g)).build()).collect(Collectors.toList());
+		List<GoodsDTO> dtoList = page.getContent().stream().map(g-> {
+			Long createdBy = g.getCreatedBy();
+			User createdByUser = new User();
+			createdByUser.setId(createdBy);
+			if (createdBy != null) {
+				// TODO join is better
+				createdByUser = userService.findById(createdBy);
+			}
+			return GoodsDTO.builder()
+					.id(g.getId()).productName(g.getProductName()).price(g.getPrice())
+					.promotionPrice(g.getPromotionPrice()).productSn(g.getProductSn())
+					.productPic(g.getProductPic()).productCategoryPath(g.getCategoryPath())
+					.productType(g.getProductType()).originalPrice(g.getOriginalPrice())
+					.nextPriceTime(formatDateTime(generateNextPriceTime(g))).description(g.getDescription())
+					.createdBy(createdByUser.getId()).avatarOfCreatedBy(createdByUser.getAvatar())
+					.nameOfCreatedBy(createdByUser.getName())
+					.build();
+		}).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);
 	}
 
+	private String formatDateTime(LocalDateTime dateTime) {
+		if (dateTime != null) {
+			return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+		}
+		return null;
+	}
 	private LocalDateTime generateNextPriceTime(Goods g) {
 		if (g.getProductType() != null && ProductTypeEnum.RESALE.getType() == g.getProductType()) {
 			return resaleService.nextPriceTime(g.getCreateTime());
@@ -159,7 +195,7 @@ public class GoodsService implements IGoodsService {
 		Goods goods = goodsDao.findById(goodsId).orElseThrow(() -> new RuntimeException("unable to find goods by " + goodsId));
 		GoodsDTO dto = new GoodsDTO();
 		BeanUtils.copyProperties(goods, dto, "albumPics");
-		dto.setNextPriceTime(generateNextPriceTime(goods));
+		dto.setNextPriceTime(formatDateTime(generateNextPriceTime(goods)));
 		if(!StringUtils.isEmpty(goods.getAlbumPics())) {
 			dto.setAlbumPics(JSONArray.parseArray(goods.getAlbumPics(), String.class));
 		}

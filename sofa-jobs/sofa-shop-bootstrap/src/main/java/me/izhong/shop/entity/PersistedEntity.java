@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public abstract class PersistedEntity implements Serializable {
     @Column(name="CREATE_TIME")
-    private LocalDateTime createTime;
+    protected LocalDateTime createTime;
     @Column(name="CREATE_BY")
-    private String createdBy;
+    protected String createdBy;
 }

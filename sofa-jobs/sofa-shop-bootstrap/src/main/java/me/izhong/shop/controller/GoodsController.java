@@ -24,6 +24,16 @@ public class GoodsController {
     @Autowired
     private IGoodsService goodsService;
 
+    @PostMapping(path = "/list/index", consumes = "application/json")
+    @ResponseBody
+    @ApiOperation(value="首页商品", httpMethod = "POST", consumes = "application/json")
+    public PageModel<GoodsDTO> listOnIndexPage(@RequestBody PageQueryParamDTO pageQuery) {
+        pageQuery.validRequest();
+
+        pageQuery.setOnIndexPage(true);
+        return goodsService.list(pageQuery);
+    }
+
     @PostMapping(path = "/list", consumes = "application/json")
     @ResponseBody
     @ApiOperation(value="获取商品列表", httpMethod = "POST", consumes = "application/json")

@@ -13,6 +13,7 @@ import me.izhong.shop.entity.PayRecord_;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
 import me.izhong.shop.service.IUserService;
+import me.izhong.shop.util.ShareCodeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -72,6 +73,7 @@ public class UserService implements IUserService {
         user.setRegisterTime(Timestamp.valueOf(LocalDateTime.now()));
         user.setLoginTime(user.getRegisterTime());
         user =  userDao.save(user);
+        user.setUserCode(ShareCodeUtil.generateUserCode(user.getId()));
         // TODO create money score table
         UserMoney money = new UserMoney();
         money.setUserId(user.getId());
@@ -190,7 +192,11 @@ public class UserService implements IUserService {
 
     @Override
     public User findById(Long userId) {
-        return userDao.findById(userId).orElseThrow(()->new RuntimeException("unable to find user by " + userId));
+        User user =  userDao.findById(userId).orElse(null);
+        if (user != null && StringUtils.isEmpty(user.getUserCode())) {
+            user.setUserCode(ShareCodeUtil.generateUserCode(user.getId()));
+        }
+        return user;
     }
 
     @Override

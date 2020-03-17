@@ -30,9 +30,15 @@ public class Notice {
     private String title;
 
     /**
+     * 公告描述
+     */
+    @Column(name = "DESCRIPTION")
+    private String description;
+
+    /**
      * 公告内容
      */
-    @Column(name = "CONTENT")
+    @Column(name = "CONTENT", length = 500)
     private String content;
 
     /**

@@ -6,6 +6,7 @@ import lombok.experimental.Accessors;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -13,7 +14,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "PAY_RECORD")
 @SequenceGenerator(name = "PAY_RECORD_SEQ", sequenceName = "PAY_RECORD_SEQ", allocationSize = 1)
-public class PayRecord extends PersistedEntity{
+public class PayRecord{
     @Id
     @GeneratedValue
     private Long id;
@@ -39,5 +40,9 @@ public class PayRecord extends PersistedEntity{
     Long payerId;
     @Column(name = "RECEIVER")
     Long receiverId;
+    @Column(name="CREATE_TIME")
+    private LocalDateTime createTime;
+    @Column(name="CREATE_BY")
+    private String createdBy;
 
 }
