@@ -69,6 +69,8 @@ public class Goods {
     private String reducePriceCount;
     @Column(name = "IS_DELETE")
     private Integer isDelete;
+    @Column(name = "ON_INDEX_PAGE")
+    private Boolean onIndexPage = Boolean.FALSE;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

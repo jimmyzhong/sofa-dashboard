@@ -42,9 +42,12 @@ public class GoodsDTO {
 	private String detailDesc;
 	private Integer reducePriceCount;
 	private Integer isDelete;
-	private LocalDateTime nextPriceTime; // 寄售商品下一次降价时间
+	private String nextPriceTime; // 寄售商品下一次降价时间
 	private LocalDateTime createTime;
 	private LocalDateTime updateTime;
 	private Long createdBy;
+	private Boolean onIndexPage;
+	private String avatarOfCreatedBy;
+	private String nameOfCreatedBy;
     private List<GoodsAttributes> attributes;
 }

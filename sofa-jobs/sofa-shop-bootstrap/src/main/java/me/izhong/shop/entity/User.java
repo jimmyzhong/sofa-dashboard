@@ -45,10 +45,13 @@ public class User extends EditableEntity {
     private Timestamp registerTime;
     @Column(name = "loginTime")
     private Timestamp loginTime;
+    @Column(name = "userCode", unique = true)
+    private String userCode; // 用户码
     @Column(name = "INVITE_USER")
     private Long inviteUserId;
     @Column(name = "INVITE_USER2")
     private Long inviteUserId2;
+
 
 
     public void encryptUserPassword() {

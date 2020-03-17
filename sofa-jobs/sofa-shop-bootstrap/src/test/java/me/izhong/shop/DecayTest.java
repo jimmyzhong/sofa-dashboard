@@ -1,11 +1,16 @@
 package me.izhong.shop;
 
+import me.izhong.shop.service.impl.UserService;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static me.izhong.shop.util.ShareCodeUtil.decodeUserCode;
+import static me.izhong.shop.util.ShareCodeUtil.generateUserCode;
+import static org.junit.Assert.assertEquals;
 
 public class DecayTest {
 
@@ -23,5 +28,15 @@ public class DecayTest {
 
         BigDecimal newPrice = BigDecimal.valueOf(100).multiply(BigDecimal.valueOf(1-0.1).pow(e.intValue()));
         System.out.println("newPrice " + newPrice);
+    }
+
+
+    @Test
+    public void testUserCode() {
+        for (Long i=31l; i<126; i++) {
+            String code = generateUserCode(i);
+            System.out.println(code);
+            assertEquals(i, decodeUserCode(code));
+        }
     }
 }

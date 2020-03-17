@@ -12,7 +12,6 @@ import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
-import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
@@ -33,6 +32,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
+import static me.izhong.shop.util.ShareCodeUtil.decodeUserCode;
 
 @Controller
 @AjaxWrapper
@@ -65,6 +66,7 @@ public class UserController {
             put("userId",user.getId());
             put("phone",user.getPhone());
             put("nickName",user.getNickName());
+            put("userCode",user.getUserCode());
             put("avatar",user.getAvatar());
         }};
     }
@@ -172,8 +174,8 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
             @ApiImplicitParam(name = "token", value = "token", dataType = "string"),
             @ApiImplicitParam(name = "code", value = "验证码", dataType = "string"),
-            @ApiImplicitParam(name = "invitationId", value = "邀请人ID", dataType = "string"),
-            @ApiImplicitParam(name = "orderNo", value = "邀请人订单号", dataType = "string"),
+            @ApiImplicitParam(name = "refUserCode", value = "邀请人注册码", dataType = "string"),
+
     })
     public Map register(@RequestBody Map<String,String> params) {
         String phone = params.get("phone");
@@ -181,26 +183,26 @@ public class UserController {
         String password = params.get("password");
         String code = params.get("code");
         String nickName = params.get("nickName");
-        String invitationId = params.get("invitationId");
-        String orderNo = params.get("orderNo");
+        String refUserCode = params.get("refUserCode");
 
         User user = new User();
         user.setPhone(phone);
         user.setPassword(password);
         user.setNickName(nickName);
         ensureRequiredFieldWhenRegistering(user);
-        if (StringUtils.isEmpty(invitationId) && StringUtils.isEmpty(orderNo)) {
-            // TODO
-            log.warn("no invitation info specified");
+        if (StringUtils.isEmpty(refUserCode)) {
+            throw BusinessException.build("没有邀请码不能注册");
         }
-        if (!StringUtils.isEmpty(orderNo)) {
-            Order order = orderService.findByOrderNo(orderNo);
-            if (order == null) throw BusinessException.build(orderNo + "订单不存在ß");
+        Long refUserId = decodeUserCode(refUserCode.toUpperCase());
+        if (refUserId == null) {
+            throw BusinessException.build("未能解析邀请码.");
+        }
+        User refUser = userService.findById(refUserId);
+        if (refUser == null) {
+            throw BusinessException.build("邀请人不存在");
+        }
 
-            user.setInviteUserId(order.getUserId());
-        } else if (!StringUtils.isEmpty(invitationId)){
-            user.setInviteUserId(Long.valueOf(invitationId));
-        }
+        user.setInviteUserId(refUserId);
 
         verifyPhoneCode(token,phone,code);
         final User dbUser = userService.registerUser(user);
@@ -215,6 +217,7 @@ public class UserController {
             put("userId",dbUser.getId());
             put("phone",dbUser.getPhone());
             put("nickName",dbUser.getNickName());
+            put("userCode",dbUser.getUserCode());
             put("avatar",dbUser.getAvatar());
         }};
     }
@@ -328,7 +331,7 @@ public class UserController {
         return userService.findMoneyByUserId(userId);
     }
 
-    @PostMapping("/money/return/detail")
+    @PostMapping("/money/detail")
     @RequireUserLogin
     @ResponseBody
     @ApiOperation(value = "获取当前登录用户返现明细", httpMethod = "POST")

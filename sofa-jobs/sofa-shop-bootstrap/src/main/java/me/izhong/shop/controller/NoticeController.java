@@ -51,7 +51,7 @@ public class NoticeController {
 
     @GetMapping(value = "/detail/{id}")
     @ResponseBody
-    @ApiOperation(value="用户订单列表", httpMethod = "GET")
+    @ApiOperation(value="通知详情", httpMethod = "GET")
     public Notice detail(@PathVariable("id") Long id) {
         return noticeService.findById(id);
     }
