@@ -35,6 +35,10 @@ public class Notice {
     @Column(name = "CONTENT")
     private String content;
 
+
+    @Column(name = "DESC")
+    private String desc;
+
     /**
      * 公告链接
      */

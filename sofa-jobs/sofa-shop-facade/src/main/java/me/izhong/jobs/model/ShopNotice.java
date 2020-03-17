@@ -12,6 +12,7 @@ public class ShopNotice {
     private Long id;
     private String title;
     private String content;
+    private String desc;
     private String link;
     private Integer status;
     private Integer isTop;
