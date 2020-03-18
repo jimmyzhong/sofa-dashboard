@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
-    <th:block th:include="include :: header('公告列表')"/>
+    <th:block th:include="include :: header('文章列表')"/>
 </head>
 <body class="gray-bg">
 <div class="container-div">
@@ -11,14 +11,8 @@
                 <div class="select-list">
                     <ul>
                         <li>
-                            公告标题：<input type="text" name="title"/>
+                            文章标题：<input type="text" name="title"/>
                         </li>
-                        <li>
-                            公告状态：<select name="status">
-                                        <option value="">所有</option>
-                                        <option value="1">启用</option>
-                                        <option value="0">不启用</option>
-                                    </select>
                         <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
                                     class="fa fa-search"></i>&nbsp;搜索</a>
@@ -46,21 +40,21 @@
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
-    var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
-    var prefix = ctx + "ext/shop/notice";
+    var detailFlag = [[${@permission.hasPermi('ext:shop:article:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:article:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:article:remove')}]];
+    var prefix = ctx + "ext/shop/article";
     function add() {
         var url = prefix + '/add';
-        $.modal.openTab("新增公告", url);
+        $.modal.openTab("新增文章", url);
     }
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
-        $.modal.openTab("公告详情", url);
+        $.modal.openTab("文章详情", url);
     }
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;
-        $.modal.openTab("编辑公告", url);
+        $.modal.openTab("编辑文章", url);
     }
     $(function () {
         var options = {
@@ -71,7 +65,7 @@
             removeUrl: prefix + "/remove",
             sortName: "id",
             sortOrder: "asc",
-            modalName: "公告",
+            modalName: "文章",
             columns: [{
                 checkbox: true
             },
@@ -82,16 +76,8 @@
             },
             {
                 field: 'title',
-                title: '公告名称',
+                title: '文章标题',
                 sortable: true
-            },
-            {
-                field: 'status',
-                title: '状态',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    return value?"启用":"不启用";
-                }
             },
             {
                 field: 'updateTime',
