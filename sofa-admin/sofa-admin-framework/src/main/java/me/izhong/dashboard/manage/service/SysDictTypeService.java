@@ -2,7 +2,7 @@ package me.izhong.dashboard.manage.service;
 
 import me.izhong.common.domain.PageRequest;
 import me.izhong.db.common.service.CrudBaseService;
-import me.izhong.dashboard.manage.domain.Ztree;
+import me.izhong.dashboard.common.domain.Ztree;
 import me.izhong.dashboard.manage.entity.SysDictType;
 
 import java.util.List;

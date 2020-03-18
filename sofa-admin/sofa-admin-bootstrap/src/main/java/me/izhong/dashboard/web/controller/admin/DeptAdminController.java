@@ -1,15 +1,15 @@
 package me.izhong.dashboard.web.controller.admin;
 
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.dashboard.manage.annotation.Log;
-import me.izhong.dashboard.manage.constants.BusinessType;
+import me.izhong.dashboard.common.annotation.Log;
+import me.izhong.dashboard.common.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.service.SysDeptService;
-import me.izhong.dashboard.manage.domain.Ztree;
+import me.izhong.dashboard.common.domain.Ztree;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-import static me.izhong.dashboard.manage.constants.SystemConstants.STATUS_ENABLE;
+import static me.izhong.dashboard.common.constants.SystemConstants.STATUS_ENABLE;
 
 
 @Controller

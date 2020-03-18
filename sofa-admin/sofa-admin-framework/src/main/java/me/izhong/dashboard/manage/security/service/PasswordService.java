@@ -1,14 +1,14 @@
 package me.izhong.dashboard.manage.security.service;
 
-import me.izhong.dashboard.manage.constants.ShiroConstants;
-import me.izhong.dashboard.manage.constants.SystemConstants;
+import me.izhong.dashboard.common.constants.ShiroConstants;
+import me.izhong.dashboard.common.constants.SystemConstants;
 import me.izhong.dashboard.manage.entity.SysUser;
-import me.izhong.dashboard.manage.expection.user.UserPasswordNotMatchException;
-import me.izhong.dashboard.manage.expection.user.UserPasswordRetryLimitExceedException;
+import me.izhong.dashboard.common.expection.user.UserPasswordNotMatchException;
+import me.izhong.dashboard.common.expection.user.UserPasswordRetryLimitExceedException;
 import me.izhong.dashboard.manage.factory.AsyncManager;
 import me.izhong.dashboard.manage.factory.AsyncFactory;
-import me.izhong.dashboard.manage.util.MD5Util;
-import me.izhong.dashboard.manage.util.MessageUtil;
+import me.izhong.dashboard.common.util.MD5Util;
+import me.izhong.dashboard.common.util.MessageUtil;
 import me.izhong.common.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.cache.Cache;

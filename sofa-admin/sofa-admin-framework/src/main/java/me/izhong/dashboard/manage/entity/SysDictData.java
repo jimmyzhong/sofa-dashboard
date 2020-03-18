@@ -7,7 +7,7 @@ import me.izhong.common.annotation.AutoId;
 import me.izhong.common.annotation.Excel;
 import me.izhong.common.annotation.PrimaryId;
 import me.izhong.common.annotation.Search;
-import me.izhong.dashboard.manage.constants.UserConstants;
+import me.izhong.dashboard.common.constants.UserConstants;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 

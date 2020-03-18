@@ -2,14 +2,14 @@ package me.izhong.dashboard.web.controller.admin;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.dashboard.manage.annotation.Log;
-import me.izhong.dashboard.manage.constants.BusinessType;
+import me.izhong.dashboard.common.annotation.Log;
+import me.izhong.dashboard.common.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.service.SysMenuService;
-import me.izhong.dashboard.manage.domain.Ztree;
+import me.izhong.dashboard.common.domain.Ztree;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -3,10 +3,10 @@ package me.izhong.dashboard.web.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.dashboard.manage.expection.user.UserHasNotPermissionException;
-import me.izhong.dashboard.manage.expection.user.UserNotLoginException;
-import me.izhong.dashboard.manage.util.HttpUtil;
-import me.izhong.dashboard.web.bean.ResponseContainer;
+import me.izhong.dashboard.common.expection.user.UserHasNotPermissionException;
+import me.izhong.dashboard.common.expection.user.UserNotLoginException;
+import me.izhong.dashboard.common.util.HttpUtil;
+import me.izhong.dashboard.common.domain.ResponseContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;

@@ -2,13 +2,13 @@ package me.izhong.dashboard.manage.aspect;
 
 import com.alibaba.fastjson.JSON;
 import me.izhong.common.model.UserInfo;
-import me.izhong.dashboard.manage.annotation.Log;
-import me.izhong.dashboard.manage.constants.SystemConstants;
+import me.izhong.dashboard.common.annotation.Log;
+import me.izhong.dashboard.common.constants.SystemConstants;
 import me.izhong.dashboard.manage.entity.SysOperLog;
 import me.izhong.dashboard.manage.factory.AsyncManager;
 import me.izhong.dashboard.manage.factory.AsyncFactory;
-import me.izhong.dashboard.manage.util.IpUtil;
-import me.izhong.dashboard.manage.util.ServletUtil;
+import me.izhong.dashboard.common.util.IpUtil;
+import me.izhong.dashboard.common.util.ServletUtil;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -29,7 +29,7 @@ import java.util.Map;
 @Component
 public class LogAspect {
     // 配置织入点
-    @Pointcut("@annotation(me.izhong.dashboard.manage.annotation.Log)")
+    @Pointcut("@annotation(me.izhong.dashboard.common.annotation.Log)")
     public void logPointCut() {
     }
 

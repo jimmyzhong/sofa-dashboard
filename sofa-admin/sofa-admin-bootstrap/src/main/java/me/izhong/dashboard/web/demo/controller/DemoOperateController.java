@@ -1,6 +1,6 @@
 package me.izhong.dashboard.web.demo.controller;
 
-import me.izhong.dashboard.manage.util.StringUtil;
+import me.izhong.dashboard.common.util.StringUtil;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;

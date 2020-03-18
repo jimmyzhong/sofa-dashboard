@@ -1,7 +1,7 @@
 package me.izhong.dashboard.manage.security.filter;
 
 import com.google.code.kaptcha.Constants;
-import me.izhong.dashboard.manage.constants.ShiroConstants;
+import me.izhong.dashboard.common.constants.ShiroConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
 

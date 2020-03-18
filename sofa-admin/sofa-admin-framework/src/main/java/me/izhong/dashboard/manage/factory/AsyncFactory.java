@@ -1,15 +1,15 @@
 package me.izhong.dashboard.manage.factory;
 
 import eu.bitwalker.useragentutils.UserAgent;
-import me.izhong.dashboard.manage.constants.SystemConstants;
+import me.izhong.dashboard.common.constants.SystemConstants;
 import me.izhong.dashboard.manage.entity.SysLoginInfo;
 import me.izhong.dashboard.manage.entity.SysOperLog;
 import me.izhong.dashboard.manage.service.SysLoginInfoService;
 import me.izhong.dashboard.manage.service.SysOperLogService;
-import me.izhong.dashboard.manage.util.IpUtil;
-import me.izhong.dashboard.manage.util.LogUtil;
-import me.izhong.dashboard.manage.util.ServletUtil;
-import me.izhong.dashboard.manage.util.SpringUtil;
+import me.izhong.dashboard.common.util.IpUtil;
+import me.izhong.dashboard.common.util.LogUtil;
+import me.izhong.dashboard.common.util.ServletUtil;
+import me.izhong.dashboard.common.util.SpringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

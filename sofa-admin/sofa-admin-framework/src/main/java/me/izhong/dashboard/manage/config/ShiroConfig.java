@@ -11,7 +11,7 @@ import me.izhong.dashboard.manage.security.session.OnlineWebSessionManager;
 import me.izhong.dashboard.manage.security.session.SpringSessionValidationScheduler;
 import me.izhong.dashboard.manage.security.filter.CaptchaValidateFilter;
 import me.izhong.dashboard.manage.security.filter.OnlineSessionFilter;
-import me.izhong.dashboard.manage.util.SpringUtil;
+import me.izhong.dashboard.common.util.SpringUtil;
 import org.apache.shiro.codec.Base64;
 import org.apache.shiro.mgt.SecurityManager;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
@@ -20,16 +20,12 @@ import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.servlet.Filter;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 

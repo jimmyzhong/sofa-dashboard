@@ -3,7 +3,7 @@ package me.izhong.dashboard.web.controller.admin;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.dashboard.manage.util.ServletUtil;
+import me.izhong.dashboard.common.util.ServletUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
