@@ -200,6 +200,16 @@ public class GoodsService implements IGoodsService {
 		if(!StringUtils.isEmpty(goods.getAlbumPics())) {
 			dto.setAlbumPics(JSONArray.parseArray(goods.getAlbumPics(), String.class));
 		}
+
+		if (goods.getCreatedBy() != null) {
+			// TODO join is better
+			User createdByUser = userService.findById(goods.getCreatedBy());
+			if (createdByUser != null) {
+				dto.setAvatarOfCreatedBy(createdByUser.getAvatar());
+				dto.setNameOfCreatedBy(createdByUser.getName());
+			}
+		}
+
 		return dto;
 	}
 

@@ -103,9 +103,10 @@ public class ResaleService {
 
     public LocalDateTime nextPriceTime(LocalDateTime createdTime) {
         LocalDateTime now = LocalDateTime.now();
-        Long hours = Duration.between(createdTime, LocalDateTime.now()).toHours();
-        Long leftHours = decayPeriodHours - (hours % decayPeriodHours );
-        return now.plusHours(leftHours);
+        Long seconds = Duration.between(createdTime, now).getSeconds();
+        Long leftSeconds = (decayPeriodHours * 3600) - (seconds % (decayPeriodHours * 3600));
+        LocalDateTime priceTime = now.plusSeconds(leftSeconds);
+        return priceTime;
     }
 
     @Transactional

@@ -1,6 +1,6 @@
 package me.izhong.shop;
 
-import me.izhong.shop.service.impl.UserService;
+import me.izhong.shop.util.ShareCodeUtil;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -33,6 +33,10 @@ public class DecayTest {
 
     @Test
     public void testUserCode() {
+        assertEquals(Long.valueOf(ShareCodeUtil.SHORT_BITS_LIMITS),
+                decodeUserCode(generateUserCode(ShareCodeUtil.SHORT_BITS_LIMITS)));
+        assertEquals(Long.valueOf(ShareCodeUtil.SHORT_BITS_LIMITS + 100),
+                decodeUserCode(generateUserCode(ShareCodeUtil.SHORT_BITS_LIMITS + 100)));
         for (Long i=31l; i<126; i++) {
             String code = generateUserCode(i);
             System.out.println(code);

@@ -8,6 +8,7 @@ import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.config.AliCloudProperties;
 import me.izhong.shop.util.AliCloudUtils;
+import me.izhong.shop.util.ShareCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -34,6 +35,17 @@ public class TestController {
 
     @Autowired
     private AliCloudProperties cloudProperties;
+
+    @GetMapping("/usercode/{id}")
+    public String userCode(@PathVariable("id") Long id) {
+        return ShareCodeUtil.generateUserCode(id);
+    }
+
+    @GetMapping("/userid/{code}")
+    public Long userId(@PathVariable("code") String code) {
+        return ShareCodeUtil.decodeUserCode(code);
+    }
+
 
     @GetMapping("/bucket/list")
     public List<String> listBuckets(){

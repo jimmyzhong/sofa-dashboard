@@ -7,6 +7,7 @@ import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import me.izhong.shop.filter.AjaxMethodReturnValueHandler;
 import me.izhong.shop.interceptor.AuthInterceptor;
+import me.izhong.shop.util.serializer.LocalDateTimeSerializer;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.web.method.support.HandlerMethodReturnValueHandler;
 import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer , InitializingBean {
     static {
         dateFormat = "yyyy-MM-dd HH:mm:ss";
         serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
+        serializeConfig.put(LocalDateTime.class, new LocalDateTimeSerializer());
     }
 
     @Override
