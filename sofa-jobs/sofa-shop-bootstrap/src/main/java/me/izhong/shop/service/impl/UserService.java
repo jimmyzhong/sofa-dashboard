@@ -8,10 +8,8 @@ import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.dao.UserMoneyDao;
-import me.izhong.shop.entity.PayRecord;
-import me.izhong.shop.entity.PayRecord_;
-import me.izhong.shop.entity.User;
-import me.izhong.shop.entity.UserMoney;
+import me.izhong.shop.dao.UserScoreDao;
+import me.izhong.shop.entity.*;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.util.ShareCodeUtil;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +33,7 @@ public class UserService implements IUserService {
 
     @Autowired private UserDao userDao;
     @Autowired private UserMoneyDao userMoneyDao;
+    @Autowired private UserScoreDao userScoreDao;
     @Autowired private PayRecordService payRecordService;
     @Autowired private ThirdPartyService certifyService;
 
@@ -81,6 +80,13 @@ public class UserService implements IUserService {
         money.setUnavailableAmount(BigDecimal.ZERO);
         money.setCreateTime(LocalDateTime.now());
         userMoneyDao.save(money);
+
+        UserScore score = new UserScore();
+        score.setUserId(user.getId());
+        score.setAvailableScore(0L);
+        score.setUnavailableScore(0L);
+        userScoreDao.save(score);
+
         return user;
     }
 
@@ -213,4 +219,20 @@ public class UserService implements IUserService {
                                                       PageRequest pageRequest) {
         return payRecordService.listMoneyReturnRecord(userId, pageRequest);
     }
+
+    @Override
+    public UserScore findScoreByUserId(Long userId) {
+        UserScore um = userScoreDao.findByUserId(userId);
+        if (um == null) {
+            um = new UserScore();
+        }
+        return um;
+    }
+
+    @Override
+    public PageModel<PayRecord> listScoreReturnRecord(Long userId, PageRequest pageRequest) {
+        return payRecordService.listScoreReturnRecord(userId, pageRequest);
+    }
+
+
 }

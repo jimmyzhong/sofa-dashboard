@@ -5,6 +5,7 @@ import me.izhong.common.domain.PageRequest;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
+import me.izhong.shop.entity.UserScore;
 
 import java.time.LocalDate;
 
@@ -37,4 +38,8 @@ public interface IUserService {
     UserMoney findMoneyByUserId(Long userId);
 
     PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageRequest pageRequest);
+
+    UserScore findScoreByUserId(Long userId);
+
+    PageModel<PayRecord> listScoreReturnRecord(Long userId, PageRequest pageRequest);
 }

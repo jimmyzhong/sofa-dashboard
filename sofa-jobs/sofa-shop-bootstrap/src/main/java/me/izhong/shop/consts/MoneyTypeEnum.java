@@ -11,7 +11,8 @@ public enum MoneyTypeEnum {
     DEPOSIT_MONEY (1, "充值余额"),
     RESALE_GOODS (2, "寄售商品"),
     // 仅付款类型
-    RETURN_MONEY (10, "返现");
+    RETURN_MONEY (10, "返现"),
+    RETURN_SCORE (11, "返积分");
 
     int type;
     String description;

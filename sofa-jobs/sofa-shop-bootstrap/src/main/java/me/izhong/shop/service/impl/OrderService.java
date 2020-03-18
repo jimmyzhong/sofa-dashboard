@@ -70,6 +70,8 @@ public class OrderService implements IOrderService {
 	private UserService userService;
 	@Autowired
 	private UserMoneyDao userMoneyDao;
+	@Autowired
+	private UserScoreDao userScoreDao;
 
 	@Value("${order.expire.time}")
 	private Long orderExpireMinutes;
@@ -232,6 +234,9 @@ public class OrderService implements IOrderService {
 			if (payType != null && payType.equalsIgnoreCase(RESALE_GOODS.getDescription())) {
 				record.setReceiverId(order.getResaleUser());
 			}
+
+			// 付款成功,此处应该有积分奖励
+			recordScoreReturn(order);
 		}
 
 		payRecordDao.save(record);
@@ -248,19 +253,29 @@ public class OrderService implements IOrderService {
 		moneyReturn.setInternalId(order.getOrderSn());
 		moneyReturn.setSysState(0);
 		payRecordDao.save(moneyReturn);
-
-//		UserMoney userMoney = userMoneyDao.findByUserId(receiverId);
-//		if (userMoney == null) {
-//			userMoney = new UserMoney();
-//			userMoney.setUserId(order.getUserId());
-//			userMoney.setCreateTime(LocalDateTime.now());
-//			userMoney.setAvailableAmount(moneyReturn.getTotalAmount());
-//		} else {
-//			userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getTotalAmount()));
-//			userMoney.setUpdateTime(LocalDateTime.now());
-//		}
-//		userMoneyDao.save(userMoney);
 	}
+
+	private void recordScoreReturn(Order order) {
+		PayRecord scoreReturn = new PayRecord();
+		scoreReturn.setType(MoneyTypeEnum.RETURN_SCORE.getDescription());
+		scoreReturn.setCreateTime(LocalDateTime.now());
+		scoreReturn.setReceiverId(order.getUserId());
+		scoreReturn.setTotalAmount(order.getTotalAmount());
+		scoreReturn.setInternalId(order.getOrderSn());
+		scoreReturn.setSysState(0);
+		payRecordDao.save(scoreReturn);
+
+		UserScore userScore = userScoreDao.findByUserId(order.getUserId());
+		if (userScore == null) {
+			userScore = new UserScore();
+			userScore.setUserId(order.getUserId());
+			userScore.setAvailableScore(scoreReturn.getTotalAmount().longValue());
+		} else {
+			userScore.setAvailableScore(userScore.getAvailableScore() + scoreReturn.getTotalAmount().longValue());
+		}
+		userScoreDao.save(userScore);
+	}
+
 
 	/**
 	 * 直接买

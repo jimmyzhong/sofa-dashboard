@@ -15,6 +15,7 @@ import me.izhong.shop.consts.Constants;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
+import me.izhong.shop.entity.UserScore;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AuthService;
@@ -341,6 +342,30 @@ public class UserController {
         SessionInfo session = CacheUtil.getSessionInfo(request);
         Long userId = session.getId();
         return userService.listMoneyReturnRecord(userId, pageRequest);
+    }
+
+    @GetMapping("/score")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiOperation(value = "获取当前登录用户积分", httpMethod = "GET")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public UserScore score(HttpServletRequest request) {
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
+        return userService.findScoreByUserId(userId);
+    }
+
+    @PostMapping("/score/detail")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiOperation(value = "获取当前登录用户积分明细", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PageModel<PayRecord> scoreReturnDetail(@RequestBody PageRequest pageRequest, HttpServletRequest request) {
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
+        return userService.listScoreReturnRecord(userId, pageRequest);
     }
 
     private void verifyPhoneCode( String token, String phone , String code) {

@@ -19,7 +19,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -89,27 +91,61 @@ public class PayRecordService {
                                                       PageRequest pageRequest) {
         LocalDate start = convertToLocalDate(pageRequest.getBeginCreateTime());
         LocalDate end = convertToLocalDate(pageRequest.getEndCreateTime());
-        Specification<PayRecord> specification = (r, q, cb) -> {
-            Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
-                    cb.or(cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()),
-                            cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RESALE_GOODS.getDescription())));
-            if (start != null) {
-                predicate = cb.and(predicate, cb.greaterThan(r.get(PayRecord_.createTime), start.atStartOfDay()));
-            }
-            if (end != null) {
-                predicate = cb.and(predicate, cb.lessThanOrEqualTo(r.get(PayRecord_.createTime), end.atStartOfDay()));
-            }
-
-            return predicate;
-        };
+        Specification<PayRecord> specification = getMoneyReturnQuery(userId, start, end);
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
 
+        return getPayRecordPageModel(pageRequest, specification, sort);
+    }
+
+    public PageModel<PayRecord> listScoreReturnRecord(Long userId,
+                                                      PageRequest pageRequest) {
+        LocalDate start = convertToLocalDate(pageRequest.getBeginCreateTime());
+        LocalDate end = convertToLocalDate(pageRequest.getEndCreateTime());
+        Specification<PayRecord> specification = getScoreReturnQuery(userId, start, end);
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+
+        return getPayRecordPageModel(pageRequest, specification, sort);
+    }
+
+    private PageModel<PayRecord> getPayRecordPageModel(PageRequest pageRequest, Specification<PayRecord> specification, Sort sort) {
         Pageable pageableReq = org.springframework.data.domain.PageRequest.
                 of(Long.valueOf(pageRequest.getPageNum()-1).intValue(),
                         Long.valueOf(pageRequest.getPageSize()).intValue(), sort);
 
         Page<PayRecord> page = payRecordDao.findAll(specification, pageableReq);
         return PageModel.instance(page.getTotalElements(), page.getContent());
+    }
+
+    private Specification<PayRecord> getMoneyReturnQuery(Long userId, LocalDate start, LocalDate end) {
+        return (r, q, cb) -> {
+                Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
+                        cb.or(cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()),
+                                cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RESALE_GOODS.getDescription())));
+            predicate = getCreatedTimeBetweenQuery(start, end, r, cb, predicate);
+
+            return predicate;
+            };
+    }
+
+    private Specification<PayRecord> getScoreReturnQuery(Long userId, LocalDate start, LocalDate end) {
+        return (r, q, cb) -> {
+            Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
+                    cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_SCORE.getDescription()));
+            predicate = getCreatedTimeBetweenQuery(start, end, r, cb, predicate);
+
+            return predicate;
+        };
+    }
+
+    private Predicate getCreatedTimeBetweenQuery(LocalDate start, LocalDate end, Root<PayRecord> r, CriteriaBuilder cb, Predicate predicate) {
+        if (start != null) {
+            predicate = cb.and(predicate, cb.greaterThan(r.get(PayRecord_.createTime), start.atStartOfDay()));
+        }
+        if (end != null) {
+            predicate = cb.and(predicate, cb.lessThanOrEqualTo(r.get(PayRecord_.createTime), end.atStartOfDay()));
+        }
+        return predicate;
     }
 }
