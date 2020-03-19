@@ -19,7 +19,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        port: ${{ secrets.PORT1 }}
         source: "sofa-jobs/sofa-jobs-bootstrap/target/sofa-jobs-bootstrap.jar"
         target: "jobs/application"
         strip_components: 3
@@ -29,7 +29,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        port: ${{ secrets.PORT1 }}
         source: "sofa-jobs/sofa-jobs-agent-bootstrap/target/sofa-jobs-agent-bootstrap.jar"
         target: "jobs/application"
         strip_components: 3
@@ -39,7 +39,7 @@ jobs:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        port: ${{ secrets.PORT }}
+        port: ${{ secrets.PORT1 }}
         script: |
           ~/jobs/bin/restart.sh sofa-jobs-bootstrap
           ~/jobs/bin/restart.sh sofa-jobs-agent-bootstrap
