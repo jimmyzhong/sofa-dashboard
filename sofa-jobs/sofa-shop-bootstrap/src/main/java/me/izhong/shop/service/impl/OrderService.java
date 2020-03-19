@@ -205,41 +205,44 @@ public class OrderService implements IOrderService {
 		if (PayStatusEnum.SUCCESS.name().equals(state) && order.getStatus() < PAID.getState()) {
 			order.setStatus(PAID.getState());
 			record.setSysState(1);
-			List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(),order.getUserId());
-			// 更新库存、销售量信息
-			Set<Goods> goodsSetToUpdateStockAndSale = new HashSet<>();
-			for (OrderItem item: items) {
-				GoodsStore store = storeDao.findByProductIdAndProductAttrId(item.getProductId(), item.getProductAttributeId());
-				store.setStore(store.getStore() - item.getQuantity());
-				storeDao.save(store);
-				goodsDao.findById(item.getProductId()).ifPresent(goods->{
-					goods.setStock(goods.getStock() - item.getQuantity());
-					goods.setSale((goods.getSale()==null ? 0 : goods.getSale()) + item.getQuantity());
-					goodsSetToUpdateStockAndSale.add(goods);
-				});
-			}
-			goodsDao.saveAll(goodsSetToUpdateStockAndSale);
 
-			// 返现记录
-			User user = userService.findById(order.getUserId());
-			if (user.getInviteUserId() != null) {
-				recordMoneyReturn(order, user.getId(), user.getInviteUserId(), 0.03);  //TODO externalize
-			}
-			if (user.getInviteUserId2() != null) {
-				recordMoneyReturn(order, user.getId(), user.getInviteUserId2(), 0.02);  //TODO externalize
+			if (StringUtils.equals(payType, NORMAL_GOODS.getDescription()) ||
+					StringUtils.equals(payType, RESALE_GOODS.getDescription())) {
+				// 更新库存、销售量信息
+				List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
+				Set<Goods> goodsSetToUpdateStockAndSale = new HashSet<>();
+				for (OrderItem item : items) {
+					GoodsStore store = storeDao.findByProductIdAndProductAttrId(item.getProductId(), item.getProductAttributeId());
+					store.setStore(store.getStore() - item.getQuantity());
+					storeDao.save(store);
+					goodsDao.findById(item.getProductId()).ifPresent(goods -> {
+						goods.setStock(goods.getStock() - item.getQuantity());
+						goods.setSale((goods.getSale() == null ? 0 : goods.getSale()) + item.getQuantity());
+						goodsSetToUpdateStockAndSale.add(goods);
+					});
+				}
+				goodsDao.saveAll(goodsSetToUpdateStockAndSale);
+
+				// 返现记录
+				User user = userService.findById(order.getUserId());
+				if (user.getInviteUserId() != null) {
+					recordMoneyReturn(order, user.getId(), user.getInviteUserId(), 0.03);  //TODO externalize
+				}
+				if (user.getInviteUserId2() != null) {
+					recordMoneyReturn(order, user.getId(), user.getInviteUserId2(), 0.02);  //TODO externalize
+				}
+				// 付款成功,此处应该有积分奖励
+				recordScoreReturn(order);
+				// 寄售商品付款到寄售人
+				if (StringUtils.equals(payType, RESALE_GOODS.getDescription())) {
+					record.setReceiverId(order.getResaleUser());
+				}
 			}
 
-			// 寄售商品付款到寄售人
-			if (payType != null && payType.equalsIgnoreCase(RESALE_GOODS.getDescription())) {
-				record.setReceiverId(order.getResaleUser());
-			}
 			// 充值金额充值账户余额
-			else if (payType != null && payType.equalsIgnoreCase(DEPOSIT_MONEY.getDescription())) {
-				recordMoneyReturn(order, null, user.getId(), 1.0, 1, true);
+			if (StringUtils.equals(payType, DEPOSIT_MONEY.getDescription())) {
+				recordMoneyReturn(order, null, order.getUserId(), 1.0, 1, true);
 			}
-
-			// 付款成功,此处应该有积分奖励
-			recordScoreReturn(order);
 		}
 
 		payRecordDao.save(record);
