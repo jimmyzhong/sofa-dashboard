@@ -41,7 +41,7 @@ public class NoticeController {
         }
         if (StringUtils.isEmpty(query.getOrderByColumn())) {
             query.setOrderByColumn("updateTime");
-            query.setOrderDirection("description");
+            query.setOrderDirection("desc");
         }
         
         PageModel<Notice> model = noticeService.pageList(query, query.getQuery(), status);
