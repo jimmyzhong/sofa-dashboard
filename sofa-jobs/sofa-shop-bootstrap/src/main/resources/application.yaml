@@ -110,3 +110,5 @@ order:
       limit: 0.1
       period:
         hours: 24
+password:
+  pattern: ^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,20}$

@@ -30,7 +30,6 @@ public class DecayTest {
         System.out.println("newPrice " + newPrice);
     }
 
-
     @Test
     public void testUserCode() {
         assertEquals(Long.valueOf(ShareCodeUtil.SHORT_BITS_LIMITS),
@@ -42,5 +41,40 @@ public class DecayTest {
             System.out.println(code);
             assertEquals(i, decodeUserCode(code));
         }
+    }
+
+    @Test
+    public void testPassword() {
+        String regex = "^(?![0-9]+$)[0-9A-Za-z]{8,16}$";
+
+        String value = "aaa";  // 长度不够
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "1111aaaa1111aaaaa";  // 太长
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "111111111"; // 纯数字
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "aaaaaaaaa"; // 纯字母
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "####@@@@#"; // 特殊字符
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "1111aaaa";  // 数字字母组合
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "aaaa1111"; // 数字字母组合
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "aa1111aa";	// 数字字母组合
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "11aaaa11";	// 数字字母组合
+        System.out.println(value+ ":" + value.matches(regex));
+
+        value = "aa11aa11"; // 数字字母组合
+        System.out.println(value+ ":" + value.matches(regex));
     }
 }

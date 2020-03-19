@@ -12,6 +12,7 @@ import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.consts.ErrorCode;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
@@ -23,6 +24,7 @@ import me.izhong.shop.service.impl.ThirdPartyService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +49,7 @@ public class UserController {
     @Autowired private IOrderService orderService;
     @Autowired private AuthService authService;
     @Autowired private ThirdPartyService thirdService;
+    @Value("${password.pattern}") private String passwordPattern;
 
     @GetMapping(path="/current",  produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -145,6 +148,7 @@ public class UserController {
         if (StringUtils.isEmpty(phone) || StringUtils.isEmpty(password)) {
             throw BusinessException.build("用户名密码不能为空");
         }
+
         User persistedUser = authService.attemptLogin(phone, password);
 
         SessionInfo session = new SessionInfo();
@@ -166,6 +170,17 @@ public class UserController {
 
     private String getToken(User persistedUser) {
         return persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
+    @PostMapping("/password/valid")
+    @ApiOperation(value="密码是否规范",httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
+
+    })
+    public Boolean checkPasswordPattern(@RequestBody Map<String,String> params) {
+        String password = params.get("password");
+        return password.matches(passwordPattern);
     }
 
     @PostMapping("/register")
@@ -191,6 +206,10 @@ public class UserController {
         user.setPassword(password);
         user.setNickName(nickName);
         ensureRequiredFieldWhenRegistering(user);
+
+        if (!password.matches(passwordPattern)) {
+            throw new BusinessException(ErrorCode.USER_PASSWORD_NOT_MATCH_PATTERN, "密码过于简单");
+        }
         if (StringUtils.isEmpty(refUserCode)) {
             throw BusinessException.build("没有邀请码不能注册");
         }
@@ -238,6 +257,10 @@ public class UserController {
         user.setPhone(phone);
         user.setPassword(password);
         ensureRequiredFieldWhenRegistering(user);
+        if (!user.getPassword().matches(passwordPattern)) {
+            throw new BusinessException(ErrorCode.USER_PASSWORD_NOT_MATCH_PATTERN, "密码过于简单");
+        }
+
         verifyPhoneCode(token,phone, params.get("code"));
 
 

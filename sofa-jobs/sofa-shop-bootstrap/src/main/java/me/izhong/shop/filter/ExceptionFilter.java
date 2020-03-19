@@ -2,6 +2,7 @@ package me.izhong.shop.filter;
 
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.constant.ErrCode;
 import me.izhong.common.exception.BusinessException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
@@ -35,6 +36,9 @@ public class ExceptionFilter implements HandlerExceptionResolver {
             log.error("请求BusinessException异常", e);
             BusinessException bexp = (BusinessException) e;
             msg = bexp.getMessage();
+            if (bexp.getCode() != ErrCode.FAIL_CODE) {
+                code = bexp.getCode();
+            }
         } else if(e instanceof BindException){
             BindException ex = (BindException)e;
             List<ObjectError> errors = ex.getAllErrors();

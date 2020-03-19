@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.shop.consts.ErrorCode;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserDao;
@@ -14,6 +15,7 @@ import me.izhong.shop.service.IUserService;
 import me.izhong.shop.util.ShareCodeUtil;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -36,7 +38,6 @@ public class UserService implements IUserService {
     @Autowired private UserScoreDao userScoreDao;
     @Autowired private PayRecordService payRecordService;
     @Autowired private ThirdPartyService certifyService;
-
 
     public void expectNew(User user) {
         if (!StringUtils.isEmpty(user.getLoginName()) &&
@@ -68,6 +69,7 @@ public class UserService implements IUserService {
                 user.setInviteUserId2(invitor.getInviteUserId());
             }
         }
+
         user.encryptUserPassword();
         user.setRegisterTime(Timestamp.valueOf(LocalDateTime.now()));
         user.setLoginTime(user.getRegisterTime());
