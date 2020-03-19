@@ -213,21 +213,22 @@ public class UserController {
         if (!password.matches(passwordPattern)) {
             throw new BusinessException(ErrorCode.USER_PASSWORD_NOT_MATCH_PATTERN, "密码过于简单");
         }
+
+        verifyPhoneCode(token,phone,code);
+
         if (StringUtils.isEmpty(refUserCode)) {
             throw BusinessException.build("没有邀请码不能注册");
         }
         Long refUserId = decodeUserCode(refUserCode.toUpperCase());
         if (refUserId == null) {
-            throw BusinessException.build("未能解析邀请码.");
+            throw BusinessException.build("邀请码不存在");
         }
         User refUser = userService.findById(refUserId);
         if (refUser == null) {
-            throw BusinessException.build("邀请人不存在");
+            throw BusinessException.build("邀请码不存在");
         }
-
         user.setInviteUserId(refUserId);
 
-        verifyPhoneCode(token,phone,code);
         final User dbUser = userService.registerUser(user);
 
         SessionInfo session = new SessionInfo();
@@ -265,7 +266,6 @@ public class UserController {
         }
 
         verifyPhoneCode(token,phone, params.get("code"));
-
 
         user = userService.expectExists(user);
         user.setPassword(password);
