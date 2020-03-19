@@ -19,16 +19,18 @@ public class AuthService {
     }
 
     public User attemptLogin(String username, String password) {
-        User persistedUser = userDao.findFirstByLoginName(username);
-        if (persistedUser == null) {
-            persistedUser = userDao.findFirstByEmail(username);
-        }
-        if (persistedUser == null) {
-            persistedUser = userDao.findFirstByPhone(username);
-        }
+//        User persistedUser = userDao.findFirstByLoginName(username);
+//        if (persistedUser == null) {
+//            persistedUser = userDao.findFirstByEmail(username);
+//        }
+//        if (persistedUser == null) {
+//            persistedUser = userDao.findFirstByPhone(username);
+//        }
+
+        User persistedUser = userDao.findFirstByPhone(username);
 
         if (persistedUser == null) {
-            throw BusinessException.build("用户不存在");
+            throw BusinessException.build("登录手机号不存在，请先注册");
         }
 
         String encryptedPass = PasswordUtils.encrypt(password, persistedUser.getSalt());
