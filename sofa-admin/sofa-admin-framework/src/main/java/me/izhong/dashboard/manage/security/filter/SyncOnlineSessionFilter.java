@@ -1,8 +1,6 @@
 package me.izhong.dashboard.manage.security.filter;
 
 
-import me.izhong.dashboard.manage.constants.ShiroConstants;
-import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.security.session.OnlineSessionDAO;
 import org.apache.shiro.web.filter.PathMatchingFilter;
 import org.springframework.beans.factory.annotation.Autowired;

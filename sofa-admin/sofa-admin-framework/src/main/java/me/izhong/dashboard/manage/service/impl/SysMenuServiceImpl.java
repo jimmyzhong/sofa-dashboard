@@ -8,7 +8,7 @@ import me.izhong.dashboard.manage.entity.SysRoleMenu;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysMenuService;
 import me.izhong.db.mongo.util.CriteriaUtil;
-import me.izhong.dashboard.manage.domain.Ztree;
+import me.izhong.dashboard.common.domain.Ztree;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;

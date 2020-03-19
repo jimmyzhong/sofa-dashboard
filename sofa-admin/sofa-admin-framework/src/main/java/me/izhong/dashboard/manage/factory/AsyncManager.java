@@ -1,7 +1,7 @@
 package me.izhong.dashboard.manage.factory;
 
-import me.izhong.dashboard.manage.util.SpringUtil;
-import me.izhong.dashboard.manage.util.ThreadUtil;
+import me.izhong.dashboard.common.util.SpringUtil;
+import me.izhong.dashboard.common.util.ThreadUtil;
 
 import java.util.TimerTask;
 import java.util.concurrent.ScheduledExecutorService;

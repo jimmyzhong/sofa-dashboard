@@ -1,10 +1,10 @@
 package me.izhong.dashboard.manage.security.session;
 
-import me.izhong.dashboard.manage.constants.ShiroConstants;
+import me.izhong.dashboard.common.constants.ShiroConstants;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
 import me.izhong.common.util.DateUtil;
-import me.izhong.dashboard.manage.util.SpringUtil;
+import me.izhong.dashboard.common.util.SpringUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.shiro.session.ExpiredSessionException;
 import org.apache.shiro.session.InvalidSessionException;

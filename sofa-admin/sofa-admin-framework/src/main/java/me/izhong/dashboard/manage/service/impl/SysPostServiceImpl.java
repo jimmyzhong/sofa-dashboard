@@ -11,7 +11,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysPostService;
 import me.izhong.common.util.Convert;
 import me.izhong.db.mongo.util.CriteriaUtil;
-import me.izhong.dashboard.manage.util.StringUtil;
+import me.izhong.dashboard.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;

@@ -2,8 +2,8 @@ package me.izhong.dashboard.manage.interceptor;
 
 import com.alibaba.fastjson.JSON;
 import me.izhong.common.annotation.RepeatSubmit;
-import me.izhong.dashboard.manage.util.ServletUtil;
-import me.izhong.dashboard.web.bean.ResponseContainer;
+import me.izhong.dashboard.common.util.ServletUtil;
+import me.izhong.dashboard.common.domain.ResponseContainer;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

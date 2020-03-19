@@ -361,7 +361,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         return  fieldName;
     }
 
-    private void processionAnnotations(Object source) {
+    private void processionAnnotations(final Object source) {
         if(source == null)
             return;
         ReflectionUtils.doWithFields(source.getClass(), new ReflectionUtils.FieldCallback() {

@@ -2,9 +2,9 @@ package me.izhong.dashboard.web.controller;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.dashboard.manage.constants.Global;
-import me.izhong.dashboard.manage.util.FileUploadUtil;
-import me.izhong.dashboard.manage.util.FileUtil;
+import me.izhong.dashboard.common.constants.Global;
+import me.izhong.dashboard.common.util.FileUploadUtil;
+import me.izhong.dashboard.common.util.FileUtil;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,6 +1,6 @@
 package me.izhong.dashboard.manage.security.session;
 
-import me.izhong.dashboard.manage.util.ThreadUtil;
+import me.izhong.dashboard.common.util.ThreadUtil;
 import org.apache.shiro.session.mgt.DefaultSessionManager;
 import org.apache.shiro.session.mgt.SessionValidationScheduler;
 import org.apache.shiro.session.mgt.ValidatingSessionManager;

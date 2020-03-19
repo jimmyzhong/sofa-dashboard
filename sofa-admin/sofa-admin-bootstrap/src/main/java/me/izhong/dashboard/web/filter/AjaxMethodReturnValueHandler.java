@@ -1,7 +1,7 @@
 package me.izhong.dashboard.web.filter;
 
 import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.dashboard.web.bean.ResponseContainer;
+import me.izhong.dashboard.common.domain.ResponseContainer;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.http.converter.HttpMessageConverter;

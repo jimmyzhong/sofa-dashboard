@@ -2,7 +2,7 @@ package me.izhong.dashboard.manage.service;
 
 import me.izhong.db.common.service.CrudBaseService;
 import me.izhong.dashboard.manage.entity.SysDept;
-import me.izhong.dashboard.manage.domain.Ztree;
+import me.izhong.dashboard.common.domain.Ztree;
 
 
 import java.util.List;

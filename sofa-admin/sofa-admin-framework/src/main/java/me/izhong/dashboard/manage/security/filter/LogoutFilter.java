@@ -2,11 +2,11 @@ package me.izhong.dashboard.manage.security.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.model.UserInfo;
-import me.izhong.dashboard.manage.constants.ShiroConstants;
-import me.izhong.dashboard.manage.constants.SystemConstants;
+import me.izhong.dashboard.common.constants.ShiroConstants;
+import me.izhong.dashboard.common.constants.SystemConstants;
 import me.izhong.dashboard.manage.factory.AsyncManager;
 import me.izhong.dashboard.manage.factory.AsyncFactory;
-import me.izhong.dashboard.manage.util.MessageUtil;
+import me.izhong.dashboard.common.util.MessageUtil;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.cache.Cache;
