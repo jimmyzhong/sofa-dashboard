@@ -1,20 +1,15 @@
 package me.izhong.shop.service.mng;
 
-import static org.springframework.data.domain.PageRequest.of;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.izhong.shop.util.PageableConvertUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
@@ -29,6 +24,7 @@ import me.izhong.jobs.model.ShopNotice;
 import me.izhong.shop.dao.NoticeDao;
 import me.izhong.shop.entity.Notice;
 import me.izhong.shop.service.INoticeService;
+import me.izhong.shop.util.PageableConvertUtil;
 
 @Slf4j
 @Service
@@ -53,6 +49,7 @@ public class ShopNoticeMngFacadeImpl implements IShopNoticeMngFacade {
 	public void edit(ShopNotice shopNotice) {
 		Notice notice = noticeService.findById(shopNotice.getId());
 		notice.setTitle(shopNotice.getTitle());
+		notice.setDescription(shopNotice.getDescription());
 		notice.setContent(shopNotice.getContent());
 		notice.setStatus(shopNotice.getStatus());
 		notice.setIsTop(shopNotice.getIsTop());

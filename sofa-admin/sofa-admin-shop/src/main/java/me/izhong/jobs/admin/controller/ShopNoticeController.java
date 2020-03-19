@@ -76,6 +76,9 @@ public class ShopNoticeController {
     	checkField(shopNotice.getTitle(), "公告标题");
     	checkField(shopNotice.getContent(), "公告内容");
     	checkField(shopNotice.getStatus(), "公告状态");
+    	if (shopNotice.getIsTop() == null) {
+    		shopNotice.setIsTop(0);
+    	}
 		shopServiceReference.noticeService.edit(shopNotice);
     }
 
