@@ -87,7 +87,7 @@
 				var data = $("#form-shop-notice-edit").serializeArray();
 				var sHTML = $('.summernote').summernote('code');
 				data.push({"name": "content", "value": sHTML});
-				$.operate.save(prefix + "/add", data);
+				$.operate.save(prefix + "/edit", data);
 			}
 		}
 		// 上传文件
