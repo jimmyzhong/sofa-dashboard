@@ -3,7 +3,7 @@ package me.izhong.jobs.admin.controller;
 import java.util.HashMap;
 import java.util.Map;
 
-import me.izhong.dashboard.manage.constants.Global;
+import me.izhong.dashboard.common.constants.Global;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,8 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.dashboard.manage.util.FileUploadUtil;
-import me.izhong.dashboard.manage.util.MimeTypeUtil;
+import me.izhong.dashboard.common.util.FileUploadUtil;
+import me.izhong.dashboard.common.util.MimeTypeUtil;
 
 @Slf4j
 @Controller

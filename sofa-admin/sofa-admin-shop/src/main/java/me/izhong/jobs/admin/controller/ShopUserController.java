@@ -1,8 +1,8 @@
 package me.izhong.jobs.admin.controller;
 
 import me.izhong.common.util.Convert;
-import me.izhong.dashboard.manage.annotation.Log;
-import me.izhong.dashboard.manage.constants.BusinessType;
+import me.izhong.dashboard.common.annotation.Log;
+import me.izhong.dashboard.common.constants.BusinessType;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
