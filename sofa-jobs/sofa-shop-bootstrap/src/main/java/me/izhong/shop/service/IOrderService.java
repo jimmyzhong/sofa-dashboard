@@ -65,4 +65,12 @@ public interface IOrderService {
     void delivery(List<OrderDeliveryParam> deliveryParamList);
 
 	void update(Order order);
+
+	/**
+	 * 申请发货
+	 * @param currentUserId
+	 * @param orderNo
+	 * @return
+	 */
+    Order applyToDeliverOrder(Long currentUserId, String orderNo);
 }

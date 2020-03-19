@@ -2,7 +2,6 @@ package me.izhong.shop.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.google.common.base.Predicates;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -11,7 +10,6 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.consts.Constants;
-import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
@@ -21,7 +19,6 @@ import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.impl.ResaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.jaxb.SpringDataJaxb;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,8 +27,6 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.service.IOrderService;
-
-import java.time.LocalDateTime;
 
 import static me.izhong.shop.consts.OrderStateEnum.*;
 
@@ -115,6 +110,19 @@ public class OrderController {
 			throw BusinessException.build("订单号不能为空");
 		}
 		resaleService.resaleOrder(getCurrentUserId(request), orderRequest.getOrderNo());
+	}
+
+	@PostMapping(value = "/deliverOrder")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="申请发货", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public void deliverOrder(@RequestBody SubmitOrderRequest orderRequest, HttpServletRequest request) {
+		if(orderRequest.getOrderNo()==null) {
+			throw BusinessException.build("订单号不能为空");
+		}
+		orderService.applyToDeliverOrder(getCurrentUserId(request), orderRequest.getOrderNo());
 	}
 
     @PostMapping(value = "/cancelOrder")

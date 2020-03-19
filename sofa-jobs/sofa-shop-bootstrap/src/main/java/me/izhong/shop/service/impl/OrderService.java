@@ -34,7 +34,10 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -408,6 +411,9 @@ public class OrderService implements IOrderService {
 	@Transactional
 	public Order confirm(Long userId, String orderNo) {
 		Order order = orderDao.findFirstByOrderSn(orderNo);
+		if (order.getStatus() < PAID.getState()) {
+			throw BusinessException.build("订单为支付");
+		}
 		order.setStatus(CONFIRMED.getState());
 		orderDao.save(order);
 		return order;
@@ -519,5 +525,16 @@ public class OrderService implements IOrderService {
 	@Override
 	public void update(Order order) {
 		
+	}
+
+	@Override
+	public Order applyToDeliverOrder(Long currentUserId, String orderNo) {
+		Order order = orderDao.findFirstByOrderSn(orderNo);
+		if (order.getStatus() != PAID.getState()) {
+			throw BusinessException.build("只有已付款的订单才能发货");
+		}
+		order.setStatus(WAIT_DELIVER.getState());
+		orderDao.save(order);
+		return order;
 	}
 }

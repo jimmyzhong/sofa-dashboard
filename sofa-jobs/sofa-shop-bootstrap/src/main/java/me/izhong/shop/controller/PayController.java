@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -103,16 +104,18 @@ public class PayController {
         Order order  = orderService.findByOrderNo(orderNo);
         if (order == null) {
             order = new Order();
-            order.setOrderType(MoneyTypeEnum.DEPOSIT_MONEY.getType());
-            order.setTotalAmount(params.getChargeAmount());
-            order.setUserId(session.getId());
-            order.setCount(1);
-            order.setSubject("余额充值");
-            order.setDescription("充值金额:" + order.getTotalAmount());
-            order.setStatus(OrderStateEnum.WAIT_PAYING.getState());
-            // TODO store in redis or db
-            orderService.saveOrUpdate(order);
+            order.setOrderSn(orderNo);
         }
+        order.setOrderType(MoneyTypeEnum.DEPOSIT_MONEY.getType());
+        order.setTotalAmount(params.getChargeAmount());
+        order.setUserId(session.getId());
+        order.setCount(1);
+        order.setSubject("余额充值");
+        order.setDescription("充值金额:" + order.getTotalAmount());
+        order.setStatus(OrderStateEnum.WAIT_PAYING.getState());
+        order.setCreateTime(LocalDateTime.now());
+        // TODO store in redis or db
+        orderService.saveOrUpdate(order);
         expectMandatoryFieldForAlipay(order);
 
         String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo,
