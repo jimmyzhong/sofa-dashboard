@@ -7,6 +7,8 @@ import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
 import me.izhong.shop.config.JWTProperties;
+import me.izhong.shop.consts.ErrorCode;
+import me.izhong.shop.expection.UserNotLoginException;
 import me.izhong.shop.service.impl.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -44,12 +46,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         String token = getTok(request);
 
         if(token == null) {
-            throw BusinessException.build("用户未登陆");
+            throw new UserNotLoginException();
         }
 
         SessionInfo session = null;
         if((session = CacheUtil.getSessionInfo(token)) == null) {
-            throw BusinessException.build("用户未登陆,或者登陆已经过期");
+            throw new UserNotLoginException("用户未登陆,或者登陆已经过期");
         }
 
         request.setAttribute("userId", session.getId());
