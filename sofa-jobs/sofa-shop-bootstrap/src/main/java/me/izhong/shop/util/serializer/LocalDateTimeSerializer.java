@@ -12,9 +12,13 @@ import java.time.format.DateTimeFormatter;
 public class LocalDateTimeSerializer implements ObjectSerializer {
 
     public static final LocalDateTimeSerializer instance = new LocalDateTimeSerializer();
-    private static final String defaultPattern = "yyyy-MM-dd HH:mm:ss";
+    private String defaultPattern = "yyyy-MM-dd HH:mm:ss";
 
     public LocalDateTimeSerializer() {
+    }
+
+    public LocalDateTimeSerializer(String dateFormat) {
+        defaultPattern = dateFormat;
     }
 
     @Override
