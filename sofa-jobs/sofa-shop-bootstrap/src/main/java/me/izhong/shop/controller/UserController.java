@@ -1,6 +1,7 @@
 package me.izhong.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Maps;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
@@ -178,9 +179,11 @@ public class UserController {
             @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
 
     })
-    public Boolean checkPasswordPattern(@RequestBody Map<String,String> params) {
+    public Map checkPasswordPattern(@RequestBody Map<String,String> params) {
         String password = params.get("password");
-        return password.matches(passwordPattern);
+        Map map = new HashMap();
+        map.put("valid", password.matches(passwordPattern));
+        return map;
     }
 
     @PostMapping("/register")
