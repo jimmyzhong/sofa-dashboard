@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer , InitializingBean {
         dateFormat = "yyyy-MM-dd HH:mm:ss";
         serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
         serializeConfig.put(LocalDate.class, new SimpleDateFormatSerializer(dateFormat));
-        serializeConfig.put(LocalDateTime.class, new SimpleDateFormatSerializer(dateFormat));
+        //serializeConfig.put(LocalDateTime.class, new SimpleDateFormatSerializer(dateFormat));
     }
 
     @Override
