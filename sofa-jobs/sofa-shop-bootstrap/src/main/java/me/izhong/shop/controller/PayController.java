@@ -10,7 +10,11 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
+import me.izhong.shop.cache.CacheUtil;
+import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PayInfoDTO;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.IOrderService;
@@ -65,6 +69,50 @@ public class PayController {
         String orderNo = params.getOrderNo();
         Order order  = orderService.findByOrderNo(orderNo);
 //        Order order = getOrderForTest(params.getOrderNo());
+        expectMandatoryFieldForAlipay(order);
+
+        String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo,
+                order.getTotalAmount());
+        PayInfoDTO res = new PayInfoDTO();
+        res.setPayInfo(payMaterials);
+        return res;
+    }
+
+    @PostMapping(path="/alipay/charge", consumes = "application/json")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="发起支付宝充值请求", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PayInfoDTO payForCharge(
+            @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+                    "  \"orderNo\": \"00001\"" +
+                    "}")
+            @RequestBody PayInfoDTO params, HttpServletRequest request) {
+        if (params.getChargeAmount() == null || params.getChargeAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw BusinessException.build("充值金额要大于0");
+        }
+
+        if(StringUtils.isEmpty(params.getOrderNo())) {
+            //generate a order number for charge request
+            params.setOrderNo(orderService.generateOrderNo());
+        }
+
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
+        if (order == null) {
+            order = new Order();
+            order.setOrderType(MoneyTypeEnum.DEPOSIT_MONEY.getType());
+            order.setTotalAmount(params.getChargeAmount());
+            order.setUserId(session.getId());
+            order.setCount(1);
+            order.setSubject("余额充值");
+            order.setDescription("充值金额:" + order.getTotalAmount());
+            order.setStatus(OrderStateEnum.WAIT_PAYING.getState());
+            // TODO store in redis or db
+            orderService.saveOrUpdate(order);
+        }
         expectMandatoryFieldForAlipay(order);
 
         String payMaterials = aliPayService.pay(order.getSubject(), order.getDescription(), orderNo,

@@ -60,7 +60,9 @@ public interface IOrderService {
 
 	Order cancel(Long currentUserId, String orderNo);
 
-	void delivery(List<OrderDeliveryParam> deliveryParamList);
+    String generateOrderNo();
+
+    void delivery(List<OrderDeliveryParam> deliveryParamList);
 
 	void update(Order order);
 }

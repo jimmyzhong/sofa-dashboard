@@ -40,9 +40,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static me.izhong.shop.consts.MoneyTypeEnum.RESALE_GOODS;
+import static me.izhong.shop.consts.MoneyTypeEnum.*;
 import static me.izhong.shop.consts.OrderStateEnum.*;
-import static me.izhong.shop.consts.MoneyTypeEnum.NORMAL_GOODS;
 
 @Slf4j
 @Service
@@ -205,10 +204,10 @@ public class OrderService implements IOrderService {
 
 		if (PayStatusEnum.SUCCESS.name().equals(state) && order.getStatus() < PAID.getState()) {
 			order.setStatus(PAID.getState());
+			record.setSysState(1);
 			List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(),order.getUserId());
 			// 更新库存、销售量信息
 			Set<Goods> goodsSetToUpdateStockAndSale = new HashSet<>();
-			Map<OrderItem, Goods> resaleItems = new HashMap<>();
 			for (OrderItem item: items) {
 				GoodsStore store = storeDao.findByProductIdAndProductAttrId(item.getProductId(), item.getProductAttributeId());
 				store.setStore(store.getStore() - item.getQuantity());
@@ -234,6 +233,10 @@ public class OrderService implements IOrderService {
 			if (payType != null && payType.equalsIgnoreCase(RESALE_GOODS.getDescription())) {
 				record.setReceiverId(order.getResaleUser());
 			}
+			// 充值金额充值账户余额
+			else if (payType != null && payType.equalsIgnoreCase(DEPOSIT_MONEY.getDescription())) {
+				recordMoneyReturn(order, null, user.getId(), 1.0, 1, true);
+			}
 
 			// 付款成功,此处应该有积分奖励
 			recordScoreReturn(order);
@@ -244,6 +247,10 @@ public class OrderService implements IOrderService {
 	}
 
 	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor) {
+		recordMoneyReturn(order, payerId, receiverId, returnFactor, 0, false);
+	}
+
+	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor, int sysState, boolean updateUserMoney) {
 		PayRecord moneyReturn = new PayRecord();
 		moneyReturn.setType(MoneyTypeEnum.RETURN_MONEY.getDescription());
 		moneyReturn.setCreateTime(LocalDateTime.now());
@@ -251,8 +258,20 @@ public class OrderService implements IOrderService {
 		moneyReturn.setReceiverId(receiverId);
 		moneyReturn.setTotalAmount(order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor)));
 		moneyReturn.setInternalId(order.getOrderSn());
-		moneyReturn.setSysState(0);
+		moneyReturn.setSysState(sysState);
 		payRecordDao.save(moneyReturn);
+
+		if (updateUserMoney) {
+			UserMoney userMoney = userMoneyDao.selectUserForUpdate(order.getUserId());
+			if (userMoney == null) {
+				userMoney = new UserMoney();
+				userMoney.setUserId(order.getUserId());
+				userMoney.setAvailableAmount(moneyReturn.getTotalAmount());
+			} else {
+				userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getTotalAmount()));
+			}
+			userMoneyDao.save(userMoney);
+		}
 	}
 
 	private void recordScoreReturn(Order order) {
@@ -262,7 +281,7 @@ public class OrderService implements IOrderService {
 		scoreReturn.setReceiverId(order.getUserId());
 		scoreReturn.setTotalAmount(order.getTotalAmount());
 		scoreReturn.setInternalId(order.getOrderSn());
-		scoreReturn.setSysState(0);
+		scoreReturn.setSysState(1);
 		payRecordDao.save(scoreReturn);
 
 		UserScore userScore = userScoreDao.findByUserId(order.getUserId());
@@ -481,7 +500,8 @@ public class OrderService implements IOrderService {
 		order.setReceiverPhone(address.getUserPhone());
 	}
 
-	private String generateOrderNo() {
+	@Override
+	public String generateOrderNo() {
 		// TODO use redis increase
 		LocalDateTime localDateTime = LocalDateTime.now();
 		String rand = RandomStringUtils.randomNumeric(4);

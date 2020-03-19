@@ -12,7 +12,9 @@ public enum MoneyTypeEnum {
     RESALE_GOODS (2, "寄售商品"),
     // 仅付款类型
     RETURN_MONEY (10, "返现"),
-    RETURN_SCORE (11, "返积分");
+    RETURN_SCORE (11, "返积分"),
+    SPEND_MONEY (12, "余额付款"),
+    SPEND_SCORE (13, "积分兑换");
 
     int type;
     String description;
