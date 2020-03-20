@@ -13,6 +13,7 @@ import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.consts.ErrorCode;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PayInfoDTO;
@@ -101,7 +102,9 @@ public class PayController {
         }
         SessionInfo session = CacheUtil.getSessionInfo(request);
         userService.checkUserCertified(session.getId());
-
+        if (StringUtils.isEmpty(userService.findById(session.getId()).getAlipayAccount())){
+            throw BusinessException.build(ErrorCode.USER_ALIPAY_ACCOUNT_NOT_EXISTS, "请绑定支付宝账号");
+        }
         payRecordService.addWithdrawMoneyRecord(session.getId(), params.getChargeAmount());
     }
 
