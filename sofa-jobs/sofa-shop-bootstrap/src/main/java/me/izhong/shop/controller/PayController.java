@@ -18,7 +18,9 @@ import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PayInfoDTO;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.IOrderService;
+import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AliPayService;
+import me.izhong.shop.service.impl.PayRecordService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,6 +53,10 @@ public class PayController {
     IOrderService orderService;
     @Autowired
     AliPayService aliPayService;
+    @Autowired
+    IUserService userService;
+    @Autowired
+    PayRecordService payRecordService;
 
     @PostMapping(path="/alipay", consumes = "application/json")
     @ResponseBody
@@ -79,6 +85,27 @@ public class PayController {
         return res;
     }
 
+    @PostMapping(path="/alipay/withdraw", consumes = "application/json")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="支付宝提现请求", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public void withDrawMoney(
+            @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+                    "  \"chargeAmount\": 100" +
+                    "}")
+            @RequestBody PayInfoDTO params, HttpServletRequest request) {
+        if (params.getChargeAmount() == null || params.getChargeAmount().compareTo(BigDecimal.ZERO) <= 0) {
+            throw BusinessException.build("提现金额要大于0");
+        }
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        userService.checkUserCertified(session.getId());
+
+        payRecordService.addWithdrawMoneyRecord(session.getId(), params.getChargeAmount());
+    }
+
+
     @PostMapping(path="/alipay/charge", consumes = "application/json")
     @ResponseBody
     @RequireUserLogin
@@ -94,12 +121,14 @@ public class PayController {
             throw BusinessException.build("充值金额要大于0");
         }
 
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        userService.checkUserCertified(session.getId());
+
         if(StringUtils.isEmpty(params.getOrderNo())) {
             //generate a order number for charge request
             params.setOrderNo(orderService.generateOrderNo());
         }
 
-        SessionInfo session = CacheUtil.getSessionInfo(request);
         String orderNo = params.getOrderNo();
         Order order  = orderService.findByOrderNo(orderNo);
         if (order == null) {

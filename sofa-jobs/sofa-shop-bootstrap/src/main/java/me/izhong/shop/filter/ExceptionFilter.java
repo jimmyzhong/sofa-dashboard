@@ -47,7 +47,10 @@ public class ExceptionFilter implements HandlerExceptionResolver {
         } else if(e instanceof NoHandlerFoundException){
              NoHandlerFoundException ex = (NoHandlerFoundException)e;
              msg = "资源没有找到";
-         }else {
+         } else if(e instanceof RuntimeException){
+             msg = "网络异常,请稍后再试";
+             log.error("系统异常", e);
+         } else {
             log.error("请求异常", e);
             String message = e.getMessage();
             if (StringUtils.isNotBlank(message))

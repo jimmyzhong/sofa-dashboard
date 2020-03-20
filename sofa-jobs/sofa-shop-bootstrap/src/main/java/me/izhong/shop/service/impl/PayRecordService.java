@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserMoneyDao;
@@ -26,6 +27,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -60,6 +62,8 @@ public class PayRecordService {
             }
 
             Set<Long> userIds = getUserIdsWhoReceivedMoneyBetween(start, end);
+            userIds.addAll(getUserIdsWhoWithdrawMoneyBetween(start, end));
+
             for (Long userId: userIds) {
                 updateUserMoney(userId, start, end);
             }
@@ -70,21 +74,60 @@ public class PayRecordService {
 
     @Transactional
     public void updateUserMoney(Long userId, LocalDateTime start, LocalDateTime end) {
-        List<PayRecord> payRecords = payRecordDao.findAllByReceiverAndBetweenCreationDate(userId, start, end, 0);
-        BigDecimal money = payRecords.stream().map(p->{
+        List<PayRecord> getMoneyRecords = payRecordDao.findAllByReceiverAndBetweenCreationDateAndTypeIn(userId, start, end,
+                0, Arrays.asList(MoneyTypeEnum.RETURN_MONEY.getDescription()));
+        BigDecimal money = getMoneyRecords.stream().map(p->{
+            p.setSysState(1);
+            return p.getTotalAmount();
+        }).reduce((a, b) -> a.add(b)).get();
+
+        List<PayRecord> withdrawMoneyRecords = payRecordDao.findAllByPayerIdAndBetweenCreationDateAndTypeIn(userId, start, end,
+                0, Arrays.asList(MoneyTypeEnum.WITHDRAW_MONEY.getDescription()));
+        BigDecimal withDrawMoney = getMoneyRecords.stream().map(p->{
             p.setSysState(1);
             return p.getTotalAmount();
         }).reduce((a, b) -> a.add(b)).get();
 
         UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
         userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(money));
+        userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().subtract(withDrawMoney));
         userMoneyDao.save(userMoney);
-        payRecordDao.saveAll(payRecords);
+        payRecordDao.saveAll(getMoneyRecords);
+        payRecordDao.saveAll(withdrawMoneyRecords);
+
         log.info("update user money done for " + userId);
+    }
+
+    @Transactional
+    public void addWithdrawMoneyRecord(Long userId, BigDecimal amount) {
+        UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
+        if (userMoney == null) {
+            throw BusinessException.build("用户余额不存在,请联系管理员");
+        }
+
+        if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
+            throw BusinessException.build("可用余额不足");
+        }
+
+        userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
+        userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(amount));
+
+        PayRecord moneyWithdraw = new PayRecord();
+        moneyWithdraw.setType(MoneyTypeEnum.WITHDRAW_MONEY.getDescription());
+        moneyWithdraw.setCreateTime(LocalDateTime.now());
+        moneyWithdraw.setPayerId(userId);
+        moneyWithdraw.setTotalAmount(amount);
+        moneyWithdraw.setSysState(-1);
+        payRecordDao.save(moneyWithdraw);
     }
 
     private Set<Long> getUserIdsWhoReceivedMoneyBetween(LocalDateTime start, LocalDateTime end) {
         return payRecordDao.findReceiversBetweenCreationDateWithSysState(start, end, 0);
+    }
+
+    private Set<Long> getUserIdsWhoWithdrawMoneyBetween(LocalDateTime start, LocalDateTime end) {
+        return payRecordDao.findPayersBetweenCreationDateWithSysStateAndTypeIn(start, end, 0,
+                Arrays.asList(MoneyTypeEnum.WITHDRAW_MONEY.getDescription()));
     }
 
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,

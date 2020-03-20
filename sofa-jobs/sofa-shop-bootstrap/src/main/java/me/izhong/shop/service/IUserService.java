@@ -42,4 +42,10 @@ public interface IUserService {
     UserScore findScoreByUserId(Long userId);
 
     PageModel<PayRecord> listScoreReturnRecord(Long userId, PageRequest pageRequest);
+
+    void checkUserCertified(User user);
+
+    void checkUserCertified(Long userId);
+
+    void setAlipayAccount(Long userId, String alipayAccount);
 }
