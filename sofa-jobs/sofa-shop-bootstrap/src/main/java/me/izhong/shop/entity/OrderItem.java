@@ -21,6 +21,8 @@ public class OrderItem {
     private Long userId;
     @Column(name = "PRODUCT_ID")
     private Long productId;
+    @Column(name = "PRODUCT_PIC")
+    private String productPic;
     @Column(name = "PRODUCT__ATTR_ID")
     private Long productAttributeId;
     @Column(name = "NAME")
@@ -31,6 +33,8 @@ public class OrderItem {
     private Integer quantity;
     @Column(name = "PRICE")
     private BigDecimal price;
+    @Column(name = "UNIT_PRICE")
+    private BigDecimal unitPrice;
     @Column(name = "PAID_PRICE")
     private BigDecimal paidPrice;
 }

@@ -344,6 +344,8 @@ public class OrderService implements IOrderService {
 		item.setProductId(goods.getId());
 		item.setQuantity(quantity);
 		item.setUserId(userId);
+		item.setProductPic(goods.getProductPic());
+		item.setUnitPrice(goods.getPromotionPrice()!=null ? goods.getPromotionPrice() : goods.getPrice());
 		if (goods.getAttributes()!=null && !goods.getAttributes().isEmpty()){
 			GoodsAttributes attributes = goods.getAttributes().get(0);
 			item.setName(attributes.getName());
