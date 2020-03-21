@@ -214,6 +214,9 @@ public class UserController {
     })
     public Map getAlipayAccount( HttpServletRequest request) {
         User user = userService.findById(CacheUtil.getSessionInfo(request).getId());
+        if (StringUtils.isEmpty(user.getAlipayAccount())) {
+            throw BusinessException.build(ErrorCode.USER_ALIPAY_ACCOUNT_NOT_EXISTS, "请绑定支付宝账号");
+        }
         return new HashMap(){{
             put("alipayName",user.getAlipayName());
             put("alipayAccount",user.getAlipayAccount());
