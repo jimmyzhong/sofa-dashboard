@@ -15,6 +15,7 @@ import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
 import me.izhong.shop.consts.ErrorCode;
+import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
@@ -370,7 +371,7 @@ public class UserController {
     @ResponseBody
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public PageModel<User> list(@RequestBody PageRequest pageRequest, HttpServletRequest request) {
+    public PageModel<User> list(@RequestBody PageQueryParamDTO pageRequest, HttpServletRequest request) {
         SessionInfo session = CacheUtil.getSessionInfo(request);
         Long userId = session.getId();
         return userService.list(userId, pageRequest);

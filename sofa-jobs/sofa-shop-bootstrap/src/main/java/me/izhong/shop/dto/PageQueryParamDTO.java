@@ -12,6 +12,8 @@ public class PageQueryParamDTO extends PageRequest {
     private Integer productType;
     private Long userId;
     private Boolean onIndexPage;
+    private Long inviteUserId;
+    private Long inviteUserId2;
 
     public boolean validRequest() {
         if (this.getPageNum()<0) {

@@ -10,6 +10,7 @@ import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.dao.UserMoneyDao;
 import me.izhong.shop.dao.UserScoreDao;
+import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.*;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.util.ShareCodeUtil;
@@ -97,14 +98,18 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageModel<User> list(Long userId, me.izhong.common.domain.PageRequest request) {
+    public PageModel<User> list(Long userId, PageQueryParamDTO request) {
         User user = this.findById(userId);
 
         User u = new User();
-        u.setInviteUserId(user.getId());
-        u.setInviteUserId2(user.getId());
+        if (request.getInviteUserId() != null) {
+            u.setInviteUserId(request.getInviteUserId());
+        }
+        if (request.getInviteUserId2() != null) {
+            u.setInviteUserId2(user.getInviteUserId2());
+        }
 
-        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+        ExampleMatcher matcher = ExampleMatcher.matchingAll()
                 .withMatcher("inviteUserId", ExampleMatcher.GenericPropertyMatchers.exact())
                 .withMatcher("inviteUserId2", ExampleMatcher.GenericPropertyMatchers.exact());
 

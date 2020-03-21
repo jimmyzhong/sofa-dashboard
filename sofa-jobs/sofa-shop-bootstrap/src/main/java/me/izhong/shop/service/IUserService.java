@@ -2,6 +2,7 @@ package me.izhong.shop.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
 
 public interface IUserService {
 
-    PageModel<User> list(Long userId, me.izhong.common.domain.PageRequest request);
+    PageModel<User> list(Long userId, PageQueryParamDTO request);
 
     User saveOrUpdate(User user);
 
