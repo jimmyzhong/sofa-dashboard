@@ -87,6 +87,7 @@
 		function sendFile(file, obj) {
 			var data = new FormData();
 			data.append("file", file);
+			$.modal.loading("图片上传中");
 			$.ajax({
 				type: "POST",
 				url: ctx + "ext/shop/oss/upload",
@@ -106,6 +107,7 @@
 					// }
 				},
 				error: function(error) {
+					$.modal.closeLoading();
 					$.modal.alertWarning("图片上传失败。");
 				}
 			});

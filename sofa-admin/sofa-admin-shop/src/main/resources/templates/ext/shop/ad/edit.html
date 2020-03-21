@@ -115,6 +115,7 @@
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#imageFile")[0].files[0]);
+			$.modal.loading("图片上传中");
 			$.ajax({
 				url: ctx + "ext/shop/oss/upload",
 				data: formdata,
@@ -124,6 +125,10 @@
 				success: function (result) {
 					$("#imageUrl").val(result.data.pictureUrl)
 					$("#imageUrlCover").attr("src",result.data.pictureUrl)
+				},
+				error:function (err) {
+					$.modal.closeLoading();
+					$.modal.alertWarning("图片上传失败");
 				}
 			})
 		}
