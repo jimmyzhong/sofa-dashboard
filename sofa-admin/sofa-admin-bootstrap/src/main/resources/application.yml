@@ -108,7 +108,7 @@ dashboard:
   avatar:
     filepath: ${dashboard.filepath}/avatar/
   export:
-    filepath: ${dashboard.filepath}/export/
+    filepath: ${java.io.tmpdir}/export/
   ip:
     addressEnabled: true
     userLocalDatabase: true
