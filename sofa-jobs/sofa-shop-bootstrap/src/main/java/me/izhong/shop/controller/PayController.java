@@ -102,10 +102,11 @@ public class PayController {
         }
         SessionInfo session = CacheUtil.getSessionInfo(request);
         userService.checkUserCertified(session.getId());
-        if (StringUtils.isEmpty(userService.findById(session.getId()).getAlipayAccount())){
+        String existingAlipayAccount = userService.findById(session.getId()).getAlipayAccount();
+        if (StringUtils.isEmpty(existingAlipayAccount)){
             throw BusinessException.build(ErrorCode.USER_ALIPAY_ACCOUNT_NOT_EXISTS, "请绑定支付宝账号");
         }
-        payRecordService.addWithdrawMoneyRecord(session.getId(), params.getChargeAmount());
+        payRecordService.addWithdrawMoneyRecord(session.getId(), params.getChargeAmount(), existingAlipayAccount);
     }
 
 
@@ -154,6 +155,7 @@ public class PayController {
                 order.getTotalAmount());
         PayInfoDTO res = new PayInfoDTO();
         res.setPayInfo(payMaterials);
+        res.setOrderNo(order.getOrderSn());
         return res;
     }
 

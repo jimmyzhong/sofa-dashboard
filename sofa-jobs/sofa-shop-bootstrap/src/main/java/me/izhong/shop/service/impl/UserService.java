@@ -253,12 +253,14 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void setAlipayAccount(Long userId, String alipayAccount) {
+    public void setAlipayAccount(Long userId, String alipayAccount, String alipayName) {
         User user = findById(userId);
         if (user == null) {
             throw BusinessException.build("用户不存在");
         }
         checkUserCertified(user);
         user.setAlipayAccount(alipayAccount);
+        user.setAlipayName(alipayName);
+        userDao.save(user);
     }
 }

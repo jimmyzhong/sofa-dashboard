@@ -10,7 +10,9 @@ import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserMoneyDao;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.PayRecord_;
+import me.izhong.shop.entity.User;
 import me.izhong.shop.entity.UserMoney;
+import me.izhong.shop.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,6 +43,7 @@ import static me.izhong.common.util.DateUtil.convertToLocalDate;
 public class PayRecordService {
     @Autowired private PayRecordDao payRecordDao;
     @Autowired private UserMoneyDao userMoneyDao;
+    @Autowired private IUserService userService;
 
     @PostConstruct
     public void setUp() {
@@ -99,7 +102,7 @@ public class PayRecordService {
     }
 
     @Transactional
-    public void addWithdrawMoneyRecord(Long userId, BigDecimal amount) {
+    public void addWithdrawMoneyRecord(Long userId, BigDecimal amount, String alipayAccount) {
         UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
         if (userMoney == null) {
             throw BusinessException.build("用户余额不存在,请联系管理员");
@@ -108,7 +111,6 @@ public class PayRecordService {
         if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
             throw BusinessException.build("可用余额不足");
         }
-
         userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
         userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(amount));
 
@@ -118,6 +120,7 @@ public class PayRecordService {
         moneyWithdraw.setPayerId(userId);
         moneyWithdraw.setTotalAmount(amount);
         moneyWithdraw.setSysState(-1);
+        moneyWithdraw.setAccount(alipayAccount);
         payRecordDao.save(moneyWithdraw);
     }
 

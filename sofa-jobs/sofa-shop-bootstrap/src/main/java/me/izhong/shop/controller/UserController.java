@@ -197,10 +197,26 @@ public class UserController {
     })
     public void setAlipayAccount(@RequestBody Map<String,String> params, HttpServletRequest request) {
         String alipayAccount = params.get("alipayAccount");
-        if (StringUtils.isEmpty(alipayAccount)) {
+        String alipayName = params.get("alipayName");
+        if (StringUtils.isEmpty(alipayAccount) || StringUtils.isEmpty(alipayName)) {
             throw BusinessException.build("账号为空");
         }
-        userService.setAlipayAccount(CacheUtil.getSessionInfo(request).getId(), alipayAccount);
+        userService.setAlipayAccount(CacheUtil.getSessionInfo(request).getId(), alipayAccount, alipayName);
+    }
+
+    @RequireUserLogin
+    @GetMapping("/alipay/account")
+    @ApiOperation(value="获取支付宝账号",httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+                    value = "登录成功后response Authorization header", required = true)
+    })
+    public Map getAlipayAccount( HttpServletRequest request) {
+        User user = userService.findById(CacheUtil.getSessionInfo(request).getId());
+        return new HashMap(){{
+            put("alipayName",user.getAlipayName());
+            put("alipayAccount",user.getAlipayAccount());
+        }};
     }
 
     @PostMapping("/register")

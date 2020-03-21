@@ -47,5 +47,5 @@ public interface IUserService {
 
     void checkUserCertified(Long userId);
 
-    void setAlipayAccount(Long userId, String alipayAccount);
+    void setAlipayAccount(Long userId, String alipayAccount, String alipayName);
 }

@@ -11,4 +11,5 @@ public class PayInfoDTO {
     private String tradeStatus;
     private String payInfo;
     private BigDecimal chargeAmount;
+    private String account;
 }

@@ -44,5 +44,6 @@ public class PayRecord{
     private LocalDateTime createTime;
     @Column(name="CREATE_BY")
     private String createdBy;
-
+    @Column(name="ACCOUNT")
+    private String account;
 }
