@@ -1,0 +1,58 @@
+
+spring:
+  application:
+    name: bidd
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://rm-bp1sx3fk91057b7056o.mysql.rds.aliyuncs.com:3306/shop?characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: paipai_test
+    password: paipai@123
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        format_sql: true
+    show-sql: true
+  #redis
+  redis:
+    host: r-bp1o1p8t1kg5squfftpd.redis.rds.aliyuncs.com
+    port: 6379
+    password: redis@test123
+    timeout: 3000
+    jedis:
+      pool:
+        max-idle: 8
+        min-idle: 0
+        max-active: 8
+        max-wait: -1
+  #session
+  session:
+    store-type: redis
+
+server:
+  # 服务器的HTTP端口，默认为80
+  port: 52186
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
+service:
+  unique:
+    id: 1
+com:
+  alipay:
+    sofa:
+      rpc:
+        registry:
+          address: zookeeper://lpp.izhong.me:52181
+        bolt-port: 13304
