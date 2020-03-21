@@ -84,18 +84,16 @@
             {
                 field: 'adType',
                 title: '广告类型',
-                sortable: true
+                formatter: function (value, row, index) {
+                    return {1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"内部文章",7:"无链接"}[value]
+                }
             },
             {
                 field: 'imageUrl',
                 title: '广告图片',
                 formatter: function (value, row, index) {
-                    return $.table.imageView(value,300,300);
+                    return $.table.imageView(value,300,300,'',1);
                 }
-            },
-            {
-                field: 'adLink',
-                title: '广告链接'
             },
             {
                 field: 'status',
@@ -111,6 +109,7 @@
             },
             {
                 title: '操作',
+                width:"300",
                 align: 'center',
                 formatter: function (value, row, index) {
                     var actions = [];
