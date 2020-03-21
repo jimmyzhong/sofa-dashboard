@@ -51,8 +51,10 @@ public class User extends EditableEntity {
     private Long inviteUserId;
     @Column(name = "INVITE_USER2")
     private Long inviteUserId2;
-
-
+    @Column(name = "ALIPAY_ACCOUNT", length = 30)
+    private String alipayAccount;
+    @Column(name = "ASSET_PASSWORD", nullable = false, length = 64)
+    private String assetPassword; // 积分、余额使用密码
 
     public void encryptUserPassword() {
         setSalt(PasswordUtils.generateSalt(8));

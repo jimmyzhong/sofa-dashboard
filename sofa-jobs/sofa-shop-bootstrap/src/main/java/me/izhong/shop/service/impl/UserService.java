@@ -236,5 +236,29 @@ public class UserService implements IUserService {
         return payRecordService.listScoreReturnRecord(userId, pageRequest);
     }
 
+    @Override
+    public void checkUserCertified(User user) {
+        if (user.getIsCertified() == null || !user.getIsCertified()) {
+            throw BusinessException.build(ErrorCode.USER_NOT_CERTIFIED, "用户未实名认证");
+        }
+    }
 
+    @Override
+    public void checkUserCertified(Long userId) {
+        User user = findById(userId);
+        if (user == null) {
+            throw BusinessException.build("用户不存在");
+        }
+        checkUserCertified(user);
+    }
+
+    @Override
+    public void setAlipayAccount(Long userId, String alipayAccount) {
+        User user = findById(userId);
+        if (user == null) {
+            throw BusinessException.build("用户不存在");
+        }
+        checkUserCertified(user);
+        user.setAlipayAccount(alipayAccount);
+    }
 }

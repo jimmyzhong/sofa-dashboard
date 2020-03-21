@@ -9,6 +9,7 @@ import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.model.UserInfo;
+import me.izhong.shop.annotation.NeedOptimisticLockRetry;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
@@ -184,6 +185,22 @@ public class UserController {
         Map map = new HashMap();
         map.put("valid", password.matches(passwordPattern));
         return map;
+    }
+
+    @RequireUserLogin
+    @PostMapping("/alipay/account")
+    @ApiOperation(value="设置支付宝账号",httpMethod = "POST")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "alipayAccount", value = "账号", dataType = "string"),
+            @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+                    value = "登录成功后response Authorization header", required = true)
+    })
+    public void setAlipayAccount(@RequestBody Map<String,String> params, HttpServletRequest request) {
+        String alipayAccount = params.get("alipayAccount");
+        if (StringUtils.isEmpty(alipayAccount)) {
+            throw BusinessException.build("账号为空");
+        }
+        userService.setAlipayAccount(CacheUtil.getSessionInfo(request).getId(), alipayAccount);
     }
 
     @PostMapping("/register")

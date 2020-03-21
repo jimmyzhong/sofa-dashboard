@@ -162,13 +162,14 @@ public class MenuAdminController {
      */
     @GetMapping("/selectMenuTree/{menuId}")
     public String selectMenuTree(@PathVariable("menuId") Long menuId, ModelMap mmap) {
-        SysMenu menu;
-        if(menuId.equals(0L)) {
+        SysMenu menu = null;
+        if(!menuId.equals(0L)) {
+            menu = sysMenuService.selectMenuById(menuId);
+        }
+        if(menu == null) {
             menu = new SysMenu();
             menu.setMenuId(0L);
             menu.setMenuName("主目录");
-        } else {
-            menu = sysMenuService.selectMenuById(menuId);
         }
         mmap.put("menu", menu);
         return prefix + "/tree";

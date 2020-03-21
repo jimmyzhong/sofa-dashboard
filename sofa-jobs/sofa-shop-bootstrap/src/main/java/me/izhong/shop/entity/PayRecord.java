@@ -33,7 +33,7 @@ public class PayRecord{
     @Column(name = "PAY_STATE", length = 20)
     private String payState;
     @Column(name = "SYS_STATE")
-    private Integer sysState;
+    private Integer sysState; // -1:需要后台系统处理; 0: 需要API JOB处理; 1: 已处理
     @Column(name = "COMMENT", length = 200)
     private String comment;
     @Column(name = "PAYER")

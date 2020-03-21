@@ -13,6 +13,6 @@ public interface UserMoneyDao extends JpaRepository<UserMoney, Long> {
     UserMoney findByUserId(Long userId);
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
-    @Query(value = "select t from user_money t where t.user_id =?1 ", nativeQuery = true)
+    @Query(value = "select t from UserMoney t where t.userId =?1 ")
     UserMoney selectUserForUpdate(Long userId);
 }
