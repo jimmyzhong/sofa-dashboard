@@ -21,9 +21,15 @@ public class UserMoney extends EditableEntity {
     @GeneratedValue
     private Long id;
     @Column(name = "AVA_AMOUNT")
-    private BigDecimal availableAmount;
+    private BigDecimal availableAmount = BigDecimal.ZERO;
     @Column(name = "UNAVA_AMOUNT")
-    private BigDecimal unavailableAmount;
+    private BigDecimal unavailableAmount = BigDecimal.ZERO;
+    @Column(name = "HIS_AMOUNT_MONEY_RETURN")
+    private BigDecimal moneyReturnAmount = BigDecimal.ZERO;
+    @Column(name = "HIS_AMOUNT_MONEY_DEPOSIT")
+    private BigDecimal moneyDepositAmount = BigDecimal.ZERO;
+    @Column(name = "HIS_AMOUNT_SALE")
+    private BigDecimal moneySaleAmount = BigDecimal.ZERO;
     @Column(name = "USER_ID")
     private Long userId;
 }

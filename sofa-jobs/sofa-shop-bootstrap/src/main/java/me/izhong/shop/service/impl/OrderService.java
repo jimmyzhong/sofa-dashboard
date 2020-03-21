@@ -277,6 +277,16 @@ public class OrderService implements IOrderService {
 			} else {
 				userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getTotalAmount()));
 			}
+			if (type == DEPOSIT_MONEY) {
+				userMoney.setMoneyDepositAmount(userMoney.getMoneyDepositAmount()
+						.add(moneyReturn.getTotalAmount()));
+			} else if (type == RETURN_MONEY) {
+				userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount()
+						.add(moneyReturn.getTotalAmount()));
+			} else if (type == RESALE_GOODS) {
+				userMoney.setMoneySaleAmount(userMoney.getMoneySaleAmount()
+						.add(moneyReturn.getTotalAmount()));
+			}
 			userMoneyDao.save(userMoney);
 		}
 	}

@@ -38,6 +38,11 @@ public enum MoneyTypeEnum {
                 .orElseThrow(()-> BusinessException.build("")).description;
     }
 
+    public static MoneyTypeEnum getByType(int type) {
+        return Arrays.stream(MoneyTypeEnum.values()).filter(e->e.type==type).findFirst()
+                .orElse(null);
+    }
+
     public static int getTypeByDescription(String description) {
         return Arrays.stream(MoneyTypeEnum.values()).filter(e->e.description.equalsIgnoreCase(description)).findFirst()
                 .orElse(UNKNOWN).type;

@@ -15,6 +15,7 @@ import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.Constants;
 import me.izhong.shop.consts.ErrorCode;
+import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
@@ -35,9 +36,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static me.izhong.shop.util.ShareCodeUtil.decodeUserCode;
 
@@ -398,10 +398,20 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户返现明细", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public PageModel<PayRecord> moneyReturnDetail(@RequestBody PageRequest pageRequest, HttpServletRequest request) {
+    public PageModel<PayRecord> moneyReturnDetail(@RequestBody PageQueryParamDTO pageRequest, HttpServletRequest request) {
         SessionInfo session = CacheUtil.getSessionInfo(request);
         Long userId = session.getId();
-        return userService.listMoneyReturnRecord(userId, pageRequest);
+        Set<MoneyTypeEnum> types = new HashSet<>();
+        if (pageRequest.getMoneyTypes()!= null) {
+            types = pageRequest.getMoneyTypes().stream().map(i->{
+                MoneyTypeEnum type = MoneyTypeEnum.getByType(i);
+                if (type == null) {
+                    throw BusinessException.build("类型信息不正确");
+                }
+                return type;
+            }).collect(Collectors.toSet());
+        }
+        return userService.listMoneyReturnRecord(userId, pageRequest, types);
     }
 
     @GetMapping("/score")

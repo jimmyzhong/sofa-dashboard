@@ -30,11 +30,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import static me.izhong.common.util.DateUtil.convertToLocalDate;
 
@@ -78,7 +80,8 @@ public class PayRecordService {
     @Transactional
     public void updateUserMoney(Long userId, LocalDateTime start, LocalDateTime end) {
         List<PayRecord> getMoneyRecords = payRecordDao.findAllByReceiverAndBetweenCreationDateAndTypeIn(userId, start, end,
-                0, Arrays.asList(MoneyTypeEnum.RETURN_MONEY.getDescription()));
+                0, Arrays.asList(MoneyTypeEnum.RETURN_MONEY.getDescription(),
+                        MoneyTypeEnum.RESALE_GOODS.getDescription()));
         BigDecimal money = getMoneyRecords.stream().map(p->{
             p.setSysState(1);
             return p.getTotalAmount();
@@ -91,10 +94,17 @@ public class PayRecordService {
             return p.getTotalAmount();
         }).reduce((a, b) -> a.add(b)).get();
 
+        BigDecimal moneyFromResale = getMoneyRecords.stream().filter(p->MoneyTypeEnum.RESALE_GOODS.getDescription().equalsIgnoreCase(p.getType()))
+                .map(PayRecord::getTotalAmount)
+                .reduce((a, b) -> a.add(b)).get();
+
         UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
         userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(money));
         userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().subtract(withDrawMoney));
+        userMoney.setMoneySaleAmount(userMoney.getMoneySaleAmount().add(moneyFromResale));
+        userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount().add(money.subtract(moneyFromResale)));
         userMoneyDao.save(userMoney);
+
         payRecordDao.saveAll(getMoneyRecords);
         payRecordDao.saveAll(withdrawMoneyRecords);
 
@@ -134,10 +144,10 @@ public class PayRecordService {
     }
 
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
-                                                      PageRequest pageRequest) {
+                                                      PageRequest pageRequest, Set<MoneyTypeEnum> types) {
         LocalDate start = convertToLocalDate(pageRequest.getBeginCreateTime());
         LocalDate end = convertToLocalDate(pageRequest.getEndCreateTime());
-        Specification<PayRecord> specification = getMoneyReturnQuery(userId, start, end);
+        Specification<PayRecord> specification = getMoneyReturnQuery(userId, start, end, types );
 
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
 
@@ -164,11 +174,13 @@ public class PayRecordService {
         return PageModel.instance(page.getTotalElements(), page.getContent());
     }
 
-    private Specification<PayRecord> getMoneyReturnQuery(Long userId, LocalDate start, LocalDate end) {
+    private Specification<PayRecord> getMoneyReturnQuery(Long userId, LocalDate start, LocalDate end, Set<MoneyTypeEnum> types) {
         return (r, q, cb) -> {
-                Predicate predicate = cb.and(cb.equal(r.get(PayRecord_.receiverId), userId),
-                        cb.or(cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RETURN_MONEY.getDescription()),
-                                cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.RESALE_GOODS.getDescription())));
+            Predicate predicate = cb.equal(r.get(PayRecord_.receiverId), userId);
+             if (types != null && !types.isEmpty()) {
+                 predicate = cb.and(predicate, r.get(PayRecord_.type).in(types.stream()
+                         .map(MoneyTypeEnum::getDescription).collect(Collectors.toList())));
+             }
             predicate = getCreatedTimeBetweenQuery(start, end, r, cb, predicate);
 
             return predicate;

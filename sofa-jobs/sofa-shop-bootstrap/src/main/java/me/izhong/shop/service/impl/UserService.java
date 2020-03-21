@@ -29,6 +29,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -234,8 +235,9 @@ public class UserService implements IUserService {
 
     @Override
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
-                                                      PageRequest pageRequest) {
-        return payRecordService.listMoneyReturnRecord(userId, pageRequest);
+                                                      PageRequest pageRequest,
+                                                      Set<MoneyTypeEnum> types) {
+        return payRecordService.listMoneyReturnRecord(userId, pageRequest, types);
     }
 
     @Override

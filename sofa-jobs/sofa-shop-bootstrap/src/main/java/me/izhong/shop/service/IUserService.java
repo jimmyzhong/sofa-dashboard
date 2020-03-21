@@ -2,6 +2,7 @@ package me.izhong.shop.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.PayRecord;
 import me.izhong.shop.entity.User;
@@ -9,6 +10,7 @@ import me.izhong.shop.entity.UserMoney;
 import me.izhong.shop.entity.UserScore;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 public interface IUserService {
 
@@ -38,7 +40,7 @@ public interface IUserService {
 
     UserMoney findMoneyByUserId(Long userId);
 
-    PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageRequest pageRequest);
+    PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageRequest pageRequest, Set<MoneyTypeEnum> types);
 
     UserScore findScoreByUserId(Long userId);
 
