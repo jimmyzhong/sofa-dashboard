@@ -1,8 +1,6 @@
 package me.izhong.dashboard.common.expection.user;
 
-import me.izhong.common.exception.BusinessException;
-
-public class UserNotFoundException extends BusinessException {
+public class UserNotFoundException extends UserException {
 
 
     public static final int KEY = 400;
@@ -11,7 +9,7 @@ public class UserNotFoundException extends BusinessException {
         super(KEY, "用户不存在");
     }
 
-    public UserNotFoundException(String message) {
-        super(KEY, message);
+    public UserNotFoundException(String loginName) {
+        super(KEY, "用户不存在", loginName);
     }
 }

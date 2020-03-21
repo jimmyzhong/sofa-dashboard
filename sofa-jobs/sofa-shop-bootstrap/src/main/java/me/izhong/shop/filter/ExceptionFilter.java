@@ -3,7 +3,8 @@ package me.izhong.shop.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.constant.ErrCode;
-import me.izhong.common.exception.BusinessException;
+import me.izhong.common.exception.*;
+import me.izhong.shop.expection.UserNotLoginException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,12 @@ public class ExceptionFilter implements HandlerExceptionResolver {
 
         int code = ResponseContainer.FAIL_CODE;
         String msg = "系统异常";
-         if (e instanceof BusinessException) {
+        if (e instanceof UserNotLoginException) {
+            UserNotLoginException uexp = (UserNotLoginException) e;
+            log.error("请求{}异常,{}",e.getClass().getSimpleName(),uexp.getMessage());
+            code = uexp.getCode();
+            msg = uexp.getMessage();
+        } else if(e instanceof BusinessException) {
             log.error("请求BusinessException异常", e);
             BusinessException bexp = (BusinessException) e;
             msg = bexp.getMessage();

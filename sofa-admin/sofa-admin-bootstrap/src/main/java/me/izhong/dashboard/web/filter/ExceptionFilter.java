@@ -3,6 +3,7 @@ package me.izhong.dashboard.web.filter;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.dashboard.common.expection.user.UserException;
 import me.izhong.dashboard.common.expection.user.UserHasNotPermissionException;
 import me.izhong.dashboard.common.expection.user.UserNotLoginException;
 import me.izhong.dashboard.common.util.HttpUtil;
@@ -34,7 +35,6 @@ public class ExceptionFilter implements HandlerExceptionResolver {
         //httpServletResponse.getWriter().write("wrong" + e.getMessage());
         //httpServletResponse.flushBuffer();
 
-
         int code = ResponseContainer.FAIL_CODE;
         String msg = "系统异常";
         if (e instanceof UserHasNotPermissionException) {
@@ -54,11 +54,11 @@ public class ExceptionFilter implements HandlerExceptionResolver {
             msg = "用户缺少权限:" + ce.getMessage();
         } else if (e instanceof HttpRequestMethodNotSupportedException) {
             msg = String.format("系统不支持请求[%s]", e.getMessage());
-        } else if (e instanceof UserNotLoginException || e instanceof UserHasNotPermissionException) {
-            log.error("请求UserNotLoginException异常");
-            BusinessException bexp = (BusinessException) e;
-            code = bexp.getCode();
-            msg = bexp.getMessage();
+        } else if (e instanceof UserException) {
+            UserException uexp = (UserException) e;
+            log.error("请求{}异常,用户:{},{}",e.getClass().getSimpleName(),uexp.getLoginName(),uexp.getMessage());
+            code = uexp.getCode();
+            msg = uexp.getMessage();
         } else if (e instanceof BusinessException) {
             log.error("请求BusinessException异常", e);
             BusinessException bexp = (BusinessException) e;

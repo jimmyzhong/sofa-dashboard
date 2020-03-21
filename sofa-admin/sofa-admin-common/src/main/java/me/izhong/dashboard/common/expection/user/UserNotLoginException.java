@@ -1,8 +1,6 @@
 package me.izhong.dashboard.common.expection.user;
 
-import me.izhong.common.exception.BusinessException;
-
-public class UserNotLoginException extends BusinessException {
+public class UserNotLoginException extends UserException {
 
 
     public static final int KEY = 400;
@@ -13,5 +11,9 @@ public class UserNotLoginException extends BusinessException {
 
     public UserNotLoginException(String message) {
         super(KEY, message);
+    }
+
+    public UserNotLoginException(String message, String loginName) {
+        super(KEY, message, loginName);
     }
 }

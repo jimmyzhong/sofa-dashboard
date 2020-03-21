@@ -1,8 +1,6 @@
 package me.izhong.dashboard.common.expection.user;
 
-import me.izhong.common.exception.BusinessException;
-
-public class UserPasswordRetryLimitExceedException extends BusinessException {
+public class UserPasswordRetryLimitExceedException extends UserException {
 
 
     public static final int KEY = 400;

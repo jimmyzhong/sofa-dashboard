@@ -348,7 +348,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         Assert.notNull(salt,"");
         SysUser dbUser = findUser(userId);
         if (dbUser == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(userId+"");
         if (StringUtils.isBlank(newPassword)) {
             throw BusinessException.build("password不能为空");
         }

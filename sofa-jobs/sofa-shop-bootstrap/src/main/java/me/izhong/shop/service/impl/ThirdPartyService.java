@@ -44,7 +44,7 @@ public class ThirdPartyService {
         SmsResponse response = AliCloudUtils.instance.sendSms(properties, phoneNumber, paramString, resetPasswordSms);
         if (!response.isSuccess()) {
             log.info("{} 发送短信异常，阿里云响应 {}",phoneNumber,response.getMessage());
-            throw BusinessException.build("短信发送失败，稍后再试。详细原因:" + response.getMessage());
+            throw BusinessException.build("短信发送失败，稍后再试。");
             //return response.getCode() + "," + response.getMessage();
         }
         return null;
