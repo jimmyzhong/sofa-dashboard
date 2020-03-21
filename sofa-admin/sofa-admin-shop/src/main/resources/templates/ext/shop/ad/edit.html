@@ -26,13 +26,20 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">广告类型：</label>
 				<div class="col-sm-8">
-					<select class="form-control" id="adType" name="adType" required th:field="*{adType}">
-						<option value="1">网址</option>
+					<select class="form-control" id="adType" name="adType" required onchange="adTypeChange()" th:field="*{adType}">
+						<option value="1" selected>网址</option>
 						<option value="2">内部商品</option>
 						<option value="3">内部拍品</option>
 						<option value="4">内部寄售商品</option>
-						<option value="5">无链接</option>
+						<option value="5">内部文章</option>
+						<option value="7">无链接</option>
 					</select>
+				</div>
+			</div>
+			<div class="form-group" id="adLinkContain">
+				<label class="col-sm-3 control-label">广告链接：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="adLink" id="adLink" th:field="*{adLink}" required>
 				</div>
 			</div>
 			<div class="form-group">
@@ -40,12 +47,6 @@
 				<div class="col-sm-8">
 					<textarea class="form-control" name="content" id="content" th:field="*{content}" required>
 					</textarea>
-				</div>
-			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">广告链接：</label>
-				<div class="col-sm-8">
-					<input class="form-control" type="text" name="adLink" id="adLink" th:field="*{adLink}" required>
 				</div>
 			</div>
 			<div class="form-group">
@@ -67,6 +68,7 @@
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
 					<button type="button" class="btn btn-w-m btn-primary" onclick="submitHandler()">提交</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
 				</div>
 			</div>
 
@@ -93,7 +95,23 @@
 			},
 			focusCleanup: true
 		});
-
+		$(function () {
+			adTypeChange(1)
+		})
+		function adTypeChange(initFlag){
+			var adType=$('#adType').val();
+			var labelMap={"1":"链接：","2":"商品id：","3":"拍卖id：","4":"寄售商品id：","5":"文章id："};
+			var labelStr=labelMap[adType];
+			if(labelStr){
+				$("#adLinkContain").show();
+				$("#adLinkContain>label").text(labelStr);
+				if(initFlag!=1){
+					$("#adLinkContain input").val('');
+				}
+			}else {
+				$("#adLinkContain").hide();
+			}
+		}
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#imageFile")[0].files[0]);
@@ -114,8 +132,10 @@
 				$.modal.alertWarning("广告图片不能为空");
 				return;
 			}
-			if($("#adType").val()!="5"&&(!$("#adLink").val())){
-				$.modal.alertWarning("广告链接不能为空");
+			if($("#adType").val()!="7"&&(!$("#adLink").val())){
+				var adType=$('#adType').val();
+				var labelMap={1:"链接",2:"商品id",3:"拍卖id",4:"寄售商品id",5:"文章id"}[adType];
+				$.modal.alertWarning(labelMap+"不能为空");
 				return;
 			}
 			if ($.validate.form()) {

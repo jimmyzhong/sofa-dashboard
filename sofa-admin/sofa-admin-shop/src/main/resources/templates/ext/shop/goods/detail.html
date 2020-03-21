@@ -21,13 +21,13 @@
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label">价格：</label>
+				<label class="col-sm-3 control-label">市场价：</label>
 				<div class="col-sm-8">
 					<p type="text" name="price" id="price" th:text="${goods.price}"></p>
 				</div>
 			</div>
 			<div class="form-group">
-				<label class="col-sm-3 control-label is-required">折扣价：</label>
+				<label class="col-sm-3 control-label is-required">一口价：</label>
 				<div class="col-sm-8">
 					<p th:text="${goods.promotionPrice}"></p>
 				</div>
@@ -81,8 +81,8 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
-					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
 					<button type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
 				</div>
 			</div>
 		</form>
