@@ -38,6 +38,8 @@ public class UserService implements IUserService {
     @Autowired private UserScoreDao userScoreDao;
     @Autowired private PayRecordService payRecordService;
     @Autowired private ThirdPartyService certifyService;
+    @Value("${user.avatar.default}")
+    private String defaultAvatar;
 
     public void expectNew(User user) {
         if (!StringUtils.isEmpty(user.getLoginName()) &&
@@ -70,6 +72,7 @@ public class UserService implements IUserService {
             }
         }
 
+        user.setAvatar(defaultAvatar);
         user.encryptUserPassword();
         user.setRegisterTime(Timestamp.valueOf(LocalDateTime.now()));
         user.setLoginTime(user.getRegisterTime());

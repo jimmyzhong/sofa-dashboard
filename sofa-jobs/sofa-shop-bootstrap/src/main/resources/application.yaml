@@ -112,3 +112,6 @@ order:
         hours: 24
 password:
   pattern: ^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,20}$
+user:
+  avatar:
+    default: https://lpp-cn-pic.oss-cn-hangzhou.aliyuncs.com/shop/default_avatar.png

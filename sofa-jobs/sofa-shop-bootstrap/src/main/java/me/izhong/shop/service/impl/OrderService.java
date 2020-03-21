@@ -325,7 +325,7 @@ public class OrderService implements IOrderService {
 
 		// 预减库存
 		GoodsStore store = storeDao.findByProductIdAndProductAttrId(productId, productAttrId);
-		if (store.getPreStore() < quantity || store.getStore() < quantity) {
+		if (store==null || store.getPreStore() < quantity || store.getStore() < quantity) {
 			throw BusinessException.build("库存不足");
 		}
 		store.setPreStore(store.getPreStore() - quantity);
@@ -364,6 +364,8 @@ public class OrderService implements IOrderService {
 		order.setSubject(order.getOrderSn() + ", 共有品类" + order.getCount());
 		order.setStatus(WAIT_PAYING.getState());
 		order.setCreateTime(LocalDateTime.now());
+		order.setUnitPrice(item.getUnitPrice());
+		order.setProductPic(item.getProductPic());
 
 		order = orderDao.save(order);
 		item.setOrderId(order.getId());
@@ -451,11 +453,13 @@ public class OrderService implements IOrderService {
 		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),
 				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
 		Page<Order> orders = orderDao.findAll(example, pageableReq);
+
 		List<OrderDTO> dtos = orders.getContent().stream()
 				.map(o->checkOrderExpired(o))
 				.map(o->OrderDTO.builder()
 				.orderSn(o.getOrderSn()).id(o.getId()).count(o.getCount())
 				.totalAmount(o.getTotalAmount()).statusComment(getCommentByState(o.getStatus()))
+				.productPic(o.getProductPic()).unitPrice(o.getUnitPrice()).createTime(o.getCreateTime())
 				.subject(o.getSubject()).description(o.getDescription()).build())
 				.collect(Collectors.toList());
 		return PageModel.instance(orders.getTotalElements(), dtos);

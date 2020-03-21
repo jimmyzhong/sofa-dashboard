@@ -101,4 +101,9 @@ public class Order {
     private Integer count;
     @Column(name = "RESALE_USER")
     private Long resaleUser;
+    // first product info
+    @Column(name = "PRODUCT_PIC")
+    private String productPic;
+    @Column(name = "UNIT_PRICE")
+    private BigDecimal unitPrice;
 }
