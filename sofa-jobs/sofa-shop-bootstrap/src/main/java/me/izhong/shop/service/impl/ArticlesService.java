@@ -2,6 +2,8 @@ package me.izhong.shop.service.impl;
 
 import static org.springframework.data.domain.PageRequest.of;
 
+import me.izhong.shop.entity.Order;
+import me.izhong.shop.util.PageableConvertUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -19,6 +21,9 @@ import me.izhong.shop.dao.ArticlesDao;
 import me.izhong.shop.entity.Articles;
 import me.izhong.shop.service.IArticlesService;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 @Service
 public class ArticlesService implements IArticlesService {
 
@@ -28,18 +33,31 @@ public class ArticlesService implements IArticlesService {
 	@Override
 	@Transactional
 	public void saveOrUpdate(Articles articles) {
-		articlesDao.save(articles);
+		Articles ats = findById(articles.getId());
+		ats.setTitle(articles.getTitle());
+		ats.setContent(articles.getContent());
+		ats.setUpdateTime(LocalDateTime.now());
+		articlesDao.save(ats);
 	}
 
 	@Override
 	@Transactional
 	public void deleteById(Long id) {
+		Articles ats = findById(id);
+		if(StringUtils.isNotBlank(ats.getType())) {
+			throw BusinessException.build("系统禁止删除文章" + ats.getTitle() + ats.getType());
+		}
 		articlesDao.deleteById(id);
 	}
 
 	@Override
 	public Articles findById(Long id) {
 		return articlesDao.findById(id).orElseThrow(()-> BusinessException.build("找不到文章" + id));
+	}
+
+	@Override
+	public Articles findByType(String type) {
+		return articlesDao.findByType(type);
 	}
 
 	@Override
@@ -54,16 +72,7 @@ public class ArticlesService implements IArticlesService {
 				.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains());
 
 		Example<Articles> example = Example.of(article, matcher);
-		Sort sort = Sort.unsorted();
-		if (!StringUtils.isEmpty(request.getOrderByColumn()) && !StringUtils.isEmpty(request.getOrderDirection())) {
-			sort = Sort.by("asc".equalsIgnoreCase(request.getOrderDirection()) ? Sort.Direction.ASC: Sort.Direction.DESC,
-					request.getOrderByColumn());
-		}
-
-		Pageable pageableReq = of(
-				Long.valueOf(request.getPageNum()-1).intValue(),
-				Long.valueOf(request.getPageSize()).intValue(), sort);
-		Page<Articles> page = articlesDao.findAll(example, pageableReq);
+		Page<Articles> page = articlesDao.findAll(example, PageableConvertUtil.toDataPageable(request));
 		return PageModel.instance(page.getTotalElements(), page.getContent());
 	}
 

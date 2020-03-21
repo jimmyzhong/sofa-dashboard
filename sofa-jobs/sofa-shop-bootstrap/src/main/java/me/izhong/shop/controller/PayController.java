@@ -1,5 +1,7 @@
 package me.izhong.shop.controller;
 
+import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.sofa.rpc.common.utils.JSONUtils;
 import io.swagger.annotations.Api;
@@ -18,6 +20,7 @@ import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PayInfoDTO;
 import me.izhong.shop.entity.Order;
+import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AliPayService;
@@ -92,7 +95,7 @@ public class PayController {
     @ApiOperation(value="支付宝提现请求", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public void withDrawMoney(
+    public PayInfoDTO withDrawMoney(
             @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
                     "  \"chargeAmount\": 100" +
                     "}")
@@ -102,13 +105,75 @@ public class PayController {
         }
         SessionInfo session = CacheUtil.getSessionInfo(request);
         userService.checkUserCertified(session.getId());
-        String existingAlipayAccount = userService.findById(session.getId()).getAlipayAccount();
-        if (StringUtils.isEmpty(existingAlipayAccount)){
+        User user = userService.findById(session.getId());
+
+        if (StringUtils.isEmpty(user.getAlipayAccount())){
             throw BusinessException.build(ErrorCode.USER_ALIPAY_ACCOUNT_NOT_EXISTS, "请绑定支付宝账号");
         }
-        payRecordService.addWithdrawMoneyRecord(session.getId(), params.getChargeAmount(), existingAlipayAccount);
+
+        if(StringUtils.isEmpty(params.getOrderNo())) {
+            //generate a order number for withdraw request
+            params.setOrderNo(orderService.generateOrderNo());
+        }
+
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
+        if (order == null) {
+            order = new Order();
+            order.setOrderSn(orderNo);
+        }
+        order.setOrderType(MoneyTypeEnum.WITHDRAW_MONEY.getType());
+        order.setTotalAmount(params.getChargeAmount());
+        order.setCreateTime(LocalDateTime.now());
+        order.setSubject("用户提现");
+        order.setDescription("用户提现 " + user.getAlipayAccount());
+        orderService.saveOrUpdate(order);
+
+        AlipayFundTransUniTransferResponse response = aliPayService.transfer(orderNo, order.getTotalAmount(), user.getAlipayAccount(), user.getAlipayName());
+
+        if (!response.isSuccess()) {
+            log.error("提现失败 " + response.getBody());
+            throw BusinessException.build("提现失败");
+        }
+
+        // TODO 成功提现，修改用户余额 ？
+
+        PayInfoDTO dto = new PayInfoDTO();
+        dto.setOrderNo(orderNo);
+        dto.setTradeStatus("SUCCESS");
+        return dto;
     }
 
+    @PostMapping(path="/alipay/withdraw/query", consumes = "application/json")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="查询提现状态", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PayInfoDTO queryWithDraw(@ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+            "  \"orderNo\": \"00001\"" +
+            "}")@RequestBody PayInfoDTO params){
+        if(StringUtils.isEmpty(params.getOrderNo())) {
+            throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
+        }
+
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
+        if (order == null) {
+            throw BusinessException.build("订单不存在");
+        }
+
+        PayInfoDTO res = new PayInfoDTO();
+        res.setOrderNo(orderNo);
+
+        AlipayFundTransOrderQueryResponse response = aliPayService.queryTransfer(orderNo);
+        if (!response.isSuccess()) {
+            throw BusinessException.build("提现失败");
+        }
+
+        res.setTradeStatus("SUCCESS");
+        return res;
+    }
 
     @PostMapping(path="/alipay/charge", consumes = "application/json")
     @ResponseBody
