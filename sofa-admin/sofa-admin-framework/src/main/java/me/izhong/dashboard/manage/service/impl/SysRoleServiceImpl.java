@@ -1,14 +1,12 @@
 package me.izhong.dashboard.manage.service.impl;
 
+import me.izhong.dashboard.manage.entity.*;
+import me.izhong.dashboard.manage.service.SysUserService;
 import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.dashboard.manage.dao.RoleDao;
 import me.izhong.dashboard.manage.dao.RoleDeptDao;
 import me.izhong.dashboard.manage.dao.RoleMenuDao;
 import me.izhong.dashboard.manage.dao.UserRoleDao;
-import me.izhong.dashboard.manage.entity.SysRole;
-import me.izhong.dashboard.manage.entity.SysRoleDept;
-import me.izhong.dashboard.manage.entity.SysRoleMenu;
-import me.izhong.dashboard.manage.entity.SysUserRole;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysRoleService;
 import me.izhong.common.util.Convert;
@@ -41,6 +39,9 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
 
     @Autowired
     private RoleDeptDao roleDeptDao;
+
+    @Autowired
+    private SysUserService sysUserService;
 
     /**
      * 根据用户ID查询权限
@@ -254,6 +255,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
     public long deleteAuthUser(SysUserRole sysUserRole) {
         Assert.notNull(sysUserRole.getUserId(), "userId cant be null");
         Assert.notNull(sysUserRole.getRoleId(), "roleId cant be null");
+        sysUserService.checkUserAllowed(new SysUser(sysUserRole.getUserId()),"取消授权");
         return userRoleDao.deleteAllByUserIdAndRoleId(sysUserRole.getUserId(), sysUserRole.getRoleId());
     }
 
@@ -266,6 +268,10 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
      */
     @Override
     public long deleteAuthUsers(Long roleId, String userIds) {
+        List<Long> uids = Convert.toLongList(userIds);
+        uids.forEach(e->{
+            sysUserService.checkUserAllowed(new SysUser(e),"取消授权");
+        });
         List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdAndUserIdIn(roleId, Convert.toLongArray(userIds));
         userRoleDao.deleteAll(sysUserRoles);
         return sysUserRoles.size();
@@ -273,6 +279,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
 
     @Override
     public long deleteAuthUsers(List<Long> roleIds, Long userId) {
+        sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
         List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdInAndUserId(roleIds, userId);
         userRoleDao.deleteAll(sysUserRoles);
         return sysUserRoles.size();
@@ -280,6 +287,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
 
     @Override
     public long deleteAuthUsers(Long userId) {
+        sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
         return userRoleDao.deleteAllByUserId(userId);
     }
 

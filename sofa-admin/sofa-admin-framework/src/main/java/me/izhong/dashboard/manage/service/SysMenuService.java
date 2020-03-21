@@ -15,6 +15,7 @@ public interface SysMenuService extends CrudBaseService<Long,SysMenu> {
      * @return 菜单列表 返回的是数形结构
      */
     List<SysMenu> selectVisibleMenusByUser(Long userId);
+    List<SysMenu> selectVisibleMenus();
 
     List<SysMenu> selectMenusByUser(Long userId);
 
@@ -40,7 +41,7 @@ public interface SysMenuService extends CrudBaseService<Long,SysMenu> {
      * @return 权限列表
      */
     public Set<String> selectPermsByUserId(Long userId);
-
+    public Set<String> selectPermsAll();
     /**
      * 根据角色ID查询菜单
      *

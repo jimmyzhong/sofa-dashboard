@@ -94,6 +94,7 @@ xss:
 dashboard:
   version: 4.0.0
   salt: salt@defalut
+  debugMode: false
   filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
   ali:
     oss:

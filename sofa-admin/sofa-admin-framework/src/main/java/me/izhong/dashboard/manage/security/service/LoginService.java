@@ -1,5 +1,7 @@
 package me.izhong.dashboard.manage.security.service;
 
+import lombok.extern.slf4j.Slf4j;
+import me.izhong.dashboard.common.constants.Global;
 import me.izhong.dashboard.common.constants.ShiroConstants;
 import me.izhong.dashboard.common.constants.SystemConstants;
 import me.izhong.dashboard.common.constants.UserConstants;
@@ -23,6 +25,7 @@ import org.springframework.util.StringUtils;
  * 登录校验方法
  */
 @Component
+@Slf4j
 public class LoginService {
     @Autowired
     private PasswordService passwordService;
@@ -34,6 +37,16 @@ public class LoginService {
      * 登录
      */
     public SysUser login(String username, String password) {
+
+        if(Global.isDebugMode()) {
+            SysUser user = sysUserService.findUserByLoginName(username);
+            if (user == null) {
+                AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.not.exists")));
+                throw new UserNotFoundException(username);
+            }
+            log.info("DebugMode用户{}登陆成功",username);
+            return user;
+        }
         // 验证码校验
         if (!StringUtils.isEmpty(ServletUtil.getRequest().getAttribute(ShiroConstants.CURRENT_CAPTCHA))) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.jcaptcha.error")));

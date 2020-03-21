@@ -75,7 +75,15 @@ public class UserRealm extends AuthorizingRealm {
         Set<String> roles;
         // 菜单，按钮权限列表
         Set<String> menus;
-        if(user.getPerms() !=null) {
+
+        if(Global.isDebugMode()) {
+            roles = sysRoleService.selectRoleKeys(user.getUserId());
+            menus = sysMenuService.selectPermsAll();
+            user.setRoles(roles);
+            user.setPerms(menus);
+            //UserInfoContextHelper.setUser(user);
+            log.debug("DebugMode用户[{}]从数据库加载权限成功", user.getLoginName());
+        } else if(user.getPerms() !=null) {
             roles = user.getRoles();
             menus = user.getPerms();
             log.debug("用户[{}]从session加载权限成功", user.getLoginName());
@@ -87,6 +95,8 @@ public class UserRealm extends AuthorizingRealm {
             //UserInfoContextHelper.setUser(user);
             log.debug("用户[{}]从数据库加载权限成功", user.getLoginName());
         }
+
+
 
         // 角色加入AuthorizationInfo认证对象
         info.setRoles(roles);
