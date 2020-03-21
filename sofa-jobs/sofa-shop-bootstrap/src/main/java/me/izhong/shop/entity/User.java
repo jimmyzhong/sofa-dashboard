@@ -55,7 +55,7 @@ public class User extends EditableEntity {
     private String alipayAccount;
     @Column(name = "ALIPAY_NAME", length = 30)
     private String alipayName;
-    @Column(name = "ASSET_PASSWORD", nullable = false, length = 64)
+    @Column(name = "ASSET_PASSWORD",length = 64)
     private String assetPassword; // 积分、余额使用密码
 
     public void encryptUserPassword() {
