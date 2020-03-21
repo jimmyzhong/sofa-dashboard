@@ -20,6 +20,8 @@ import java.util.List;
 @Data
 public class SysUser extends TimedBasedEntity {
 
+    public static final String SEQUENCE_KEY = SysUser.class.getSimpleName() + "|" + "userId";
+
     @PrimaryId
     @AutoId
     @Indexed(unique = true)

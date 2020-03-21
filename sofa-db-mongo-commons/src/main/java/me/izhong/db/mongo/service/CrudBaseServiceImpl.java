@@ -391,7 +391,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
         });
     }
 
-    public Long getNextId(String collectionName) {
+    public long getNextId(String collectionName) {
         Query query = new Query(Criteria.where("collectionName").is(collectionName));
         Update update = new Update();
         update.inc("seqId", 1);
