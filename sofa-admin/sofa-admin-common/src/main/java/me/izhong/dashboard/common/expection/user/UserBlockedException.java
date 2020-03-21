@@ -1,8 +1,6 @@
 package me.izhong.dashboard.common.expection.user;
 
-import me.izhong.common.exception.BusinessException;
-
-public class UserBlockedException extends BusinessException {
+public class UserBlockedException extends UserException {
 
 
     public static final int KEY = 400;

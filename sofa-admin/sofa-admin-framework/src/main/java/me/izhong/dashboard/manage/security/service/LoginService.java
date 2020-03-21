@@ -42,7 +42,7 @@ public class LoginService {
         // 用户名或密码为空 错误
         if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("not.null")));
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(username);
         }
         // 密码如果不在指定范围内 错误
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
@@ -71,7 +71,7 @@ public class LoginService {
 
         if (user == null) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.not.exists")));
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(username);
         }
 
         if (Boolean.TRUE.equals(user.getIsDelete())) {
