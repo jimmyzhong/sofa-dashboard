@@ -89,7 +89,7 @@ public class PayRecordService {
 
         List<PayRecord> withdrawMoneyRecords = payRecordDao.findAllByPayerIdAndBetweenCreationDateAndTypeIn(userId, start, end,
                 0, Arrays.asList(MoneyTypeEnum.WITHDRAW_MONEY.getDescription()));
-        BigDecimal withDrawMoney = getMoneyRecords.stream().map(p->{
+        BigDecimal withDrawMoney = withdrawMoneyRecords.stream().map(p->{
             p.setSysState(1);
             return p.getTotalAmount();
         }).reduce((a, b) -> a.add(b)).get();

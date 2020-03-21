@@ -303,7 +303,7 @@ var table = {
                 return actions.join('');
             },
             // 图片预览
-            imageView: function (value, height, width, target) {
+            imageView: function (value, height, width, target,type) {
                 if ($.common.isEmpty(width)) {
                     width = 'auto';
                 }
@@ -313,6 +313,9 @@ var table = {
                 // blank or self
                 var _target = $.common.isEmpty(target) ? 'self' : target;
                 if ($.common.isNotEmpty(value)) {
+                    if(type=="1"){
+                        return $.common.sprintf("<img style='border-radius: 0' class='img-circle img-xs' data-height='%s' data-width='%s' data-target='%s' src='%s'/>", height, width, _target, value);
+                    }
                     return $.common.sprintf("<img class='img-circle img-xs' data-height='%s' data-width='%s' data-target='%s' src='%s'/>", height, width, _target, value);
                 } else {
                     return $.common.nullToStr(value);

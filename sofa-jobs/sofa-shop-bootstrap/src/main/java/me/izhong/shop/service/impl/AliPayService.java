@@ -5,8 +5,12 @@ import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
+import com.alipay.api.request.AlipayFundTransOrderQueryRequest;
+import com.alipay.api.request.AlipayFundTransUniTransferRequest;
 import com.alipay.api.request.AlipayTradeAppPayRequest;
 import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.alipay.api.response.AlipayTradeAppPayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.sofa.rpc.common.utils.JSONUtils;
@@ -54,6 +58,71 @@ public class AliPayService {
             log.error("query order status outTradeNo="+outTradeNo+",tradeNo="+tradeNo, e);
             throw BusinessException.build("查询订单信息失败:" + e.getMessage());
         }
+    }
+
+    /**
+     * 转账、提现
+     * @param outTradeNo 支付时传入的商户订单号
+     * @return
+     */
+    public AlipayFundTransUniTransferResponse transfer(String outTradeNo,
+                                                       BigDecimal amount, String alipayAccount,
+                                                       String alipayName) {
+        JSONObject bizContent = new JSONObject();
+        AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
+        bizContent.put("out_biz_no", outTradeNo);
+        bizContent.put("trans_amount", amount);
+        bizContent.put("product_code", "TRANS_ACCOUNT_NO_PWD");
+        bizContent.put("biz_scene", "DIRECT_TRANSFER");
+        bizContent.put("order_title", "提现");
+
+        JSONObject payee = new JSONObject();
+        payee.put("identity", alipayAccount);
+        payee.put("identity_type", "ALIPAY_LOGON_ID");
+        payee.put("name",alipayName);
+
+        bizContent.put("payee_info", payee);
+
+        request.setBizContent(bizContent.toString());
+        AlipayFundTransUniTransferResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                log.info("提现调用成功," + outTradeNo);
+            } else {
+                log.warn("调用失败," + outTradeNo);
+            }
+            log.info("提现结果应答{}", URLDecoder.decode(response.getBody(),"utf8"));
+        } catch (Exception e) {
+            log.error("提现异常",e);
+            throw BusinessException.build("提现操作失败");
+        }
+        return response;
+    }
+
+    /**
+     *
+     * @param outTradeNo 支付时传入的商户订单号
+     * @return
+     */
+    public AlipayFundTransOrderQueryResponse queryTransfer(String outTradeNo) {
+        AlipayFundTransOrderQueryRequest request = new AlipayFundTransOrderQueryRequest();
+        JSONObject bizContent = new JSONObject();
+        bizContent.put("out_biz_no", outTradeNo);
+        request.setBizContent(bizContent.toString());
+        AlipayFundTransOrderQueryResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+            if(response.isSuccess()){
+                System.out.println("调用成功");
+            } else {
+                System.out.println("调用失败");
+            }
+            log.info("提现查询应答{}", URLDecoder.decode(response.getBody(),"utf8"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
     }
 
     /**

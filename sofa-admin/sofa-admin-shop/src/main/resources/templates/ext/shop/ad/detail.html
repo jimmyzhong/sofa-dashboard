@@ -2,16 +2,15 @@
 <html lang="zh" xmlns:th="http://www.thymeleaf.org" >
 <head>
 	<th:block th:include="include :: header('查看广告信息')" />
-	<th:block th:include="include :: summernote-css" />
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<form class="form-horizontal m" id="form-shop-ad-edit" th:object="${ad}">
+		<form class="form-horizontal m shop-detail-contain" id="form-shop-ad-edit" th:object="${ad}">
 			<input name="id" type="hidden" th:field="*{id}"/>
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">广告prefix图片：</label>
 				<div class="col-sm-8">
-					<img id="ad_img" class="img-circle img-lg" th:src="*{imageUrl}">
+					<img id="ad_img" class="img-lg" th:src="*{imageUrl}">
 				</div>
 			</div>
 			<div class="form-group">
@@ -20,15 +19,28 @@
 					<p type="text" name="productName" id="productName" th:text="${ad.adName}"></p>
 				</div>
 			</div>
+<!--			var str={1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"内部文章",7:"无链接"}[adType]-->
 			<div class="form-group">
 				<label class="col-sm-3 control-label">广告类型：</label>
 				<div class="col-sm-8">
-					<p id="adType_p"></p>
-					<input type="hidden" id="adType" class="form-control" name="adType" th:field="*{adType}" />
+					<p th:switch="${ad.adType}">
+						<span th:case="1">网址</span>
+						<span th:case="2">内部商品</span>
+						<span th:case="3">内部拍品</span>
+						<span th:case="4">内部寄售商品</span>
+						<span th:case="5">内部文章</span>
+						<span th:case="7">无链接</span>
+					</p>
 				</div>
 			</div>
-			<div class="form-group">
-				<label class="col-sm-3 control-label">广告链接：</label>
+			<div class="form-group" th:if="${ad.adType ne 7}">
+				<label class="col-sm-3 control-label" th:switch="${ad.adType}">
+					<span th:case="1">链接：</span>
+					<span th:case="2">商品id：</span>
+					<span th:case="3">拍卖id：</span>
+					<span th:case="4">寄售商品id：</span>
+					<span th:case="5">文章id：</span>
+				</label>
 				<div class="col-sm-8">
 					<p type="text" name="adLink" th:text="${ad.adLink}"></p>
 				</div>
@@ -42,12 +54,8 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label">是否启用：</label>
 				<div class="col-sm-8">
-					<div class="radio-inline">
-			            <label><input readonly name="status" type="radio" value="1" th:field="*{status}"/>启用</label>
-			        </div>
-			        <div class="radio-inline">
-			            <label><input readonly name="status" type="radio" value="0" th:field="*{status}"/>不启用</label>
-			        </div>
+					<p th:if="${ad.status eq 1}">启用</p>
+					<p th:if="${ad.status eq 0}">不启用</p>
 				</div>
 			</div>
 			<div class="form-group">
@@ -66,15 +74,8 @@
 		</form>
 	</div>
 	<th:block th:include="include :: footer" />
-	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
 		var prefix = ctx + "ext/shop/ad";
-		$(function () {
-			var adType=$("#adType").val();
-			var str={1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"无链接"}[adType]||"不详"
-			$("#adType_p").text(str)
-		})
-
 		function gotoEdit() {
 			var url = prefix + '/edit/' + $("#id").val();
 			$.modal.openTab("编辑广告", url);
