@@ -341,11 +341,8 @@ public class UserController {
         String resetPass = params.get("resetPass");
         String randomNumber = RandomStringUtils.randomNumeric(6);
 
-        String res = thirdService.sendSms(phone, new JSONObject(){{put("code", randomNumber);}}, StringUtils.equals(resetPass,"true"));
-        if (res != null) {
-            log.info("{} 发送短信异常，阿里云响应 {}",phone,res);
-            throw BusinessException.build("获取验证码异常，请稍后再试");
-        }
+        thirdService.sendSms(phone, new JSONObject(){{put("code", randomNumber);}}, StringUtils.equals(resetPass,"true"));
+
         String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phone;
         CacheUtil.setSmsInfo(randomToken,randomNumber);
         return new HashMap(){{
