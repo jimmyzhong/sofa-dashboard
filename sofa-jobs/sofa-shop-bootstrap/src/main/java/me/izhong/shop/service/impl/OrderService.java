@@ -242,9 +242,9 @@ public class OrderService implements IOrderService {
 				}
 			}
 
-			// 充值金额充值账户余额
+			// 充值金额充值账户余额,直接到账
 			if (StringUtils.equals(payType, DEPOSIT_MONEY.getDescription())) {
-				recordMoneyReturn(order, null, order.getUserId(), 1.0, 1, true);
+				recordMoney(order, null, order.getUserId(), 1.0, 1, true, DEPOSIT_MONEY);
 			}
 		}
 
@@ -253,13 +253,13 @@ public class OrderService implements IOrderService {
 	}
 
 	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor) {
-		recordMoneyReturn(order, payerId, receiverId, returnFactor, 0, false);
+		recordMoney(order, payerId, receiverId, returnFactor, 0, false, MoneyTypeEnum.RETURN_MONEY);
 	}
 
-	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor, int sysState,
-								   boolean updateUserMoney) {
+	private void recordMoney(Order order, Long payerId, Long receiverId, Double returnFactor, int sysState,
+							 boolean updateUserMoney, MoneyTypeEnum type) {
 		PayRecord moneyReturn = new PayRecord();
-		moneyReturn.setType(MoneyTypeEnum.RETURN_MONEY.getDescription());
+		moneyReturn.setType(type.getDescription());
 		moneyReturn.setCreateTime(LocalDateTime.now());
 		moneyReturn.setPayerId(payerId);
 		moneyReturn.setReceiverId(receiverId);
