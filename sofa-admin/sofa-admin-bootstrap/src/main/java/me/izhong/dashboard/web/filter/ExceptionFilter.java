@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ObjectError;
@@ -69,6 +70,11 @@ public class ExceptionFilter implements HandlerExceptionResolver {
             List<ObjectError> errors = ex.getAllErrors();
             ObjectError error = errors.get(0);
             msg = error.getDefaultMessage();
+        } else if(e instanceof DuplicateKeyException){
+            DuplicateKeyException ex = (DuplicateKeyException)e;
+            String errDetail = ex.getMessage();
+            log.error("主键冲突", e);
+            msg = "系统异常，请联系管理员。主键冲突";
         } else {
             log.error("请求异常", e);
             String message = e.getMessage();
