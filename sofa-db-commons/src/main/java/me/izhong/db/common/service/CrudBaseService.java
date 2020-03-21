@@ -47,5 +47,4 @@ public interface CrudBaseService<K,T> {
 
      long removeByPIds(String pIds) throws BusinessException;
 
-     long getNextId(String collectionName);
 }

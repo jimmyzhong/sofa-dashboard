@@ -27,7 +27,7 @@ public class ZJobStatsServiceImpl extends CrudBaseServiceImpl<Long, ZJobStats>
         //更新
         Update update = new Update();
         if (stats.getStatsId() == null)
-            update.set("statsId", getNextId("JobStats"));
+            update.set("statsId", mongoSequenceService.getNextId("JobStats"));
         if (StringUtils.isNotBlank(stats.getType()))
             update.set("type", stats.getType());
         if (StringUtils.isNotBlank(stats.getValue1()))
