@@ -270,7 +270,7 @@ public class ExcelUtil<T> {
             wb.write(out);
             return filename;
         } catch (Exception e) {
-            log.error("导出Excel异常{}", e);
+            log.error("导出Excel异常", e);
             throw BusinessException.build("导出Excel失败，请联系网站管理员！");
         } finally {
             if (wb != null) {
@@ -582,7 +582,10 @@ public class ExcelUtil<T> {
         String downloadPath = Global.getExportPath() + filename;
         File desc = new File(downloadPath);
         if (!desc.getParentFile().exists()) {
-            desc.getParentFile().mkdirs();
+            boolean succ = desc.getParentFile().mkdirs();
+            if(!succ) {
+                throw BusinessException.build("创建本地目录失败:" + downloadPath);
+            }
         }
         return downloadPath;
     }

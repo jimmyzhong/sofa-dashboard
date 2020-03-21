@@ -83,8 +83,8 @@ public class FileUploadUtil {
             String requestMaping = Global.getUploadMapping();
             if(baseDir.startsWith(Global.getAvatarPath())){
                 requestMaping =  Global.getAvatarMapping();
-            } else if(baseDir.startsWith(Global.getExportPath())){
-                requestMaping =  Global.getExportMapping();
+            } else if(baseDir.startsWith(Global.getUploadPath())){
+                requestMaping =  Global.getUploadMapping();
             }
             String url = requestMaping + fileName;
             log.info("本地上传文件http地址:{}",url);

@@ -341,11 +341,8 @@ public class UserController {
         String resetPass = params.get("resetPass");
         String randomNumber = RandomStringUtils.randomNumeric(6);
 
-        String res = thirdService.sendSms(phone, new JSONObject(){{put("code", randomNumber);}}, StringUtils.equals(resetPass,"true"));
-        if (res != null) {
-            log.info("sms res:" + res);
-            throw BusinessException.build(res);
-        }
+        thirdService.sendSms(phone, new JSONObject(){{put("code", randomNumber);}}, StringUtils.equals(resetPass,"true"));
+
         String randomToken = RandomStringUtils.randomNumeric(32) + "_" + phone;
         CacheUtil.setSmsInfo(randomToken,randomNumber);
         return new HashMap(){{
@@ -439,10 +436,12 @@ public class UserController {
             throw BusinessException.build("手机号不能为空");
         }
         if(StringUtils.isBlank(token)) {
-            throw BusinessException.build("token不能为空");
+            log.info("token不能为空");
+            throw BusinessException.build("请获取验证码");
         }
         if(!token.endsWith(phone)){
-            throw BusinessException.build("token异常");
+            log.info("非法请求，用户换手机号了，要用发验证码的手机号");
+            throw BusinessException.build("非法请求，要用发验证码的手机号");
         }
         String cacheCode = CacheUtil.getSmsInfo(token);
         if(cacheCode == null){
