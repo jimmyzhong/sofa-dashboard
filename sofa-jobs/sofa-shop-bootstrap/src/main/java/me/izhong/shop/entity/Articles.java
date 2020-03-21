@@ -26,6 +26,13 @@ public class Articles {
     private String title;
     @Column(name = "CONTENT")
     private String content;
+    /**
+     * 类型，如果不为空，不让删除
+     *  用户须知 USER_NOTICE
+     *
+     */
+    @Column(name = "TYPE")
+    private String type;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

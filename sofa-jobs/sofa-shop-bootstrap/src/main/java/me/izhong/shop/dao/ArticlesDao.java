@@ -7,4 +7,5 @@ import me.izhong.shop.entity.Articles;
 
 @Repository
 public interface ArticlesDao extends JpaRepository<Articles, Long> {
+    Articles findByType(String type);
 }

@@ -12,5 +12,7 @@ public interface IArticlesService {
 
 	Articles findById(Long id);
 
+	Articles findByType(String type);
+
     PageModel<Articles> pageList(PageRequest request, String title);
 }
