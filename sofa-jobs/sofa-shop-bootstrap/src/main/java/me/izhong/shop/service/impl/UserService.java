@@ -113,6 +113,14 @@ public class UserService implements IUserService {
                 .withMatcher("inviteUserId", ExampleMatcher.GenericPropertyMatchers.exact())
                 .withMatcher("inviteUserId2", ExampleMatcher.GenericPropertyMatchers.exact());
 
+        if (request.getInviteUserId() == null && request.getInviteUserId2() == null) {
+            u.setInviteUserId(userId);
+            u.setInviteUserId2(userId);
+            matcher = ExampleMatcher.matchingAny()
+                    .withMatcher("inviteUserId", ExampleMatcher.GenericPropertyMatchers.exact())
+                    .withMatcher("inviteUserId2", ExampleMatcher.GenericPropertyMatchers.exact());
+        }
+
         Example<User> example = Example.of(u, matcher);
         Sort sort = Sort.by(Sort.Direction.DESC, "registerTime");
 
