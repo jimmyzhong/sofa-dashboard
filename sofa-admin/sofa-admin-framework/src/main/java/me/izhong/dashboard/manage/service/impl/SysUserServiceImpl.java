@@ -376,6 +376,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                 SysUser u = userDao.findByLoginName(user.getLoginName());
                 checkUserAllowed(u,"导入");
                 if (u == null) {
+                    user.setUserId(getNextId(SysUser.SEQUENCE_KEY));
                     user.setSalt(Global.getSalt());
                     user.setPassword(MD5Util.encode(Global.getSalt() + password));
                     user.setCreateBy(operName);
