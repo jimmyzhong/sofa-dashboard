@@ -77,6 +77,10 @@
             <artifactId>mongodb-driver</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-mongodb</artifactId>
+            <version>2.1.16.RELEASE</version>
+        </dependency>
     </dependencies>
 </project>

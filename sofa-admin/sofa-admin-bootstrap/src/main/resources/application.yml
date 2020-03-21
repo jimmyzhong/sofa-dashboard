@@ -93,6 +93,7 @@ xss:
 dashboard:
   version: 4.0.0
   salt: salt@defalut
+  debugMode: false
   filepath: /shop/dashboard
   ali:
     oss:

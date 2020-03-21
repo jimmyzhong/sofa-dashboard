@@ -50,7 +50,18 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
                     .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
         }
         sortMenus(sysMenus);
-        return getChildPerms(sysMenus, 0);
+        return toTree(sysMenus, 0);
+    }
+
+    @Override
+    public List<SysMenu> selectVisibleMenus() {
+        List<SysMenu> sysMenus = doSelectPermsByUserId(null, true);
+        if(sysMenus != null && sysMenus.size() > 0) {
+            sysMenus = sysMenus.stream().filter(e -> StringUtils.equals("0", e.getVisible()))
+                    .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
+        }
+        sortMenus(sysMenus);
+        return toTree(sysMenus, 0);
     }
 
     /**
@@ -69,7 +80,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
             sysMenus = doSelectPermsByUserId(userId, true);
         }
         sortMenus(sysMenus);
-        return getChildPerms(sysMenus, 0);
+        return getAllChildList(sysMenus, 0);
     }
 
     private void sortMenus(List<SysMenu> sysMenus) {
@@ -118,6 +129,19 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
         return permsSet;
     }
 
+    @Override
+    public Set<String> selectPermsAll() {
+        //查询用户所有的权限 String格式
+        List<SysMenu> perms = doSelectPermsByUserId(null, false);
+        Set<String> permsSet = new HashSet<>();
+        for (SysMenu perm : perms) {
+            if (StringUtils.isNotEmpty(perm.getPerms())) {
+                permsSet.addAll(Arrays.asList(perm.getPerms().trim().split(",")));
+            }
+        }
+        return permsSet;
+    }
+
     /**
      * role下面的菜单权限,给角色分配权限
      *
@@ -127,12 +151,32 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
     @Override
     public List<Ztree> roleMenuTreeData(Long roleId) {
         List<Ztree> ztrees = null;
-        List<SysMenu> sysMenuList = selectMenuList(null);
-        //只显示正常的
-        sysMenuList = sysMenuList.stream().filter(e -> StringUtils.equals("0",e.getVisible()))
-                .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
+        final List<SysMenu> sysMenuList = selectMenuList(null);
+
+        SysMenu root = new SysMenu();
+        root.setMenuId(0L);
+        root.setMenuName("全部");
+        root.setPerms("");
+        sysMenuList.add(root);
 
         sortMenus(sysMenuList);
+        //只显示正常的
+//        sysMenuList = sysMenuList.stream().filter(e -> StringUtils.equals("0",e.getVisible()))
+//                .filter(e -> e.getIsDelete() == null || !e.getIsDelete().booleanValue()).collect(toList());
+        //获取删除，禁止节点
+        List<SysMenu> unnormalList = sysMenuList.stream().filter(
+                e -> StringUtils.equals("1",e.getVisible()) ||  e.getIsDelete() != null && e.getIsDelete().booleanValue()).collect(toList());
+
+        //删除不该显示子节点
+        List<SysMenu> unnormalChildList = new ArrayList<>();
+        unnormalList.forEach( e -> {
+            List<SysMenu> rmm = getAllChildList(sysMenuList,e.getMenuId());
+            unnormalChildList.addAll(rmm);
+        });
+
+        sysMenuList.removeAll(unnormalList);
+        sysMenuList.removeAll(unnormalChildList);
+
         if (roleId != null) {
             List<SysRoleMenu> sysRoleMenus = roleMenuDao.findAllByRoleId(roleId);
             List<Long> roleMenuList = sysRoleMenus == null ? null : sysRoleMenus.stream().map(e -> e.getMenuId()).collect(toList());
@@ -140,6 +184,7 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
         } else {
             ztrees = initZtree(sysMenuList, null, true);
         }
+
         return ztrees;
     }
 
@@ -160,6 +205,13 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
     @Override
     public List<Ztree> menuTreeData() {
         List<SysMenu> sysMenuList = menuDao.findAll();
+
+        SysMenu root = new SysMenu();
+        root.setMenuId(0L);
+        root.setMenuName("根目录");
+        root.setPerms("");
+        sysMenuList.add(root);
+
         sortMenus(sysMenuList);
         List<Ztree> ztrees = initZtree(sysMenuList);
         return ztrees;
@@ -281,6 +333,9 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
             if(parentMenu == null) {
                 throw BusinessException.build("父菜单不存在");
             }
+            if(parentMenu.getMenuId().equals(m.getMenuId())) {
+                throw BusinessException.build("当前菜单的父菜单不能是自己");
+            }
             if(StringUtils.equalsAny(m.getMenuType(),"M","C")) {
                 if (!StringUtils.equals(parentMenu.getMenuType(), "M")) {
                     throw BusinessException.build("父菜单不是目录，不能选择");
@@ -383,105 +438,69 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
 //        return perms;
     }
 
-    /**
-     * 根据父节点的ID获取所有子节点
-     *
-     * @param list     分类表
-     * @param parentId 传入的父节点ID
-     * @return String
-     */
-    public static List<SysMenu> getChildPerms(List<SysMenu> list, int parentId) {
-        List<SysMenu> returnList = new ArrayList<SysMenu>();
+    public static List<SysMenu> getAllChildList(List<SysMenu> list, long parentId) {
+        List<SysMenu> returnList = new ArrayList<>();
         for (Iterator<SysMenu> iterator = list.iterator(); iterator.hasNext(); ) {
-            SysMenu t = (SysMenu) iterator.next();
+            SysMenu t = iterator.next();
             // 一、根据传入的某个父节点ID,遍历该父节点的所有子节点
-            if (t.getParentId() == parentId) {
-                recursionFn(list, t);
-                returnList.add(t);
+            if (t.getParentId() != null && t.getParentId() == parentId) {
+                recursionFn(list, t, returnList);
+                if(!returnList.contains(t))
+                    returnList.add(t);
             }
         }
         return returnList;
     }
 
-    /**
-     * 递归列表
-     *
-     * @param list
-     * @param t
-     */
-    private static void recursionFn(List<SysMenu> list, SysMenu t) {
+    private static void recursionFn(List<SysMenu> list, SysMenu t, List<SysMenu> returnList) {
         // 得到子节点列表
-        List<SysMenu> childList = getChildList(list, t);
+        List<SysMenu> childList = getDirectChildList(list, t);
+        if(childList == null || childList.size() == 0)
+            return;
         t.setChildren(childList);
+        childList.forEach(e->{
+            if(!returnList.contains(e))
+                returnList.add(e);
+        });
         for (SysMenu tChild : childList) {
-            if (hasChild(list, tChild)) {
-                // 判断是否有子节点
-                Iterator<SysMenu> it = childList.iterator();
-                while (it.hasNext()) {
-                    SysMenu n = it.next();
-                    recursionFn(list, n);
-                }
-            }
+            recursionFn(list, tChild, returnList);
         }
     }
 
     /**
      * 得到子节点列表
      */
-    private static List<SysMenu> getChildList(List<SysMenu> list, SysMenu t) {
+    private static List<SysMenu> getDirectChildList(List<SysMenu> list, SysMenu t) {
 
-        List<SysMenu> tlist = new ArrayList<SysMenu>();
+        List<SysMenu> tlist = new ArrayList<>();
         Iterator<SysMenu> it = list.iterator();
         while (it.hasNext()) {
-            SysMenu n = (SysMenu) it.next();
-            if (n.getParentId().longValue() == t.getMenuId().longValue()) {
+            SysMenu n = it.next();
+            if (n.getParentId() !=null && n.getParentId().longValue() == t.getMenuId().longValue()) {
                 tlist.add(n);
             }
         }
         return tlist;
     }
 
-    List<SysMenu> returnList = new ArrayList<SysMenu>();
-
-    /**
-     * 根据父节点的ID获取所有子节点
-     *
-     * @param list   分类表
-     * @param typeId 传入的父节点ID
-     * @param prefix 子节点前缀
-     */
-    public List<SysMenu> getChildPerms(List<SysMenu> list, int typeId, String prefix) {
-        if (list == null) {
-            return null;
-        }
+    public static List<SysMenu> toTree(List<SysMenu> list, long parentId) {
+        List<SysMenu> returnList = new ArrayList<>();
         for (Iterator<SysMenu> iterator = list.iterator(); iterator.hasNext(); ) {
-            SysMenu node = (SysMenu) iterator.next();
-            // 一、根据传入的某个父节点ID,遍历该父节点的所有子节点
-            if (node.getParentId() == typeId) {
-                recursionFn(list, node, prefix);
+            SysMenu t = iterator.next();
+            if (t.getParentId() != null && t.getParentId() == parentId) {
+                recursionTreeFn(list, t);
+                returnList.add(t);
             }
-            // 二、遍历所有的父节点下的所有子节点
-            /*
-             * if (node.getParentId()==0) { recursionFn(list, node); }
-             */
         }
         return returnList;
     }
 
-    private void recursionFn(List<SysMenu> list, SysMenu node, String p) {
+    private static void recursionTreeFn(List<SysMenu> list, SysMenu t) {
         // 得到子节点列表
-        List<SysMenu> childList = getChildList(list, node);
-        if (hasChild(list, node)) {
-            // 判断是否有子节点
-            returnList.add(node);
-            Iterator<SysMenu> it = childList.iterator();
-            while (it.hasNext()) {
-                SysMenu n = (SysMenu) it.next();
-                n.setMenuName(p + n.getMenuName());
-                recursionFn(list, n, p + p);
-            }
-        } else {
-            returnList.add(node);
+        List<SysMenu> childList = getDirectChildList(list, t);
+        t.setChildren(childList);
+        for (SysMenu tChild : childList) {
+            recursionTreeFn(list, tChild);
         }
     }
 
@@ -489,6 +508,6 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
      * 判断是否有子节点
      */
     private static boolean hasChild(List<SysMenu> list, SysMenu t) {
-        return getChildList(list, t).size() > 0 ? true : false;
+        return getDirectChildList(list, t).size() > 0 ? true : false;
     }
 }

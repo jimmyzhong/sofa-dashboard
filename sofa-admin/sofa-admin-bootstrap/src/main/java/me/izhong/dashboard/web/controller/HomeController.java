@@ -1,6 +1,8 @@
 package me.izhong.dashboard.web.controller;
 
 import me.izhong.common.model.UserInfo;
+import me.izhong.dashboard.common.constants.Global;
+import me.izhong.dashboard.common.domain.Ztree;
 import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
 import me.izhong.dashboard.manage.service.SysMenuService;
@@ -57,12 +59,13 @@ public class HomeController {
         String demoUser = configService.getKey("sys.main.demoEnableUser");
         model.addAttribute("demoEnabled", StringUtils.equals(user.getLoginName(),demoUser));
 
-        List<SysMenu> menus2 = sysMenuService.selectVisibleMenusByUser(user.getUserId());
-        if(menus2 !=null && menus2.size() > 0) {
-            //去掉隐藏的菜单
+        List<SysMenu> menus2;
+        if(Global.isDebugMode()) {
+            menus2 = sysMenuService.selectVisibleMenus();
+        } else {
+            menus2 = sysMenuService.selectVisibleMenusByUser(user.getUserId());
         }
         model.addAttribute("menus", menus2);
-
         return "index";
     }
 

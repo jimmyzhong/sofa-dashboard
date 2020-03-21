@@ -94,6 +94,10 @@ public class Global {
         return StringUtils.defaultIfBlank(getConfig("dashboard.demoEnabled"), "true");
     }
 
+    public static boolean isDebugMode() {
+        return StringUtils.equals(getConfig("dashboard.debugMode"), "true");
+    }
+
 
     /**
      * 获取文件上传路径

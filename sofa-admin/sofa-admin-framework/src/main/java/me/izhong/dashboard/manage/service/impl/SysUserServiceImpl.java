@@ -587,7 +587,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
      */
     @Override
     public void checkUserAllowed(SysUser user,String actionName) {
-        if (user != null && user.getUserId() != null && user.isAdmin()) {
+        if (!Global.isDebugMode() && user != null && user.getUserId() != null && user.isAdmin()) {
             throw BusinessException.build("不允许" + StringUtils.defaultIfBlank(actionName,"操作") + "超级管理员用户" + StringUtils.defaultIfBlank(user.getLoginName(),""));
         }
     }

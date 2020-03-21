@@ -148,11 +148,11 @@ public class MenuAdminController {
     }
 
     /**
-     * 加载所有菜单列表树
+     * 加载所有菜单列表树，菜单编辑页面，选择父菜单
      */
     @GetMapping("/menuTreeData")
     @ResponseBody
-    public List<Ztree> menuTreeData(SysRole sysRole) {
+    public List<Ztree> menuTreeData() {
         List<Ztree> ztrees = sysMenuService.menuTreeData();
         return ztrees;
     }
