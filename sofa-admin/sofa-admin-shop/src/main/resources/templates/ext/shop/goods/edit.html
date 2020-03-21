@@ -158,6 +158,7 @@
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#productPic")[0].files[0]);
+			$.modal.loading("图片上传中");
 			$.ajax({
 				url: ctx + "ext/shop/oss/upload",
 				data: formdata,
@@ -167,6 +168,10 @@
 				success: function (result) {
 					$("#productPicInput").val(result.data.pictureUrl)
 					$("#productPic_img").attr("src",result.data.pictureUrl)
+				},
+				error:function (err) {
+					$.modal.closeLoading();
+					$.modal.alertWarning("图片上传失败");
 				}
 			})
 		}
@@ -174,6 +179,7 @@
 		function upAlbumPics(){
 			var formdata = new FormData();
 			formdata.append("file", $("#uploadAlbumPics")[0].files[0]);
+			$.modal.loading("图片上传中");
 			$.ajax({
 				url: ctx + "ext/shop/oss/upload",
 				data: formdata,
@@ -183,11 +189,14 @@
 				success: function (result) {
 					albumPics.push(result.data.pictureUrl)
 					$("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
+				},
+				error:function (err) {
+					$.modal.closeLoading();
+					$.modal.alertWarning("图片上传失败");
 				}
 			})
 		}
 		function delAlbumPics(obj,str) {
-			console.log(str)
 			$(obj).parents("div.pic").remove();
 			var index = albumPics.indexOf(str);
 			if (index > -1) {
@@ -197,14 +206,12 @@
 
 		function randerImgs() {
 			for(var i =0;i<albumPics.length;i++){
-				console.log("albumPics==>",albumPics[i])
 				$("#upAlbumPics_content").append("<div class='pic'><img src='"+albumPics[i]+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+albumPics[i]+"')>删除</a></p></div>")
 			}
 		}
 
 		function fetchGoodsCategory() {
 			var categoryId=$("#category").val()
-			console.log("categoryId",categoryId)
 			$.ajax({
 				url: ctx + "ext/shop/category/queryAll",
 				type: "get",
@@ -254,6 +261,7 @@
 		function sendFile(file, obj) {
 			var data = new FormData();
 			data.append("file", file);
+			$.modal.loading("图片上传中");
 			$.ajax({
 				type: "POST",
 				url: ctx + "ext/shop/oss/upload",
@@ -263,10 +271,10 @@
 				processData: false,
 				dataType: 'json',
 				success: function(result) {
-					console.log("富文本图片上传成功", result.data.fileName)
 					$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.fileName);
 				},
 				error: function(error) {
+					$.modal.closeLoading();
 					$.modal.alertWarning("图片上传失败。");
 				}
 			});

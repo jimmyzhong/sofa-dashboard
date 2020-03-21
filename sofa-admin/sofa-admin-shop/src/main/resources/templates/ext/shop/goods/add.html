@@ -189,6 +189,7 @@
 	    function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#productPic")[0].files[0]);
+			$.modal.loading("图片上传中");
 			$.ajax({
 				url: ctx + "ext/shop/oss/upload",
 				data: formdata,
@@ -198,6 +199,10 @@
 				success: function (result) {
 					$("#productPicInput").val(result.data.pictureUrl)
 					$("#productPic_img").attr("src",result.data.pictureUrl)
+				},
+				error:function (err) {
+					$.modal.closeLoading();
+					$.modal.alertWarning("图片上传失败");
 				}
 			})
 		}
@@ -252,6 +257,10 @@
 				success: function (result) {
 					albumPics.push(result.data.pictureUrl)
 					$("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
+				},
+				error:function (err) {
+					$.modal.closeLoading();
+					$.modal.alertWarning("图片上传失败");
 				}
 			})
 		}
