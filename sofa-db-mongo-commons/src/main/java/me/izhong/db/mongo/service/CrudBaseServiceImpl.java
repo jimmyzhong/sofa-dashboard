@@ -20,6 +20,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -44,6 +45,9 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
 
     @Autowired
     protected MongoTemplate mongoTemplate;
+
+    @Autowired
+    protected MongoSequenceService mongoSequenceService;
 
     @Override
     public PageModel<T> selectPage(PageRequest request, T target) {
@@ -374,7 +378,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
                         throw BusinessException.build("AutoId field must be Long type");
                     }
                     if (field.get(source) == null || ((Long) field.get(source)).longValue() == 0) {
-                        field.set(source, getNextId(source.getClass().getSimpleName() + "|" + field.getName()));
+                        field.set(source, mongoSequenceService.getNextId(source.getClass().getSimpleName() + "|" + field.getName()));
                         isNew = true;
                     }
                 }
@@ -390,18 +394,4 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
             }
         });
     }
-
-    public long getNextId(String collectionName) {
-        Query query = new Query(Criteria.where("collectionName").is(collectionName));
-        Update update = new Update();
-        update.inc("seqId", 1);
-        FindAndModifyOptions options = new FindAndModifyOptions();
-        options.upsert(true);
-        options.returnNew(true);
-
-        SysSeqInfo seq = mongoTemplate.findAndModify(query, update, options, SysSeqInfo.class);
-        log.debug(collectionName + "generate id:" + seq.getSeqId());
-        return seq.getSeqId();
-    }
-
 }

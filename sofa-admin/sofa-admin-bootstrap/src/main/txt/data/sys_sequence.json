@@ -7,5 +7,5 @@
 {"_id":{"$oid":"5d1b5e8c87885be7168c58c3"},"collectionName":"SysLoginInfo|infoId","seqId":1000}
 {"_id":{"$oid":"5d3db79a19c04687b883bba9"},"collectionName":"SysOperLog|operId","seqId":1000}
 {"_id":{"$oid":"5d4e4336b61bb0ceb20a9195"},"collectionName":"SysConfig|configId","seqId":1000}
-{"_id":{"$oid":"5ddce743771878189a3982f2"},"collectionName":"SysDept|deptId","seqId":1000}
+{"_id":{"$oid":"5ddce743771878189a3982f1"},"collectionName":"SysDept|deptId","seqId":1000}
 {"_id":{"$oid":"5ddce743771878189a3982f2"},"collectionName":"SysNotice|noticeId","seqId":1000}
