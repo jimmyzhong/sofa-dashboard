@@ -41,11 +41,11 @@ public interface IUserService {
 
     UserMoney findMoneyByUserId(Long userId);
 
-    PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageRequest pageRequest, Set<MoneyTypeEnum> types);
+    PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageQueryParamDTO pageRequest, Set<MoneyTypeEnum> types);
 
     UserScore findScoreByUserId(Long userId);
 
-    PageModel<PayRecord> listScoreReturnRecord(Long userId, PageRequest pageRequest);
+    PageModel<PayRecord> listScoreReturnRecord(Long userId, PageQueryParamDTO pageRequest);
 
     void checkUserCertified(User user);
 

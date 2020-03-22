@@ -246,7 +246,7 @@ public class UserService implements IUserService {
 
     @Override
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
-                                                      PageRequest pageRequest,
+                                                      PageQueryParamDTO pageRequest,
                                                       Set<MoneyTypeEnum> types) {
         return payRecordService.listMoneyReturnRecord(userId, pageRequest, types);
     }
@@ -261,7 +261,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public PageModel<PayRecord> listScoreReturnRecord(Long userId, PageRequest pageRequest) {
+    public PageModel<PayRecord> listScoreReturnRecord(Long userId, PageQueryParamDTO pageRequest) {
         return payRecordService.listScoreReturnRecord(userId, pageRequest);
     }
 

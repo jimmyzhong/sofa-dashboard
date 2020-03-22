@@ -359,6 +359,20 @@ public class UserController {
         userService.certify(user);
     }
 
+    @GetMapping("/certify")
+    @RequireUserLogin
+    @ApiOperation(value="用户实名认证",httpMethod = "GET")
+    @ApiImplicitParams({
+            @ApiImplicitParam(paramType = "header", dataType = "string", name = Constants.AUTHORIZATION, value = "登录成功后token", required = true)
+    })
+    public Map getCertified(HttpServletRequest request) {
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        Long userId = session.getId();
+        User user = userService.findById(Long.valueOf(userId));
+
+        return new HashMap(){{put("certified", user.getIsCertified());}};
+    }
+
     @RequestMapping("/phoneCode")
     @ApiOperation(value="获取验证码",httpMethod = "GET")
     public Map getPhoneCode(@RequestBody Map<String,String> params) {
@@ -453,7 +467,7 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户积分明细", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public PageModel<PayRecord> scoreReturnDetail(@RequestBody PageRequest pageRequest, HttpServletRequest request) {
+    public PageModel<PayRecord> scoreReturnDetail(@RequestBody PageQueryParamDTO pageRequest, HttpServletRequest request) {
         SessionInfo session = CacheUtil.getSessionInfo(request);
         Long userId = session.getId();
         return userService.listScoreReturnRecord(userId, pageRequest);

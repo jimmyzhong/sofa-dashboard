@@ -371,6 +371,13 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("商品不存在");
 		}
 
+		// 自己能否购买自己的寄售商品 ？
+		if (goods.getProductType() != null && goods.getProductType().equals(ProductTypeEnum.RESALE.getType())) {
+			if (goods.getCreatedBy() != null && goods.getCreatedBy().equals(userId)) {
+				throw BusinessException.build("自己不能购买自己的寄售商品");
+			}
+		}
+
 		// 预减库存
 		GoodsStore store = storeDao.findByProductIdAndProductAttrId(productId, productAttrId);
 		if (store==null || store.getPreStore() < quantity || store.getStore() < quantity) {

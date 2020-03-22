@@ -72,7 +72,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
             PageRequestUtil.injectQuery(request,query);
 
         injectObject(query, target);
-        log.info("query list sql:{}",query);
+        log.info("query list sql Entity:{},{}",tClass.getTypeName(),query);
         List<T> results = mongoTemplate.find(query, (Class) tClass);
         return results;
     }
@@ -187,7 +187,7 @@ public class CrudBaseServiceImpl<K,T> implements CrudBaseService<K,T> {
     private long doCount(Query query){
         if(query == null)
             query = new Query();
-        log.info("query count sql:{}",query);
+        log.info("query count sql Entity:{},{}",tClass.getTypeName(),query);
         return mongoTemplate.count(query, (Class)tClass);
     }
 
