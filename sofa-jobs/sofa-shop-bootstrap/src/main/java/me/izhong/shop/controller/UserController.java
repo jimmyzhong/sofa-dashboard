@@ -453,7 +453,7 @@ public class UserController {
     @ApiOperation(value = "获取当前登录用户积分明细", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public PageModel<PayRecord> scoreReturnDetail(@RequestBody PageRequest pageRequest, HttpServletRequest request) {
+    public PageModel<PayRecord> scoreReturnDetail(@RequestBody PageQueryParamDTO pageRequest, HttpServletRequest request) {
         SessionInfo session = CacheUtil.getSessionInfo(request);
         Long userId = session.getId();
         return userService.listScoreReturnRecord(userId, pageRequest);

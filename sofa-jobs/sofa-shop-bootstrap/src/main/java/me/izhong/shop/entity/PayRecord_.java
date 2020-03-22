@@ -14,7 +14,7 @@ public class PayRecord_ extends PersistedEntity{
     public static volatile SingularAttribute<PayRecord, String> externalId;
     public static volatile SingularAttribute<PayRecord, String> payMethod;
     public static volatile SingularAttribute<PayRecord, String> type;
-    public static volatile SingularAttribute<PayRecord, String> state;
+    public static volatile SingularAttribute<PayRecord, String> sysState;
     public static volatile SingularAttribute<PayRecord, String> comment;
     public static volatile SingularAttribute<PayRecord, Long> payerId;
     public static volatile SingularAttribute<PayRecord, Long> receiverId;

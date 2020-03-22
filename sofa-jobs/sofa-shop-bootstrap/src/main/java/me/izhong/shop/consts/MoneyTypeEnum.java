@@ -15,7 +15,8 @@ public enum MoneyTypeEnum {
     RETURN_MONEY (10, "返现"),
     RETURN_SCORE (11, "返积分"),
     SPEND_MONEY (12, "余额付款"),
-    SPEND_SCORE (13, "积分兑换");
+    SPEND_SCORE (13, "积分兑换"),
+    GIFT_SCORE (14, "系统送积分");
 
     int type;
     String description;
