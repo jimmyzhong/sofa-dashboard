@@ -90,7 +90,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
                 }
             }
         }
-        //返回的是系统所有的角色
+        //返回的是系统所有的角色,用户有权限的节点会打勾
         return sysRoles;
     }
 
@@ -106,6 +106,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
      * @return 结果
      */
     @Override
+    @Transactional
     public long deleteRoleById(Long roleId) {
         return removeRoleInfo(roleId + "");
     }
@@ -117,6 +118,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
      * @throws Exception
      */
     @Override
+    @Transactional
     public long removeRoleInfo(String ids) throws BusinessException {
         Long[] roleIds = Convert.toLongArray(ids);
         for (Long roleId : roleIds) {
@@ -138,10 +140,8 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
     @Override
     @Transactional
     public int insertRole(SysRole sysRole) {
-        //sysRole.setCreateBy(ShiroUtils.getLoginName());
         // 新增角色信息
         super.insert(sysRole);
-        //ShiroUtils.clearCachedAuthorizationInfo();
         return insertRoleMenu(sysRole.getRoleId(), Arrays.asList(sysRole.getMenuIds()));
     }
 
@@ -157,7 +157,6 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
         Assert.notNull(sysRole.getRoleId(), "roleId cant be null");
         // 修改角色信息
         roleDao.save(sysRole);
-        //ShiroUtils.clearCachedAuthorizationInfo();
         // 删除角色与菜单关联
         roleMenuDao.deleteAllByRoleId(sysRole.getRoleId());
         //新增role -- menu
@@ -255,7 +254,9 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
     public long deleteAuthUser(SysUserRole sysUserRole) {
         Assert.notNull(sysUserRole.getUserId(), "userId cant be null");
         Assert.notNull(sysUserRole.getRoleId(), "roleId cant be null");
-        sysUserService.checkUserAllowed(new SysUser(sysUserRole.getUserId()),"取消授权");
+        if(sysUserRole.getRoleId().equals(1L)) {
+            sysUserService.checkUserAllowed(new SysUser(sysUserRole.getUserId()), "取消授权");
+        }
         return userRoleDao.deleteAllByUserIdAndRoleId(sysUserRole.getUserId(), sysUserRole.getRoleId());
     }
 
@@ -268,10 +269,13 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
      */
     @Override
     public long deleteAuthUsers(Long roleId, String userIds) {
-        List<Long> uids = Convert.toLongList(userIds);
-        uids.forEach(e->{
-            sysUserService.checkUserAllowed(new SysUser(e),"取消授权");
-        });
+        Assert.notNull(roleId, "roleId cant be null");
+        if(roleId.equals(1L)) {
+            List<Long> uids = Convert.toLongList(userIds);
+            uids.forEach(e -> {
+                sysUserService.checkUserAllowed(new SysUser(e), "取消授权");
+            });
+        }
         List<SysUserRole> sysUserRoles = userRoleDao.findAllByRoleIdAndUserIdIn(roleId, Convert.toLongArray(userIds));
         userRoleDao.deleteAll(sysUserRoles);
         return sysUserRoles.size();
@@ -314,8 +318,7 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
 
     @Override
     public void checkRoleAllowed(SysRole sysRole) {
-        if (sysRole.getRoleId() !=null  && sysRole.isAdmin())
-        {
+        if (sysRole.getRoleId() !=null  && sysRole.isAdmin()) {
             throw BusinessException.build("不允许操作超级管理员角色");
         }
     }
