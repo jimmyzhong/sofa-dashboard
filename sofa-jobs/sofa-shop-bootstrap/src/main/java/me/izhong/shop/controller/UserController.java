@@ -242,7 +242,14 @@ public class UserController {
         User user = new User();
         user.setPhone(phone);
         user.setPassword(password);
-        user.setNickName(nickName);
+
+        String nickPhone = nickName;
+        try {
+            phone = phone.trim();
+            nickPhone = phone.substring(0, 3) + "****" + phone.substring(7);
+        } finally {
+        }
+        user.setNickName(nickPhone);
         ensureRequiredFieldWhenRegistering(user);
 
         if (!password.matches(passwordPattern)) {
