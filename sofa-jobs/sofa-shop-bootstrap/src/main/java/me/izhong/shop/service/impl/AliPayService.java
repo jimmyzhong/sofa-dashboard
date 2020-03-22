@@ -3,6 +3,8 @@ package me.izhong.shop.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.CertAlipayRequest;
+import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradeAppPayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayFundTransOrderQueryRequest;
@@ -20,6 +22,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.config.AliPayProperties;
 import me.izhong.shop.dao.PayRecordDao;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -29,8 +32,12 @@ import java.util.Map;
 @Service
 @Slf4j
 public class AliPayService {
+    @Qualifier("getAlipayClient")
     @Autowired
     AlipayClient alipayClient;
+    @Qualifier("getAlipayCertifiedClient")
+    @Autowired
+    AlipayClient alipayCertifiedClient;
     @Autowired
     AliPayProperties alipayProperties;
     @Autowired
@@ -67,7 +74,19 @@ public class AliPayService {
      */
     public AlipayFundTransUniTransferResponse transfer(String outTradeNo,
                                                        BigDecimal amount, String alipayAccount,
-                                                       String alipayName) {
+                                                       String alipayName) throws Exception{
+//        CertAlipayRequest certAlipayRequest = new CertAlipayRequest();
+//        certAlipayRequest.setServerUrl(alipayProperties.getUrl());
+//        certAlipayRequest.setAppId(alipayProperties.getAppId());
+//        certAlipayRequest.setPrivateKey(alipayProperties.getAppPrivateKey());
+//        certAlipayRequest.setFormat("json");
+//        certAlipayRequest.setCharset(alipayProperties.getCharset());
+//        certAlipayRequest.setSignType(alipayProperties.getSignType());
+//        certAlipayRequest.setCertPath(alipayProperties.getAppPubKeyPath());
+//        certAlipayRequest.setAlipayPublicCertPath(alipayProperties.getAliPubKeyPath());
+//        certAlipayRequest.setRootCertPath(alipayProperties.getAliRootKeyPath());
+//        DefaultAlipayClient alipayClient = new DefaultAlipayClient(certAlipayRequest);
+
         JSONObject bizContent = new JSONObject();
         AlipayFundTransUniTransferRequest request = new AlipayFundTransUniTransferRequest();
         bizContent.put("out_biz_no", outTradeNo);
@@ -86,7 +105,7 @@ public class AliPayService {
         request.setBizContent(bizContent.toString());
         AlipayFundTransUniTransferResponse response = null;
         try {
-            response = alipayClient.execute(request);
+            response = alipayCertifiedClient.certificateExecute(request);
             if(response.isSuccess()){
                 log.info("提现调用成功," + outTradeNo);
             } else {
@@ -112,7 +131,7 @@ public class AliPayService {
         request.setBizContent(bizContent.toString());
         AlipayFundTransOrderQueryResponse response = null;
         try {
-            response = alipayClient.execute(request);
+            response = alipayCertifiedClient.certificateExecute(request);
             if(response.isSuccess()){
                 System.out.println("调用成功");
             } else {

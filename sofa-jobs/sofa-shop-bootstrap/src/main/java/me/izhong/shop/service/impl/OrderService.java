@@ -270,20 +270,25 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("可用余额不足");
 		}
 
-		AlipayFundTransUniTransferResponse response = aliPayService.
-				transfer(orderNo, order.getTotalAmount(), user.getAlipayAccount(), user.getAlipayName());
+		try {
+			AlipayFundTransUniTransferResponse response = aliPayService.
+					transfer(orderNo, order.getTotalAmount(), user.getAlipayAccount(), user.getAlipayName());
 
-		if (!response.isSuccess()) {
-			log.error("提现失败 " + response.getBody());
-			throw BusinessException.build("提现失败");
-		}
+			if (!response.isSuccess()) {
+				log.error("提现失败 " + response.getBody());
+				throw BusinessException.build("提现失败");
+			}
 
-		if ("SUCCESS".equalsIgnoreCase(response.getStatus())) {
-			order.setStatus(FINISHED.getState());
-			userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
-			orderDao.save(order);
-			userMoneyDao.save(userMoney);
-			return true;
+			if ("SUCCESS".equalsIgnoreCase(response.getStatus())) {
+				order.setStatus(FINISHED.getState());
+				userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
+				order = orderDao.save(order);
+				recordMoney(order, user.getId(), null, 1.0, 0, false , WITHDRAW_MONEY);
+				userMoneyDao.save(userMoney);
+				return true;
+			}
+		}catch (Exception e) {
+			log.error("transfer error",e);
 		}
 
 		return false;
