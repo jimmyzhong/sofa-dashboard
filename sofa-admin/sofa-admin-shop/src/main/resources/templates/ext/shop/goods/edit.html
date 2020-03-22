@@ -19,9 +19,10 @@
 				<div class="col-sm-8">
 					<img id="productPic_img" class="img-circle img-lg" th:src="${goods.productPic}" >
 					<label>
-						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
-						<input name="productPic" id="productPicInput"  type="hidden" th:field="*{productPic}"/>
+                        <a type="button" class="btn btn-w-m btn-primary">选择图片</a>
+                        <input onchange ="uploadImg()" style="display: none" type="file" class="" id="productPic" accept="image/*"/>
 					</label>
+					<input name="productPic" id="productPicInput"  type="hidden" th:field="*{productPic}"/>
 				</div>
 			</div>
 			<div class="form-group">
@@ -72,7 +73,7 @@
 				<label class="col-sm-3 control-label is-required">商品相册：</label>
 				<div class="col-sm-8">
 					<label>
-						<a>添加图片</a>
+						<a type="button" class="btn btn-w-m btn-primary">选择图片</a>
 						<input style="visibility: hidden" onchange ="upAlbumPics()" id="uploadAlbumPics" type="file"  accept="image/*"/>
 					</label>
 					<div id="upAlbumPics_content">
@@ -92,7 +93,7 @@
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
 					<button type="button" class="btn btn-w-m btn-primary" onclick="submitHandler()">提交</button>
-					<button type="button" class="btn btn-w-m btn-primary" onclick="back()">返回</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
 				</div>
 			</div>
 		</form>
@@ -162,26 +163,15 @@
 				$("#productPic_img").attr("src",result.data.pictureUrl)
 			})
 		}
-		function upAlbumPics(){
-			var formdata = new FormData();
-			formdata.append("file", $("#uploadAlbumPics")[0].files[0]);
-			$.modal.loading("图片上传中");
-			$.ajax({
-				url: ctx + "ext/shop/oss/upload",
-				data: formdata,
-				type: "post",
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					albumPics.push(result.data.pictureUrl)
-					$("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
-				},
-				error:function (err) {
-					$.modal.closeLoading();
-					$.modal.alertWarning("图片上传失败");
-				}
-			})
-		}
+        function upAlbumPics(){
+            var formdata = new FormData();
+            formdata.append("file", $("#uploadAlbumPics")[0].files[0]);
+            SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
+                albumPics.push(result.data.pictureUrl)
+                $("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
+            })
+        }
+
 		function delAlbumPics(obj,str) {
 			$(obj).parents("div.pic").remove();
 			var index = albumPics.indexOf(str);
@@ -198,23 +188,19 @@
 
 		function fetchGoodsCategory() {
 			var categoryId=$("#category").val()
-			$.ajax({
-				url: ctx + "ext/shop/category/queryAll",
-				type: "get",
-				success: function (result){
-					_categoryAll=result.categoryList;
-					for(var i=0;i<_categoryAll.length;i++){
-						if(categoryId==_categoryAll[i].value){
-							$("#productCategoryIds").append('<option selected value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
-						}else{
-							$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
-						}
-					}
-					if(categoryId){
-						productCategoryChange(categoryId)
-					}
-				}
-			})
+            SHOP_COMMON.ajax.get(ctx + "ext/shop/category/queryAll",'',function (result) {
+                _categoryAll=result.data.categoryList;
+                for(var i=0;i<_categoryAll.length;i++){
+                    if(categoryId==_categoryAll[i].value){
+                        $("#productCategoryIds").append('<option selected value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
+                    }else{
+                        $("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
+                    }
+                }
+                if(categoryId){
+                    productCategoryChange(categoryId)
+                }
+            })
 		}
 		function productCategoryChange(categoryId) {
 			$("#productCategoryId").val("");
@@ -243,28 +229,14 @@
 				}
 			}
 		});
-		// 上传文件
-		function sendFile(file, obj) {
-			var data = new FormData();
-			data.append("file", file);
-			$.modal.loading("图片上传中");
-			$.ajax({
-				type: "POST",
-				url: ctx + "ext/shop/oss/upload",
-				data: data,
-				cache: false,
-				contentType: false,
-				processData: false,
-				dataType: 'json',
-				success: function(result) {
-					$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.fileName);
-				},
-				error: function(error) {
-					$.modal.closeLoading();
-					$.modal.alertWarning("图片上传失败。");
-				}
-			});
-		}
+        // 上传文件
+        function sendFile(file, obj) {
+            var data = new FormData();
+            data.append("file", file);
+            SHOP_COMMON.ajax.uploadImg(data,function (result) {
+                $(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
+            })
+        }
 	</script>
 </body>
 </html>
