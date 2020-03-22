@@ -40,9 +40,9 @@
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
-    var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
+    var detailFlag = [[${@permission.hasPermi('ext:shop:goods:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:goods:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:goods:remove')}]];
     var prefix = ctx + "ext/shop/goods";
 
     function gotoDetail(id) {

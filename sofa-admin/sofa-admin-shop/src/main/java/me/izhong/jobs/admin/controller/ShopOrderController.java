@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.dto.OrderQueryParam;
@@ -45,6 +47,7 @@ public class ShopOrderController {
 	 * @param param
 	 * @return
 	 */
+	@RequiresPermissions(ShopPermissions.Order.VIEW)
 	@PostMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopOrder> pageList(HttpServletRequest request, OrderQueryParam param) {
@@ -56,6 +59,7 @@ public class ShopOrderController {
 	 * 批量发货
 	 * @param deliveryParamList
 	 */
+	
 	@PostMapping("/update/delivery")
 	@AjaxWrapper
 	public void delivery(@RequestBody List<OrderDeliveryParam> deliveryParamList) {

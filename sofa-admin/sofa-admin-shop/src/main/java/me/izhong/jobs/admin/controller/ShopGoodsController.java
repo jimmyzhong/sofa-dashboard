@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,8 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.common.util.Convert;
 import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopGoods;
 
@@ -38,6 +39,7 @@ public class ShopGoodsController {
 		return prefix + "/goods";
 	}
 
+	@RequiresPermissions(ShopPermissions.Goods.VIEW)
 	@PostMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopGoods> pageList(HttpServletRequest request, ShopGoods goods) {
@@ -50,6 +52,7 @@ public class ShopGoodsController {
         return prefix + "/add";
     }
 
+	@RequiresPermissions(ShopPermissions.Goods.ADD)
     @PostMapping("/add")
     @AjaxWrapper
     public void addGoods(ShopGoods goods) {
@@ -74,6 +77,7 @@ public class ShopGoodsController {
 		return prefix + "/edit";
 	}
 
+	@RequiresPermissions(ShopPermissions.Goods.EDIT)
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoods goods) {
@@ -85,18 +89,21 @@ public class ShopGoodsController {
 		shopServiceReference.goodsService.edit(goods);
 	}
 
+	@RequiresPermissions(ShopPermissions.Goods.EDIT)
 	@PostMapping("/edit/publishStatus")
 	@AjaxWrapper
 	public void updatePublishStatus(@RequestParam("ids") List<Long> ids, @RequestParam("publishStatus") Integer publishStatus) {
 		shopServiceReference.goodsService.updatePublishStatus(ids, publishStatus);
 	}
 
+	@RequiresPermissions(ShopPermissions.Goods.EDIT)
 	@PostMapping("/edit/recommendStatus")
 	@AjaxWrapper
 	public void updateRecommendStatus(@RequestParam("ids") List<Long> ids, @RequestParam("recommendStatus") Integer recommendStatus) {
 		shopServiceReference.goodsService.updateRecommendStatus(ids, recommendStatus);
 	}
 
+	@RequiresPermissions(ShopPermissions.Goods.EDIT)
 	@PostMapping("/edit/deleteStatus")
 	@AjaxWrapper
 	public void updateDeleteStatus(@RequestParam("ids") List<Long> ids, @RequestParam("deleteStatus") Integer deleteStatus) {
@@ -113,15 +120,13 @@ public class ShopGoodsController {
 		return prefix + "/detail";
 	}
 
+	@RequiresPermissions(ShopPermissions.Goods.REMOVE)
 	@PostMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
-		Long[] goodsIds = Convert.toLongArray(ids);
-		for (Long goodsId : goodsIds) {
-			boolean rt = shopServiceReference.goodsService.remove(goodsId);
-			if (!rt) {
-				throw BusinessException.build("删除失败");
-			}
+		boolean result = shopServiceReference.goodsService.remove(ids);
+		if (!result) {
+			throw BusinessException.build("删除失败");
 		}
 	}
 

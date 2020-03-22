@@ -16,7 +16,7 @@ public interface IShopAdMngFacade {
 
     boolean remove(String ids);
 
-	PageModel<ShopAd> pageList(PageRequest fromRequest, String name, String content, String status);
+	PageModel<ShopAd> pageList(PageRequest fromRequest, String name, String content, Integer status);
 
 	ShopAd find(Long adId);
 }

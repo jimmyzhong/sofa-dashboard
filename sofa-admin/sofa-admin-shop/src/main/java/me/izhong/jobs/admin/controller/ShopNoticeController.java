@@ -2,6 +2,7 @@ package me.izhong.jobs.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopNotice;
 
@@ -33,6 +35,7 @@ public class ShopNoticeController {
 		return prefix + "/notice";
 	}
 
+	@RequiresPermissions(ShopPermissions.Notice.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
     public PageModel<ShopNotice> list(
@@ -48,6 +51,7 @@ public class ShopNoticeController {
         return prefix + "/add";
     }
 
+	@RequiresPermissions(ShopPermissions.Notice.ADD)
     @PostMapping("/add")
     @AjaxWrapper
     public void add(ShopNotice shopNotice) {
@@ -70,6 +74,7 @@ public class ShopNoticeController {
 		return prefix + "/edit";
     }
 
+	@RequiresPermissions(ShopPermissions.Notice.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
     public void edit(ShopNotice shopNotice) {
@@ -92,6 +97,7 @@ public class ShopNoticeController {
 		return prefix + "/detail";
 	}
 
+	@RequiresPermissions(ShopPermissions.Notice.REMOVE)
     @PostMapping("/remove")
     @AjaxWrapper
     public void remove(String ids) {

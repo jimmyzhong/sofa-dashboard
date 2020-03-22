@@ -2,6 +2,7 @@ package me.izhong.jobs.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopTemplate;
 
@@ -33,6 +35,7 @@ public class ShopTemplateController {
 		return prefix + "/template";
 	}
 
+	@RequiresPermissions(ShopPermissions.Template.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
     public PageModel<ShopTemplate> list(
@@ -47,6 +50,7 @@ public class ShopTemplateController {
         return prefix + "/add";
     }
 
+	@RequiresPermissions(ShopPermissions.Template.ADD)
     @PostMapping("/add")
     @AjaxWrapper
     public void add(ShopTemplate shopTemplate) {
@@ -68,6 +72,7 @@ public class ShopTemplateController {
 		return prefix + "/edit";
     }
 
+	@RequiresPermissions(ShopPermissions.Template.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
     public void edit(ShopTemplate shopTemplate) {
@@ -75,16 +80,6 @@ public class ShopTemplateController {
     	checkField(shopTemplate.getContent(), "模板内容");
 		shopServiceReference.templateService.edit(shopTemplate);
     }
-
-	@GetMapping("/detail/{id}")
-	public String detail(@PathVariable("id") Long id, Model model) {
-		ShopTemplate shopTemplate = shopServiceReference.templateService.find(id);
-		if (shopTemplate == null) {
-			throw BusinessException.build(String.format("模板不存在%s", id));
-		}
-		model.addAttribute("template", shopTemplate);
-		return prefix + "/detail";
-	}
 
 	@PostMapping("/detail/{id}")
 	@AjaxWrapper
@@ -96,6 +91,7 @@ public class ShopTemplateController {
 		return shopTemplate;
 	}
 
+	@RequiresPermissions(ShopPermissions.Template.REMOVE)
     @PostMapping("/remove")
     @AjaxWrapper
     public void remove(String ids) {

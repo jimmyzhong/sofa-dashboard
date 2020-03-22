@@ -17,7 +17,7 @@ public interface IShopGoodsCategoryMngFacade {
 
     void updateShowStatus(List<Long> ids, Integer showStatus);
 
-    boolean remove(Long id);
+    boolean remove(String ids);
 
     PageModel<ShopGoodsCategory> pageList(PageRequest request, Long parentId);
 

@@ -20,7 +20,7 @@ public interface IShopGoodsMngFacade {
 
     PageModel<ShopGoods> pageList(PageRequest request, ShopGoods group);
 
-    boolean remove(Long jobId);
+    boolean remove(String ids);
 
     void create(ShopGoods goods);
 }

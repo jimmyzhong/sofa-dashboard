@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +19,7 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopAd;
 
@@ -35,13 +37,14 @@ public class ShopAdController {
 		return prefix + "/ad";
 	}
 
+	@RequiresPermissions(ShopPermissions.Ad.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
     public PageModel<ShopAd> list(
     		HttpServletRequest request,
 			@RequestParam(value = "name", required = false) String name,
 			@RequestParam(value = "content", required = false) String content,
-			@RequestParam(value = "status", required = false) String status) {
+			@RequestParam(value = "status", required = false) Integer status) {
 		PageModel<ShopAd> page = shopServiceReference.adService.pageList(PageRequestUtil.fromRequest(request), name, content, status);
 		return page;
     }
@@ -51,6 +54,7 @@ public class ShopAdController {
         return prefix + "/add";
     }
 
+	@RequiresPermissions(ShopPermissions.Ad.ADD)
     @PostMapping("/add")
     @AjaxWrapper
     public void add(ShopAd shopAd) {
@@ -76,6 +80,7 @@ public class ShopAdController {
 		return prefix + "/edit";
     }
 
+	@RequiresPermissions(ShopPermissions.Ad.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
     public void edit(ShopAd shopAd) {
@@ -88,6 +93,7 @@ public class ShopAdController {
 		shopServiceReference.adService.edit(shopAd);
     }
 
+	@RequiresPermissions(ShopPermissions.Ad.EDIT)
 	@PostMapping("/edit/showStatus")
 	@AjaxWrapper
 	public void updateRecommendStatus(@RequestParam("ids") List<Long> ids, @RequestParam("showStatus") Integer showStatus) {
@@ -104,6 +110,7 @@ public class ShopAdController {
 		return prefix + "/detail";
 	}
 
+	@RequiresPermissions(ShopPermissions.Ad.REMOVE)
     @PostMapping("/remove")
     @AjaxWrapper
     public void remove(String ids) {

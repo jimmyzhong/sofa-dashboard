@@ -6,7 +6,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.izhong.jobs.admin.config.ShopPermissions;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,14 +15,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.common.util.Convert;
 import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.model.ShopGoodsCategory;
@@ -43,7 +41,7 @@ public class ShopGoodsCategoryController {
 		return prefix + "/category";
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
+	@RequiresPermissions(ShopPermissions.Category.VIEW)
 	@PostMapping("/list/{parentId}")
     @AjaxWrapper
 	public PageModel<ShopGoodsCategory> pageList(HttpServletRequest request, @PathVariable Long parentId) {
@@ -51,21 +49,19 @@ public class ShopGoodsCategoryController {
 		return page;
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
 	@GetMapping("/subCategory/{categoryId}")
 	public String subCategory(@PathVariable("categoryId") Long categoryId, Model model) {
 		model.addAttribute("categoryId", categoryId);
 		return prefix + "/subCategory";
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.ADD)
 	@GetMapping("/add/{parentId}")
     public String add(HttpServletRequest request, @PathVariable Long parentId, Model model) {
 		model.addAttribute("parentId", parentId);
         return prefix + "/add";
     }
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.ADD)
+	@RequiresPermissions(ShopPermissions.Category.ADD)
 	@PostMapping("/add")
     @AjaxWrapper
     public void addGoodsCategory(ShopGoodsCategory goodsCategory) {
@@ -81,7 +77,6 @@ public class ShopGoodsCategoryController {
     	shopServiceReference.goodsCategoryService.create(goodsCategory);
     }
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.EDIT)
 	@GetMapping("/edit/{categoryId}")
 	public String edit(@PathVariable("categoryId") Long categoryId, Model model) {
 		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
@@ -92,7 +87,7 @@ public class ShopGoodsCategoryController {
 		return prefix + "/edit";
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.EDIT)
+	@RequiresPermissions(ShopPermissions.Category.EDIT)
 	@PostMapping("/edit")
 	@AjaxWrapper
 	public void edit(ShopGoodsCategory goodsCategory) {
@@ -112,44 +107,26 @@ public class ShopGoodsCategoryController {
 		shopServiceReference.goodsCategoryService.edit(goodsCategory);
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.EDIT)
+	@RequiresPermissions(ShopPermissions.Category.EDIT)
 	@PostMapping("/edit/showStatus")
 	@AjaxWrapper
 	public void updatePublishStatus(@RequestParam("ids") List<Long> ids, @RequestParam("showStatus") Integer showStatus) {
 		shopServiceReference.goodsCategoryService.updateShowStatus(ids, showStatus);
 	}
 
-	/** 这部分删除**/
-	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
-	@PostMapping("/detail/{categoryId}")
-	@AjaxWrapper
-	public ShopGoodsCategory detail(@PathVariable("categoryId") Long categoryId, Model model) {
-		if (categoryId == null) {
-			throw BusinessException.build("categoryId不能为空");
-		}
-		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
-		if (goodsCategory == null) {
-			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
-		}
-		return goodsCategory;
-	}
-
-	@RequiresPermissions(ShopPermissions.GoodsCategory.REMOVE)
+	@RequiresPermissions(ShopPermissions.Category.REMOVE)
 	@RequestMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
-		Long[] jobIds = Convert.toLongArray(ids);
-		for (Long jobId : jobIds) {
-			boolean rt = shopServiceReference.goodsCategoryService.remove(jobId);
-			if (!rt) {
-				throw BusinessException.build("删除失败");
-			}
+		boolean result = shopServiceReference.goodsCategoryService.remove(ids);
+		if (!result) {
+			throw BusinessException.build("删除失败");
 		}
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
+	@RequiresPermissions(ShopPermissions.Category.VIEW)
 	@GetMapping("/queryLv1")
-    @ResponseBody
+    @AjaxWrapper
 	public Map<String, Object> queryLevel1() {
 		List<CategoryDTO> dtoList = shopServiceReference.goodsCategoryService.queryLevel1();
 		Map<String, Object> data = new HashMap<>();
@@ -157,9 +134,9 @@ public class ShopGoodsCategoryController {
 		return data;
 	}
 
-	@RequiresPermissions(ShopPermissions.GoodsCategory.VIEW)
+	@RequiresPermissions(ShopPermissions.Category.VIEW)
 	@GetMapping("/queryAll")
-    @ResponseBody
+    @AjaxWrapper
 	public Map<String, Object> queryAll() {
 		List<CategoryDTO> dtoList = shopServiceReference.goodsCategoryService.queryAll();
 		Map<String, Object> data = new HashMap<>();

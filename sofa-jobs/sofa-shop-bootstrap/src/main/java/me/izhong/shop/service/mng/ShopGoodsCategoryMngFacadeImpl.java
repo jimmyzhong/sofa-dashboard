@@ -1,19 +1,13 @@
 package me.izhong.shop.service.mng;
 
-import static org.springframework.data.domain.PageRequest.of;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.izhong.shop.util.PageableConvertUtil;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
@@ -22,12 +16,14 @@ import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.common.util.Convert;
 import me.izhong.jobs.dto.CategoryDTO;
 import me.izhong.jobs.manage.IShopGoodsCategoryMngFacade;
 import me.izhong.jobs.model.ShopGoodsCategory;
 import me.izhong.shop.dao.GoodsCategoryDao;
 import me.izhong.shop.entity.GoodsCategory;
 import me.izhong.shop.service.IGoodsCategoryService;
+import me.izhong.shop.util.PageableConvertUtil;
 
 @Slf4j
 @Service
@@ -70,11 +66,15 @@ public class ShopGoodsCategoryMngFacadeImpl implements IShopGoodsCategoryMngFaca
 	}
 
 	@Override
-	public boolean remove(Long categoryId) {
+	public boolean remove(String ids) {
 		try {
-			goodsCategoryService.deleteById(categoryId);
+	    	Long[] uids = Convert.toLongArray(ids);
+			for (Long uid : uids) {
+				goodsCategoryService.deleteById(uid);
+			}
 			return true;
 		} catch (Exception e) {
+			log.info("delete error:", e);
 			return false;
 		}
 	}

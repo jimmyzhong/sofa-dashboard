@@ -39,9 +39,9 @@
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
-    var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
+    var detailFlag = [[${@permission.hasPermi('ext:shop:template:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:template:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:template:remove')}]];
     var prefix = ctx + "ext/shop/template";
 
     function add() {

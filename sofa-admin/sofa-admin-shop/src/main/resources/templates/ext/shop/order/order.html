@@ -37,9 +37,9 @@
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
-    var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
+    var detailFlag = [[${@permission.hasPermi('ext:shop:order:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:order:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:order:remove')}]];
     var prefix = ctx + "ext/shop/order";
 
     function gotoDetail(id) {
