@@ -30,7 +30,46 @@ var SHOP_COMMON={
                     $.modal.alertError("图片上传失败"+err.status);
                 }
             })
-        }
+        },
+        get:function (url,data,sucBack) {
+            $.modal.loading("数据获取中");
+            $.ajax({
+                url: url,
+                type: "get",
+                success: function (result){
+                    $.modal.closeLoading();
+                    if (result.code == web_status.SUCCESS) {
+                        sucBack(result)
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                },
+                error:function (err) {
+                    $.modal.closeLoading();
+                    $.modal.alertError("数据请求失败"+err.status);
+                }
+            })
+        },
+        post:function (url,data,sucBack) {
+            $.modal.loading("数据获取中");
+            $.ajax({
+                url: url,
+                type: "post",
+                data:data,
+                success: function (result){
+                    $.modal.closeLoading();
+                    if (result.code == web_status.SUCCESS) {
+                        sucBack(result)
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                },
+                error:function (err) {
+                    $.modal.closeLoading();
+                    $.modal.alertError("数据请求失败"+err.status);
+                }
+            })
+        },
     }
 }
 

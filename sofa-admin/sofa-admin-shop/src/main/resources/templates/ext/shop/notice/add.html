@@ -87,30 +87,9 @@
 		function sendFile(file, obj) {
 			var data = new FormData();
 			data.append("file", file);
-			$.modal.loading("图片上传中");
-			$.ajax({
-				type: "POST",
-				url: ctx + "ext/shop/oss/upload",
-				data: data,
-				cache: false,
-				contentType: false,
-				processData: false,
-				dataType: 'json',
-				success: function(result) {
-					$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
-					// if (result.code == web_status.SUCCESS) {
-					// 	var url = result.data.url;
-					// 	url = $.common.startWith(url,"http") ? url : ctx + url
-					// 	$(obj).summernote('editor.insertImage', url, result.data.fileName);
-					// } else {
-					// 	$.modal.alertError(result.msg);
-					// }
-				},
-				error: function(error) {
-					$.modal.closeLoading();
-					$.modal.alertWarning("图片上传失败。");
-				}
-			});
+			SHOP_COMMON.ajax.uploadImg(data,function (result) {
+				$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
+			})
 		}
 	</script>
 </body>

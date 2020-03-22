@@ -78,22 +78,9 @@
 		function sendFile(file, obj) {
 			var data = new FormData();
 			data.append("file", file);
-			$.ajax({
-				type: "POST",
-				url: ctx + "ext/shop/oss/upload",
-				data: data,
-				cache: false,
-				contentType: false,
-				processData: false,
-				dataType: 'json',
-				success: function(result) {
-					console.log("富文本图片上传成功", result.data.fileName)
-					$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.fileName);
-				},
-				error: function(error) {
-					$.modal.alertWarning("图片上传失败。");
-				}
-			});
+			SHOP_COMMON.ajax.uploadImg(data,function (result) {
+				$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
+			})
 		}
 	</script>
 </body>
