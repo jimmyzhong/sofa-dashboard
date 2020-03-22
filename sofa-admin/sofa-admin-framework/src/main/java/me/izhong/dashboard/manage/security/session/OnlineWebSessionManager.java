@@ -1,10 +1,12 @@
 package me.izhong.dashboard.manage.security.session;
 
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.common.constants.ShiroConstants;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.service.SysUserOnlineService;
 import me.izhong.common.util.DateUtil;
 import me.izhong.dashboard.common.util.SpringUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.shiro.session.ExpiredSessionException;
 import org.apache.shiro.session.InvalidSessionException;
@@ -12,19 +14,14 @@ import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.DefaultSessionKey;
 import org.apache.shiro.session.mgt.SessionKey;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-/**
- * 主要是在此如果会话的属性修改了 就标识下其修改了 然后方便 OnlineSessionDao同步
- */
+@Slf4j
 public class OnlineWebSessionManager extends DefaultWebSessionManager {
-    private static final Logger log = LoggerFactory.getLogger(OnlineWebSessionManager.class);
 
     @Override
     public void setAttribute(SessionKey sessionKey, Object attributeKey, Object value) throws InvalidSessionException {
@@ -84,23 +81,21 @@ public class OnlineWebSessionManager extends DefaultWebSessionManager {
      */
     @Override
     public void validateSessions() {
-        if (log.isInfoEnabled()) {
-            //log.info("检测sessions是否有效...");
-        }
+        //log.info("检测sessions是否有效...");
 
         int invalidCount = 0;
-
         int timeout = (int) this.getGlobalSessionTimeout();
         Date expiredDate = DateUtils.addMilliseconds(new Date(), -timeout);
-        log.info("检测sessions是否有效，过期时间:{}",DateUtil.parseDateToStr(DateUtil.YYYY_MM_DD_HH_MM_SS,expiredDate));
+        //log.info("检测sessions是否有效，过期时间:{}",DateUtil.parseDateToStr(DateUtil.YYYY_MM_DD_HH_MM_SS,expiredDate));
 
         SysUserOnlineService sysUserOnlineService = SpringUtil.getBean(SysUserOnlineService.class);
         List<SysUserOnline> sysUserOnlineList = sysUserOnlineService.selectOnlineByLastAccessTime(expiredDate);
         if(sysUserOnlineList !=null && sysUserOnlineList.size() >0) {
-            log.info("检测到过期的在线用户数量:{}", sysUserOnlineList.size());
+            //log.info("检测到过期的在线用户数量:{}", sysUserOnlineList.size());
         }
         // 批量过期删除
-        List<String> needOfflineIdList = new ArrayList<String>();
+        List<String> needOfflineIdList = new ArrayList<>();
+        List<String> offLineLoginName = new ArrayList<>();
         for (SysUserOnline sysUserOnline : sysUserOnlineList) {
             try {
                 SessionKey key = new DefaultSessionKey(sysUserOnline.getSessionId());
@@ -117,6 +112,9 @@ public class OnlineWebSessionManager extends DefaultWebSessionManager {
                 //}
                 invalidCount++;
                 needOfflineIdList.add(sysUserOnline.getSessionId());
+                if(StringUtils.isNotBlank(sysUserOnline.getLoginName())) {
+                    offLineLoginName.add(sysUserOnline.getLoginName());
+                }
             }
 
         }
@@ -128,16 +126,13 @@ public class OnlineWebSessionManager extends DefaultWebSessionManager {
             }
         }
 
-        if (log.isInfoEnabled()) {
-            String msg = "完成session校验.";
-            if (invalidCount > 0) {
-                msg += " [" + invalidCount + "] 个session被删除";
-            } else {
-                msg += " 无session被删除.";
-            }
-            log.info(msg);
+        String msg = "完成session校验,过期时间:" + DateUtil.parseDateToStr(DateUtil.YYYY_MM_DD_HH_MM_SS,expiredDate) + ",";
+        if (invalidCount > 0) {
+            msg += " [" + invalidCount + "] 个session被删除,删除用户名称:" + offLineLoginName.toString();
+        } else {
+            msg += " 无session被删除.";
         }
-
+        log.info(msg);
     }
 
     @Override
