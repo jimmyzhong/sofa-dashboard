@@ -1,5 +1,7 @@
 package me.izhong.dashboard.manage.service.impl;
 
+import me.izhong.dashboard.manage.dao.RoleDao;
+import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.dashboard.manage.dao.MenuDao;
 import me.izhong.dashboard.manage.dao.RoleMenuDao;
@@ -7,6 +9,7 @@ import me.izhong.dashboard.manage.entity.SysMenu;
 import me.izhong.dashboard.manage.entity.SysRoleMenu;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysMenuService;
+import me.izhong.db.mongo.service.MongoRuntimeConfigService;
 import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.dashboard.common.domain.Ztree;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +20,7 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import java.util.*;
@@ -31,11 +35,16 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
     private MenuDao menuDao;
 
     @Autowired
+    private RoleDao roleDao;
+
+    @Autowired
     private RoleMenuDao roleMenuDao;
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private MongoRuntimeConfigService mongoRuntimeConfigService;
     /**
      * 首页菜单显示
      * @param userId
@@ -140,6 +149,32 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
             }
         }
         return permsSet;
+    }
+    
+    @Transactional
+    @Override
+    public long remove(Long menuId) throws BusinessException {
+        if (selectCountMenuByParentId(menuId) > 0) {
+            throw BusinessException.build("存在子菜单,不允许删除");
+        }
+        int usedCount = selectCountRoleMenuByMenuId(menuId);
+        if (usedCount > 0) {
+            List<SysRoleMenu> mrs = roleMenuDao.findAllByMenuId(menuId);
+            List<String> noticeRoleNames = new ArrayList<>();
+            mrs.forEach( e -> {
+                Long roleId = e.getRoleId();
+                SysRole sr = roleDao.findByRoleId(roleId);
+                String srn = sr.getRoleName();
+                if(!noticeRoleNames.contains(srn)) {
+                    noticeRoleNames.add(srn);
+                }
+            });
+            throw BusinessException.build("菜单已分配给角色" +noticeRoleNames+",不允许删除");
+        }
+        //去掉role里面的引用
+        roleMenuDao.deleteAllByMenuId(menuId);
+        mongoRuntimeConfigService.updateRealmUpdateTime();
+        return super.remove(menuId);
     }
 
     /**
@@ -274,12 +309,12 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
 
     @Override
     public int selectCountMenuByParentId(Long parentId) {
-        return menuDao.findAllByParentIdAndIsDelete(parentId,false).size();
+        return menuDao.countByParentId(parentId);
     }
 
     @Override
     public int selectCountRoleMenuByMenuId(Long menuId) {
-        return 0;
+        return roleMenuDao.countByMenuId(menuId);
     }
 
     @Override

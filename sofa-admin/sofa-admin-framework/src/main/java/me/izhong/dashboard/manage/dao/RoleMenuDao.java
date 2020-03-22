@@ -11,9 +11,15 @@ public interface RoleMenuDao extends MongoRepository<SysRoleMenu, Long> {
 
     void deleteAllByRoleId(Long roleId);
 
+    void deleteAllByMenuId(Long menuId);
+
     long deleteAllByRoleIdAndMenuId(Long roleId, Long menuId);
 
     int countByRoleId(Long roleId);
 
+    int countByMenuId(Long menuId);
+
     List<SysRoleMenu> findAllByRoleId(Long roleId);
+
+    List<SysRoleMenu> findAllByMenuId(Long menuId);
 }

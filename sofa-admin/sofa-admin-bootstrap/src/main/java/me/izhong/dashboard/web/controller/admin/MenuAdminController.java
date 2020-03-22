@@ -5,7 +5,6 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.dashboard.common.annotation.Log;
 import me.izhong.dashboard.common.constants.BusinessType;
 import me.izhong.dashboard.manage.entity.SysMenu;
-import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.service.SysMenuService;
@@ -38,7 +37,6 @@ public class MenuAdminController {
     @PostMapping("/list")
     @ResponseBody
     public List<SysMenu> list(SysMenu sysMenu) {
-        sysMenu.setIsDelete(false);
         List<SysMenu> sysMenuList = sysMenuService.selectMenuList(sysMenu);
         return sysMenuList;
     }
@@ -51,13 +49,7 @@ public class MenuAdminController {
     @GetMapping("/remove/{menuId}")
     @AjaxWrapper
     public long remove(@PathVariable("menuId") Long menuId) {
-        if (sysMenuService.selectCountMenuByParentId(menuId) > 0) {
-            throw BusinessException.build("存在子菜单,不允许删除");
-        }
-        if (sysMenuService.selectCountRoleMenuByMenuId(menuId) > 0) {
-            throw BusinessException.build("菜单已分配,不允许删除");
-        }
-        return sysMenuService.deleteByPId(menuId);
+        return sysMenuService.remove(menuId);
     }
 
     /**

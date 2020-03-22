@@ -16,7 +16,7 @@ public interface MenuDao extends MongoRepository<SysMenu, Long> {
 
     List<SysMenu> findAllByParentId(Long parentId);
 
-    List<SysMenu> findAllByParentIdAndIsDelete(Long parentId,boolean isDelete);
+    int countByParentId(Long parentId);
 
     List<SysMenu> findAllByMenuIdIn(List<Long> menuIds);
 }
