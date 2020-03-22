@@ -15,9 +15,9 @@ public class ResponseLogger extends MessageToMessageEncoder<BidMsg> {
                           List<Object> out) throws Exception {
 		String msg = in.getPayload();
 		if (StringUtils.isEmpty(msg)) {
-			log.debug("心跳应答: {}", ctx.channel().remoteAddress());
+			log.debug("心应答: {}", ctx.channel().remoteAddress());
 		} else {
-			log.info("应答报文: {}\n{}", ctx.channel().remoteAddress(), msg);
+			log.info("应答: {}\n{}", ctx.channel().remoteAddress(), msg);
 		}
 		out.add(in);
 	}

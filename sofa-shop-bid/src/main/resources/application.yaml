@@ -45,7 +45,6 @@ server:
     max-threads: 800
     # Tomcat启动初始化的线程数，默认值25
     min-spare-threads: 30
-
 service:
   unique:
     id: 1
@@ -56,3 +55,7 @@ com:
         registry:
           address: zookeeper://lpp.izhong.me:52181
         bolt-port: 13304
+logging:
+  pattern:
+    file: "%d{yyyy-MM-dd'T'HH:mm:ss.SSS} %-5level [%.15thread][%X{_traceId}] %logger{36} - %.-4096msg%n"
+    console: "%d{yyyy-MM-dd'T'HH:mm:ss.SSS} %-5level [%.15thread][%X{_traceId}] %logger{36} - %.-4096msg%n"

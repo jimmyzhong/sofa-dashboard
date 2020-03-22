@@ -14,11 +14,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.UUID;
 
-
 public class TraceUtil {
     public final static String TRACE_ID = "_traceId";
-
-    public static String PREFIX = "";
 
     public static void initTrace() {
         String traceId = generateTraceId();
@@ -60,14 +57,6 @@ public class TraceUtil {
         if (context != null) {
             traceId = context.getTraceId();
         }
-        if (traceId == null) {
-            traceId = generateTraceId();
-        }
-        setTraceId(traceId);
-    }
-
-    public static void initTraceFrom(BaseRequest<? extends BaseResponse> request) {
-        String traceId = request.getMsgId();
         if (traceId == null) {
             traceId = generateTraceId();
         }
@@ -146,10 +135,7 @@ public class TraceUtil {
     }
 
     static private String generateTraceId() {
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        if(StringUtils.isNotBlank(PREFIX)){
-            return PREFIX + uuid.substring(PREFIX.length(), uuid.length());
-        }
+        String uuid = UUID.randomUUID().toString().replaceAll("-", "").substring(0,16);
         return uuid;
     }
 

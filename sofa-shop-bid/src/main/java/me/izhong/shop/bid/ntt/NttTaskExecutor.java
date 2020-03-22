@@ -7,6 +7,7 @@ import me.izhong.shop.bid.config.ConfigBean;
 import me.izhong.shop.bid.config.ErrCode;
 import me.izhong.shop.bid.frame.BidContext;
 import me.izhong.shop.bid.frame.ITask;
+import me.izhong.shop.bid.util.TraceUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,10 @@ public class NttTaskExecutor {
             synchronousExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    if (context != null)
+                        TraceUtil.initTraceFrom(context);
+                    else
+                        TraceUtil.clearTrace();
                     try {
                         task.run();
                     } catch (Throwable e) {
@@ -74,6 +79,10 @@ public class NttTaskExecutor {
             scheduledExecutor.schedule(new Runnable() {
                 @Override
                 public void run() {
+                    if (context != null)
+                        TraceUtil.initTraceFrom(context);
+                    else
+                        TraceUtil.clearTrace();
                     try {
                         task.run();
                     } catch (Throwable e) {
@@ -101,6 +110,10 @@ public class NttTaskExecutor {
             scheduledExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    if (context != null)
+                        TraceUtil.initTraceFrom(context);
+                    else
+                        TraceUtil.clearTrace();
                     try {
                         task.run();
                     } catch (Throwable e) {

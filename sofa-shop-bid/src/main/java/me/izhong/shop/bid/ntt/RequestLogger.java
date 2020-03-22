@@ -15,9 +15,9 @@ public class RequestLogger extends MessageToMessageDecoder<BidMsg> {
 		String msg = in.getPayload();
 
 		if (StringUtils.isEmpty(msg)) {
-			log.debug("收到心跳: {}", ctx.channel().remoteAddress());
+			log.debug("收跳: {}", ctx.channel().remoteAddress());
 		} else {
-			log.info("收到报文：SockAddr={}, RemoteIP={}\n{}", ctx.channel()
+			log.info("收到：LIP={}, RIP={}\n{}", ctx.channel()
 					.remoteAddress(), in.getRemoteIP(), msg);
 		}
 		out.add(in);
