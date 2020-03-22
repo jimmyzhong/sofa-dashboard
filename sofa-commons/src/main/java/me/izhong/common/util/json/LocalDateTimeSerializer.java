@@ -1,4 +1,4 @@
-package me.izhong.shop.util.serializer;
+package me.izhong.common.util.json;
 
 import com.alibaba.fastjson.serializer.JSONSerializer;
 import com.alibaba.fastjson.serializer.ObjectSerializer;

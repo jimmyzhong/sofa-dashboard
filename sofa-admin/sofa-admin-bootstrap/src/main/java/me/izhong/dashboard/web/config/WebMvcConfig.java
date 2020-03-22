@@ -5,6 +5,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.serializer.SimpleDateFormatSerializer;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import me.izhong.common.util.json.LocalDateTimeSerializer;
 import me.izhong.dashboard.common.constants.Global;
 import me.izhong.dashboard.web.filter.AjaxMethodReturnValueHandler;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +40,7 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
     static {
         dateFormat = "yyyy-MM-dd HH:mm:ss";
         serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
+        serializeConfig.put(LocalDateTime.class, new LocalDateTimeSerializer(dateFormat));
     }
 
     @Override

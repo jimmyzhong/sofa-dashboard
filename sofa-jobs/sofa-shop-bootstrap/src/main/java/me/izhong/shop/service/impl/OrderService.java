@@ -559,6 +559,8 @@ public class OrderService implements IOrderService {
 		order.setReceiverCity(address.getCity());
 		order.setReceiverProvince(address.getProvince());
 		order.setReceiverPostCode(address.getPostCode());
+		order.setReceiverCounty(address.getDistrict());
+		order.setReceiverTown(address.getTown());
 		order.setReceiverDetailAddress(address.getDetailAddress());
 		order.setReceiverName(address.getUserName());
 		order.setReceiverPhone(address.getUserPhone());

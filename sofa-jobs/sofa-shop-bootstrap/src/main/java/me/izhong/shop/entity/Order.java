@@ -65,6 +65,10 @@ public class Order {
     private String receiverProvince;
     @Column(name = "RECEIVER_CITY")
     private String receiverCity;
+    @Column(name = "RECEIVER_COUNTY")
+    private String receiverCounty;
+    @Column(name = "RECEIVER_TOWN")
+    private String receiverTown;
     @Column(name = "RECEIVER_REGION")
     private String receiverRegion;
     @Column(name = "RECEIVER_DETAIL_ADDRESS")
