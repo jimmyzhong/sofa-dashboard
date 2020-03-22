@@ -3,8 +3,10 @@ package me.izhong.dashboard.manage.security.filter;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
+import me.izhong.dashboard.manage.security.UserRealm;
 import me.izhong.dashboard.manage.security.session.OnlineSession;
 import me.izhong.dashboard.manage.security.session.OnlineSessionDAO;
+import me.izhong.db.mongo.service.MongoRuntimeConfigService;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 @Slf4j
 public class OnlineSessionFilter extends AccessControlFilter {
@@ -26,6 +29,9 @@ public class OnlineSessionFilter extends AccessControlFilter {
 
     @Autowired
     private OnlineSessionDAO onlineSessionDAO;
+
+    @Autowired
+    private MongoRuntimeConfigService mongoRuntimeConfigService;
 
     /**
      * 表示是否允许访问；mappedValue就是[urls]配置中拦截器参数部分，如果允许访问返回true，否则false；
@@ -45,7 +51,12 @@ public class OnlineSessionFilter extends AccessControlFilter {
                 log.info("用户{}被强制下线",UserInfoContextHelper.getCurrentLoginName());
                 return false;
             }
+            Date rut = onlineSession.getRealmUpdateTime();
+            if(rut != null && mongoRuntimeConfigService.isNeedUpdateRealm(rut)){
+                UserRealm.refreshUserScope();
+            }
         }
+
         return true;
     }
 

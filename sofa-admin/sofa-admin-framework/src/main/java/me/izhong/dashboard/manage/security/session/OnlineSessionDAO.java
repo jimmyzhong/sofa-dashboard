@@ -15,11 +15,6 @@ import java.util.*;
  */
 public class OnlineSessionDAO extends AbstractSessionDAO {
 
-    /**
-     * 上次同步数据库的时间戳
-     */
-    private static final String LAST_SYNC_DB_TIMESTAMP = OnlineSessionDAO.class.getName() + "LAST_SYNC_DB_TIMESTAMP";
-
     @Autowired
     private SysShiroService sysShiroService;
 

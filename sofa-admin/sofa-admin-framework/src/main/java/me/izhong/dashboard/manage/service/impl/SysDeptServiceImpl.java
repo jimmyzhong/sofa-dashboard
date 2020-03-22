@@ -1,5 +1,6 @@
 package me.izhong.dashboard.manage.service.impl;
 
+import com.mongodb.client.result.DeleteResult;
 import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.common.constants.UserConstants;
@@ -9,6 +10,7 @@ import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.entity.SysUser;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysDeptService;
+import me.izhong.db.mongo.service.MongoRuntimeConfigService;
 import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.dashboard.common.domain.Ztree;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -30,7 +33,6 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.matc
 @Slf4j
 public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implements SysDeptService {
 
-
     @Autowired
     private DeptDao deptDao;
 
@@ -40,9 +42,11 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private MongoRuntimeConfigService mongoRuntimeConfigService;
+
     @Override
     public List<Long> selectAllDeptId() {
-
         List<SysDept> results = selectAll();
         List<Long> ll = new ArrayList<>();
         results.forEach(e->{
@@ -56,6 +60,13 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
         List<SysDept> lists = super.selectList(search);
         sortDepts(lists);
         return lists;
+    }
+
+    @Transactional
+    @Override
+    public long remove(Long deptId) {
+        mongoRuntimeConfigService.updateRealmUpdateTime();
+        return super.remove(deptId);
     }
 
     private void sortDepts(List<SysDept> lists) {
@@ -139,6 +150,7 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
         sysDept.setCreateTime(new Date());
         super.insert(sysDept);
         processRelations(null, sysDept);
+        mongoRuntimeConfigService.updateRealmUpdateTime();
         return 0;
     }
 
