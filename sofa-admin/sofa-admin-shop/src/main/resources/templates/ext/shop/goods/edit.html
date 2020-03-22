@@ -154,28 +154,14 @@
 				$.operate.saveTab(prefix + "/edit", data);
 			}
 		}
-
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#productPic")[0].files[0]);
-			$.modal.loading("图片上传中");
-			$.ajax({
-				url: ctx + "ext/shop/oss/upload",
-				data: formdata,
-				type: "post",
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					$("#productPicInput").val(result.data.pictureUrl)
-					$("#productPic_img").attr("src",result.data.pictureUrl)
-				},
-				error:function (err) {
-					$.modal.closeLoading();
-					$.modal.alertWarning("图片上传失败");
-				}
+			SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
+				$("#productPicInput").val(result.data.pictureUrl)
+				$("#productPic_img").attr("src",result.data.pictureUrl)
 			})
 		}
-
 		function upAlbumPics(){
 			var formdata = new FormData();
 			formdata.append("file", $("#uploadAlbumPics")[0].files[0]);
