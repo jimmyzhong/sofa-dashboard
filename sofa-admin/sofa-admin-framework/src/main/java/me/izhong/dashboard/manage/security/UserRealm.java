@@ -3,7 +3,7 @@ package me.izhong.dashboard.manage.security;
 import eu.bitwalker.useragentutils.UserAgent;
 import me.izhong.dashboard.manage.security.service.SysShiroService;
 import me.izhong.dashboard.manage.security.session.OnlineSession;
-import me.izhong.dashboard.manage.service.SysUserService;
+import me.izhong.dashboard.manage.service.*;
 import me.izhong.dashboard.common.util.IpUtil;
 import me.izhong.dashboard.common.util.ServletUtil;
 import me.izhong.dashboard.common.util.SpringUtil;
@@ -19,10 +19,8 @@ import me.izhong.dashboard.common.expection.user.UserNotFoundException;
 import me.izhong.dashboard.common.expection.user.UserPasswordNotMatchException;
 import me.izhong.dashboard.common.expection.user.UserPasswordRetryLimitExceedException;
 import me.izhong.dashboard.manage.security.service.LoginService;
-import me.izhong.dashboard.manage.service.SysDeptService;
-import me.izhong.dashboard.manage.service.SysMenuService;
-import me.izhong.dashboard.manage.service.SysRoleService;
 import me.izhong.dashboard.common.util.UserConvertUtil;
+import me.izhong.db.mongo.service.MongoRuntimeConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
@@ -57,7 +55,7 @@ public class UserRealm extends AuthorizingRealm {
     private LoginService loginService;
 
     @Autowired
-    private SysUserService sysUserService;
+    private MongoRuntimeConfigService mongoRuntimeConfigService;
 
     @Autowired
     private SysDeptService sysDeptService;
@@ -95,8 +93,6 @@ public class UserRealm extends AuthorizingRealm {
             //UserInfoContextHelper.setUser(user);
             log.debug("用户[{}]从数据库加载权限成功", user.getLoginName());
         }
-
-
 
         // 角色加入AuthorizationInfo认证对象
         info.setRoles(roles);
@@ -150,7 +146,9 @@ public class UserRealm extends AuthorizingRealm {
         setUserScope(loginUser);
         return info;
     }
+
     public static void refreshUserScope() {
+
         UserInfo u = UserInfoContextHelper.getLoginUser();
 
         SpringUtil.getBean(UserRealm.class).setUserScope(u);
@@ -198,11 +196,6 @@ public class UserRealm extends AuthorizingRealm {
             String ip = IpUtil.getIpAddr(request);
             loginUser.setLoginIp(ip);
         }
-//        onlineSession.setLoginName(loginUser.getLoginName());
-//        onlineSession.setUserId(loginUser.getUserId());
-//        onlineSession.setDeptName(loginUser.getDeptName());
-//        onlineSession.setAvatar(loginUser.getAvatar());
-        shiroService.saveSession(session);
 
         List<SysRole> rs = sysRoleService.selectRolesByUserId(loginUser.getUserId());
         // 实体名称 -> deptIds
@@ -246,6 +239,11 @@ public class UserRealm extends AuthorizingRealm {
                 });
             }
         });
+
+        onlineSession.setRealmUpdateTime(new Date());
+        shiroService.saveSession(onlineSession);
+
+        log.info("用户{}刷新部门权限完成",loginUser.getLoginName());
     }
 
     /**

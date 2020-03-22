@@ -7,6 +7,7 @@ import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.security.UserInfoContextHelper;
+import me.izhong.dashboard.manage.security.UserRealm;
 import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.manage.service.SysDeptService;
 import me.izhong.dashboard.common.domain.Ztree;
@@ -189,7 +190,6 @@ public class DeptAdminController {
     @GetMapping("/myTreeData")
     @ResponseBody
     public List<Ztree> myTreeData(String viewPerm) {
-        Long userId = UserInfoContextHelper.getCurrentUserId();
         if(StringUtils.isNotBlank(viewPerm)) {
             //只展示有权限的部门
             Set<Long> scop = UserInfoContextHelper.getLoginUser().getScopeData(viewPerm);
