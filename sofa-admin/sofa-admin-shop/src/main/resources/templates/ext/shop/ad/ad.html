@@ -31,7 +31,7 @@
         </div>
 
         <div class="btn-group-sm" id="toolbar" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="ext:shop:ad:add">
+            <a class="btn btn-success" onclick="addAd()" shiro:hasPermission="ext:shop:ad:add">
                 <i class="fa fa-plus"></i> 新增
             </a>
             <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
@@ -53,6 +53,10 @@
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
         $.modal.openTab("广告详情", url);
+    }
+    function addAd() {
+        var url = prefix + '/add';
+        $.modal.openTab("新增广告", url);
     }
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;

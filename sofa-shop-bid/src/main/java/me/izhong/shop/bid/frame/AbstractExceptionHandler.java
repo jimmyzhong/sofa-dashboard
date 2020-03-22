@@ -1,6 +1,5 @@
 package me.izhong.shop.bid.frame;
 
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.bid.pojo.ErrorResponse;
@@ -61,10 +60,7 @@ abstract public class AbstractExceptionHandler implements IExceptionHandler {
 						400, "系统错误");
 			}
 
-			String msg = JSON.toJSONString(resp);
-			context.setJsonResponse(msg);
 			context.setResponse(resp);
-
 			response(context);
 		} catch (Exception e) {
 			log.error("", e);
@@ -87,8 +83,6 @@ abstract public class AbstractExceptionHandler implements IExceptionHandler {
 			log.error(errInfo);
 			ErrorResponse resp = new ErrorResponse(context, code, errInfo);
 
-			String msg = JSON.toJSONString(resp);
-			context.setJsonResponse(msg);
 			context.setResponse(resp);
 			response(context);
 		} catch (Exception e) {

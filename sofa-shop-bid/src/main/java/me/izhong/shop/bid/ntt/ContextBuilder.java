@@ -7,6 +7,7 @@ import io.netty.handler.codec.MessageToMessageDecoder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.shop.bid.frame.BidContext;
 import me.izhong.shop.bid.frame.ISecurityChecker;
+import me.izhong.shop.bid.util.TraceUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -38,11 +39,12 @@ public class ContextBuilder extends MessageToMessageDecoder<BidMsg> {
 		}
 
 		BidContext context = new BidContext();
+		context.setTraceId(TraceUtil.getTraceId());
 
 		context.setUrl(uri);
 		context.setRemoteIP(in.getRemoteIP());
 		context.setServiceAcceptTime(System.currentTimeMillis());
-		context.setExceptionHandler(new NettyExceptionHandler(ctx.channel()));
+		context.setExceptionHandler(new NttExceptionHandler(ctx.channel()));
 		context.setSecurityChecker(checker);
 		context.setJsonObjectRequest(json);
 		context.setJsonRequest(msg);

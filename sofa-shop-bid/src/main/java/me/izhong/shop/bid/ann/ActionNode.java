@@ -11,5 +11,6 @@ public @interface ActionNode {
 
     String name();
     String url();
+    Class reqClass() default Object.class;
 
 }

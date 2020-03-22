@@ -143,7 +143,20 @@ public class ShopGoodsCategoryController {
 		data.put("categoryList", dtoList);
 		return data;
 	}
-
+	@RequiresPermissions(ShopPermissions.Category.VIEW)
+	@PostMapping("/detail/{categoryId}")
+	@AjaxWrapper
+	public ShopGoodsCategory detail(@PathVariable("categoryId") Long categoryId, Model model) {
+		if (categoryId == null) {
+			throw BusinessException.build("categoryId不能为空");
+		}
+		ShopGoodsCategory goodsCategory = shopServiceReference.goodsCategoryService.findById(categoryId);
+		if (goodsCategory == null) {
+			throw BusinessException.build(String.format("商品类目不存在%s", categoryId));
+		}
+		log.info("goodsCategoryDetail =>{}", goodsCategory);
+		return goodsCategory;
+	}
     /**
      * 
      * @param field

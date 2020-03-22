@@ -56,6 +56,8 @@ var SHOP_COMMON={
                 url: url,
                 type: "post",
                 data:data,
+                processData: false,
+                contentType: false,
                 success: function (result){
                     $.modal.closeLoading();
                     if (result.code == web_status.SUCCESS) {

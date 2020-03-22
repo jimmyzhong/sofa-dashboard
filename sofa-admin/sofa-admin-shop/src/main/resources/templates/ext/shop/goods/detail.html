@@ -72,6 +72,20 @@
 				<input type="hidden" id="albumPics" th:value="${goods.albumPics}">
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label">推荐状态：</label>
+				<div class="col-sm-8">
+					<p th:if="${goods.recommandStatus eq 1}">推荐</p>
+					<p th:if="${goods.recommandStatus eq 0}">不推荐</p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">上架状态：</label>
+				<div class="col-sm-8">
+					<p th:if="${goods.publishStatus eq 1}">上架</p>
+					<p th:if="${goods.publishStatus eq 0}">下架</p>
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label">商品详情：</label>
 				<div class="col-sm-8">
 					<input id="detail_desc" name="detail_desc" th:value="${goods.detailDesc}" type="hidden">

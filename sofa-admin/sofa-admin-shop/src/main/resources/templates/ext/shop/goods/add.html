@@ -25,9 +25,10 @@
 				<div class="col-sm-8">
 					<img id="productPic_img" class="img-circle img-lg">
 					<label>
-						<input onchange ="uploadImg()" type="file" class="" id="productPic" accept="image/*"/>
-						<input name="productPic" id="productPicInput"  type="hidden"/>
+						<a type="button" class="btn btn-w-m btn-primary">选择图片</a>
+						<input onchange ="uploadImg()" style="display: none" type="file" class="" id="productPic" accept="image/*"/>
 					</label>
+					<input name="productPic" id="productPicInput"  type="hidden"/>
 				</div>
 			</div>
 			<div class="form-group">
@@ -67,20 +68,36 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">商品描述：</label>
 				<div class="col-sm-8">
-					<textarea class="form-control" id="description" name="description" required>
-
-					</textarea>
+					<textarea class="form-control" id="description" name="description" required></textarea>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">商品相册：</label>
 				<div class="col-sm-8">
 					<label>
-						<a>添加图片</a>
+						<a type="button" class="btn btn-w-m btn-primary">添加图片</a>
 						<input style="visibility: hidden" onchange ="upAlbumPics()" id="uploadAlbumPics" type="file"  accept="image/*"/>
 					</label>
 					<div id="upAlbumPics_content">
 
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">推荐状态：</label>
+				<div class="col-sm-8">
+					<div>
+						<span><input type="radio" name="recommandStatus" value="1" checked>推荐</span>
+						<span style="margin-left: 10px"><input type="radio" name="recommandStatus" value="0">不推荐</span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">上架状态：</label>
+				<div class="col-sm-8">
+					<div>
+						<span><input type="radio" name="publishStatus" value="1" checked>上架</span>
+						<span style="margin-left: 10px"><input type="radio" name="publishStatus" value="0">下架</span>
 					</div>
 				</div>
 			</div>
@@ -184,7 +201,7 @@
 		}
 		function fetchGoodsCategory() {
 			SHOP_COMMON.ajax.get(ctx + "ext/shop/category/queryAll","",function (result) {
-				_categoryAll=result.categoryList;
+				_categoryAll=result.data.categoryList;
 				for(var i=0;i<_categoryAll.length;i++){
 					$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
 				}

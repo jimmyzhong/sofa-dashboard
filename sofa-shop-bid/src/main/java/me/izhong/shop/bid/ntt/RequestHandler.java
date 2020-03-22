@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.timeout.IdleStateEvent;
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.shop.bid.frame.ITask;
 import me.izhong.shop.bid.util.TraceUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -12,8 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+@Slf4j
 public class RequestHandler extends ChannelInboundHandlerAdapter {
-	private static Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
 	private NettyInvokeService nettyInvokeService;
 	private NttTaskExecutor nttTaskExecutor;
@@ -26,14 +27,14 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		TraceUtil.clearTrace();
-		log.info("收到连接请求：{}", ctx.channel().remoteAddress());
+		TraceUtil.initTrace();
+		log.info("R请求：{}", ctx.channel().remoteAddress());
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		TraceUtil.clearTrace();
-		log.info("连接已关闭：{}", ctx.channel().remoteAddress());
+		log.info("连接关闭：{}", ctx.channel().remoteAddress());
 	}
 
 	@Override
@@ -71,7 +72,7 @@ public class RequestHandler extends ChannelInboundHandlerAdapter {
 			log.error("解码异常：{}, {}", cause.getMessage(), ctx.channel()
 					.remoteAddress());
 		} else {
-			log.error("未捕获异常：{}", ctx.channel().remoteAddress(), cause);
+			log.error("垃圾异常：{}", ctx.channel().remoteAddress(), cause);
 		}
 
 		ctx.channel().close();

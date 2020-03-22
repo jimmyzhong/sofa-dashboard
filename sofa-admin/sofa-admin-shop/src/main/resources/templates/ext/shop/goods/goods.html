@@ -105,12 +105,13 @@
                 },
                 {
                     title: '操作',
+                    width:"300",
                     align: 'center',
                     formatter: function (value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
-                        actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
-                        actions.push('<a class="btn btn-warning btn-xs" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs '+detailFlag+'" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs '+editFlag+'" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs '+removeFlag+'" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
                         return actions.join('');
                     }
                 }]
