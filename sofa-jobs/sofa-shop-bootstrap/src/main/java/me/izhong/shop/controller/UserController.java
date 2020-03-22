@@ -1,7 +1,6 @@
 package me.izhong.shop.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Maps;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
@@ -9,7 +8,6 @@ import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.model.UserInfo;
-import me.izhong.shop.annotation.NeedOptimisticLockRetry;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
@@ -244,7 +242,14 @@ public class UserController {
         User user = new User();
         user.setPhone(phone);
         user.setPassword(password);
-        user.setNickName(nickName);
+
+        String nickPhone = nickName;
+        try {
+            phone = phone.trim();
+            nickPhone = phone.substring(0, 3) + "****" + phone.substring(7);
+        } finally {
+        }
+        user.setNickName(nickPhone);
         ensureRequiredFieldWhenRegistering(user);
 
         if (!password.matches(passwordPattern)) {
@@ -308,6 +313,22 @@ public class UserController {
         user.setPassword(password);
         user.encryptUserPassword();
         userService.saveOrUpdate(user);
+    }
+
+    @PostMapping("/resetAssetPassword")
+    @ApiOperation(value="重置支付密码",httpMethod = "POST")
+    @RequireUserLogin
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "password", value = "密码", dataType = "string"),
+            @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+                    value = "登录成功后response Authorization header", required = true)
+    })
+    public void resetAssetPassword(@RequestBody Map<String,String> params, HttpServletRequest request) {
+        String password = params.get("password");
+        if (!password.matches(passwordPattern)) {
+            throw new BusinessException(ErrorCode.USER_PASSWORD_NOT_MATCH_PATTERN, "密码过于简单");
+        }
+        userService.setAssetPassword(CacheUtil.getSessionInfo(request).getId(), password);
     }
 
     private void ensureRequiredFieldWhenRegistering(User user) {

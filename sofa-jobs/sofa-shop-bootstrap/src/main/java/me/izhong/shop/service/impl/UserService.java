@@ -216,6 +216,17 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
+    public void setAssetPassword(Long userId, String password) {
+        if (!StringUtils.isEmpty(password)) {
+            User user = findById(userId);
+            user.setAssetPassword(password);
+            user.encryptAssetPassword();
+            saveOrUpdate(user);
+        }
+    }
+
+    @Override
     public User findById(Long userId) {
         User user =  userDao.findById(userId).orElse(null);
         if (user != null && StringUtils.isEmpty(user.getUserCode())) {
@@ -271,6 +282,7 @@ public class UserService implements IUserService {
     }
 
     @Override
+    @Transactional
     public void setAlipayAccount(Long userId, String alipayAccount, String alipayName) {
         User user = findById(userId);
         if (user == null) {

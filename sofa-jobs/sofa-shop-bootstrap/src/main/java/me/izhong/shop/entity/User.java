@@ -7,7 +7,6 @@ import me.izhong.shop.util.PasswordUtils;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -57,9 +56,16 @@ public class User extends EditableEntity {
     private String alipayName;
     @Column(name = "ASSET_PASSWORD", length = 64)
     private String assetPassword; // 积分、余额使用密码
+    @Column(name = "ASSET_SALT", length = 32)
+    private String assetPasswordSalt; // 积分、余额使用密码
 
     public void encryptUserPassword() {
         setSalt(PasswordUtils.generateSalt(8));
         setPassword(PasswordUtils.encrypt(getPassword(), getSalt()));
+    }
+
+    public void encryptAssetPassword() {
+        setAssetPasswordSalt(PasswordUtils.generateSalt(8));
+        setAssetPassword(PasswordUtils.encrypt(getAssetPassword(), getAssetPasswordSalt()));
     }
 }

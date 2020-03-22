@@ -12,4 +12,5 @@ public class PayInfoDTO {
     private String payInfo;
     private BigDecimal chargeAmount;
     private String account;
+    private String password;
 }
