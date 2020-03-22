@@ -1,7 +1,6 @@
 package me.izhong.shop.controller;
 
 import com.alipay.api.response.AlipayFundTransOrderQueryResponse;
-import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.alipay.sofa.rpc.common.utils.JSONUtils;
 import io.swagger.annotations.Api;
@@ -25,6 +24,7 @@ import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AliPayService;
 import me.izhong.shop.service.impl.PayRecordService;
+import me.izhong.shop.util.PasswordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -129,18 +129,11 @@ public class PayController {
         order.setDescription("用户提现 " + user.getAlipayAccount());
         orderService.saveOrUpdate(order);
 
-        AlipayFundTransUniTransferResponse response = aliPayService.transfer(orderNo, order.getTotalAmount(), user.getAlipayAccount(), user.getAlipayName());
-
-        if (!response.isSuccess()) {
-            log.error("提现失败 " + response.getBody());
-            throw BusinessException.build("提现失败");
-        }
-
-        // TODO 成功提现，修改用户余额 ？
+        boolean success = orderService.transferMoney(user, orderNo, order, aliPayService);
 
         PayInfoDTO dto = new PayInfoDTO();
         dto.setOrderNo(orderNo);
-        dto.setTradeStatus("SUCCESS");
+        dto.setTradeStatus(success?"SUCCESS":"FAIL");
         return dto;
     }
 
@@ -171,7 +164,7 @@ public class PayController {
             throw BusinessException.build("提现失败");
         }
 
-        res.setTradeStatus("SUCCESS");
+        res.setTradeStatus(response.getStatus());
         return res;
     }
 
@@ -271,6 +264,87 @@ public class PayController {
         orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), getDescriptionByState(order.getOrderType()), payAmountInResponse,
                 order.getTotalAmount(), status, comment);
         res.setTradeStatus(status);
+        return res;
+    }
+
+    @PostMapping(path="/money", consumes = "application/json")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="余额支付", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PayInfoDTO payByMoney(
+            @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+                    "  \"orderNo\": \"00001\"" +
+                    "}")
+            @RequestBody PayInfoDTO params, HttpServletRequest request) {
+        if(StringUtils.isEmpty(params.getOrderNo())) {
+            throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
+        }
+        if (StringUtils.isEmpty(params.getPassword())) {
+            throw BusinessException.build("请输入支付密码");
+        }
+
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        User user = userService.findById(session.getId());
+
+        if (StringUtils.isEmpty(user.getAssetPassword())) {
+            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
+        }
+
+        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
+                user.getAssetPassword())) {
+            throw BusinessException.build("支付密码不正确");
+        }
+
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
+        orderService.payByMoney(session.getId(), order);
+        PayInfoDTO res = new PayInfoDTO();
+        res.setOrderNo(orderNo);
+        res.setTradeStatus("SUCCESS");
+        return res;
+    }
+
+    @PostMapping(path="/score", consumes = "application/json")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="积分", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PayInfoDTO payByScore(
+            @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+                    "  \"orderNo\": \"00001\"" +
+                    "}")
+            @RequestBody PayInfoDTO params, HttpServletRequest request) {
+        if(StringUtils.isEmpty(params.getOrderNo())) {
+            throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
+        }
+        if (StringUtils.isEmpty(params.getPassword())) {
+            throw BusinessException.build("请输入支付密码");
+        }
+
+        SessionInfo session = CacheUtil.getSessionInfo(request);
+        User user = userService.findById(session.getId());
+
+        if (StringUtils.isEmpty(user.getAssetPassword())) {
+            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
+        }
+
+        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
+                user.getAssetPassword())) {
+            throw BusinessException.build("支付密码不正确");
+        }
+
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
+        if (order == null) {
+            throw BusinessException.build("订单不存在");
+        }
+        orderService.payByScore(session.getId(), order);
+        PayInfoDTO res = new PayInfoDTO();
+        res.setOrderNo(orderNo);
+        res.setTradeStatus("SUCCESS");
         return res;
     }
 

@@ -38,6 +38,8 @@ public interface IUserService {
 
     void attemptModifyPassword(User dbUser, String password);
 
+    void setAssetPassword(Long userId, String password);
+
     UserMoney findMoneyByUserId(Long userId);
 
     PageModel<PayRecord> listMoneyReturnRecord(Long userId, PageRequest pageRequest, Set<MoneyTypeEnum> types);

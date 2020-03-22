@@ -10,6 +10,8 @@ import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.entity.Order;
+import me.izhong.shop.entity.User;
+import me.izhong.shop.service.impl.AliPayService;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface IOrderService {
@@ -37,6 +39,8 @@ public interface IOrderService {
 					   BigDecimal payAmount, BigDecimal totalAmount, String state, String comment);
 
 	PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam);
+
+	boolean transferMoney(User user, String orderNo, Order order, AliPayService aliPayService);
 
 	/**
 	 * 直接购买某个商品
@@ -73,4 +77,8 @@ public interface IOrderService {
 	 * @return
 	 */
     Order applyToDeliverOrder(Long currentUserId, String orderNo);
+
+	void payByMoney(Long id, Order order);
+
+    void payByScore(Long id, Order order);
 }

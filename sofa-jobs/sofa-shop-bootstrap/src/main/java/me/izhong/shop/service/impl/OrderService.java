@@ -1,5 +1,6 @@
 package me.izhong.shop.service.impl;
 
+import com.alipay.api.response.AlipayFundTransUniTransferResponse;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
@@ -7,10 +8,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.annotation.NeedOptimisticLockRetry;
-import me.izhong.shop.consts.MoneyTypeEnum;
-import me.izhong.shop.consts.OrderStateEnum;
-import me.izhong.shop.consts.PayStatusEnum;
-import me.izhong.shop.consts.ProductTypeEnum;
+import me.izhong.shop.consts.*;
 import me.izhong.shop.dao.*;
 import me.izhong.shop.dto.CartItemParam;
 import me.izhong.shop.dto.GoodsDTO;
@@ -77,6 +75,10 @@ public class OrderService implements IOrderService {
 
 	@Value("${order.expire.time}")
 	private Long orderExpireMinutes;
+	@Value("${score.pay.rate}")
+	private Double scorePayRate;
+	@Value("${score.return.rate}")
+	private Double scoreReturnRate;
 
 	@PostConstruct
 	public void setUp() {
@@ -202,6 +204,7 @@ public class OrderService implements IOrderService {
 		comment = StringUtils.substring(comment,0,200);
 		record.setComment(comment);
 
+		order.setPayType(PayMethodEnum.valueOf(payMethod).getCode());
 		order.setPayTradeNo(externalOrderNo);
 		order.setPayAmount(payAmount);
 
@@ -235,7 +238,9 @@ public class OrderService implements IOrderService {
 					recordMoneyReturn(order, user.getId(), user.getInviteUserId2(), 0.02);  //TODO externalize
 				}
 				// 付款成功,此处应该有积分奖励
-				recordScoreReturn(order);
+				if (!payMethod.equalsIgnoreCase(PayMethodEnum.SCORE.name())) {
+					recordScoreReturn(order);
+				}
 				// 寄售商品付款到寄售人
 				if (StringUtils.equals(payType, RESALE_GOODS.getDescription())) {
 					record.setReceiverId(order.getResaleUser());
@@ -250,6 +255,38 @@ public class OrderService implements IOrderService {
 
 		payRecordDao.save(record);
 		orderDao.save(order);
+	}
+
+	@Override
+	@Transactional
+	public boolean transferMoney(User user, String orderNo, Order order, AliPayService aliPayService) {
+		UserMoney userMoney = userMoneyDao.selectUserForUpdate(user.getId());
+		if (userMoney == null) {
+			throw BusinessException.build("用户余额不存在,请联系管理员");
+		}
+
+		BigDecimal amount = order.getTotalAmount();
+		if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
+			throw BusinessException.build("可用余额不足");
+		}
+
+		AlipayFundTransUniTransferResponse response = aliPayService.
+				transfer(orderNo, order.getTotalAmount(), user.getAlipayAccount(), user.getAlipayName());
+
+		if (!response.isSuccess()) {
+			log.error("提现失败 " + response.getBody());
+			throw BusinessException.build("提现失败");
+		}
+
+		if ("SUCCESS".equalsIgnoreCase(response.getStatus())) {
+			order.setStatus(FINISHED.getState());
+			userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
+			orderDao.save(order);
+			userMoneyDao.save(userMoney);
+			return true;
+		}
+
+		return false;
 	}
 
 	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor) {
@@ -302,12 +339,13 @@ public class OrderService implements IOrderService {
 		payRecordDao.save(scoreReturn);
 
 		UserScore userScore = userScoreDao.findByUserId(order.getUserId());
+		Long score = BigDecimal.valueOf(scoreReturn.getTotalAmount().doubleValue() * scoreReturnRate).longValue();
 		if (userScore == null) {
 			userScore = new UserScore();
 			userScore.setUserId(order.getUserId());
-			userScore.setAvailableScore(scoreReturn.getTotalAmount().longValue());
+			userScore.setAvailableScore(score);
 		} else {
-			userScore.setAvailableScore(userScore.getAvailableScore() + scoreReturn.getTotalAmount().longValue());
+			userScore.setAvailableScore(userScore.getAvailableScore() + score);
 		}
 		userScoreDao.save(userScore);
 	}
@@ -553,5 +591,45 @@ public class OrderService implements IOrderService {
 		order.setStatus(WAIT_DELIVER.getState());
 		orderDao.save(order);
 		return order;
+	}
+
+	@Override
+	@Transactional
+	public void payByMoney(Long userId, Order order) {
+		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
+		if (userMoney == null) {
+			throw BusinessException.build("用户余额不存在,请联系管理员");
+		}
+
+		BigDecimal amount = order.getTotalAmount();
+		if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
+			throw BusinessException.build("可用余额不足");
+		}
+
+		userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
+		updatePayInfo(order, null, PayMethodEnum.MONEY.name(),
+				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, amount,
+				PayStatusEnum.SUCCESS.name(), "");
+		userMoneyDao.save(userMoney);
+	}
+
+	@Override
+	@Transactional
+	public void payByScore(Long userId, Order order) {
+		UserScore userScore = userScoreDao.findByUserId(userId);
+		if (userScore == null) {
+			throw BusinessException.build("用户积分不存在,请联系管理员");
+		}
+
+		Long amount = BigDecimal.valueOf(order.getTotalAmount().doubleValue() * scorePayRate).longValue();
+		if (userScore.getAvailableScore().compareTo(amount) < 0) {
+			throw BusinessException.build("可用积分不足");
+		}
+
+		userScore.setAvailableScore(userScore.getAvailableScore() - amount);
+		updatePayInfo(order, null, PayMethodEnum.SCORE.name(),
+				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  order.getTotalAmount(), order.getTotalAmount(),
+				PayStatusEnum.SUCCESS.name(), "");
+		userScoreDao.save(userScore);
 	}
 }
