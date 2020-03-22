@@ -2,7 +2,6 @@ package me.izhong.jobs.manage;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
-import me.izhong.common.model.ReturnT;
 import me.izhong.jobs.model.ShopUser;
 
 /**
@@ -18,7 +17,7 @@ public interface IShopUserMngFacade {
 
     ShopUser edit(ShopUser user);
 
-    PageModel<ShopUser> pageList(PageRequest request, ShopUser group);
+    PageModel<ShopUser> pageList(PageRequest request, ShopUser shopUser);
 
-    boolean remove(Long jobId);
+	boolean remove(String ids);
 }

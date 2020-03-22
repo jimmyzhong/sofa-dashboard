@@ -1,23 +1,26 @@
 package me.izhong.jobs.admin.controller;
 
-import me.izhong.common.util.Convert;
-import me.izhong.dashboard.common.annotation.Log;
-import me.izhong.dashboard.common.constants.BusinessType;
-import me.izhong.common.exception.BusinessException;
-import me.izhong.db.mongo.util.PageRequestUtil;
-import me.izhong.common.domain.PageModel;
-import me.izhong.jobs.admin.config.ShopPermissions;
-import me.izhong.jobs.admin.service.ShopServiceReference;
-import me.izhong.common.annotation.AjaxWrapper;
-import me.izhong.jobs.model.ShopUser;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
+import me.izhong.common.annotation.AjaxWrapper;
+import me.izhong.common.domain.PageModel;
+import me.izhong.common.exception.BusinessException;
+import me.izhong.dashboard.common.annotation.Log;
+import me.izhong.dashboard.common.constants.BusinessType;
+import me.izhong.db.mongo.util.PageRequestUtil;
+import me.izhong.jobs.admin.config.ShopPermissions;
+import me.izhong.jobs.admin.service.ShopServiceReference;
+import me.izhong.jobs.model.ShopUser;
 
 @Controller
 @RequestMapping("/ext/shop/user")
@@ -34,30 +37,23 @@ public class ShopUserController {
 	}
 
 	@RequiresPermissions(ShopPermissions.User.VIEW)
-	@RequestMapping("/view")
-	@AjaxWrapper
-	public ShopUser view(Long userId) {
-		return shopServiceReference.userService.find(userId);
-	}
-
-	@RequiresPermissions(ShopPermissions.User.VIEW)
 	@RequestMapping("/list")
 	@AjaxWrapper
-	public PageModel<ShopUser> pageList(HttpServletRequest request, ShopUser ino) {
-		PageModel<ShopUser>  pm = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request),ino);
-		return pm;
+	public PageModel<ShopUser> pageList(HttpServletRequest request, ShopUser shopUser) {
+		PageModel<ShopUser> page = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request), shopUser);
+		return page;
 	}
 
 	@GetMapping("/edit/{userId}")
-	public String edit(@PathVariable("userId") Long userId,Model model) {
-		if(userId == null){
-			throw BusinessException.build("userId 不能为空");
+	public String edit(@PathVariable("userId") Long userId, Model model) {
+		if (userId == null) {
+			throw BusinessException.build("userId不能为空");
 		}
-		ShopUser u = shopServiceReference.userService.find(userId);
-		if(u == null) {
-			throw BusinessException.build(String.format("用户不存在%s",userId));
+		ShopUser user = shopServiceReference.userService.find(userId);
+		if (user == null) {
+			throw BusinessException.build(String.format("用户不存在%s", userId));
 		}
-		model.addAttribute("user",u);
+		model.addAttribute("user", user);
 		return prefix + "/edit";
 	}
 
@@ -65,26 +61,33 @@ public class ShopUserController {
 	@RequiresPermissions(ShopPermissions.User.EDIT)
 	@PostMapping("/edit")
 	@AjaxWrapper
-	public void edit(ShopUser user) {
-		ShopUser u = shopServiceReference.userService.find(user.getId());
-		if(u == null) {
-			throw BusinessException.build(String.format("用户不存在%s",user.getId()));
+	public void edit(ShopUser shopUser) {
+		ShopUser user = shopServiceReference.userService.find(shopUser.getId());
+		if (user == null) {
+			throw BusinessException.build(String.format("用户不存在%s", shopUser.getId()));
 		}
-		ShopUser editUser = new ShopUser();
-		editUser.setId(user.getId());
-		if(StringUtils.isNotBlank(user.getLoginName())) {
-			editUser.setLoginName(user.getLoginName());
+		ShopUser newUser = new ShopUser();
+		newUser.setId(shopUser.getId());
+		if (StringUtils.isNotBlank(shopUser.getLoginName())) {
+			newUser.setLoginName(shopUser.getLoginName());
 		}
-		if(StringUtils.isNotBlank(user.getNickName())) {
-			editUser.setNickName(user.getNickName());
+		if (StringUtils.isNotBlank(shopUser.getNickName())) {
+			newUser.setNickName(shopUser.getNickName());
 		}
-		if(StringUtils.isNotBlank(user.getPhone())) {
-			editUser.setPhone(user.getPhone());
+		if (StringUtils.isNotBlank(shopUser.getPassword())) {
+			newUser.setPassword(shopUser.getPassword());
 		}
-		if(StringUtils.isNotBlank(user.getPassword())) {
-			editUser.setPassword(user.getPassword());
+		shopServiceReference.userService.edit(newUser);
+	}
+
+	@GetMapping("/detail/{userId}")
+	public String detail(@PathVariable("userId") Long userId, Model model) {
+		ShopUser user = shopServiceReference.userService.find(userId);
+		if (user == null) {
+			throw BusinessException.build(String.format("用户不存在%s", userId));
 		}
-		shopServiceReference.userService.edit(editUser);
+		model.addAttribute("user", user);
+		return prefix + "/detail";
 	}
 
 	@Log(title = "APP用户", businessType = BusinessType.DELETE)
@@ -92,12 +95,9 @@ public class ShopUserController {
 	@RequestMapping("/remove")
 	@AjaxWrapper
 	public void remove(String ids) {
-		Long[] uids = Convert.toLongArray(ids);
-		for(Long uid : uids) {
-			boolean rt = shopServiceReference.userService.remove(uid);
-			if (!rt) {
-				throw BusinessException.build("删除失败");
-			}
+		boolean result = shopServiceReference.userService.remove(ids);
+		if (!result) {
+			throw BusinessException.build("删除失败");
 		}
 	}
 

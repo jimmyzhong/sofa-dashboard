@@ -1,27 +1,30 @@
 package me.izhong.shop.service.mng;
 
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Service;
+
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
-import me.izhong.common.exception.BusinessException;
+import me.izhong.common.util.Convert;
 import me.izhong.jobs.manage.IShopUserMngFacade;
 import me.izhong.jobs.model.ShopUser;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.util.PageableConvertUtil;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -78,13 +81,14 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
         removeWhiteSpaceParam(user);
 
         ExampleMatcher userMatcher = ExampleMatcher.matchingAny()
-                .withMatcher("email", ExampleMatcher.GenericPropertyMatchers.ignoreCase())
+        		.withMatcher("nickName", match -> match.contains())
+                .withMatcher("phone", match -> match.contains())
                 .withIgnorePaths("password");
 
         Example<User> example = Example.of(user, userMatcher);
 
         Page<User> userPage = userDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-        List<ShopUser> shopUsers = userPage.getContent().stream().map(u->{
+        List<ShopUser> shopUsers = userPage.getContent().stream().map(u -> {
             ShopUser suser = new ShopUser();
             BeanUtils.copyProperties(u, suser);
             return suser;
@@ -111,12 +115,16 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
     }
 
     @Override
-    public boolean remove(Long userId) {
-        Optional<User> user = userDao.findById(userId);
-        if (user.isPresent()){
-            userDao.delete(user.get());
-            return true;
-        }
-        return false;
+    public boolean remove(String ids) {
+		try {
+	    	Long[] uids = Convert.toLongArray(ids);
+			for (Long uid : uids) {
+				userService.deleteById(uid);
+			}
+			return true;
+		} catch (Exception e) {
+			log.info("delete error:", e);
+			return false;
+		}
     }
 }

@@ -293,4 +293,10 @@ public class UserService implements IUserService {
         user.setAlipayName(alipayName);
         userDao.save(user);
     }
+
+	@Override
+	@Transactional
+	public void deleteById(Long userId) {
+		userDao.deleteById(userId);
+	}
 }

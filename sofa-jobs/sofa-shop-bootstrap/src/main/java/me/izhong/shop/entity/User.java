@@ -15,7 +15,11 @@ import java.sql.Timestamp;
 @Table(name = "USER")
 @SequenceGenerator(name = "USER_SEQ", sequenceName = "USER_SEQ", allocationSize = 1)
 public class User extends EditableEntity {
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	@Id
     @GeneratedValue(generator = "USER_SEQ", strategy = GenerationType.SEQUENCE)
     private Long id;
     @Column(name = "PASSWORD", nullable = false, length = 64)
