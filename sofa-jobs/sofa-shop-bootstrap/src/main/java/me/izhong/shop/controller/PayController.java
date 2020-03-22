@@ -281,21 +281,22 @@ public class PayController {
         if(StringUtils.isEmpty(params.getOrderNo())) {
             throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
         }
-        if (StringUtils.isEmpty(params.getPassword())) {
-            throw BusinessException.build("请输入支付密码");
-        }
+        // TODO skip pass valid
+//        if (StringUtils.isEmpty(params.getPassword())) {
+//            throw BusinessException.build("请输入支付密码");
+//        }
 
         SessionInfo session = CacheUtil.getSessionInfo(request);
-        User user = userService.findById(session.getId());
+//        User user = userService.findById(session.getId());
 
-        if (StringUtils.isEmpty(user.getAssetPassword())) {
-            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
-        }
+//        if (StringUtils.isEmpty(user.getAssetPassword())) {
+//            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
+//        }
 
-        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
-                user.getAssetPassword())) {
-            throw BusinessException.build("支付密码不正确");
-        }
+//        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
+//                user.getAssetPassword())) {
+//            throw BusinessException.build("支付密码不正确");
+//        }
 
         String orderNo = params.getOrderNo();
         Order order  = orderService.findByOrderNo(orderNo);
@@ -320,21 +321,21 @@ public class PayController {
         if(StringUtils.isEmpty(params.getOrderNo())) {
             throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
         }
-        if (StringUtils.isEmpty(params.getPassword())) {
-            throw BusinessException.build("请输入支付密码");
-        }
+//        if (StringUtils.isEmpty(params.getPassword())) {
+//            throw BusinessException.build("请输入支付密码");
+//        }
 
         SessionInfo session = CacheUtil.getSessionInfo(request);
-        User user = userService.findById(session.getId());
+//        User user = userService.findById(session.getId());
 
-        if (StringUtils.isEmpty(user.getAssetPassword())) {
-            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
-        }
+//        if (StringUtils.isEmpty(user.getAssetPassword())) {
+//            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
+//        }
 
-        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
-                user.getAssetPassword())) {
-            throw BusinessException.build("支付密码不正确");
-        }
+//        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
+//                user.getAssetPassword())) {
+//            throw BusinessException.build("支付密码不正确");
+//        }
 
         String orderNo = params.getOrderNo();
         Order order  = orderService.findByOrderNo(orderNo);
