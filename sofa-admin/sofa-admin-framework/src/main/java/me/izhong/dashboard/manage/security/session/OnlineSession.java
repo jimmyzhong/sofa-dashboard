@@ -6,6 +6,8 @@ import lombok.ToString;
 import me.izhong.dashboard.manage.entity.SysUserOnline;
 import org.apache.shiro.session.mgt.SimpleSession;
 
+import java.util.Date;
+
 /**
  * 在线用户会话属性
  */
@@ -14,26 +16,6 @@ import org.apache.shiro.session.mgt.SimpleSession;
 @ToString
 public class OnlineSession extends SimpleSession {
     private static final long serialVersionUID = 1L;
-
-//    /**
-//     * 用户ID
-//     */
-//    private Long userId;
-//
-//    /**
-//     * 用户名称
-//     */
-//    private String loginName;
-//
-//    /**
-//     * 部门名称
-//     */
-//    private String deptName;
-//
-//    /**
-//     * 用户头像
-//     */
-//    private String avatar;
 
     /**
      * 登录IP地址
@@ -49,6 +31,8 @@ public class OnlineSession extends SimpleSession {
      * 操作系统
      */
     private String os;
+
+    private Date realmUpdateTime;
 
     /**
      * 在线状态

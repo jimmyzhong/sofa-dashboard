@@ -1,7 +1,11 @@
 package me.izhong.dashboard.manage.security;
 
 import me.izhong.common.model.UserInfo;
+import me.izhong.dashboard.common.util.SpringUtil;
+import me.izhong.dashboard.manage.security.service.SysShiroService;
+import me.izhong.dashboard.manage.security.session.OnlineSession;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
@@ -23,6 +27,13 @@ public class UserInfoContextHelper {
 
     public static String getSessionId() {
         return SecurityUtils.getSubject().getSession() == null ? null : String.valueOf(SecurityUtils.getSubject().getSession().getId());
+    }
+
+    public static OnlineSession getSession() {
+        Subject subject = SecurityUtils.getSubject();
+        Session session = SpringUtil.getBean(SysShiroService.class).getSession(subject.getSession().getId());
+        OnlineSession onlineSession = (OnlineSession)session;
+        return onlineSession;
     }
 
     public static String getIp() {
