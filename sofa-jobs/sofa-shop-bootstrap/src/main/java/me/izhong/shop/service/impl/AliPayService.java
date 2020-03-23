@@ -35,9 +35,9 @@ public class AliPayService {
     @Qualifier("getAlipayClient")
     @Autowired
     AlipayClient alipayClient;
-//    @Qualifier("getAlipayCertifiedClient")
-//    @Autowired
-//    AlipayClient alipayCertifiedClient;
+    @Qualifier("getAlipayCertifiedClient")
+    @Autowired
+    AlipayClient alipayCertifiedClient;
     @Autowired
     AliPayProperties alipayProperties;
     @Autowired
@@ -105,7 +105,7 @@ public class AliPayService {
         request.setBizContent(bizContent.toString());
         AlipayFundTransUniTransferResponse response = null;
         try {
-            response = alipayClient.certificateExecute(request);
+            response = alipayCertifiedClient.certificateExecute(request);
             if(response.isSuccess()){
                 log.info("提现调用成功," + outTradeNo);
             } else {
@@ -131,7 +131,7 @@ public class AliPayService {
         request.setBizContent(bizContent.toString());
         AlipayFundTransOrderQueryResponse response = null;
         try {
-            response = alipayClient.certificateExecute(request);
+            response = alipayCertifiedClient.certificateExecute(request);
             if(response.isSuccess()){
                 System.out.println("调用成功");
             } else {

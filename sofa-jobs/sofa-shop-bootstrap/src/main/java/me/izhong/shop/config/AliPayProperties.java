@@ -5,6 +5,7 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.CertAlipayRequest;
 import com.alipay.api.DefaultAlipayClient;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +17,7 @@ import javax.annotation.PostConstruct;
 @ConfigurationProperties(prefix = "alipay")
 @Component
 @Configuration
+@Slf4j
 public class AliPayProperties {
     String url;
     String appId;
@@ -64,6 +66,7 @@ public class AliPayProperties {
             certAlipayRequest.setRootCertPath(getCertifiedAliRootKeyPath());
             return new DefaultAlipayClient(certAlipayRequest);
         }catch (AlipayApiException exp) {
+            log.error("开发请修改application.yaml");
         }
         return null;
     }
