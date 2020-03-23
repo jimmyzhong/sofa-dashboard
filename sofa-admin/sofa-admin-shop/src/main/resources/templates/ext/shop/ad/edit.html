@@ -131,6 +131,24 @@
 				$.modal.alertWarning(labelMap+"不能为空");
 				return;
 			}
+			if($("#adType").val()!="7"&&($("#adLink").val())){
+				var adType=$('#adType').val();
+				var adLink=$('#adLink').val();
+				if(adType==1&&!SHOP_COMMON.test.isURL(adLink)){
+					$.modal.alertWarning("链接格式不对");
+					return;
+				}else{
+					var regPos = /^\d+$/; // 非负整数
+					var adLink=$('#adLink').val();
+					var adType=$('#adType').val();
+					console.log("adLink",adLink)
+					if(!regPos.test(adLink)){
+						var labelMap={2:"商品id",3:"拍卖id",4:"寄售商品id",5:"文章id"}[adType];
+						$.modal.alertWarning(labelMap+"格式不对");
+						return;
+					}
+				}
+			}
 			if ($.validate.form()) {
 				var data = $("#form-shop-ad-edit").serializeArray();
 				SHOP_COMMON.ajax.pageSave(prefix + "/edit",data)
