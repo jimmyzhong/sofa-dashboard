@@ -70,7 +70,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
-					<button type="button" class="btn btn-w-m btn-primary" onclick="submitHandler()">提交</button>
+					<a type="button" class="btn btn-w-m btn-primary" onclick="submit()">提交</a>
 				</div>
 			</div>
 
@@ -105,7 +105,7 @@
 				$("#imageUrlCover").attr("src",result.data.pictureUrl)
 			})
 		}
-		function submitHandler() {
+		function submit() {
 			if(!$("#imageUrl").val()){
 				$.modal.alertWarning("广告图片不能为空");
 				return;
@@ -118,7 +118,8 @@
 			}
 			if ($.validate.form()) {
 				var data = $("#form-shop-ad-add").serializeArray();
-				$.operate.save(prefix + "/add", data);
+				SHOP_COMMON.ajax.pageSave(prefix + "/add",data)
+				// $.operate.save(prefix + "/add", data);
 			}
 		}
 	</script>
