@@ -108,7 +108,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
-					<a type="button" class="btn btn-w-m btn-primary" onclick="submitHandler()">提交</a>
+					<a type="button" class="btn btn-w-m btn-primary" onclick="submit()">提交</a>
 					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
 				</div>
 			</div>
@@ -158,7 +158,7 @@
 			onkeyup: false,
 			focusCleanup: true
 		});
-		function submitHandler() {
+		function submit() {
 			if(!$("#productPicInput").val()){
 				$.modal.alertWarning("封面图不能为空");
 				return;
