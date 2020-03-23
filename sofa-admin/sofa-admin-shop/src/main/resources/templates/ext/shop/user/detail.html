@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:include="include :: header('用户详情')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<div class="ibox">
+		<div class="ibox-title">
+			<h5 th:text="${user.nickName}"></h5>
+		</div>
+		<div class="ibox-content">
+			<div class="row  m-t-sm">
+				<div class="col-md-2" style="text-align: center">
+					<img id="productPic_img" class="img-circle img-lg" th:src="${user.avatar}">
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label class="col-sm-5 control-label is-required">登陆名：</label>
+						<div class="col-sm-7">
+							<p th:text="${user.loginName}"></p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label is-required">姓名：</label>
+						<div class="col-sm-7">
+							<p th:text="${user.name}"></p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label is-required">手机号：</label>
+						<div class="col-sm-7">
+							<p th:text="${user.phone}"></p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">
+						<label class="col-sm-5 control-label is-required">邮箱：</label>
+						<div class="col-sm-7">
+							<p th:text="${user.email}"></p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label is-required">最近登陆时间：</label>
+						<div class="col-sm-7">
+							<p th:text="${user.loginTime}"></p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-5 control-label is-required">加入时间：</label>
+						<div class="col-sm-7">
+							<p th:text="${user.registerTime}"></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript" th:inline="javascript">
+	var prefix = ctx + "ext/shop/version";
+</script>
+</body>
+</html>
