@@ -2,7 +2,6 @@ package me.izhong.jobs.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -19,11 +18,11 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
-import me.izhong.jobs.model.ShopVersions;
+import me.izhong.jobs.model.ShopAppVersions;
 
 @Controller
 @RequestMapping("/ext/shop/version")
-public class ShopVersionController {
+public class ShopAppVersionController {
 
 	private String prefix = "ext/shop/version";
 
@@ -38,10 +37,10 @@ public class ShopVersionController {
 	@RequiresPermissions(ShopPermissions.Version.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
-    public PageModel<ShopVersions> list(
+    public PageModel<ShopAppVersions> list(
     		HttpServletRequest request,
 			@RequestParam(value = "type", required = false) String type) {
-		PageModel<ShopVersions> page = shopServiceReference.versionService.pageList(PageRequestUtil.fromRequest(request), type);
+		PageModel<ShopAppVersions> page = shopServiceReference.appVersionService.pageList(PageRequestUtil.fromRequest(request), type);
 		return page;
     }
 
@@ -53,17 +52,17 @@ public class ShopVersionController {
 	@RequiresPermissions(ShopPermissions.Version.ADD)
     @PostMapping("/add")
     @AjaxWrapper
-    public void add(ShopVersions shopVersion) {
-    	checkField(shopVersion.getVersion(), "版本号");
-    	checkField(shopVersion.getDesc(), "版本内容");
-    	checkField(shopVersion.getType(), "版本类型");
-		checkField(shopVersion.getUrl(), "版本链接");
-    	shopServiceReference.versionService.create(shopVersion);
+    public void add(ShopAppVersions shopAppVersion) {
+    	checkField(shopAppVersion.getVersion(), "版本号");
+    	checkField(shopAppVersion.getDesc(), "版本内容");
+    	checkField(shopAppVersion.getType(), "版本类型");
+		checkField(shopAppVersion.getUrl(), "版本链接");
+    	shopServiceReference.appVersionService.create(shopAppVersion);
     }
 
     @GetMapping("/edit/{id}")
     public String edit(@PathVariable("id") Long id, ModelMap model) {
-		ShopVersions shopVersion = shopServiceReference.versionService.find(id);
+		ShopAppVersions shopVersion = shopServiceReference.appVersionService.find(id);
 		if (shopVersion == null) {
 			throw BusinessException.build(String.format("版本信息不存在%s", id));
 		}
@@ -74,12 +73,22 @@ public class ShopVersionController {
 	@RequiresPermissions(ShopPermissions.Version.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
-    public void edit(ShopVersions shopVersion) {
-    	checkField(shopVersion.getVersion(), "版本号");
-    	checkField(shopVersion.getDesc(), "版本内容");
-    	checkField(shopVersion.getType(), "版本类型");
-		checkField(shopVersion.getUrl(), "版本链接");
-		shopServiceReference.versionService.edit(shopVersion);
+    public void edit(ShopAppVersions shopAppVersion) {
+    	checkField(shopAppVersion.getVersion(), "版本号");
+    	checkField(shopAppVersion.getDesc(), "版本内容");
+    	checkField(shopAppVersion.getType(), "版本类型");
+		checkField(shopAppVersion.getUrl(), "版本链接");
+		shopServiceReference.appVersionService.edit(shopAppVersion);
+    }
+
+	@RequiresPermissions(ShopPermissions.Version.REMOVE)
+    @PostMapping("/remove")
+    @AjaxWrapper
+    public void remove(String ids) {
+    	boolean result = shopServiceReference.appVersionService.remove(ids);
+    	if (!result) {
+    		throw BusinessException.build("删除失败");
+    	}
     }
 
     /**

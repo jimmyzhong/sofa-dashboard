@@ -16,8 +16,8 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Entity
-@Table(name = "VERSIONS")
-public class Versions {
+@Table(name = "APP_VERSIONS")
+public class AppVersions {
 
 	@Id
     @GeneratedValue

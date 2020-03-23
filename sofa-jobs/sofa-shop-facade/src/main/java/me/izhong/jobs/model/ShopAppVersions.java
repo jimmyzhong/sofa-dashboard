@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ShopVersions implements Serializable {
+public class ShopAppVersions implements Serializable {
 
     /**
 	 * 
