@@ -54,7 +54,7 @@ var table = {
                     showFooter: false,
                     search: false,
                     showSearch: true,
-                    showPageGo: false,
+                    showPageGo: true,
                     showRefresh: true,
                     showColumns: true,
                     showToggle: true,
