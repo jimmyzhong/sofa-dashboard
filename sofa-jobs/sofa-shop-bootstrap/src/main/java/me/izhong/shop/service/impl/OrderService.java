@@ -25,10 +25,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -495,24 +497,40 @@ public class OrderService implements IOrderService {
 	}
 
 	public PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam) {
-		Order order = new Order();
-		order.setUserId(userId);
-		if (!StringUtils.isEmpty(queryParam.getStatus())) {
-			int state= OrderStateEnum.getStateByComment(queryParam.getStatus());
-			if (state >= 0) {
-				order.setStatus(state);
-			}
-		}
-		ExampleMatcher matcher = ExampleMatcher.matchingAll()
-				.withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
-				.withMatcher("status", ExampleMatcher.GenericPropertyMatchers.exact());
-
-		Example<Order> example = Example.of(order, matcher);
+//		Order order = new Order();
+//		order.setUserId(userId);
+//		if (!StringUtils.isEmpty(queryParam.getStatus())) {
+//			int state= OrderStateEnum.getStateByComment(queryParam.getStatus());
+//			if (state >= 0) {
+//				order.setStatus(state);
+//			}
+//		}
+//		ExampleMatcher matcher = ExampleMatcher.matchingAll()
+//				.withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
+//				.withMatcher("status", ExampleMatcher.GenericPropertyMatchers.exact());
+//
+//		Example<Order> example = Example.of(order, matcher);
 		Sort sort = Sort.by(Sort.Direction.DESC, "orderSn");
 
+		Specification<Order> specification = (r, q, cb) -> {
+			Predicate p = cb.equal(r.get("userId"), userId);
+			if (!StringUtils.isEmpty(queryParam.getStatus())) {
+				int state= OrderStateEnum.getStateByComment(queryParam.getStatus());
+				if (state >= 0) {
+					p = cb.and(p, cb.equal(r.get("status"), state));
+				}
+			}
+
+			Predicate notDel = cb.or(cb.equal(r.get("isDelete"), 0), cb.isNull(r.get("isDelete")));
+			Predicate goodsOrder = r.get("orderType").in(NORMAL_GOODS.getType(), RESALE_GOODS.getType());
+
+			p = cb.and(p, notDel, goodsOrder);
+
+			return p;
+		};
 		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),
 				Long.valueOf(queryParam.getPageSize()).intValue(), sort);
-		Page<Order> orders = orderDao.findAll(example, pageableReq);
+		Page<Order> orders = orderDao.findAll(specification, pageableReq);
 
 		List<OrderDTO> dtos = orders.getContent().stream()
 				.map(o->checkOrderExpired(o))
