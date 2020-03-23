@@ -31,6 +31,13 @@ public class AliPayProperties {
     String aliPubKeyPath;
     String aliRootKeyPath;
 
+    //certified, used to transfer
+    String certifiedAppId;
+    String certifiedAppPrivateKey;
+    String certifiedAppPubKeyPath;
+    String certifiedAliRootKeyPath;
+    String certifiedAliPubKeyPath;
+
 //    @PostConstruct
 //    public void setUp(){
 //        java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -47,14 +54,14 @@ public class AliPayProperties {
         try {
             CertAlipayRequest certAlipayRequest = new CertAlipayRequest();
             certAlipayRequest.setServerUrl(getUrl());
-            certAlipayRequest.setAppId(getAppId());
-            certAlipayRequest.setPrivateKey(getAppPrivateKey());
+            certAlipayRequest.setAppId(getCertifiedAppId());
+            certAlipayRequest.setPrivateKey(getCertifiedAppPrivateKey());
             certAlipayRequest.setFormat("json");
             certAlipayRequest.setCharset(getCharset());
             certAlipayRequest.setSignType(getSignType());
-            certAlipayRequest.setCertPath(getAppPubKeyPath());
-            certAlipayRequest.setAlipayPublicCertPath(getAliPubKeyPath());
-            certAlipayRequest.setRootCertPath(getAliRootKeyPath());
+            certAlipayRequest.setCertPath(getCertifiedAppPubKeyPath());
+            certAlipayRequest.setAlipayPublicCertPath(getCertifiedAliPubKeyPath());
+            certAlipayRequest.setRootCertPath(getCertifiedAliRootKeyPath());
             return new DefaultAlipayClient(certAlipayRequest);
         }catch (AlipayApiException exp) {
         }
