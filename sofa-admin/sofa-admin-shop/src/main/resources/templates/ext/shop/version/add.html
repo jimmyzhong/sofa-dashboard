@@ -24,9 +24,9 @@
         <div class="form-group">
             <label class="col-sm-3 control-label is-required">下载链接：</label>
             <div class="col-sm-8">
-				<div class="input-group">
+				<div style="position: relative">
 					<input class="form-control" type="text" name="url" id="url" required>
-					<label class="input-group-btn" id="upLoad" style="display: none">
+					<label class="input-group-btn" id="upLoad" style="display: none;position: absolute;top: 0;right: 48px">
 						<a type="button" class="btn btn-primary">上传</a>
 						<input onchange="uploadImg()" style="display: none" type="file" class="" id="imageFile"
 							   accept="image/*"/>
@@ -55,8 +55,8 @@
 	function uploadImg(){
 		var formdata = new FormData();
 		formdata.append("file", $("#imageFile")[0].files[0]);
-		SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
-			$("#url").val(result.data.pictureUrl)
+		SHOP_COMMON.ajax.uploadFile(formdata,function (result) {
+			$("#url").val(result.data.fileUrl)
 		})
 	}
 

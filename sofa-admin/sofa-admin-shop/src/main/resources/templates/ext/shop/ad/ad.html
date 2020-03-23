@@ -50,6 +50,24 @@
     var editFlag = [[${@permission.hasPermi('ext:shop:ad:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:ad:remove')}]];
     var prefix = ctx + "ext/shop/ad";
+    $("#form-shop-ad-add").validate({
+        onkeyup: false,
+        rules: {
+            adName: {
+                minlength: 2,
+                maxlength: 30,
+
+            },
+            content: {
+                minlength: 5,
+                maxlength: 60
+            },
+            adLink: {
+
+            }
+        },
+        focusCleanup: true
+    });
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
         $.modal.openTab("广告详情", url);

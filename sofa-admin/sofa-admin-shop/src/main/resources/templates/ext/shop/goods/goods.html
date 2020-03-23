@@ -107,20 +107,24 @@
                     title: '描述'
                 }, {
                     field: 'price',
-                    title: '市场价'
+                    title: '市场价',
+                    sortable: true
                 },
                 {
                     field: 'promotionPrice',
-                    title: '一口价'
+                    title: '一口价',
+                    sortable: true
                 },
                 {
                     field: 'stock',
-                    title: '库存'
+                    title: '库存',
+                    sortable: true
                 },
                 {
                     field: 'recommandStatus',
                     title: '推荐状态',
                     align: 'center',
+                    sortable: true,
                     formatter: function (value, row, index) {
                         return value?"推荐":"不推荐";
                     }
@@ -129,6 +133,7 @@
                     field: 'publishStatus',
                     title: '上架状态',
                     align: 'center',
+                    sortable: true,
                     formatter: function (value, row, index) {
                         return value?"上架":"下架";
                     }

@@ -10,7 +10,7 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">版本类型：</label>
 				<div class="col-sm-8">
-					<div>
+					<div id="type">
 						<span><input type="radio" name="type" value="Ios" th:field="*{type}" onchange="typeChange()">Ios</span>
 						<span style="margin-left: 10px"><input type="radio" name="type" value="Android" th:field="*{type}" onchange="typeChange()">Android</span>
 					</div>
@@ -27,9 +27,9 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">下载链接：</label>
 				<div class="col-sm-8">
-					<div>
+					<div style="position: relative">
 						<input class="form-control" type="text" name="url" id="url" required th:field="*{url}">
-						<label class="input-group-btn" id="upLoad">
+						<label class="input-group-btn" id="upLoad" style="position: absolute;top: 0;right: 48px">
 							<a type="button" class="btn btn-primary">上传</a>
 							<input onchange ="uploadImg()" style="display: none" type="file" class="" id="imageFile" accept="image/*"/>
 						</label>
@@ -56,8 +56,8 @@
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#imageFile")[0].files[0]);
-			SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
-				$("#url").val(result.data.pictureUrl)
+			SHOP_COMMON.ajax.uploadFile(formdata,function (result) {
+				$("#url").val(result.data.fileUrl)
 			})
 		}
 		$(function () {
