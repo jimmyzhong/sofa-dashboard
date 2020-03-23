@@ -100,7 +100,8 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         removeWhiteSpaceParam(goods);
 
         ExampleMatcher matcher = ExampleMatcher.matchingAny()
-                .withMatcher("productName", match -> match.contains());
+                .withMatcher("productName", match -> match.contains())
+                .withIgnorePaths("onIndexPage");
 
         Example<Goods> example = Example.of(goods, matcher);
 
