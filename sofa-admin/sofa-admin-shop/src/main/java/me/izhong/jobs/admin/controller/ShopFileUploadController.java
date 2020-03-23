@@ -39,4 +39,20 @@ public class ShopFileUploadController {
 		return result;
 	}
 
+	@PostMapping(value = "/file", consumes = "multipart/form-data")
+	@AjaxWrapper
+	public Map<String, Object> file(@RequestParam("file") MultipartFile file) {
+		if (file.getContentType() == null) {
+			throw BusinessException.build("上传的文件为空,请重新上传!");
+		}
+		String fielUrl = null;
+		try {
+			fielUrl = FileUploadUtil.upload(Global.getUploadPath(), file, null);
+		} catch (Exception e) {
+			log.error("上传文件失败", e);
+		}
+		Map<String, Object> result = new HashMap<>();
+		result.put("fileUrl", fielUrl);
+		return result;
+	}
 }

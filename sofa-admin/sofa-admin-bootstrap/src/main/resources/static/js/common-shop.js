@@ -31,6 +31,28 @@ var SHOP_COMMON={
                 }
             })
         },
+        uploadFile:function (formdata,sucBack) {
+            $.modal.loading("文件上传中");
+            $.ajax({
+                url: ctx + "ext/shop/oss/file",
+                data: formdata,
+                type: "post",
+                processData: false,
+                contentType: false,
+                success: function (result) {
+                    $.modal.closeLoading();
+                    if (result.code == web_status.SUCCESS) {
+                        sucBack(result)
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                },
+                error:function (err) {
+                    $.modal.closeLoading();
+                    $.modal.alertError("文件上传失败"+err.status);
+                }
+            })
+        },
         get:function (url,data,sucBack) {
             $.modal.loading("数据获取中");
             $.ajax({
