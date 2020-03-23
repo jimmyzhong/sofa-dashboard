@@ -71,12 +71,16 @@ public class UserAdminController {
     public PageModel<UserInfo> list(@RequestParam(value = "loginName", required = false) String loginName,
                                     @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
                                     @RequestParam(value = "deptId", required = false) Long deptId,
+                                    @RequestParam(value = "status", required = false) String status,
                                     HttpServletRequest request) {
         SysUser searchUser = new SysUser();
         searchUser.setPhoneNumber(phoneNumber);
         searchUser.setLoginName(loginName);
         searchUser.setDeptId(deptId);
         searchUser.setIsDelete(false);
+        if(StringUtils.isNotBlank(status)) {
+            searchUser.setStatus(status);
+        }
 
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
         if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
