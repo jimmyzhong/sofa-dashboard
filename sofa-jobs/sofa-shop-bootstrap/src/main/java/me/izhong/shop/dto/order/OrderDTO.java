@@ -26,6 +26,7 @@ public class OrderDTO {
     private String description; // 订单的描述
     private String payTradeNo;
     private String payStatus;
+    private Integer orderType;
     private Integer count;
     private LocalDateTime createTime;
     private String productPic;

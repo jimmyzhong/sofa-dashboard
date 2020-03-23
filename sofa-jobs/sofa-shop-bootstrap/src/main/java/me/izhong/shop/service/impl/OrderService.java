@@ -526,7 +526,8 @@ public class OrderService implements IOrderService {
 				.orderSn(o.getOrderSn()).id(o.getId()).count(o.getCount())
 				.totalAmount(o.getTotalAmount()).statusComment(getCommentByState(o.getStatus()))
 				.productPic(o.getProductPic()).unitPrice(o.getUnitPrice()).createTime(o.getCreateTime())
-				.subject(o.getSubject()).description(o.getDescription()).build())
+				.subject(o.getSubject()).description(o.getDescription())
+				.orderType(o.getOrderType()).build())
 				.collect(Collectors.toList());
 		return PageModel.instance(orders.getTotalElements(), dtos);
 	}
