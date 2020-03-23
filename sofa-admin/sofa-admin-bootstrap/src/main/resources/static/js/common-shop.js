@@ -72,6 +72,29 @@ var SHOP_COMMON={
                 }
             })
         },
+        pageSave:function (url,data,sucBack) {
+            console.log(JSON.stringify(data))
+            var sendData={}
+            for(var i=0;i<data.length;i++){
+                sendData[data[i].name]=data[i].value;
+            }
+            console.log(JSON.stringify(sendData))
+            $.modal.loading("数据提交中");
+            $.ajax({
+                cache: true,
+                url: url,
+                type: "POST",
+                data:sendData,
+                async: false,
+                success: function (result){
+                    $.operate.successTabCallback(result);
+                },
+                error:function (err) {
+                    $.modal.closeLoading();
+                    $.modal.alertError("系统错误");
+                }
+            })
+        },
     }
 }
 

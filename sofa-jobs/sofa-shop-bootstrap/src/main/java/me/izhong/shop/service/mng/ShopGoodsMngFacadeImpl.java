@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -98,7 +99,10 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         BeanUtils.copyProperties(shopGoods, goods);
         removeWhiteSpaceParam(goods);
 
-        Example<Goods> example = Example.of(goods);
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withMatcher("productName", match -> match.contains());
+
+        Example<Goods> example = Example.of(goods, matcher);
 
         Page<Goods> userPage = goodsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
         List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t -> {

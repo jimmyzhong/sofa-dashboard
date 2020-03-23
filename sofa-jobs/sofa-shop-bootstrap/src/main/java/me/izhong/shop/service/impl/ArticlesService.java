@@ -33,11 +33,16 @@ public class ArticlesService implements IArticlesService {
 	@Override
 	@Transactional
 	public void saveOrUpdate(Articles articles) {
-		Articles ats = findById(articles.getId());
-		ats.setTitle(articles.getTitle());
-		ats.setContent(articles.getContent());
-		ats.setUpdateTime(LocalDateTime.now());
-		articlesDao.save(ats);
+		if(articles.getId()==null){
+			articlesDao.save(articles);
+		}else{
+			Articles ats = findById(articles.getId());
+			ats.setTitle(articles.getTitle());
+			ats.setContent(articles.getContent());
+			ats.setUpdateTime(LocalDateTime.now());
+			articlesDao.save(ats);
+		}
+
 	}
 
 	@Override

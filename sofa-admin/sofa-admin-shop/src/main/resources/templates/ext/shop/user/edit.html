@@ -34,7 +34,7 @@
 	        if ($.validate.form()) {
 				var data = $("#form-shop-user-edit").serializeArray();
 				console.log("submit user==>",data)
-	        	$.operate.save(prefix + "/edit", data);
+	        	$.operate.saveTab(prefix + "/edit", data);
 	        }
 	    }
 	</script>
