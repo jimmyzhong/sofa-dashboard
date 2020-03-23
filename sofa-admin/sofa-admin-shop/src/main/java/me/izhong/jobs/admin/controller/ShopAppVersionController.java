@@ -70,6 +70,17 @@ public class ShopAppVersionController {
 		return prefix + "/edit";
     }
 
+	@GetMapping("/detail/{id}")
+	public String detail(@PathVariable("id") Long id, ModelMap model) {
+		ShopAppVersions shopVersion = shopServiceReference.appVersionService.find(id);
+		if (shopVersion == null) {
+			throw BusinessException.build(String.format("版本信息不存在%s", id));
+		}
+		model.addAttribute("version", shopVersion);
+		return prefix + "/detail";
+	}
+
+
 	@RequiresPermissions(ShopPermissions.Version.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper
@@ -90,6 +101,8 @@ public class ShopAppVersionController {
     		throw BusinessException.build("删除失败");
     	}
     }
+
+
 
     /**
      * 
