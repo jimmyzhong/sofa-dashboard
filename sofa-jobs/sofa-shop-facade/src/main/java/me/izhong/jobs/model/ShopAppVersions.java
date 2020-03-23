@@ -17,7 +17,7 @@ public class ShopAppVersions implements Serializable {
 	private Long id;
     private String type;
     private String version;
-    private String desc;
+    private String description;
     private String url; 
     private String forceUpdateVersion;
     private LocalDateTime createTime;

@@ -50,7 +50,7 @@ public class ShopAppVersionsMngFacadeImpl implements IShopAppVersionsMngFacade {
 		AppVersions version = appVersionsService.findById(shopVersions.getId());
 		version.setType(shopVersions.getType());
 		version.setVersion(shopVersions.getVersion());
-		version.setDesc(shopVersions.getDesc());
+		version.setDescription(shopVersions.getDescription());
 		version.setUrl(shopVersions.getUrl());
 		version.setForceUpdateVersion(shopVersions.getForceUpdateVersion());
 		version.setUpdateTime(LocalDateTime.now());

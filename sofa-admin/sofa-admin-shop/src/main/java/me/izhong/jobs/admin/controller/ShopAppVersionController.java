@@ -54,7 +54,7 @@ public class ShopAppVersionController {
     @AjaxWrapper
     public void add(ShopAppVersions shopAppVersion) {
     	checkField(shopAppVersion.getVersion(), "版本号");
-    	checkField(shopAppVersion.getDesc(), "版本内容");
+    	checkField(shopAppVersion.getDescription(), "版本内容");
     	checkField(shopAppVersion.getType(), "版本类型");
 		checkField(shopAppVersion.getUrl(), "版本链接");
     	shopServiceReference.appVersionService.create(shopAppVersion);
@@ -75,7 +75,7 @@ public class ShopAppVersionController {
     @AjaxWrapper
     public void edit(ShopAppVersions shopAppVersion) {
     	checkField(shopAppVersion.getVersion(), "版本号");
-    	checkField(shopAppVersion.getDesc(), "版本内容");
+    	checkField(shopAppVersion.getDescription(), "版本内容");
     	checkField(shopAppVersion.getType(), "版本类型");
 		checkField(shopAppVersion.getUrl(), "版本链接");
 		shopServiceReference.appVersionService.edit(shopAppVersion);

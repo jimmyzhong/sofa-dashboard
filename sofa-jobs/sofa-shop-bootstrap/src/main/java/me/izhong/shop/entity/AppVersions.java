@@ -26,8 +26,8 @@ public class AppVersions {
     private String type;
     @Column(name = "VERSION")
     private String version;
-    @Column(name = "DESC")
-    private String desc;
+    @Column(name = "DESCRIPTION")
+    private String description;
     @Column(name = "URL")
     private String url; 
     @Column(name = "FORCE_UPDATE_VERSION")
