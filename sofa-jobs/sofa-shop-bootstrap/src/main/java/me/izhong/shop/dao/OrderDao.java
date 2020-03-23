@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,7 +14,7 @@ import me.izhong.shop.entity.Order;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface OrderDao extends JpaRepository<Order, Long> {
+public interface OrderDao extends JpaRepository<Order, Long>, JpaSpecificationExecutor {
 
 	Order findFirstByOrderSn(String orderSn);
 
