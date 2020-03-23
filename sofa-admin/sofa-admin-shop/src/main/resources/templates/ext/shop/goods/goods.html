@@ -14,6 +14,20 @@
                             商品名称：<input type="text" name="productName"/>
                         </li>
                         <li>
+                            上架状态：<select name="publishStatus">
+                            <option value="">所有</option>
+                            <option value="1">上架</option>
+                            <option value="0">下架</option>
+                        </select>
+                        <li>
+                        <li>
+                        推荐状态：<select name="recommandStatus">
+                            <option value="">所有</option>
+                            <option value="1">推荐</option>
+                            <option value="0">不推荐</option>
+                        </select>
+                        <li>
+                        <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
                                     class="fa fa-search"></i>&nbsp;搜索</a>
                             <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
@@ -102,6 +116,22 @@
                 {
                     field: 'stock',
                     title: '库存'
+                },
+                {
+                    field: 'recommandStatus',
+                    title: '推荐状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value?"推荐":"不推荐";
+                    }
+                },
+                {
+                    field: 'publishStatus',
+                    title: '上架状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value?"上架":"下架";
+                    }
                 },
                 {
                     title: '操作',
