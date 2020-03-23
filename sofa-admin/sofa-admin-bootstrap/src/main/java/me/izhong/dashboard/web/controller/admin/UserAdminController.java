@@ -132,6 +132,7 @@ public class UserAdminController {
         }
 
         dbUser.setStatus(user.getStatus());
+        dbUser.setIsDelete(false);
         dbUser.setPhoneNumber(user.getPhoneNumber());
         dbUser.setEmail(user.getEmail());
         dbUser.setUserName(user.getUserName());
@@ -231,6 +232,7 @@ public class UserAdminController {
     @PostMapping("/export")
     @AjaxWrapper
     public String export(HttpServletRequest request, SysUser user) {
+        user.setIsDelete(false);
         PageModel<SysUser> list = sysUserService.getPage(PageRequestUtil.fromRequestIgnorePageSize(request), user);
         ExcelUtil<SysUser> util = new ExcelUtil<SysUser>(SysUser.class);
         return util.exportExcel(list.getRows(), "用户数据");

@@ -380,6 +380,8 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
                     user.setSalt(Global.getSalt());
                     user.setPassword(MD5Util.encode(Global.getSalt() + password));
                     user.setCreateBy(operName);
+                    user.setUpdateBy(operName);
+                    user.setIsDelete(false);
                     user = saveUser(user);
                     successNum++;
                     successMsg.append("<br/>" + successNum + "、账号 " + user.getLoginName() + " 导入成功");
