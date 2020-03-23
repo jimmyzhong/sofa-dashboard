@@ -497,19 +497,6 @@ public class OrderService implements IOrderService {
 	}
 
 	public PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam) {
-//		Order order = new Order();
-//		order.setUserId(userId);
-//		if (!StringUtils.isEmpty(queryParam.getStatus())) {
-//			int state= OrderStateEnum.getStateByComment(queryParam.getStatus());
-//			if (state >= 0) {
-//				order.setStatus(state);
-//			}
-//		}
-//		ExampleMatcher matcher = ExampleMatcher.matchingAll()
-//				.withMatcher("userId", ExampleMatcher.GenericPropertyMatchers.exact())
-//				.withMatcher("status", ExampleMatcher.GenericPropertyMatchers.exact());
-//
-//		Example<Order> example = Example.of(order, matcher);
 		Sort sort = Sort.by(Sort.Direction.DESC, "orderSn");
 
 		Specification<Order> specification = (r, q, cb) -> {
@@ -522,10 +509,11 @@ public class OrderService implements IOrderService {
 			}
 
 			Predicate notDel = cb.or(cb.equal(r.get("isDelete"), 0), cb.isNull(r.get("isDelete")));
-			Predicate goodsOrder = r.get("orderType").in(NORMAL_GOODS.getType(), RESALE_GOODS.getType());
-
-			p = cb.and(p, notDel, goodsOrder);
-
+			Predicate orderType = r.get("orderType").in(NORMAL_GOODS.getType(), RESALE_GOODS.getType());
+			if (queryParam.getMoneyTypes() != null && !queryParam.getMoneyTypes().isEmpty()) {
+				orderType =  r.get("orderType").in(queryParam.getMoneyTypes());
+			}
+			p = cb.and(p, notDel, orderType);
 			return p;
 		};
 		Pageable pageableReq = PageRequest.of(Long.valueOf(queryParam.getPageNum()-1).intValue(),

@@ -20,7 +20,7 @@ public class PageQueryParamDTO extends PageRequest {
     private Long inviteUserId;
     private Long inviteUserId2;
     // 余额类型
-    private List<Integer> moneyTypes; // 1:充值,2:寄售商品,10:返现
+    private List<Integer> moneyTypes; // 0:普通商品,1:充值,2:寄售商品,10:返现
 
     public boolean validRequest() {
         if (this.getPageNum()<0) {
