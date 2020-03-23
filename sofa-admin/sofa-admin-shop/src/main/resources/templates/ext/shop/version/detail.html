@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:include="include :: header('版本详情')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m shop-detail-contain">
+		<div class="form-group">
+			<label class="col-sm-3 control-label is-required">版本类型：</label>
+			<div class="col-sm-8">
+				<p th:text="${version.type}"></p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label is-required">版本号：</label>
+			<div class="col-sm-8">
+				<p th:text="${version.version}"></p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label is-required">下载链接：</label>
+			<div class="col-sm-8">
+				<p th:text="${version.url}"></p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label is-required">版本介绍：</label>
+			<div class="col-sm-8">
+				<p th:text="${version.desc}"></p>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-sm-3 control-label is-required">最低更新版本：</label>
+			<div class="col-sm-8">
+				<p th:text="${version.forceUpdateVersion}"></p>
+			</div>
+		</div>
+	</form>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript" th:inline="javascript">
+	var prefix = ctx + "ext/shop/version";
+</script>
+</body>
+</html>

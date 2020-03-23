@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('版本管理')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="ext:shop:version:add">
+                <i class="fa fa-plus"></i> 新增
+            </a>
+            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"
+               shiro:hasPermission="ext:shop:version:remove">
+                <i class="fa fa-remove"></i> 删除
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var detailFlag = [[${@permission.hasPermi('ext:shop:version:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:version:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:version:remove')}]];
+    var prefix = ctx + "ext/shop/version";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            detailUrl: prefix + "/detail/{id}",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            sortName: "id",
+            sortOrder: "asc",
+            modalName: "版本管理",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '版本Id',
+                    sortable: true
+                },
+                {
+                    field: 'type',
+                    title: '版本类型'
+                },
+                {
+                    field: 'version',
+                    title: '版本号'
+                },
+                {
+                    field: 'url',
+                    title: '链接'
+                },
+                {
+                    field: 'forceUpdateVersion',
+                    title: '最低更新版本'
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs '+editFlag+'" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs '+detailFlag+'" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-edit"></i> 详情</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs '+removeFlag+'" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+</script>
+</body>
+</html>

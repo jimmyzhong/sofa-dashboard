@@ -57,9 +57,7 @@ public class ShopVersionController {
     	checkField(shopVersion.getVersion(), "版本号");
     	checkField(shopVersion.getDesc(), "版本内容");
     	checkField(shopVersion.getType(), "版本类型");
-    	if (!StringUtils.equals(shopVersion.getType(), "IOS")) {
-    		checkField(shopVersion.getUrl(), "版本链接");
-    	}
+		checkField(shopVersion.getUrl(), "版本链接");
     	shopServiceReference.versionService.create(shopVersion);
     }
 
@@ -80,9 +78,7 @@ public class ShopVersionController {
     	checkField(shopVersion.getVersion(), "版本号");
     	checkField(shopVersion.getDesc(), "版本内容");
     	checkField(shopVersion.getType(), "版本类型");
-    	if (!StringUtils.equals(shopVersion.getType(), "IOS")) {
-    		checkField(shopVersion.getUrl(), "版本链接");
-    	}
+		checkField(shopVersion.getUrl(), "版本链接");
 		shopServiceReference.versionService.edit(shopVersion);
     }
 
