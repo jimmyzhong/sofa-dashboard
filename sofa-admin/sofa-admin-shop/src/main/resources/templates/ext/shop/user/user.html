@@ -78,6 +78,12 @@
         var url = prefix + '/edit/' + id;
         $.modal.openTab("用户编辑", url);
     }
+    function integraldetail(id){
+        $.modal.open("用户积分明细", prefix + "/scoreDetail/"+id);
+    }
+    function balanceDetail(id){
+        $.modal.open("用户余额明细", prefix + "/balanceDetail/"+id);
+    }
     $(function () {
         var options = {
             url: prefix + "/list",
@@ -134,9 +140,9 @@
 						actions.push('<div class="btn-group">' +
                             '<a data-toggle="dropdown" class="btn btn-primary btn-xs">更多操作 <span class="caret"></span></a>' +
                             '<ul class="dropdown-menu">\n' +
-                            '    <li><a href="buttons.html#">充值明细</a></li>\n' +
-                            '    <li><a href="buttons.html#" class="font-bold">订单明细</a></li>\n' +
-                            '    <li><a href="buttons.html#">积分明细</a></li>\n' +
+                            '    <li><a onclick="balanceDetail(\'' + row.id + '\')">余额明细</a></li>\n' +
+                            '    <li><a href="buttons.html#">订单明细</a></li>\n' +
+                            '    <li><a onclick="integraldetail(\'' + row.id + '\')">积分明细</a></li>\n' +
                             '    <li><a href="buttons.html#">实名信息</a></li>\n' +
                             '    </ul></div>');
 						return actions.join('');

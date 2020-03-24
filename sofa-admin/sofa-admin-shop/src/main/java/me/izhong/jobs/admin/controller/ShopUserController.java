@@ -101,4 +101,15 @@ public class ShopUserController {
 		}
 	}
 
+	@GetMapping("/scoreDetail/{userId}")
+	public String scoreDetail(@PathVariable("userId") Long userId, Model model) {
+		model.addAttribute("userId", userId);
+		return prefix + "/scoreDetail";
+	}
+
+	@GetMapping("/balanceDetail/{userId}")
+	public String balanceDetail(@PathVariable("userId") Long userId, Model model) {
+		model.addAttribute("userId", userId);
+		return prefix + "/balanceDetail";
+	}
 }
