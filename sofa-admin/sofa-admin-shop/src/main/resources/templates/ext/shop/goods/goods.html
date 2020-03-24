@@ -21,10 +21,10 @@
                         </select>
                         <li>
                         <li>
-                        推荐状态：<select name="recommandStatus">
+                        推荐状态：<select name="onIndexPage">
                             <option value="">所有</option>
-                            <option value="1">推荐</option>
-                            <option value="0">不推荐</option>
+                            <option value=1>推荐</option>
+                            <option value=0>不推荐</option>
                         </select>
                         <li>
                         <li>
@@ -81,7 +81,7 @@
             removeUrl: prefix + "/remove",
             sortName: "id",
             sortOrder: "asc",
-            modalName: "执行器",
+            modalName: "商品管理",
             columns: [{
                 checkbox: true
             },
@@ -121,7 +121,7 @@
                     sortable: true
                 },
                 {
-                    field: 'recommandStatus',
+                    field: 'onIndexPage',
                     title: '推荐状态',
                     align: 'center',
                     sortable: true,
