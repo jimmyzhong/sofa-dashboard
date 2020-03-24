@@ -9,4 +9,6 @@ public interface IAppVersionsService {
 	void deleteById(Long id);
 
     AppVersions findById(Long id);
+
+    AppVersions latest(String type);
 }

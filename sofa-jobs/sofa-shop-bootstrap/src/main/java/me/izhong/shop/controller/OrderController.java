@@ -138,6 +138,19 @@ public class OrderController {
 		orderService.cancel(getCurrentUserId(request), orderRequest.getOrderNo());
     }
 
+	@PostMapping(value = "/deleteOrder")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="用户删除订单", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public void deleteOrder(@RequestBody SubmitOrderRequest orderRequest, HttpServletRequest request) {
+		if(orderRequest.getOrderNo()==null) {
+			throw BusinessException.build("订单号不能为空");
+		}
+		orderService.delete(getCurrentUserId(request), orderRequest.getOrderNo());
+	}
+
 	@PostMapping(value = "/list")
 	@ResponseBody
 	@RequireUserLogin

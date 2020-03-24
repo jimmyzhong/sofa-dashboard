@@ -38,7 +38,10 @@ public interface IOrderService {
 	void updatePayInfo(Order order, String externalOrderNo, String payMethod, String payType,
 					   BigDecimal payAmount, BigDecimal totalAmount, String state, String comment);
 
-	PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam);
+    @Transactional
+    void delete(Long currentUserId, String orderNo);
+
+    PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam);
 
 	boolean transferMoney(User user, String orderNo, Order order, AliPayService aliPayService);
 

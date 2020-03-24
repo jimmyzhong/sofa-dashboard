@@ -1,5 +1,6 @@
 package me.izhong.shop;
 
+import com.alibaba.fastjson.JSON;
 import me.izhong.shop.util.ShareCodeUtil;
 import org.junit.Test;
 
