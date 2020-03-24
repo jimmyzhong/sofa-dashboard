@@ -49,4 +49,5 @@ public class ShopGoods implements Serializable {
 	//降价次数
 	private Integer reducePriceCount;
 	private Integer isDelete;
+    private Boolean onIndexPage;
 }
