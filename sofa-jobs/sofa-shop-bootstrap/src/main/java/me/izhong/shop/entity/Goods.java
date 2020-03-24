@@ -70,7 +70,7 @@ public class Goods {
     @Column(name = "IS_DELETE")
     private Integer isDelete;
     @Column(name = "ON_INDEX_PAGE")
-    private Boolean onIndexPage = Boolean.FALSE;
+    private Boolean onIndexPage;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

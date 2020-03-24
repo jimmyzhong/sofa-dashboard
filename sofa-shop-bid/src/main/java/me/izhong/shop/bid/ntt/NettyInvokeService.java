@@ -39,7 +39,8 @@ public class NettyInvokeService {
 					//应答报文
 					Map map = new HashMap();
 					map.put("data",response);
-					map.put("code",response.getCode());
+					int code = response == null ? 200 : response.getCode();
+					map.put("code",code);
 					map.put("msg","success");
 
 					if (channel.isActive()) {
