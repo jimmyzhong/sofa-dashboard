@@ -6,11 +6,11 @@
 <body class="gray-bg">
 <div class="container-div">
     <div class="row">
-        <div class="btn-group-sm" id="addRule" role="group">
-            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="ext:shop:consignment:add">
-                <i class="fa fa-plus"></i> 新增
-            </a>
-        </div>
+<!--        <div class="btn-group-sm" id="addRule" role="group">-->
+<!--            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="ext:shop:consignment:add">-->
+<!--                <i class="fa fa-plus"></i> 新增-->
+<!--            </a>-->
+<!--        </div>-->
         <div class="col-sm-12 select-table table-striped">
             <table id="bootstrap-table" data-mobile-responsive="true"></table>
         </div>
@@ -22,10 +22,6 @@
     var editFlag = [[${@permission.hasPermi('ext:shop:consignment:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:consignment:remove')}]];
     var prefix = ctx + "ext/shop/consignmentRule";
-    function gotoDetail(id) {
-        var url = prefix + '/detail/' + id;
-        $.modal.openTab("规则详情", url);
-    }
     $(function () {
         var options = {
             url: prefix + "/list",
