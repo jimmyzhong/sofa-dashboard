@@ -1,8 +1,10 @@
 package me.izhong.shop.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.shop.util.json.CommaSplitList;
 
 import java.util.List;
 
@@ -20,6 +22,7 @@ public class PageQueryParamDTO extends PageRequest {
     private Long inviteUserId;
     private Long inviteUserId2;
     // 余额类型
+    @JSONField(name="moneyTypes", deserializeUsing = CommaSplitList.class)
     private List<Integer> moneyTypes; // 0:普通商品,1:充值,2:寄售商品,10:返现
 
     public boolean validRequest() {
