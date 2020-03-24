@@ -2,10 +2,13 @@ package me.izhong.shop.service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.model.ShopReceiverInfo;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
@@ -40,6 +43,8 @@ public interface IOrderService {
 
     @Transactional
     void delete(Long currentUserId, String orderNo);
+
+    Map<String, Integer> getCountOfStatus(Long currentUserId, MoneyTypeEnum type, List<OrderStateEnum> states);
 
     PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam);
 

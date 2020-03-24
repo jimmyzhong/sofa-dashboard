@@ -24,7 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +37,7 @@ import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -502,6 +502,20 @@ public class OrderService implements IOrderService {
 		Order order = orderDao.findFirstByOrderSn(orderNo);
 		order.setIsDelete(1);
 		orderDao.save(order);
+	}
+
+	@Override
+	public Map<String, Integer> getCountOfStatus(Long currentUserId, MoneyTypeEnum type, List<OrderStateEnum> states) {
+		List<Map<String, Integer>> list =  orderDao.selectOrderOfUserGroupByState(type.getType(), currentUserId,
+				states.stream().map(OrderStateEnum::getState).collect(Collectors.toList()));
+
+		Map<String, Integer> res = new HashMap<>();
+		for (Map<String, Integer> map : list) {
+			String status = OrderStateEnum.getCommentByState(map.get("status"));
+			Integer count = map.get("number");
+			res.put(status, count);
+		}
+		return res;
 	}
 
 	public PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam) {

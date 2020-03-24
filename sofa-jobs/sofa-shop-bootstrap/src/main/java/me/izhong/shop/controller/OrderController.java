@@ -10,6 +10,8 @@ import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
@@ -27,6 +29,10 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.service.IOrderService;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static me.izhong.shop.consts.OrderStateEnum.*;
 
@@ -150,6 +156,20 @@ public class OrderController {
 		}
 		orderService.delete(getCurrentUserId(request), orderRequest.getOrderNo());
 	}
+
+	@GetMapping(value = "/count/normal")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="统计信息", httpMethod = "GET")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public Map<String, Integer> countOrder(HttpServletRequest request) {
+
+		Map<String, Integer> map = orderService.getCountOfStatus(getCurrentUserId(request),
+				MoneyTypeEnum.NORMAL_GOODS, Arrays.asList(WAIT_DELIVER, DELIVERED));
+
+		return map;
+    }
 
 	@PostMapping(value = "/list")
 	@ResponseBody
