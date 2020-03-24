@@ -496,6 +496,14 @@ public class OrderService implements IOrderService {
 		return order;
 	}
 
+	@Override
+	@Transactional
+	public void delete(Long currentUserId, String orderNo) {
+		Order order = orderDao.findFirstByOrderSn(orderNo);
+		order.setIsDelete(1);
+		orderDao.save(order);
+	}
+
 	public PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "orderSn");
 

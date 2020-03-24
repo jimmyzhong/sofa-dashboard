@@ -7,4 +7,5 @@ import me.izhong.shop.entity.AppVersions;
 
 @Repository
 public interface AppVersionsDao extends JpaRepository<AppVersions, Long> {
+    AppVersions findFirstByTypeOrderByVersionDesc(String type);
 }

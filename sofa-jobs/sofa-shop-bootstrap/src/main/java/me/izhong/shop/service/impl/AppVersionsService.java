@@ -32,4 +32,8 @@ public class AppVersionsService implements IAppVersionsService {
 		return appVersionsDao.findById(id).orElseThrow(()-> BusinessException.build("找不到版本信息" + id));
 	}
 
+	@Override
+	public AppVersions latest(String type) {
+		return appVersionsDao.findFirstByTypeOrderByVersionDesc(type);
+	}
 }

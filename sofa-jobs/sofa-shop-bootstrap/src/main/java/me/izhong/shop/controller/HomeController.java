@@ -14,7 +14,9 @@ import me.izhong.shop.consts.Constants;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.entity.Ad;
+import me.izhong.shop.entity.AppVersions;
 import me.izhong.shop.service.IAdService;
+import me.izhong.shop.service.IAppVersionsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -43,6 +45,8 @@ public class HomeController {
 	@Autowired
     private IAdService adService;
 
+	@Autowired
+    private IAppVersionsService appVersionsService;
 
     @PostMapping(value = "/ad/list")
     @ResponseBody
@@ -56,6 +60,13 @@ public class HomeController {
     @ApiOperation(value="广告内容", httpMethod = "GET")
     public Ad detailAd(@PathVariable("adId") String adId) {
         return adService.findById(Long.valueOf(adId));
+    }
+
+    @GetMapping(value = "/version/{appType}")
+    @ResponseBody
+    @ApiOperation(value="版本", httpMethod = "GET")
+    public AppVersions latestAppversion(@PathVariable("appType") String appType) {
+        return appVersionsService.latest(appType);
     }
 
     @GetMapping(value = "/recommendProductList")
