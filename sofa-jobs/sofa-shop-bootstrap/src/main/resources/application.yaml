@@ -128,3 +128,12 @@ password:
 user:
   avatar:
     default: https://lpp-cn-pic.oss-cn-hangzhou.aliyuncs.com/shop/default_avatar.png
+
+---
+spring:
+  profiles: test
+
+alipay:
+  certifiedAppPubKeyPath: /home/server/shop/crt/appCertPublicKey_2015071600173316.crt
+  certifiedAliPubKeyPath: /home/server/shop/crt/alipayCertPublicKey_RSA2.crt
+  certifiedAliRootKeyPath: /home/server/shop/crt/alipayRootCert.crt

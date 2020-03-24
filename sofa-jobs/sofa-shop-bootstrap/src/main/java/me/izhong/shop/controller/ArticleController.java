@@ -21,4 +21,9 @@ public class ArticleController {
         return articlesService.findByType(type);
     }
 
+    @RequestMapping(value = "/detail/{id}")
+    public Articles contentType(@PathVariable("id") Long id) {
+        return articlesService.findById(id);
+    }
+
 }
