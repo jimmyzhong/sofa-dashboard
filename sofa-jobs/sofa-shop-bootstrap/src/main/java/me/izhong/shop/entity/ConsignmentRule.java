@@ -26,6 +26,10 @@ public class ConsignmentRule {
 	private String ruleNo;
     @Column(name = "LIMIT_RULE")
 	private String limitRule;
+    @Column(name="REDUCE_Value")
+    private String reduceValue;
+    @Column(name = "TIME_STEP")
+    private String timeStep;
     @Column(name = "BEGIN_TIME")
 	private LocalDateTime beginTime;
     @Column(name = "END_TIME")

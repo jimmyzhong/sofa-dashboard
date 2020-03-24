@@ -59,8 +59,14 @@
 	<th:block th:include="include :: summernote-js" />
 	<script type="text/javascript" th:inline="javascript">
 		var prefix = ctx + "ext/shop/notice";
-		$("#form-shop-ad-add").validate({
+		$("#form-shop-notice-add").validate({
 			onkeyup: false,
+			rules: {
+				description: {
+					minlength: 5,
+					maxlength: 200
+				},
+			},
 			focusCleanup: true
 		});
 		function submit() {

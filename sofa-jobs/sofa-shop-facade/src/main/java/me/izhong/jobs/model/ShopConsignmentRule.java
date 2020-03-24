@@ -17,7 +17,8 @@ public class ShopConsignmentRule implements Serializable {
 	private Long id;
 	private String ruleNo;
 	private String limitRule;
-	private String reduceValue;
+	private String reduceValue; //降价权重
+	private String timeStep; //时间跨度
 	private LocalDateTime beginTime;
 	private LocalDateTime endTime;
 	private Integer isDelete;

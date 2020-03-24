@@ -43,7 +43,8 @@ public class ShopConsignmentRuleMngFacade implements IShopConsignmentRuleMngFaca
 	public void create(ShopConsignmentRule shopConsignmentRule) {
 		ConsignmentRule rule = new ConsignmentRule();
 		rule.setRuleNo(generateRuleNo());
-		rule.setLimitRule(shopConsignmentRule.getLimitRule());
+		rule.setTimeStep(shopConsignmentRule.getTimeStep());
+		rule.setReduceValue(shopConsignmentRule.getReduceValue());
 		rule.setCreateTime(LocalDateTime.now());
 		rule.setUpdateTime(LocalDateTime.now());
 		rule.setIsDelete(0);
@@ -55,7 +56,8 @@ public class ShopConsignmentRuleMngFacade implements IShopConsignmentRuleMngFaca
 		ConsignmentRule rule = consignmentRuleService.findById(shopConsignmentRule.getId());
 		rule.setBeginTime(shopConsignmentRule.getBeginTime());
 		rule.setEndTime(shopConsignmentRule.getEndTime());
-		rule.setLimitRule(shopConsignmentRule.getLimitRule());
+		rule.setTimeStep(shopConsignmentRule.getTimeStep());
+		rule.setReduceValue(shopConsignmentRule.getReduceValue());
 		rule.setUpdateTime(LocalDateTime.now());
 		consignmentRuleService.saveOrUpdate(rule);
 	}
@@ -77,13 +79,12 @@ public class ShopConsignmentRuleMngFacade implements IShopConsignmentRuleMngFaca
 	@Override
 	public PageModel<ShopConsignmentRule> pageList(PageRequest request) {
 		ConsignmentRule rule = new ConsignmentRule();
-
         Example<ConsignmentRule> example = Example.of(rule);
 		Page<ConsignmentRule> page = consignmentRuleDao.findAll(example, PageableConvertUtil.toDataPageable(request));
         List<ShopConsignmentRule> list = page.getContent().stream().map(t -> {
         	ShopConsignmentRule obj = new ShopConsignmentRule();
             BeanUtils.copyProperties(t, obj);
-        	getReduceValue(obj);
+//        	getReduceValue(obj);
             return obj;
         }).collect(Collectors.toList());
         return PageModel.instance(page.getTotalElements(), list);
@@ -94,7 +95,7 @@ public class ShopConsignmentRuleMngFacade implements IShopConsignmentRuleMngFaca
 		ConsignmentRule rule = consignmentRuleService.findById(id);
     	ShopConsignmentRule obj = new ShopConsignmentRule();
     	BeanUtils.copyProperties(rule, obj);
-    	getReduceValue(obj);
+//    	getReduceValue(obj);
     	return obj;
 	}
 

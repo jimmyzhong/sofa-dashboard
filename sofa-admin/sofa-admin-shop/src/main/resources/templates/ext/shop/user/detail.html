@@ -7,7 +7,7 @@
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
 	<div class="ibox">
 		<div class="ibox-title">
-			<h5 th:text="${user.nickName}"></h5>
+			用户基本信息
 		</div>
 		<div class="ibox-content">
 			<div class="row  m-t-sm">
@@ -16,44 +16,99 @@
 				</div>
 				<div class="col-md-4">
 					<div class="form-group">
-						<label class="col-sm-5 control-label is-required">登陆名：</label>
-						<div class="col-sm-7">
-							<p><span th:text="${user.loginName}"></span></p>
-						</div>
+						<label>昵称</label>
+						<p th:text="${user.nickName}"></p>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-5 control-label is-required">姓名：</label>
-						<div class="col-sm-7">
-							<p><span th:text="${user.name}"></span></p>
-						</div>
+						<label>登陆名</label>
+						<p th:text="${user.loginName}"></p>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-5 control-label is-required">手机号：</label>
-						<div class="col-sm-7">
-							<p ><span th:text="${user.phone}"></span></p>
-						</div>
+						<label>姓名</label>
+						<p th:text="${user.name}"></p>
+					</div>
+					<div class="form-group">
+						<label>手机号</label>
+						<p th:text="${user.phone}"></p>
 					</div>
 				</div>
 				<div class="col-md-6">
 					<div class="form-group">
-						<label class="col-sm-5 control-label is-required">邮箱：</label>
-						<div class="col-sm-7">
-							<p><span th:text="${user.email}"></span></p>
-						</div>
+						<label>邮箱</label>
+						<p th:text="${user.email}"></p>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-5 control-label is-required">最近登陆时间：</label>
-						<div class="col-sm-7">
-							<p ><span th:text="${user.loginTime}"></span></p>
-						</div>
+						<label>最近登陆时间</label>
+						<p th:text="${user.loginTime}"></p>
 					</div>
 					<div class="form-group">
-						<label class="col-sm-5 control-label is-required">加入时间：</label>
-						<div class="col-sm-7">
-							<p><span th:text="${user.registerTime}"></span></p>
-						</div>
+						<label>加入时间</label>
+						<p th:text="${user.registerTime}"></p>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ibox">
+		<div class="ibox-title">
+			用户上下级
+		</div>
+		<div class="ibox-content">
+			<div class="form-group">
+				<table class="table">
+					<caption>用户上级</caption>
+					<thead>
+					<tr>
+						<th>id</th>
+						<th>昵称</th>
+						<th>Last Name</th>
+						<th>Username</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<th scope="row">1</th>
+						<td>Mark</td>
+						<td>Otto</td>
+						<td>@mdo</td>
+					</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="ibox-content">
+			<div class="form-group">
+				<table class="table">
+					<caption>用户下级</caption>
+					<thead>
+					<tr>
+						<th>id</th>
+						<th>昵称</th>
+						<th>Last Name</th>
+						<th>Username</th>
+					</tr>
+					</thead>
+					<tbody>
+					<tr>
+						<th scope="row">1</th>
+						<td>Mark</td>
+						<td>Otto</td>
+						<td>@mdo</td>
+					</tr>
+					<tr>
+						<th scope="row">2</th>
+						<td>Jacob</td>
+						<td>Thornton</td>
+						<td>@fat</td>
+					</tr>
+					<tr>
+						<th scope="row">3</th>
+						<td>Larry</td>
+						<td>the Bird</td>
+						<td>@twitter</td>
+					</tr>
+					</tbody>
+				</table>
 			</div>
 		</div>
 	</div>

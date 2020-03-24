@@ -65,6 +65,12 @@
 		})
 		$("#form-shop-version-edit").validate({
 			onkeyup: false,
+			rules: {
+				description: {
+					minlength: 5,
+					maxlength: 200
+				},
+			},
 			focusCleanup: true
 		});
 		function typeChange() {

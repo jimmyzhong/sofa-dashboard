@@ -52,9 +52,11 @@ public class ShopConsignmentRuleController {
     @PostMapping("/add")
     @AjaxWrapper
     public void add(ShopConsignmentRule shopConsignmentRule) {
-    	checkField(shopConsignmentRule.getBeginTime(), "开始时间");
-    	checkField(shopConsignmentRule.getEndTime(), "结束时间");
-    	checkField(shopConsignmentRule.getLimitRule(), "寄售规则");
+//    	checkField(shopConsignmentRule.getBeginTime(), "开始时间");
+//    	checkField(shopConsignmentRule.getEndTime(), "结束时间");
+//    	checkField(shopConsignmentRule.getLimitRule(), "寄售规则");
+    	checkField(shopConsignmentRule.getTimeStep(), "时间跨度");
+    	checkField(shopConsignmentRule.getReduceValue(), "降价权重");
     	shopServiceReference.consignmentRuleService.create(shopConsignmentRule);
     }
 
@@ -72,9 +74,11 @@ public class ShopConsignmentRuleController {
     @PostMapping("/edit")
     @AjaxWrapper
     public void edit(ShopConsignmentRule shopConsignmentRule) {
-    	checkField(shopConsignmentRule.getBeginTime(), "开始时间");
-    	checkField(shopConsignmentRule.getEndTime(), "结束时间");
-    	checkField(shopConsignmentRule.getLimitRule(), "寄售规则");
+//    	checkField(shopConsignmentRule.getBeginTime(), "开始时间");
+//    	checkField(shopConsignmentRule.getEndTime(), "结束时间");
+//    	checkField(shopConsignmentRule.getLimitRule(), "寄售规则");
+		checkField(shopConsignmentRule.getTimeStep(), "时间跨度");
+		checkField(shopConsignmentRule.getReduceValue(), "降价权重");
 		shopServiceReference.consignmentRuleService.edit(shopConsignmentRule);
     }
 

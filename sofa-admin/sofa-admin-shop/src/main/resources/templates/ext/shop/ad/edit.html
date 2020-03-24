@@ -28,7 +28,7 @@
 				<label class="col-sm-3 control-label is-required">广告类型：</label>
 				<div class="col-sm-8">
 					<select class="form-control" id="adType" name="adType" required onchange="adTypeChange()" th:field="*{adType}">
-						<option value="1" selected>网址</option>
+						<option value="1" >网址</option>
 						<option value="2">内部商品</option>
 						<option value="3">内部拍品</option>
 						<option value="4">内部寄售商品</option>
@@ -80,17 +80,9 @@
 		$("#form-shop-ad-edit").validate({
 			onkeyup: false,
 			rules: {
-				adName: {
-					minlength: 2,
-					maxlength: 30,
-
-				},
 				content: {
 					minlength: 5,
-					maxlength: 60
-				},
-				adLink: {
-
+					maxlength: 200
 				}
 			},
 			focusCleanup: true

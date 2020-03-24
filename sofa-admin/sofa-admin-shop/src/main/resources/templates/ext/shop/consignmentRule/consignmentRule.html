@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('寄售规则管理')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="btn-group-sm" id="addRule" role="group">
+            <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="ext:shop:consignment:add">
+                <i class="fa fa-plus"></i> 新增
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var detailFlag = [[${@permission.hasPermi('ext:shop:consignment:view')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:consignment:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('ext:shop:consignment:remove')}]];
+    var prefix = ctx + "ext/shop/consignmentRule";
+    function gotoDetail(id) {
+        var url = prefix + '/detail/' + id;
+        $.modal.openTab("规则详情", url);
+    }
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            detailUrl: prefix + "/detail/{id}",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            sortName: "id",
+            sortOrder: "asc",
+            modalName: "寄售规则",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: 'Id',
+                    sortable: true
+                },
+                {
+                    field: 'timeStep',
+                    title: '时间跨度(小时)'
+                },
+                {
+                    field: 'reduceValue',
+                    title: '降价权重(%)'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    width:"300",
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs '+editFlag+'" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
+                        // actions.push('<a class="btn btn-primary btn-xs '+detailFlag+'" href="javascript:void(0)" onclick="$.operate.detail(\'' + row.id + '\')"><i class="fa fa-edit"></i> 详情</a> ');
+                        // actions.push('<a class="btn btn-warning btn-xs '+removeFlag+'" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+</script>
+</body>
+</html>

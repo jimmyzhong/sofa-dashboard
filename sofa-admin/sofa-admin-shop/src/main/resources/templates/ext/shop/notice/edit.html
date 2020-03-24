@@ -76,11 +76,16 @@
 			var content = $("#detail_desc_s").val();
 			$('#editor').summernote('code', content);
 		})
-		$("#form-shop-ad-add").validate({
+		$("#form-shop-notice-edit").validate({
 			onkeyup: false,
+			rules: {
+				description: {
+					minlength: 5,
+					maxlength: 200
+				},
+			},
 			focusCleanup: true
 		});
-
 		function submit() {
 			if ($.validate.form()) {
 				var data = $("#form-shop-notice-edit").serializeArray();

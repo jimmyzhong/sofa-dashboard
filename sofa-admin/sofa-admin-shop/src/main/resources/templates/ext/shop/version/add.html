@@ -58,9 +58,14 @@
 			$("#url").val(result.data.fileUrl)
 		})
 	}
-
     $("#form-shop-version-add").validate({
         onkeyup: false,
+        rules: {
+            description: {
+                minlength: 5,
+                maxlength: 200
+            },
+        },
         focusCleanup: true
     });
 	function typeChange() {
