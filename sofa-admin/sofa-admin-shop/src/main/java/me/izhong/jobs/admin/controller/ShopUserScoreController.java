@@ -1,7 +1,6 @@
 package me.izhong.jobs.admin.controller;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,29 +17,28 @@ import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopPayRecord;
 
 @Controller
-@RequestMapping("/ext/shop/user/money")
-public class ShopUserMoneyController {
+@RequestMapping("/ext/shop/user/score")
+public class ShopUserScoreController {
 
-	private String prefix = "ext/shop/user/money";
+	private String prefix = "ext/shop/user/score";
 
 	@Autowired(required = false)
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
 	public String user() {
-		return prefix + "/user/money";
+		return prefix + "/user/score";
 	}
 
 	@RequestMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopPayRecord> pageList(
 			HttpServletRequest request,
-			@RequestParam(value = "userId", required = false) Long userId,
-			@RequestParam(value = "moneyTypes", required = false) List<Integer> moneyTypes) {
+			@RequestParam(value = "userId", required = false) Long userId) {
 		if (userId == null) {
 			return PageModel.instance(0L, new ArrayList<>());
 		}
-		PageModel<ShopPayRecord> page = shopServiceReference.payRecordService.pageMoneyList(PageRequestUtil.fromRequest(request), userId, moneyTypes);
+		PageModel<ShopPayRecord> page = shopServiceReference.payRecordService.pageScoreList(PageRequestUtil.fromRequest(request), userId);
 		return page;
 	}
 

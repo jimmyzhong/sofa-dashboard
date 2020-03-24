@@ -168,7 +168,7 @@ public class PayRecordService {
     }
 
     public PageModel<PayRecord> listScoreReturnRecord(Long userId,
-                                                      PageQueryParamDTO pageRequest) {
+    												  PageRequest pageRequest) {
         LocalDate start = convertToLocalDate(pageRequest.getBeginCreateTime());
         LocalDate end = convertToLocalDate(pageRequest.getEndCreateTime());
         Integer state = null;

@@ -32,7 +32,7 @@ public class ShopPayRecordMngFacadeImpl implements IShopPayRecordMngFacade {
 	private PayRecordService payRecordService;
 
 	@Override
-	public PageModel<ShopPayRecord> pageList(PageRequest request, Long userId, List<Integer> moneyTypes) {
+	public PageModel<ShopPayRecord> pageMoneyList(PageRequest request, Long userId, List<Integer> moneyTypes) {
         Set<MoneyTypeEnum> types = new HashSet<>();
         if (!CollectionUtils.isEmpty(moneyTypes)) {
             types = moneyTypes.stream().map(t -> {
@@ -44,6 +44,17 @@ public class ShopPayRecordMngFacadeImpl implements IShopPayRecordMngFacade {
             }).collect(Collectors.toSet());
         }
 		PageModel<PayRecord> page = payRecordService.listMoneyReturnRecord(userId, request, types);
+		List<ShopPayRecord> list = page.getRows().stream().map(t -> {
+			ShopPayRecord obj = new ShopPayRecord();
+            BeanUtils.copyProperties(t, obj);
+            return obj;
+        }).collect(Collectors.toList());
+		return PageModel.instance(page.getCount(), list);
+	}
+
+	@Override
+	public PageModel<ShopPayRecord> pageScoreList(PageRequest request, Long userId) {
+		PageModel<PayRecord> page = payRecordService.listScoreReturnRecord(userId, request);
 		List<ShopPayRecord> list = page.getRows().stream().map(t -> {
 			ShopPayRecord obj = new ShopPayRecord();
             BeanUtils.copyProperties(t, obj);
