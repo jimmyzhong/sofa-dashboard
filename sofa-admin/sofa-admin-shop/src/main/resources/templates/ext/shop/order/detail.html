@@ -1,32 +1,203 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
 <head>
-	<th:block th:include="include :: header('订单详情')" />
+	<th:block th:include="include :: header('订单详情')"/>
 </head>
 <body class="white-bg">
-	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<h1>商品订单</h1>
-
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<div class="ibox">
+		<div class="ibox-title">
+			订单信息
+		</div>
+		<div class="ibox-content">
+			<div class="row  m-t-sm">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>id</label>
+						<p th:text="${order.id}"></p>
+					</div>
+					<div class="form-group">
+						<label>用户ID</label>
+						<p th:text="${order.userId}"></p>
+					</div>
+					<div class="form-group">
+						<label>订单Sn</label>
+						<p th:text="${order.orderSn}"></p>
+					</div>
+					<div class="form-group">
+						<label>用户昵称</label>
+						<p th:text="${order.nickName}"></p>
+					</div>
+					<div class="form-group">
+						<label>实际支付金额</label>
+						<p th:text="${order.totalAmount}"></p>
+					</div>
+					<div class="form-group">
+						<label>运费金额</label>
+						<p th:text="${order.freightAmount}"></p>
+					</div>
+					<div class="form-group">
+						<label>促销优化金额</label>
+						<p th:text="${order.promotionAmount}"></p>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>支付方式</label>
+						<p th:if="${order.payType eq 1}">支付宝</p>
+						<p th:if="${order.payType eq 2}">微信</p>
+					</div>
+					<div class="form-group">
+						<label>订单来源</label>
+						<p th:if="${order.sourceType eq 1}">h5订单</p>
+						<p th:if="${order.sourceType eq 2}">app订单</p>
+					</div>
+					<div class="form-group">
+						<label>订单状态</label>
+						<p th:if="${order.status eq 0}">待付款</p>
+						<p th:if="${order.status eq 1}">待发货</p>
+						<p th:if="${order.status eq 2}">已发货</p>
+						<p th:if="${order.status eq 3}">已完成</p>
+						<p th:if="${order.status eq 4}">已关闭</p>
+						<p th:if="${order.status eq 5}">无效订单</p>
+					</div>
+					<div class="form-group">
+						<label>订单类型</label>
+						<p th:if="${order.orderType eq 1}">正常订单</p>
+						<p th:if="${order.orderType eq 2}">秒杀订单</p>
+					</div>
+					<div class="form-group">
+						<label>物流公司</label>
+						<p th:text="${order.deliveryCompany}"></p>
+					</div>
+					<div class="form-group">
+						<label>物流单号</label>
+						<p th:text="${order.deliverySn}"></p>
+					</div>
+					<div class="form-group">
+						<label>积分抵扣金额</label>
+						<p th:text="${order.integrationAmount}"></p>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>自动确认时间(天)</label>
+						<p th:text="${order.autoConfirmDay}"></p>
+					</div>
+					<div class="form-group">
+						<label>可以获得的积分</label>
+						<p th:text="${order.integration}"></p>
+					</div>
+					<div class="form-group">
+						<label>活动信息</label>
+						<p th:text="${order.promotionInfo}"></p>
+					</div>
+					<div class="form-group">
+						<label>订单创建时间</label>
+						<p th:text="${order.createTime}"></p>
+					</div>
+					<div class="form-group">
+						<label>订单更新时间</label>
+						<p th:text="${order.updateTime}"></p>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<style>
-		#detail_desc_contain img{
-			width: 100% !important;
-		}
-		 #upAlbumPics_content>div{
-			 width: 100px;
-			 height:50px;
-			 display: inline-block;
-			 margin-right: 10px;
-		 }
-		#upAlbumPics_content>div>img{
-			width: 100%;
-			height: 100%;
-		}
-	</style>
-	<th:block th:include="include :: footer" />
-	<script type="text/javascript" th:inline="javascript">
-		var prefix = ctx + "ext/shop/goods";
-
-	</script>
+	<div class="ibox">
+		<div class="ibox-title">
+			 收货信息
+		</div>
+		<div class="ibox-content">
+			<div class="row  m-t-sm">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>收货人姓名</label>
+						<p th:text="${order.receiverName}"></p>
+					</div>
+					<div class="form-group">
+						<label>收货人电话</label>
+						<p th:text="${order.receiverPhone}"></p>
+					</div>
+					<div class="form-group">
+						<label>收货人邮编</label>
+						<p th:text="${order.receiverPostCode}"></p>
+					</div>
+					<div class="form-group">
+						<label>发货时间</label>
+						<p th:text="${order.deliveryTime}"></p>
+					</div>
+					<div class="form-group">
+						<label>确认收货时间</label>
+						<p th:text="${order.receiveTime}"></p>
+					</div>
+					<div class="form-group">
+						<label>评价时间</label>
+						<p th:text="${order.commentTime}"></p>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>省份/直辖市</label>
+						<p th:text="${order.receiverProvince}"></p>
+					</div>
+					<div class="form-group">
+						<label>城市</label>
+						<p th:text="${order.receiverCity}"></p>
+					</div>
+					<div class="form-group">
+						<label>区</label>
+						<p th:text="${order.receiverRegion}"></p>
+					</div>
+					<div class="form-group">
+						<label>详细地址</label>
+						<p th:text="${order.receiverDetailAddress}"></p>
+					</div>
+					<div class="form-group">
+						<label>详细地址</label>
+						<p th:text="${order.receiverDetailAddress}"></p>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>订单备注</label>
+						<p th:text="${order.note}"></p>
+					</div>
+					<div class="form-group">
+						<label>确认收货状态</label>
+						<p th:if="${order.confirmStatus eq 0}">未确认</p>
+						<p th:if="${order.confirmStatus eq 1}">已确认</p>
+					</div>
+					<div class="form-group">
+						<label>删除状态</label>
+						<p th:if="${order.isDelete eq 0}">未删除</p>
+						<p th:if="${order.isDelete eq 1}">已删除</p>
+					</div>
+					<div class="form-group">
+						<label>下单时使用的积分</label>
+						<p th:text="${order.useIntegration}"></p>
+					</div>
+					<div class="form-group">
+						<label>支付时间</label>
+						<p th:text="${order.paymentTime}"></p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+	.form-group{
+		min-height: 41px;
+	}
+	.form-group>label{
+		font-weight: 600;
+		font-size:14px;
+	}
+</style>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript" th:inline="javascript">
+	var prefix = ctx + "ext/shop/order";
+</script>
 </body>
 </html>

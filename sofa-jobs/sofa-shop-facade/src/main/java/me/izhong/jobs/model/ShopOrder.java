@@ -45,6 +45,7 @@ public class ShopOrder implements Serializable {
     private Integer autoConfirmDay;
     /** 可以获得的积分 */
     private Integer integration;
+
     /** 活动信息 */
     private String promotionInfo;
     /** 收货人姓名 */
