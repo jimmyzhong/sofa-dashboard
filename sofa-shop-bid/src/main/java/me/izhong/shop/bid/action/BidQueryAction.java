@@ -6,11 +6,8 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.bid.ann.ActionNode;
 import me.izhong.shop.bid.frame.BidContext;
 import me.izhong.shop.bid.frame.IFilterCallback;
-import me.izhong.shop.bid.pojo.BidQueryItem;
 import me.izhong.shop.bid.pojo.BidQueryResponse;
-import me.izhong.shop.bid.pojo.BidRequest;
-import me.izhong.shop.bid.pojo.BidResponse;
-import me.izhong.shop.bid.service.RateLimitService;
+import me.izhong.shop.bid.service.RedisUtilService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class BidQueryAction implements IActionNode {
 
     @Autowired
-    private RateLimitService rateLimitService;
+    private RedisUtilService redisUtilService;
 
     @Override
     public void process(BidContext context, IFilterCallback callback) throws BusinessException {
@@ -36,7 +33,7 @@ public class BidQueryAction implements IActionNode {
         bidResponse.setCode(200);
         if(isQueryAll) {
             bidResponse.setMsg("查询全部报价");
-            bidResponse.getBids().addAll(rateLimitService.getAllBidItems("bidId"));
+            bidResponse.getBids().addAll(redisUtilService.getAllBidItems(bidId));
         } else {
             bidResponse.setMsg("查询报价");
             Long start = json.getLong("start");
@@ -46,7 +43,7 @@ public class BidQueryAction implements IActionNode {
             if(start.longValue() < 1 || start.longValue() > 10000000) {
                 throw BusinessException.build("start必须大于1小于10000000");
             }
-            bidResponse.getBids().addAll(rateLimitService.getBidItems(bidId, start));
+            bidResponse.getBids().addAll(redisUtilService.getBidItems(bidId, start));
         }
         context.setResponse(bidResponse);
         callback.onPostProcess(context);

@@ -17,7 +17,7 @@ import java.util.Map;
 @Service
 @Getter
 @Setter
-public class RateLimitService {
+public class RedisUtilService {
 
 
     private volatile int bidLimit = 5;
@@ -39,7 +39,8 @@ public class RateLimitService {
     }
 
     public List<BidQueryItem> getAllBidItems(String key) {
-        Map<String, String> maps = getJedis().hgetAll(key);
+        List<String> keys = redisBidClient.getBidQueryKeys(key);
+        Map<String, String> maps = getJedis().hgetAll(keys.get(0));
         List<BidQueryItem> items = new ArrayList<>();
         maps.forEach((k,v) -> {
             String[] values = v.split(",");

@@ -9,7 +9,7 @@ import me.izhong.shop.bid.frame.BidContext;
 import me.izhong.shop.bid.frame.IFilterCallback;
 import me.izhong.shop.bid.ntt.NttTaskExecutor;
 import me.izhong.shop.bid.pojo.BidResponse;
-import me.izhong.shop.bid.service.RateLimitService;
+import me.izhong.shop.bid.service.RedisUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class TestTpsAction implements IActionNode {
     private NttTaskExecutor nttTaskExecutor;
 
     @Autowired
-    private RateLimitService rateLimitService;
+    private RedisUtilService redisUtilService;
 
     private volatile long s = 0;
 
@@ -33,7 +33,7 @@ public class TestTpsAction implements IActionNode {
         log.info("start service");
         JSONObject json = context.getJsonObjectRequest();
 
-        RedisBidResponse rt = rateLimitService.acquireBid("test2");
+        RedisBidResponse rt = redisUtilService.acquireBid("test2");
 
         BidResponse resp = new BidResponse();
         if(rt.isSuccess()) {

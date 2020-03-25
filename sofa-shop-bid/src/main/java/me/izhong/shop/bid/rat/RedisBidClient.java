@@ -84,7 +84,7 @@ public class RedisBidClient {
         return Arrays.asList(tokenKey, timestampKey,bidKey,bidList);
     }
 
-    List<String> getBidQueryKeys(String bidId) {
+    public List<String> getBidQueryKeys(String bidId) {
         String prefix = "bid.goods.{" + bidId;
         String tokenKey = prefix + "}.list"; // request_rate_limiter.{id}.tokens
         return Arrays.asList(tokenKey);

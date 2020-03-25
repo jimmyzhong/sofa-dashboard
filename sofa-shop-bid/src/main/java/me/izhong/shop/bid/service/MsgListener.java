@@ -16,12 +16,12 @@ public class MsgListener extends JedisPubSub {
     public void onMessage(String channel, String message) {       //收到消息会调用
         System.out.println(String.format("收到消息成功！ channel： %s, message： %s", channel, message));
 
-        RateLimitService rateLimitService = SpringUtil.getBean(RateLimitService.class);
+        RedisUtilService redisUtilService = SpringUtil.getBean(RedisUtilService.class);
         JSONObject jsonObject = JSON.parseObject(message);
         int setBidLimit = jsonObject.getIntValue("setBidLimit");
         if(setBidLimit > 0 && setBidLimit <= 50) {
             log.info("设置报价tps{}",setBidLimit);
-            rateLimitService.setBidLimit(setBidLimit);
+            redisUtilService.setBidLimit(setBidLimit);
         }
         //this.unsubscribe();
     }
