@@ -164,9 +164,13 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
             mrs.forEach( e -> {
                 Long roleId = e.getRoleId();
                 SysRole sr = roleDao.findByRoleId(roleId);
-                String srn = sr.getRoleName();
-                if(!noticeRoleNames.contains(srn)) {
-                    noticeRoleNames.add(srn);
+                if(sr == null) {
+                    roleMenuDao.deleteAllByRoleId(roleId);
+                } else {
+                    String srn = sr.getRoleName();
+                    if (!noticeRoleNames.contains(srn)) {
+                        noticeRoleNames.add(srn);
+                    }
                 }
             });
             throw BusinessException.build("菜单已分配给角色" +noticeRoleNames+",不允许删除");
@@ -442,6 +446,8 @@ public class SysMenuServiceImpl extends CrudBaseServiceImpl<Long,SysMenu> implem
         } else {
             aggregationOperations.add(match(Criteria.where("menuType").in(new String[]{"M", "C", "F"})));
         }
+
+        aggregationOperations.add(match(Criteria.where("visible").is("0")));
         aggregationOperations.add(match(CriteriaUtil.notDeleteCriteria()));
 
         //aggregationOperations.add(skip(start));

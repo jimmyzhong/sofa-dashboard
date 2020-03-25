@@ -95,7 +95,7 @@
 <th:block th:include="include :: ztree-js"/>
 <script th:inline="javascript">
     var editFlag = [[${@permission.hasPermi('system:user:edit')}]];
-    var removeFlag = [[${@permission.hasPermi('system:user:removeJobGroup')}]];
+    var removeFlag = [[${@permission.hasPermi('system:user:remove')}]];
     var resetPwdFlag = [[${@permission.hasPermi('system:user:resetPwd')}]];
     var prefix = ctx + "system/user";
 
