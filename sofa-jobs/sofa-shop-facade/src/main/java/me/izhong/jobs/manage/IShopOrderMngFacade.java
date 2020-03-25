@@ -13,6 +13,8 @@ public interface IShopOrderMngFacade {
 
     PageModel<ShopOrder> pageList(PageRequest request, OrderQueryParam param);
 
+    PageModel<ShopOrder> pageList(PageRequest request,Long userId, OrderQueryParam param);
+
 	void delivery(List<OrderDeliveryParam> deliveryParamList);
 
 	void close(List<Long> ids, String note);
