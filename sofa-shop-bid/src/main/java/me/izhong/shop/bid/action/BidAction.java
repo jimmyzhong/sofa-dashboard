@@ -4,30 +4,38 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.bid.ann.ActionNode;
+import me.izhong.shop.bid.bean.RedisBidResponse;
 import me.izhong.shop.bid.frame.*;
 import me.izhong.shop.bid.pojo.BidRequest;
 import me.izhong.shop.bid.pojo.BidResponse;
+import me.izhong.shop.bid.service.RateLimitService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-@ActionNode(name = "测试服务", url = "/test")
+@ActionNode(name = "测试服务", url = "/api/bid/acquire")
 public class BidAction implements IActionNode {
+
+    @Autowired
+    private RateLimitService rateLimitService;
 
     @Override
     public void process(BidContext context, IFilterCallback callback) throws BusinessException {
-        log.info("start service");
+        log.info("start bid acquire service");
         JSONObject json = context.getJsonObjectRequest();
-        String phone = json.getString("phone");
 
-        BidRequest bidRequest = (BidRequest)context.getRequest();
+        RedisBidResponse rt = rateLimitService.acquireBid("test2");
 
-        log.info("phone {}",bidRequest.getPhone());
-        BidResponse bidResponse = new BidResponse();
-        bidResponse.setMsg("tttt");
-        bidResponse.setPrice(9900);
-
-        context.setResponse(bidResponse);
+        BidResponse resp = new BidResponse();
+        if(rt.isSuccess()) {
+            resp.setPrice(rt.getPrice());
+            resp.setSeqId(rt.getSeqId());
+            resp.setCode(200);
+        } else {
+            resp.setCode(rt.getAllow().intValue());
+        }
+        context.setResponse(resp);
 
         callback.onPostProcess(context);
     }

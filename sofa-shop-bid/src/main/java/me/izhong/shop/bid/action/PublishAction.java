@@ -7,25 +7,11 @@ import me.izhong.shop.bid.ann.ActionNode;
 import me.izhong.shop.bid.frame.BidContext;
 import me.izhong.shop.bid.frame.IFilterCallback;
 import me.izhong.shop.bid.ntt.NttTaskExecutor;
-import me.izhong.shop.bid.rat.RateLimitClient;
-import me.izhong.shop.bid.rat.RateLimitResult;
-import org.apache.commons.lang3.StringUtils;
+import me.izhong.shop.bid.rat.RedisBidClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import rx.Observable;
-import rx.Subscription;
-import rx.subjects.PublishSubject;
-import rx.subjects.SerializedSubject;
-import rx.subjects.Subject;
-
-import java.io.IOException;
-import java.util.TimerTask;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -36,7 +22,7 @@ public class PublishAction implements IActionNode {
     private NttTaskExecutor nttTaskExecutor;
 
     @Autowired
-    private RateLimitClient rateLimitClient;
+    private RedisBidClient redisBidClient;
 
     private volatile long s = 0;
 

@@ -1,7 +1,8 @@
 package me.izhong.shop.bid;
 
+import me.izhong.shop.bid.bean.RedisBidResponse;
 import me.izhong.shop.bid.ntt.NttTaskExecutor;
-import me.izhong.shop.bid.rat.RateLimitClient;
+import me.izhong.shop.bid.rat.RedisBidClient;
 import me.izhong.shop.bid.service.RedisSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -19,7 +20,7 @@ public class ShopBidApplication {
     private NttTaskExecutor nttTaskExecutor;
 
     @Autowired
-    private RateLimitClient rateLimitClient;
+    private RedisBidClient redisBidClient;
 
     @Autowired
     private JedisPool jedisPool;
@@ -31,7 +32,7 @@ public class ShopBidApplication {
 
     @PostConstruct
     void init(){
-        boolean isAll = rateLimitClient.isAllowed("test2",3,3);
+        RedisBidResponse isAll = redisBidClient.checkBidResult("123",3,3);
         System.out.println("xxxx" + isAll);
 
 

@@ -7,5 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BidResponse extends BaseResponse {
-    private int price;
+    private Long price;
+
+    private Long seqId;
 }
