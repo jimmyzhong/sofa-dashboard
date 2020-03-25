@@ -128,4 +128,14 @@ public class ShopUserController {
 		model.addAttribute("userId", userId);
 		return prefix + "/balanceDetail";
 	}
+
+	@GetMapping("/certification/{userId}")
+	public String certification(@PathVariable("userId") Long userId, Model model) {
+		ShopUser user = shopServiceReference.userService.find(userId);
+		if (user == null) {
+			throw BusinessException.build(String.format("用户不存在%s", userId));
+		}
+		model.addAttribute("user", user);
+		return prefix + "/certification";
+	}
 }

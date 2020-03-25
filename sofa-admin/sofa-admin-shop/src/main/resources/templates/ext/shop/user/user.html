@@ -67,7 +67,9 @@
     function integraldetail(id) {
         $.modal.open("用户积分明细", prefix + "/scoreDetail/" + id);
     }
-
+    function certification(id) {
+        $.modal.open("用户余额信息", prefix + "/certification/" + id);
+    }
     function balanceDetail(id) {
         $.modal.open("用户余额明细", prefix + "/balanceDetail/" + id);
     }
@@ -146,7 +148,7 @@
                             '    <li><a onclick="balanceDetail(\'' + row.id + '\')">余额明细</a></li>\n' +
                             '    <li><a href="buttons.html#">订单明细</a></li>\n' +
                             '    <li><a onclick="integraldetail(\'' + row.id + '\')">积分明细</a></li>\n' +
-                            '    <li><a href="buttons.html#">实名信息</a></li>\n' +
+                            '    <li><a onclick="certification(\'' + row.id + '\')">实名信息</a></li>\n' +
                             '    </ul></div>');
                         return actions.join('');
                     }
