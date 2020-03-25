@@ -18,7 +18,9 @@ public interface IShopGoodsMngFacade {
 
     void updateDeleteStatus(List<Long> ids, Integer deleteStatus);
 
-    PageModel<ShopGoods> pageList(PageRequest request, ShopGoods group);
+    PageModel<ShopGoods> pageList(PageRequest request, ShopGoods shopGoods);
+
+    PageModel<ShopGoods> pageConsignmentList(PageRequest request, ShopGoods shopGoods);
 
     boolean remove(String ids);
 

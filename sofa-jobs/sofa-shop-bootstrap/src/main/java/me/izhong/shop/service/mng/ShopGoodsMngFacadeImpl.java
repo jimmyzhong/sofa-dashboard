@@ -114,6 +114,27 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	}
 
 	@Override
+    public PageModel<ShopGoods> pageConsignmentList(PageRequest request, ShopGoods shopGoods) {
+        Goods goods = new Goods();
+        BeanUtils.copyProperties(shopGoods, goods);
+        removeWhiteSpaceParam(goods);
+        goods.setProductType(1);
+
+        ExampleMatcher matcher = ExampleMatcher.matchingAny()
+                .withMatcher("productName", match -> match.contains());
+
+        Example<Goods> example = Example.of(goods, matcher);
+
+        Page<Goods> userPage = goodsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
+        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t -> {
+        	ShopGoods obj = new ShopGoods();
+            BeanUtils.copyProperties(t, obj);
+            return obj;
+        }).collect(Collectors.toList());
+        return PageModel.instance(userPage.getTotalElements(), shopGoodList);
+    }
+
+	@Override
 	public boolean remove(String ids) {
 		try {
 	    	Long[] uids = Convert.toLongArray(ids);

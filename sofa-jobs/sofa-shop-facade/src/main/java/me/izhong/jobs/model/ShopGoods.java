@@ -2,6 +2,7 @@ package me.izhong.jobs.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Getter;
@@ -50,4 +51,6 @@ public class ShopGoods implements Serializable {
 	private Integer reducePriceCount;
 	private Integer isDelete;
     private Boolean onIndexPage;
+    private String createdBy;
+    private LocalDateTime createTime;
 }

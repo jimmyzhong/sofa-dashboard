@@ -1,13 +1,13 @@
 package me.izhong.shop.dao;
 
-import me.izhong.shop.entity.User;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import java.time.LocalDateTime;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import me.izhong.shop.entity.User;
 
 @Repository
 public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExecutor {
@@ -15,4 +15,7 @@ public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExec
     User findFirstByEmail(String email);
     User findFirstByPhone(String phone);
     User findFirstByLoginName(String loginName);
+
+    @Query(value = "select count(*) from user t where t.register_time = ?1", nativeQuery = true)
+    long countUserByRegisterTime(LocalDateTime registerTime);
 }
