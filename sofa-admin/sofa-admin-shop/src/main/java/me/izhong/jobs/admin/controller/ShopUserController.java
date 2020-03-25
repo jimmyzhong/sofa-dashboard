@@ -80,6 +80,22 @@ public class ShopUserController {
 		shopServiceReference.userService.edit(newUser);
 	}
 
+	//冻结用户
+	@RequiresPermissions(ShopPermissions.User.EDIT)
+	@PostMapping("/disable/{userId}")
+	@AjaxWrapper
+	public void disable(@PathVariable("userId") Long userId) {
+		shopServiceReference.userService.disable(userId);
+	}
+
+	//解结用户
+	@RequiresPermissions(ShopPermissions.User.EDIT)
+	@PostMapping("/enable/{userId}")
+	@AjaxWrapper
+	public void enable(@PathVariable("userId") Long userId) {
+		shopServiceReference.userService.enable(userId);
+	}
+
 	@GetMapping("/detail/{userId}")
 	public String detail(@PathVariable("userId") Long userId, Model model) {
 		ShopUser user = shopServiceReference.userService.find(userId);
