@@ -163,11 +163,24 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
         SysDept dbSysDept = deptDao.findByDeptId(sysDept.getDeptId());
         if(dbSysDept == null)
             throw BusinessException.build("部不门存在");
+
         sysDept.setId(dbSysDept.getId());
-        sysDept.setUpdateTime(new Date());
         processRelations(dbSysDept, sysDept);
 
-        deptDao.save(sysDept);
+        dbSysDept.setDeptName(sysDept.getDeptName());
+        dbSysDept.setLeader(sysDept.getLeader());
+        dbSysDept.setPhone(sysDept.getPhone());
+        dbSysDept.setEmail(sysDept.getEmail());
+        dbSysDept.setOrderNum(sysDept.getOrderNum());
+        dbSysDept.setStatus(sysDept.getStatus());
+        dbSysDept.setParentId(sysDept.getParentId());
+        dbSysDept.setParentName(sysDept.getParentName());
+        dbSysDept.setAncestors(sysDept.getAncestors());
+        dbSysDept.setDescendents(sysDept.getDescendents());
+        dbSysDept.setChildren(sysDept.getChildren());
+        dbSysDept.setUpdateTime(new Date());
+
+        deptDao.save(dbSysDept);
         return 0;
     }
 
