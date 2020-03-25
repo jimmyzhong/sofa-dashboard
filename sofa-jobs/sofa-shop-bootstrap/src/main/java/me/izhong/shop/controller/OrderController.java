@@ -157,7 +157,7 @@ public class OrderController {
 		orderService.delete(getCurrentUserId(request), orderRequest.getOrderNo());
 	}
 
-	@GetMapping(value = "/count/normal")
+	@GetMapping(value = "/count/")
 	@ResponseBody
 	@RequireUserLogin
 	@ApiOperation(value="统计信息", httpMethod = "GET")
@@ -166,7 +166,8 @@ public class OrderController {
 	public Map<String, Integer> countOrder(HttpServletRequest request) {
 
 		Map<String, Integer> map = orderService.getCountOfStatus(getCurrentUserId(request),
-				MoneyTypeEnum.NORMAL_GOODS, Arrays.asList(WAIT_DELIVER, DELIVERED));
+				Arrays.asList(MoneyTypeEnum.NORMAL_GOODS, MoneyTypeEnum.RESALE_GOODS),
+				Arrays.asList(WAIT_DELIVER, DELIVERED, WAIT_PAYING));
 
 		return map;
     }

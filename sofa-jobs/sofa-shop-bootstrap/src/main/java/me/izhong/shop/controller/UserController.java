@@ -349,14 +349,14 @@ public class UserController {
             @ApiImplicitParam(name = "idCard", value = "身份证号码",  dataType = "string"),
             @ApiImplicitParam(paramType = "header", dataType = "string", name = Constants.AUTHORIZATION, value = "登录成功后token", required = true)
     })
-    public void certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
+    public Map certify(@RequestBody Map<String,String> params, HttpServletRequest request) {
         SessionInfo session = CacheUtil.getSessionInfo(request);
         Long userId = session.getId();
         User user = userService.findById(Long.valueOf(userId));
         user.setName(params.get("name"));
         user.setIdentityID(params.get("idCard"));
-        //认证失败会抛出异常
-        userService.certify(user);
+        boolean certified = userService.certify(user);
+        return new HashMap(){{put("certified", certified);}};
     }
 
     @GetMapping("/certify")

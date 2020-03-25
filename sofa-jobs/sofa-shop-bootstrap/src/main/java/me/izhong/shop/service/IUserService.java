@@ -3,7 +3,6 @@ package me.izhong.shop.service;
 import java.util.Set;
 
 import me.izhong.common.domain.PageModel;
-import me.izhong.common.domain.PageRequest;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.PayRecord;
@@ -23,7 +22,7 @@ public interface IUserService {
 
     User registerUser(User user);
 
-    void certify(User user);
+    boolean certify(User user);
 
     User expectExists(User user);
 

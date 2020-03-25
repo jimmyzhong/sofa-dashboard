@@ -172,7 +172,7 @@ public class GoodsService implements IGoodsService {
 					.stock(g.getStock()).nextPriceTime(formatDateTime(generateNextPriceTime(g)))
 					.description(g.getDescription()).sale(g.getSale())
 					.createdBy(createdByUser.getId()).avatarOfCreatedBy(createdByUser.getAvatar())
-					.nameOfCreatedBy(createdByUser.getName())
+					.nameOfCreatedBy(createdByUser.getNickName())
 					.build();
 		}).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dtoList);

@@ -2,11 +2,9 @@ package me.izhong.shop.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
-import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.consts.ErrorCode;
 import me.izhong.shop.consts.MoneyTypeEnum;
-import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.dao.UserMoneyDao;
 import me.izhong.shop.dao.UserScoreDao;
@@ -18,17 +16,12 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.Set;
 
 @Service
@@ -142,12 +135,13 @@ public class UserService implements IUserService {
         return userDao.save(user);
     }
 
-    public void certify(User user) {
+    public boolean certify(User user) {
         boolean certifiedRes = certifyService.getCertifiedInfo(user.getName(), user.getIdentityID());
         if (certifiedRes) {
             user.setIsCertified(true);
             userDao.save(user);
         }
+        return certifiedRes;
     }
 
     @Override

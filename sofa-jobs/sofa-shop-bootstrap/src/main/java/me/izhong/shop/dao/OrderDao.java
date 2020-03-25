@@ -34,6 +34,6 @@ public interface OrderDao extends JpaRepository<Order, Long>, JpaSpecificationEx
 	@Query(value = "update tx_order t set t.note = ?1 where t.id = ?2", nativeQuery = true)
 	void updateNote(String note, Long id);
 
-	@Query(value = "select status, count(*) as number from shop.tx_order where order_type = ?1 and status in ?3 and user_id = ?2 group by status", nativeQuery = true)
-	List<Map<String, Integer>> selectOrderOfUserGroupByState(Integer orderType, Long userId, List<Integer> status);
+	@Query(value = "select status, count(*) as number from shop.tx_order where order_type in ?1 and status in ?3 and user_id = ?2 group by status", nativeQuery = true)
+	List<Map<String, Integer>> selectOrderOfUserGroupByState(List<Integer> orderTypes, Long userId, List<Integer> status);
 }
