@@ -43,9 +43,6 @@
         </div>
     </div>
 </div>
-<style>
-
-</style>
 
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
@@ -68,7 +65,10 @@
         $.modal.open("用户积分明细", prefix + "/scoreDetail/" + id);
     }
     function certification(id) {
-        $.modal.open("用户余额信息", prefix + "/certification/" + id);
+        $.modal.open("用户实名信息", prefix + "/certification/" + id);
+    }
+    function orderDetail(id) {
+        $.modal.open("用户订单信息", prefix + "/orderDetail/" + id);
     }
     function balanceDetail(id) {
         $.modal.open("用户余额明细", prefix + "/balanceDetail/" + id);
@@ -146,7 +146,7 @@
                             '<a data-toggle="dropdown" class="btn btn-primary btn-xs">更多操作 <span class="caret"></span></a>' +
                             '<ul class="dropdown-menu user-more-action">\n' +
                             '    <li><a onclick="balanceDetail(\'' + row.id + '\')">余额明细</a></li>\n' +
-                            '    <li><a href="buttons.html#">订单明细</a></li>\n' +
+                            '    <li><a onclick="orderDetail(\'' + row.id + '\')">订单明细</a></li>\n' +
                             '    <li><a onclick="integraldetail(\'' + row.id + '\')">积分明细</a></li>\n' +
                             '    <li><a onclick="certification(\'' + row.id + '\')">实名信息</a></li>\n' +
                             '    </ul></div>');
