@@ -6,137 +6,89 @@
 <body class="gray-bg">
 <div class="container-div">
 	<div class="row">
-		<div class="col-sm-12 search-collapse">
-			<form id="job-form">
-				<div class="select-list">
-					<ul>
-						<li>
-							用户昵称：<input type="text" name="nickName"/>
-						</li>
-						<li>
-							手机号：<input type="text" name="phone"/>
-						</li>
-						<li>
-							<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
-									class="fa fa-search"></i>&nbsp;搜索</a>
-							<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
-									class="fa fa-refresh"></i>&nbsp;重置</a>
-						</li>
-					</ul>
-				</div>
-			</form>
-		</div>
 		<div class="col-sm-12 select-table table-striped">
 			<table id="bootstrap-table" data-mobile-responsive="true"></table>
 		</div>
+		<input id="userId" name="userId" th:value="${userId}" type="hidden">
 	</div>
 </div>
-<style>
-	/** 气泡弹出框样式 **/
-	.popover {
-		font-size: 13px;
-		max-width: unset;
-	}
-
-	.popover-title {
-		padding: 8px 14px;
-		margin: 0 !important;
-		font-size: 14px;
-		background-color: #f7f7f7;
-		border-bottom: 1px solid #ebebeb;
-		border-radius: 5px 5px 0 0;
-	}
-
-	.popover-content {
-		padding: 5px;
-	}
-</style>
-
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
 	var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
 	var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
 	var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
-	var prefix = ctx + "ext/shop/user";
-	function gotoDetail(id) {
-		var url = prefix + '/detail/' + id;
-		$.modal.openTab("用户详情", url);
-	}
-	function gotoEdit(id){
-		var url = prefix + '/edit/' + id;
-		$.modal.openTab("用户编辑", url);
-	}
-	function integraldetail(id){
-		$.modal.open("用户积分明细", prefix + "/scoreDetail/"+id);
-	}
+	var prefix = ctx + "ext/shop/user/score";
 	$(function () {
 		var options = {
-			url: prefix + "/list",
+			url: prefix + "/list?userId=" + $("#userId").val(),
 			detailUrl: prefix + "/detail/{id}",
 			createUrl: prefix + "/add",
 			updateUrl: prefix + "/edit/{id}",
 			removeUrl: prefix + "/remove",
 			sortName: "id",
 			sortOrder: "asc",
-			modalName: "会员管理",
+			modalName: "用户积分明细",
 			columns: [{
 				checkbox: true
 			},
 				{
 					field: 'id',
-					title: '用户ID',
+					title: 'ID',
+					sortable: true
+				},{
+					field: 'internalId',
+					title: '订单号',
 					sortable: true
 				},
 				{
-					title: '头像',
-					field: 'avatar',
-					formatter: function (value, row, index) {
-						return $.table.imageView(value);
-					}
-				},
-				{
-					field: 'phone',
-					title: '手机',
+					field: 'receiverId',
+					title: '收款人ID',
 					sortable: true
 				},
 				{
-					field: 'nickName',
-					title: '昵称'
-				},
-				{
-					field: 'registerTime',
-					title: '注册时间',
+					field: 'receiverNickName',
+					title: '收款人昵称',
 					sortable: true
 				},
 				{
-					field: 'loginTime',
-					title: '登陆时间',
-					sortable: true
+					field: 'totalAmount',
+					title: '金额'
 				},
 				{
-					title: '操作',
-					width: 400,
+					field: 'sysState',
+					title: '状态',
 					align: 'center',
 					formatter: function (value, row, index) {
-						var actions = [];
-						actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
-						actions.push('<a class="btn btn-warning btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
-						actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
-						actions.push('<div class="btn-group">' +
-								'<a data-toggle="dropdown" class="btn btn-primary btn-xs">更多操作 <span class="caret"></span></a>' +
-								'<ul class="dropdown-menu">\n' +
-								'    <li><a href="buttons.html#">充值明细</a></li>\n' +
-								'    <li><a href="buttons.html#">订单明细</a></li>\n' +
-								'    <li><a onclick="integraldetail(\'' + row.id + '\')">积分明细</a></li>\n' +
-								'    <li><a href="buttons.html#">实名信息</a></li>\n' +
-								'    </ul></div>');
-						return actions.join('');
+						return value ? "未入账" : "已入账";
 					}
+				},
+				{
+					field: 'type',
+					title: '交易类型',
+					align: 'center'
+				},
+				{
+					field: 'createTime',
+					title: '创建时间',
+					sortable: true
 				}
+				// {
+				// 	title: '操作',
+				// 	width: 400,
+				// 	align: 'center',
+				// 	formatter: function (value, row, index) {
+				// 		var actions = [];
+				// 		actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
+				// 		actions.push('<a class="btn btn-warning btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+				// 		actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
+				// 		return actions.join('');
+				// 	}
+				// }
 			]
 		};
 		$.table.init(options);
 	});
+
 	/* 添加用户-选择用户-提交 */
 	function submitHandler(index, layero) {
 		$.modal.close();
