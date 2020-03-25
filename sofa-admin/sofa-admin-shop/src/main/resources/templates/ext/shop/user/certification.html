@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+	<th:block th:include="include :: header('用户实名信息')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<div class="ibox">
+		<div class="ibox-title">
+			用户实名信息
+		</div>
+		<div class="ibox-content">
+			<div class="row  m-t-sm">
+				<div class="col-md-4">
+					<div class="form-group">
+						<label>姓名</label>
+						<p th:text="${user.nickName}"></p>
+					</div>
+					<div class="form-group">
+						<label>身份证号码</label>
+						<p th:text="${user.loginName}"></p>
+					</div>
+					<div class="form-group">
+						<label>实名认证</label>
+						<p th:if="${user.isCertified eq true}">已实名</p>
+						<p th:if="${user.isCertified eq false}">未实名</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<style>
+	p{
+		min-height: 18px;
+	}
+	#productPic_img{
+		width: 80px;
+		height: 80px;
+	}
+	.form-group{
+		min-height: 41px;
+	}
+	.form-group>label{
+		font-weight: 600;
+		font-size:14px;
+	}
+</style>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript" th:inline="javascript">
+	var prefix = ctx + "ext/shop/version";
+</script>
+</body>
+</html>

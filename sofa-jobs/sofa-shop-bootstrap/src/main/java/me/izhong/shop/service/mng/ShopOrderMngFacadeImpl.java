@@ -56,7 +56,21 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
         }).collect(Collectors.toList());
         return PageModel.instance(page.getTotalElements(), shopGoodCategoryList);
 	}
+	@Override
+	public PageModel<ShopOrder> pageList(PageRequest request,Long userId, OrderQueryParam param) {
+		Order order = new Order();
+		BeanUtils.copyProperties(param, order);
+		order.setUserId(userId);
+		Example<Order> example = Example.of(order);
 
+		Page<Order> page = orderDao.findAll(example, PageableConvertUtil.toDataPageable(request));
+		List<ShopOrder> shopGoodCategoryList = page.getContent().stream().map(t -> {
+			ShopOrder obj = new ShopOrder();
+			BeanUtils.copyProperties(t, obj);
+			return obj;
+		}).collect(Collectors.toList());
+		return PageModel.instance(page.getTotalElements(), shopGoodCategoryList);
+	}
 	@Override
 	public void delivery(List<OrderDeliveryParam> deliveryParamList) {
 		orderService.delivery(deliveryParamList);

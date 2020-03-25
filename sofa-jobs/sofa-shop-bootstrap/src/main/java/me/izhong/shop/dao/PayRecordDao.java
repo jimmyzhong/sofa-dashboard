@@ -34,4 +34,7 @@ public interface PayRecordDao extends JpaRepository<PayRecord, Long>, JpaSpecifi
             "and pr.sys_state = ?4 and pr.type in ?5", nativeQuery = true)
     List<PayRecord>  findAllByPayerIdAndBetweenCreationDateAndTypeIn(Long payer, LocalDateTime start, LocalDateTime end,
                                                                      Integer sysState, List<String> types);
+
+    @Query(value = "select count(*) from pay_record t where t.type = ?1", nativeQuery = true)
+    long countGoodsByType(String type);
 }

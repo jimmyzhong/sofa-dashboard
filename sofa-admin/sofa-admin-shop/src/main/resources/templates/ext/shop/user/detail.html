@@ -28,11 +28,20 @@
 						<p th:text="${user.name}"></p>
 					</div>
 					<div class="form-group">
+						<label>身份证号码</label>
+						<p th:text="${user.identityID}"></p>
+					</div>
+					<div class="form-group">
 						<label>手机号</label>
 						<p th:text="${user.phone}"></p>
 					</div>
 				</div>
 				<div class="col-md-6">
+					<div class="form-group">
+						<label>实名认证</label>
+						<p th:if="${user.isCertified eq true}">已实名</p>
+						<p th:if="${user.isCertified eq false}">未实名</p>
+					</div>
 					<div class="form-group">
 						<label>邮箱</label>
 						<p th:text="${user.email}"></p>
@@ -120,6 +129,13 @@
 	#productPic_img{
 		width: 80px;
 		height: 80px;
+	}
+	.form-group{
+		min-height: 41px;
+	}
+	.form-group>label{
+		font-weight: 600;
+		font-size:14px;
 	}
 </style>
 <th:block th:include="include :: footer"/>

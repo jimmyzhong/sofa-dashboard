@@ -30,15 +30,14 @@ public class ShopConsignmentRuleController {
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
-	public String ad() {
+	public String consignmentRule() {
 		return prefix + "/consignmentRule";
 	}
 
 	@RequiresPermissions(ShopPermissions.ConsignmentRule.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
-    public PageModel<ShopConsignmentRule> list(
-    		HttpServletRequest request) {
+    public PageModel<ShopConsignmentRule> list(HttpServletRequest request) {
 		PageModel<ShopConsignmentRule> page = shopServiceReference.consignmentRuleService.pageList(PageRequestUtil.fromRequest(request));
 		return page;
     }

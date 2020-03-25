@@ -2,15 +2,14 @@ package me.izhong.jobs.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import me.izhong.jobs.dto.OrderQueryParam;
+import me.izhong.jobs.model.ShopOrder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -128,4 +127,28 @@ public class ShopUserController {
 		model.addAttribute("userId", userId);
 		return prefix + "/balanceDetail";
 	}
+
+	@GetMapping("/certification/{userId}")
+	public String certification(@PathVariable("userId") Long userId, Model model) {
+		ShopUser user = shopServiceReference.userService.find(userId);
+		if (user == null) {
+			throw BusinessException.build(String.format("用户不存在%s", userId));
+		}
+		model.addAttribute("user", user);
+		return prefix + "/certification";
+	}
+
+	@GetMapping("/orderDetail/{userId}")
+	public String orderDetail(@PathVariable("userId") Long userId, Model model) {
+		model.addAttribute("userId", userId);
+		return prefix + "/orderDetail";
+	}
+
+	@RequestMapping("/orderList")
+	@AjaxWrapper
+	public PageModel<ShopOrder> pageList(HttpServletRequest request, @RequestParam(value = "userId") Long userId, OrderQueryParam param) {
+		PageModel<ShopOrder> page = shopServiceReference.orderService.pageList(PageRequestUtil.fromRequest(request),userId, param);
+		return page;
+	}
+//	orderDetail
 }
