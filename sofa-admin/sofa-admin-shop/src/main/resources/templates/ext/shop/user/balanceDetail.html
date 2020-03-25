@@ -58,6 +58,10 @@
                     field: 'id',
                     title: 'ID',
                     sortable: true
+                },{
+                    field: 'internalId',
+                    title: '订单号',
+                    sortable: true
                 },
                 {
                     field: 'payerId',
@@ -65,8 +69,18 @@
                     sortable: true
                 },
                 {
+                    field: 'payerNickName',
+                    title: '付款人昵称',
+                    sortable: true
+                },
+                {
                     field: 'receiverId',
                     title: '收款人ID',
+                    sortable: true
+                },
+                {
+                    field: 'receiverNickName',
+                    title: '收款人昵称',
                     sortable: true
                 },
                 {
@@ -87,13 +101,8 @@
                     align: 'center'
                 },
                 {
-                    field: 'registerTime',
-                    title: '注册时间',
-                    sortable: true
-                },
-                {
-                    field: 'loginTime',
-                    title: '登陆时间',
+                    field: 'createTime',
+                    title: '创建时间',
                     sortable: true
                 }
                 // {

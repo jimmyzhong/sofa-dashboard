@@ -1,6 +1,7 @@
 package me.izhong.jobs.admin.controller;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ public class ShopUserMoneyController {
 	@Autowired(required = false)
 	private ShopServiceReference shopServiceReference;
 
+
 	@GetMapping
 	public String user() {
 		return prefix + "/user/money";
@@ -36,9 +38,13 @@ public class ShopUserMoneyController {
 	public PageModel<ShopPayRecord> pageList(
 			HttpServletRequest request,
 			@RequestParam(value = "userId", required = false) Long userId,
-			@RequestParam(value = "moneyTypes", required = false) List<Integer> moneyTypes) {
+			@RequestParam(value = "moneyType", required = false) Integer moneyType) {
 		if (userId == null) {
 			return PageModel.instance(0L, new ArrayList<>());
+		}
+		List<Integer> moneyTypes = new LinkedList<>();
+		if(null !=moneyType){
+			moneyTypes.add(moneyType);
 		}
 		PageModel<ShopPayRecord> page = shopServiceReference.payRecordService.pageMoneyList(PageRequestUtil.fromRequest(request), userId, moneyTypes);
 		return page;

@@ -26,7 +26,9 @@ public class ShopPayRecord implements Serializable {
     private Integer sysState; // -1:需要后台系统处理; 0: 需要API JOB处理; 1: 已处理
     private String comment;
     private Long payerId;
+    private String payerNickName;
     private Long receiverId;
+    private String receiverNickName;
     private LocalDateTime createTime;
     private String createdBy;
     private String account;

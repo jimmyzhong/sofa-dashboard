@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import me.izhong.shop.dao.UserDao;
+import me.izhong.shop.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +33,10 @@ public class ShopPayRecordMngFacadeImpl implements IShopPayRecordMngFacade {
 	@Autowired
 	private PayRecordService payRecordService;
 
+    @Autowired
+    private UserDao userDao;
+
+
 	@Override
 	public PageModel<ShopPayRecord> pageMoneyList(PageRequest request, Long userId, List<Integer> moneyTypes) {
         Set<MoneyTypeEnum> types = new HashSet<>();
@@ -47,6 +53,14 @@ public class ShopPayRecordMngFacadeImpl implements IShopPayRecordMngFacade {
 		List<ShopPayRecord> list = page.getRows().stream().map(t -> {
 			ShopPayRecord obj = new ShopPayRecord();
             BeanUtils.copyProperties(t, obj);
+            if(null !=t.getPayerId()){
+                User payer=userDao.findById(t.getPayerId()).orElse(null);
+                if(null !=payer) obj.setPayerNickName(payer.getNickName());
+            }
+            if(null !=t.getReceiverId()){
+                User receiver=userDao.findById(t.getReceiverId()).orElse(null);
+                if(null !=receiver) obj.setReceiverNickName(receiver.getNickName());
+            }
             return obj;
         }).collect(Collectors.toList());
 		return PageModel.instance(page.getCount(), list);
