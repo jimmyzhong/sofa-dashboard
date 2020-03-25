@@ -36,6 +36,11 @@ public enum OrderStateEnum {
                 .orElseThrow(()-> BusinessException.build("")).comment;
     }
 
+    public static OrderStateEnum getEnumByState(int state) {
+        return Arrays.stream(OrderStateEnum.values()).filter(e->e.state==state).findFirst()
+                .orElseThrow(()-> BusinessException.build(""));
+    }
+
     public static int getStateByComment(String comment) {
         return Arrays.stream(OrderStateEnum.values()).filter(e->e.comment.equalsIgnoreCase(comment)).findFirst()
                 .orElse(INVALID).state;

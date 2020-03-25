@@ -44,7 +44,7 @@ public interface IOrderService {
     @Transactional
     void delete(Long currentUserId, String orderNo);
 
-    Map<String, Integer> getCountOfStatus(Long currentUserId, MoneyTypeEnum type, List<OrderStateEnum> states);
+    Map<String, Integer> getCountOfStatus(Long currentUserId, List<MoneyTypeEnum> type, List<OrderStateEnum> states);
 
     PageModel<OrderDTO> list(Long userId, PageQueryParamDTO queryParam);
 

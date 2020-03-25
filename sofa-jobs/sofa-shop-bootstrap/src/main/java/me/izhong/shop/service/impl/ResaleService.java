@@ -148,6 +148,7 @@ public class ResaleService {
             gs.setProductId(g.getId());
             gs.setPreStore(g.getStock());
             gs.setStore(g.getStock());
+            goodsStores.add(gs);
         }
         storeDao.saveAll(goodsStores);
         order.setStatus(OrderStateEnum.RESALED.getState());

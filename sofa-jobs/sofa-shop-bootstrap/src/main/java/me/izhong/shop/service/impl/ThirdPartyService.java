@@ -29,9 +29,10 @@ public class ThirdPartyService {
     public boolean getCertifiedInfo(String personName, String idCard) {
         CertifyServiceResponse response = AliCloudUtils.instance.fetchCertifiedUserInfo(properties, personName, idCard);
         if (response != null) {
-            if(response.isSuccess()) {
+            if(response.isSuccess() && response.getData() != null &&
+                "1".equals(response.getData().get("result"))) {
                 return true;
-            } else {
+            } else if(!response.isSuccess()){
                 throw BusinessException.build(response.getMessage());
             }
         }

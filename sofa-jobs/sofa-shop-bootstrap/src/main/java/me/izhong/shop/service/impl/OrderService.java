@@ -505,15 +505,16 @@ public class OrderService implements IOrderService {
 	}
 
 	@Override
-	public Map<String, Integer> getCountOfStatus(Long currentUserId, MoneyTypeEnum type, List<OrderStateEnum> states) {
-		List<Map<String, Integer>> list =  orderDao.selectOrderOfUserGroupByState(type.getType(), currentUserId,
+	public Map<String, Integer> getCountOfStatus(Long currentUserId, List<MoneyTypeEnum> types, List<OrderStateEnum> states) {
+		List<Map<String, Integer>> list =  orderDao.selectOrderOfUserGroupByState(
+				types.stream().map(MoneyTypeEnum::getType).collect(Collectors.toList()), currentUserId,
 				states.stream().map(OrderStateEnum::getState).collect(Collectors.toList()));
 
 		Map<String, Integer> res = new HashMap<>();
 		for (Map<String, Integer> map : list) {
-			String status = OrderStateEnum.getCommentByState(map.get("status"));
+			OrderStateEnum status = OrderStateEnum.getEnumByState(map.get("status"));
 			Integer count = map.get("number");
-			res.put(status, count);
+			res.put(status.name(), count);
 		}
 		return res;
 	}
