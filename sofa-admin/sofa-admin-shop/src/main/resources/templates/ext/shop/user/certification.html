@@ -22,8 +22,8 @@
 					</div>
 					<div class="form-group">
 						<label>实名认证</label>
-						<p th:if="${user.isCertified eq true}">已实名</p>
-						<p th:if="${user.isCertified eq false}">未实名</p>
+						<p th:if="${user.isCertified eq true}"><span class="shop-tag-success">已实名</span></p>
+						<p th:if="${user.isCertified eq false}"><span class="shop-tag-danger"></span>未实名</p>
 					</div>
 				</div>
 			</div>

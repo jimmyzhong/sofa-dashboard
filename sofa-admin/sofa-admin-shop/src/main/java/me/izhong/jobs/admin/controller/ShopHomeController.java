@@ -22,7 +22,7 @@ public class ShopHomeController {
     @GetMapping("/system/main_job")
     public String main(ModelMap mmap) {
         mmap.put("version", "1.0");
-        return "ext/djob/main_v1";
+        return "ext/shop/main_v1";
     }
 
 	@RequestMapping("/home")

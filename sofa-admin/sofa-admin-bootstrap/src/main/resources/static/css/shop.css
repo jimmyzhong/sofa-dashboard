@@ -5,3 +5,38 @@
 .shop-detail-contain .col-sm-8{
     padding-top: 7px;
 }
+
+/*tag*/
+.shop-tag{
+    background-color: #ecf5ff;
+    display: inline-block;
+    padding: 0 10px;
+    font-size: 12px;
+    color: #409eff;
+    border: 1px solid #d9ecff;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+.shop-tag-success{
+    display: inline-block;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    background-color: #f0f9eb;
+    border-color: #e1f3d8;
+    color: #67c23a;
+}
+.shop-tag-danger{
+    display: inline-block;
+    padding: 0 10px;
+    font-size: 12px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    background-color: #fef0f0;
+    border-color: #fde2e2;
+    color: #f56c6c;
+}
