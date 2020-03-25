@@ -44,24 +44,7 @@
     </div>
 </div>
 <style>
-    /** 气泡弹出框样式 **/
-    .popover {
-        font-size: 13px;
-        max-width: unset;
-    }
 
-    .popover-title {
-        padding: 8px 14px;
-        margin: 0 !important;
-        font-size: 14px;
-        background-color: #f7f7f7;
-        border-bottom: 1px solid #ebebeb;
-        border-radius: 5px 5px 0 0;
-    }
-
-    .popover-content {
-        padding: 5px;
-    }
 </style>
 
 <th:block th:include="include :: footer"/>
@@ -159,7 +142,7 @@
                         actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
                         actions.push('<div class="btn-group">' +
                             '<a data-toggle="dropdown" class="btn btn-primary btn-xs">更多操作 <span class="caret"></span></a>' +
-                            '<ul class="dropdown-menu">\n' +
+                            '<ul class="dropdown-menu user-more-action">\n' +
                             '    <li><a onclick="balanceDetail(\'' + row.id + '\')">余额明细</a></li>\n' +
                             '    <li><a href="buttons.html#">订单明细</a></li>\n' +
                             '    <li><a onclick="integraldetail(\'' + row.id + '\')">积分明细</a></li>\n' +
@@ -173,5 +156,28 @@
         $.table.init(options);
     });
 </script>
+<style>
+    .user-more-action{
+        width: 315px;
+        margin-left: -315px;
+        margin-top: -30px;
+        border-radius: 5px;
+        box-shadow: 0 0 26px rgba(86, 96, 117, 0.3);
+    }
+    .user-more-action>li{
+        display: inline-block;
+    }
+    .user-more-action>li>a{
+        display: inline-block;
+        padding: 3px 10px;
+    }
+    .caret{
+        transform:rotate(90deg);
+        -ms-transform:rotate(90deg); 	/* IE 9 */
+        -moz-transform:rotate(90deg); 	/* Firefox */
+        -webkit-transform:rotate(90deg); /* Safari 和 Chrome */
+        -o-transform:rotate(90deg); 	/* Opera */
+    }
+</style>
 </body>
 </html>
