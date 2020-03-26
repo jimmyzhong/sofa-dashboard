@@ -1,7 +1,6 @@
 package me.izhong.dashboard.web.controller.admin;
 
 import me.izhong.dashboard.manage.entity.SysRole;
-import me.izhong.dashboard.manage.entity.SysUserRole;
 import me.izhong.dashboard.manage.service.*;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -114,7 +114,7 @@ public class UserAdminController {
 
         SysUser dbUser = new SysUser();
         if (StringUtils.isBlank(user.getLoginName())) {
-            throw BusinessException.build("loginName不能为空");
+            throw BusinessException.build("登录名不能为空");
         }
         if (StringUtils.isBlank(user.getLoginName())) {
             throw BusinessException.build("登录名不能为空");
@@ -336,8 +336,7 @@ public class UserAdminController {
      * 进入授权角色页
      */
     @GetMapping("/authRole/{userId}")
-    public String authRole(@PathVariable("userId") Long userId, ModelMap mmap)
-    {
+    public String authRole(@PathVariable("userId") Long userId, ModelMap mmap) {
         SysUser user = sysUserService.findUser(userId);
         // 获取用户所属的角色列表
         List<SysRole> userRoles = sysRoleService.selectRolesByUserId(userId);
@@ -355,6 +354,9 @@ public class UserAdminController {
     @PostMapping("/authRole/insertAuthRole")
     @AjaxWrapper
     public void insertAuthRole(Long userId, Long[] roleIds) {
+        if(roleIds != null && !Arrays.asList(roleIds).contains(1L))
+            sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
+
         sysUserService.saveUserRoles(userId, roleIds);
     }
 
