@@ -67,6 +67,11 @@
       <artifactId>spring-data-redis</artifactId>
     </dependency>
     <dependency>
+      <groupId>me.izhong.sofa</groupId>
+      <artifactId>sofa-shop-facade</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
       <version>RELEASE</version>
