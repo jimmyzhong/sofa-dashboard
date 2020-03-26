@@ -30,6 +30,8 @@ public interface SysUserService {
 
     SysUser saveUserAndPerms(SysUser user);
 
+    void saveUserRoles(Long userId,Long[] roleIds);
+
     List<SysUser> findUsersByUserIds(Long[] id);
 
     PageModel getPage(PageRequest pageRequest, SysUser searchUser);
@@ -59,4 +61,6 @@ public interface SysUserService {
     String importUser(List<SysUser> userList, boolean updateSupport, String operName);
 
     void checkUserAllowed(SysUser user,String actionName);
+
+    SysUser registerUser(SysUser user);
 }

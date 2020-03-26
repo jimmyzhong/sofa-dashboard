@@ -1,5 +1,6 @@
 package me.izhong.dashboard.manage.service.impl;
 
+import me.izhong.dashboard.common.constants.UserConstants;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
@@ -128,6 +129,15 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         user = saveUser(user);
         doUserPerms(user);
         return user;
+    }
+
+    @Transactional
+    @Override
+    public void saveUserRoles(Long userId, Long[] roleIds) {
+        // 删除用户与角色关联
+        userRoleDao.deleteAllByUserId(userId);
+        // 新增用户与角色管理
+        insertUserRole(userId,roleIds);
     }
 
     @Transactional
@@ -412,17 +422,14 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
 
     /**
      * 给用户授予角色
-     *
-     * @param user
      */
-    private void insertUserRole(SysUser user) {
-        Long[] roles = user.getRoleIds();
-        if (roles != null && roles.length > 0) {
+    private void insertUserRole(Long userId, Long[] roleIds) {
+        if (roleIds != null && roleIds.length > 0) {
             // 新增用户与角色管理
             List<SysUserRole> list = new ArrayList<>();
-            for (Long roleId : roles) {
+            for (Long roleId : roleIds) {
                 SysUserRole ur = new SysUserRole();
-                ur.setUserId(user.getUserId());
+                ur.setUserId(userId);
                 ur.setRoleId(roleId);
                 list.add(ur);
             }
@@ -506,7 +513,7 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         // 删除用户与角色关联
         userRoleDao.deleteAllByUserId(userId);
         // 新增用户与角色管理
-        insertUserRole(user);
+        insertUserRole(user.getUserId(),user.getRoleIds());
         // 删除用户与岗位关联
         userPostDao.deleteAllByUserId(userId);
         // 新增用户与岗位管理
@@ -592,5 +599,11 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
         if (!Global.isDebugMode() && user != null && user.getUserId() != null && user.isAdmin()) {
             throw BusinessException.build("不允许" + StringUtils.defaultIfBlank(actionName,"操作") + "超级管理员用户" + StringUtils.defaultIfBlank(user.getLoginName(),""));
         }
+    }
+
+    @Override
+    public SysUser registerUser(SysUser user) {
+        user.setUserType(UserConstants.REGISTER_USER_TYPE);
+        return userDao.save(user);
     }
 }

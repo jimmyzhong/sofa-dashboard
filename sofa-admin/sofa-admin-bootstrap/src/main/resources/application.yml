@@ -3,7 +3,10 @@ spring:
     banner-mode: "OFF"
   data:
     mongodb:
-      uri: mongodb://10.10.51.212:27017/jobs
+      #uri: mongodb://10.10.51.212:27017/jobs
+      uri: mongodb://shop:shop%40mongo@lpp.izhong.me:27017/shop?authMechanism=SCRAM-SHA-256
+
+
       #&replicaSet=rs0
   http:
     encoding:

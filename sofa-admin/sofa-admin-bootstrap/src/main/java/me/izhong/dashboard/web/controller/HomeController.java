@@ -35,7 +35,7 @@ public class HomeController {
     }
 
     @RequestMapping("/index")
-    public String index2(Model model) {
+    public String index2(ModelMap model) {
         UserInfo user = UserInfoContextHelper.getLoginUser();
         model.addAttribute("user", user);
 
@@ -57,7 +57,10 @@ public class HomeController {
 //        m1.getChildren().add(m2);
 
         String demoUser = configService.getKey("sys.main.demoEnableUser");
-        model.addAttribute("demoEnabled", StringUtils.equals(user.getLoginName(),demoUser));
+        model.put("demoEnabled", StringUtils.equals(user.getLoginName(),demoUser));
+
+        model.put("sideTheme", configService.getKey("sys.index.sideTheme"));
+        model.put("skinName", configService.getKey("sys.index.skinName"));
 
         List<SysMenu> menus2;
         if(Global.isDebugMode()) {
@@ -65,7 +68,7 @@ public class HomeController {
         } else {
             menus2 = sysMenuService.selectVisibleMenusByUser(user.getUserId());
         }
-        model.addAttribute("menus", menus2);
+        model.put("menus", menus2);
         return "index";
     }
 

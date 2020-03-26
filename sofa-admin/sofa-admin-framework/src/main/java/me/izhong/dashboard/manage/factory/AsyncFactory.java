@@ -65,7 +65,7 @@ public class AsyncFactory {
                 logininfor.setMsg(message);
                 logininfor.setLoginTime(new Date());
                 // 日志状态
-                if (SystemConstants.SUCCESS.equals(status) || SystemConstants.LOGOUT.equals(status)) {
+                if (SystemConstants.SUCCESS.equals(status) || SystemConstants.LOGOUT.equals(status) || SystemConstants.REGISTER.equals(status)) {
                     logininfor.setStatus(SystemConstants.SUCCESS);
                 } else if (SystemConstants.FAIL.equals(status)) {
                     logininfor.setStatus(SystemConstants.FAIL);

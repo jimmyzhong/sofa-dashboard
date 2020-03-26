@@ -41,6 +41,12 @@ public class UserConstants {
     public final static String USER_NAME_NOT_UNIQUE = "1";
 
     /**
+     * 用户类型
+     */
+    public static final String SYSTEM_USER_TYPE = "00";
+    public static final String REGISTER_USER_TYPE = "01";
+
+    /**
      * 手机号码是否唯一的返回结果
      */
     public final static String USER_PHONE_UNIQUE = "0";

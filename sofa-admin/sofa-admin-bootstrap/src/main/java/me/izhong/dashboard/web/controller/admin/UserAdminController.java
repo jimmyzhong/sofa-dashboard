@@ -1,5 +1,7 @@
 package me.izhong.dashboard.web.controller.admin;
 
+import me.izhong.dashboard.manage.entity.SysRole;
+import me.izhong.dashboard.manage.entity.SysUserRole;
 import me.izhong.dashboard.manage.service.*;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
@@ -327,6 +329,33 @@ public class UserAdminController {
 
         sysUserService.checkUserAllowed(user,"重置");
         sysUserService.resetUserPwd(user.getUserId(), user.getPassword(),user.getSalt());
+    }
+
+
+    /**
+     * 进入授权角色页
+     */
+    @GetMapping("/authRole/{userId}")
+    public String authRole(@PathVariable("userId") Long userId, ModelMap mmap)
+    {
+        SysUser user = sysUserService.findUser(userId);
+        // 获取用户所属的角色列表
+        List<SysRole> userRoles = sysRoleService.selectRolesByUserId(userId);
+        List<Long> roleIds = userRoles.stream().map(e->e.getRoleId()).collect(Collectors.toList());
+        mmap.put("user", user);
+        mmap.put("userRoles", roleIds);
+        return prefix + "/authRole";
+    }
+
+    /**
+     * 用户授权角色
+     */
+    @RequiresPermissions("system:user:edit")
+    @Log(title = "用户管理", businessType = BusinessType.GRANT)
+    @PostMapping("/authRole/insertAuthRole")
+    @AjaxWrapper
+    public void insertAuthRole(Long userId, Long[] roleIds) {
+        sysUserService.saveUserRoles(userId, roleIds);
     }
 
     /**
