@@ -2,6 +2,7 @@
 <head th:fragment=header(title)>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="keywords" content="">
     <meta name="description" content="">
     <title th:text="${title}"></title>
@@ -18,6 +19,7 @@
 
 <!-- 通用JS -->
 <div th:fragment="footer">
+    <a id="scroll-up" href="#" class="btn btn-sm display"><i class="fa fa-angle-double-up"></i></a>
     <script th:src="@{/js/jquery.min.js}"></script>
     <script th:src="@{/js/bootstrap.min.js}"></script>
     <!-- bootstrap-table 表格插件 -->
@@ -43,8 +45,7 @@
     <script th:src="@{/ruoyi/js/common.js?v=4.0.0}"></script>
     <script th:src="@{/ruoyi/js/ry-ui.js?v=4.0.0}"></script>
     <script th:src="@{/js/common-shop.js}"></script>
-    <script th:inline="javascript"> var ctx = [[@{
-        /}]]; </script>
+    <script th:inline="javascript"> var ctx = [[@{/}]]; </script>
 </div>
 
 <!-- ztree树插件 -->
@@ -97,6 +98,7 @@
     <script th:src="@{/ajax/libs/summernote/summernote.min.js}"></script>
     <script th:src="@{/ajax/libs/summernote/summernote-zh-CN.js}"></script>
 </div>
+
 <!-- cropbox图像裁剪插件 -->
 <div th:fragment="cropbox-css">
     <link th:href="@{/ajax/libs/cropbox/cropbox.css}" rel="stylesheet"/>

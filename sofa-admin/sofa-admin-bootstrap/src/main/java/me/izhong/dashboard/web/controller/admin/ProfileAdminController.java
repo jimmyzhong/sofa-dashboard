@@ -25,8 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/system/user/profile")
-public class SysProfileController {
-    private static final Logger log = LoggerFactory.getLogger(SysProfileController.class);
+public class ProfileAdminController {
+    private static final Logger log = LoggerFactory.getLogger(ProfileAdminController.class);
 
     private String prefix = "system/user/profile";
 

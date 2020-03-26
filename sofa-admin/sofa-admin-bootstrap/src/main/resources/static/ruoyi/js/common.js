@@ -12,6 +12,11 @@ $(function() {
         });
     }
 
+    // 回到顶部绑定
+    if ($.fn.toTop !== undefined) {
+        $('#scroll-up').toTop();
+    }
+
     // select2复选框事件绑定
     if ($.fn.select2 !== undefined) {
         $.fn.select2.defaults.set( "theme", "bootstrap" );
@@ -154,6 +159,49 @@ $(function() {
     });
 });
 
+(function ($) {
+    'use strict';
+    $.fn.toTop = function(opt) {
+        var elem = this;
+        var win = $(window);
+        var doc = $('html, body');
+        var options = $.extend({
+            autohide: true,
+            offset: 50,
+            speed: 500,
+            position: true,
+            right: 15,
+            bottom: 5
+        }, opt);
+        elem.css({
+            'cursor': 'pointer'
+        });
+        if (options.autohide) {
+            elem.css('display', 'none');
+        }
+        if (options.position) {
+            elem.css({
+                'position': 'fixed',
+                'right': options.right,
+                'bottom': options.bottom,
+            });
+        }
+        elem.click(function() {
+            doc.animate({
+                scrollTop: 0
+            }, options.speed);
+        });
+        win.scroll(function() {
+            var scrolling = win.scrollTop();
+            if (options.autohide) {
+                if (scrolling > options.offset) {
+                    elem.fadeIn(options.speed);
+                } else elem.fadeOut(options.speed);
+            }
+        });
+    };
+})(jQuery);
+
 /** 刷新选项卡 */
 var refreshItem = function(){
     var topWindow = $(window.parent.document);
@@ -278,3 +326,26 @@ $.ajaxSetup({
         }
     }
 });
+
+
+Array.prototype.indexOf = function (val) {
+    for (var i = 0; i < this.length; i++) {
+        if (this[i] == val) return i;
+    }
+    return -1;
+};
+
+Array.prototype.remove = function (val) {
+    var index = this.indexOf(val);
+    if (index > -1) {
+        this.splice(index, 1);
+    }
+}
+
+Array.prototype.contains = function (val) {
+    return this.indexOf(val) >= 0;
+}
+
+Array.prototype.add = function (val) {
+    this.push(val);
+}

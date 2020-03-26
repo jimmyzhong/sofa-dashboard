@@ -2923,7 +2923,7 @@ fieldset[disabled] .note-editor .btn-link:focus {
 .note-editor .open > .dropdown-menu {
   display: block;
   left:0!important;
-    right:auto!important;
+  right:auto!important;
 }
 .note-editor .open > a {
   outline: 0;
@@ -5778,7 +5778,7 @@ td.visible-lg {
     display: table-cell !important;
   }
 }
-.hidden-xs {
+.summernote .hidden-xs {
   display: block !important;
 }
 tr.hidden-xs {

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="renderer" content="webkit">
     <title>[[${@config.getKey('sys.main.name')?:"后台管理"}]]</title>
+    <!-- 避免IE使用兼容模式 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="keywords" content="[[${@config.getKey('sys.main.name')?:"后台管理"}]]">
     <meta name="description" content="[[${@config.getKey('sys.main.name')?:"后台管理"}]]">
     <!--[if lt IE 9]>
@@ -30,15 +32,15 @@
         <div class="nav-close">
             <i class="fa fa-times-circle"></i>
         </div>
+        <a th:href="@{/index}">
+            <li class="logo hidden-xs">
+                <!--                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')!=null}">[[${@config.getKey('sys.main.name')}]]</span>-->
+                <!--                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')==null}">后台管理</span>-->
+                <span class="logo-lg">[[${@config.getKey('sys.main.name')?:"后台管理"}]]</span>
+            </li>
+        </a>
         <div class="sidebar-collapse">
             <ul class="nav" id="side-menu">
-                <a th:href="@{/index}">
-                    <li class="logo">
-<!--                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')!=null}">[[${@config.getKey('sys.main.name')}]]</span>-->
-<!--                        <span class="logo-lg" th:if="${@config.getKey('sys.main.name')==null}">后台管理</span>-->
-                        <span class="logo-lg">[[${@config.getKey('sys.main.name')?:"后台管理"}]]</span>
-                    </li>
-                </a>
                 <li>
                     <div class="user-panel">
                         <a class="menuItem" title="个人中心" th:href="@{/system/user/profile}">
@@ -203,7 +205,7 @@
                         <a href="javascript:void(0)" class="dropdown-toggle" data-hover="dropdown">
                             <img th:src="(${user.avatar} == null or ${user.avatar} == '') ? @{/img/profile.png} : @{${user.avatar}}"
                                  class="user-image">
-                            <span class="hidden-xs">[[${user.userName}]]</span>
+                            <span class="hidden-xs">[[${#strings.defaultString(user.userName, '-')}]]</span>
                         </a>
                         <ul class="dropdown-menu">
                             <li class="mt5">
@@ -275,16 +277,20 @@
         // 历史访问路径缓存
         var historyPath = storage.get("historyPath");
         // 排除非左侧菜单链接
+/*
         var excludesUrl = [ctx + "system/user/profile"];
+*/
         // 本地主题优先，未设置取系统配置
         if($.common.isNotEmpty(skin)){
             $("body").addClass(skin.split('|')[0]);
             $("body").addClass(skin.split('|')[1]);
         } else {
-            var sideTheme = [[${@config.getKey('sys.index.sideTheme')}]];
+/*            var sideTheme = [[${@config.getKey('sys.index.sideTheme')}]];
             var skinName = [[${@config.getKey('sys.index.skinName')}]];
             $("body").addClass(sideTheme);
-            $("body").addClass(skinName);
+            $("body").addClass(skinName);*/
+            $("body").addClass([[${sideTheme}]]);
+            $("body").addClass([[${skinName}]]);
         }
 
         /* 用户管理-重置密码 */
@@ -305,9 +311,10 @@
         /** 刷新时访问路径页签 */
         function applyPath(url) {
             $('a[href$="' + decodeURI(url) + '"]').click();
-            if($.inArray(url, excludesUrl) < 0){
+         /*   if($.inArray(url, excludesUrl) < 0){
                 $('a[href$="' + url + '"]').parent("li").addClass("selected").parents("li").addClass("active").end().parents("ul").addClass("in");
-            }
+            }*/
+            $('a[href$="' + url + '"]').parent("li").addClass("selected").parents("li :not(.user-panel)").addClass("active").end().parents("ul").addClass("in");
         }
 
         $(function() {

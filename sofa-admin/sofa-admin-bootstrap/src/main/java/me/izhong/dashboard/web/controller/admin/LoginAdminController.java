@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @Slf4j
-public class SysLoginController {
+public class LoginAdminController {
 
     @GetMapping("/login")
     public String login(HttpServletRequest request, HttpServletResponse response) {

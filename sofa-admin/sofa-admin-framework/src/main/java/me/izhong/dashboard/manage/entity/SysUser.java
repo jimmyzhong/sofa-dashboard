@@ -49,6 +49,9 @@ public class SysUser extends TimedBasedEntity {
 
     private Boolean phoneNumberLoginEnable;
 
+    /** 用户类型 */
+    private String userType;
+
     @Excel(name = "用户邮箱")
     @Search
     @Email(message = "邮箱格式不正确")

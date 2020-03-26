@@ -24,7 +24,7 @@ import java.io.IOException;
  */
 @Controller
 @RequestMapping("/captcha")
-public class SysCaptchaController {
+public class CaptchaAdminController {
     @Resource(name = "captchaProducer")
     private Producer captchaProducer;
 
