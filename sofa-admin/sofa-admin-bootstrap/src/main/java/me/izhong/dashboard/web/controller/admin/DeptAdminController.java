@@ -193,7 +193,8 @@ public class DeptAdminController {
         if(StringUtils.isNotBlank(viewPerm)) {
             //只展示有权限的部门
             Set<Long> scop = UserInfoContextHelper.getLoginUser().getScopeData(viewPerm);
-            return sysDeptService.selectDeptTreeData(scop.toArray(new Long[]{}));
+            if(scop != null)
+                return sysDeptService.selectDeptTreeData(scop.toArray(new Long[]{}));
         }
         return sysDeptService.selectDeptTree(null);
     }
