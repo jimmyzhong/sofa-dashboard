@@ -22,6 +22,8 @@ public class ShopUser implements Serializable {
     private String phone;
     private String email;
     private Boolean isLocked;
+    private Long inviteUserId; //上级
+    private Long inviteUserId2;//上上级
     private Date registerTime;
     private Date loginTime;
 

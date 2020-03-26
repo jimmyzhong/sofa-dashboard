@@ -5,6 +5,7 @@
 </head>
 <body class="white-bg">
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<input id="userId" name="userId" th:value="${user.id}" type="hidden">
 	<div class="ibox">
 		<div class="ibox-title">
 			用户基本信息
@@ -60,64 +61,50 @@
 	</div>
 	<div class="ibox">
 		<div class="ibox-title">
-			用户上下级
+			上级用户信息
 		</div>
 		<div class="ibox-content">
 			<div class="form-group">
-				<table class="table">
-					<caption>用户上级</caption>
-					<thead>
-					<tr>
-						<th>id</th>
-						<th>昵称</th>
-						<th>Last Name</th>
-						<th>Username</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr>
-						<th scope="row">1</th>
-						<td>Mark</td>
-						<td>Otto</td>
-						<td>@mdo</td>
-					</tr>
-					</tbody>
-				</table>
+				<div class="row  m-t-sm">
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>id</label>
+							<p th:text="${upperUser.id}"></p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>昵称</label>
+							<p th:text="${upperUser.nickName}"></p>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>姓名</label>
+							<p th:text="${upperUser.name}"></p>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
+	</div>
+	<div class="ibox">
+		<div class="ibox-title">
+			下级用户信息
+		</div>
 		<div class="ibox-content">
-			<div class="form-group">
-				<table class="table">
-					<caption>用户下级</caption>
-					<thead>
-					<tr>
-						<th>id</th>
-						<th>昵称</th>
-						<th>Last Name</th>
-						<th>Username</th>
-					</tr>
-					</thead>
-					<tbody>
-					<tr>
-						<th scope="row">1</th>
-						<td>Mark</td>
-						<td>Otto</td>
-						<td>@mdo</td>
-					</tr>
-					<tr>
-						<th scope="row">2</th>
-						<td>Jacob</td>
-						<td>Thornton</td>
-						<td>@fat</td>
-					</tr>
-					<tr>
-						<th scope="row">3</th>
-						<td>Larry</td>
-						<td>the Bird</td>
-						<td>@twitter</td>
-					</tr>
-					</tbody>
-				</table>
+			<div class="select-table table-striped">
+				<table id="bootstrap-table-1" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+	<div class="ibox">
+		<div class="ibox-title">
+			下下级用户信息
+		</div>
+		<div class="ibox-content">
+			<div class="select-table table-striped">
+				<table id="bootstrap-table-2" data-mobile-responsive="true"></table>
 			</div>
 		</div>
 	</div>
@@ -140,7 +127,105 @@
 </style>
 <th:block th:include="include :: footer"/>
 <script type="text/javascript" th:inline="javascript">
-	var prefix = ctx + "ext/shop/version";
+	var prefix = ctx + "ext/shop/user";
+	$(function () {
+		var options = {
+			id: "bootstrap-table-1",
+			url: prefix + "/inviteList?userId=" + $("#userId").val(),
+			detailUrl: prefix + "/detail/{id}",
+			createUrl: prefix + "/add",
+			updateUrl: prefix + "/edit/{id}",
+			removeUrl: prefix + "/remove",
+			sortName: "id",
+			sortOrder: "asc",
+			modalName: "下级用户",
+			columns: [{
+				checkbox: true
+			},
+				{
+					field: 'id',
+					title: '用户ID',
+					sortable: true
+				},
+				{
+					title: '头像',
+					field: 'avatar',
+					formatter: function (value, row, index) {
+						return $.table.imageView(value);
+					}
+				},
+				{
+					field: 'phone',
+					title: '手机',
+					sortable: true
+				},
+				{
+					field: 'nickName',
+					title: '昵称'
+				},
+				{
+					field: 'registerTime',
+					title: '注册时间',
+					sortable: true
+				},
+				{
+					field: 'loginTime',
+					title: '登陆时间',
+					sortable: true
+				}
+			]
+		};
+		$.table.init(options);
+	});
+	$(function () {
+		var options = {
+			id: "bootstrap-table-2",
+			url: prefix + "/invite2List?userId=" + $("#userId").val(),
+			detailUrl: prefix + "/detail/{id}",
+			createUrl: prefix + "/add",
+			updateUrl: prefix + "/edit/{id}",
+			removeUrl: prefix + "/remove",
+			sortName: "id",
+			sortOrder: "asc",
+			modalName: "下下级用户",
+			columns: [{
+				checkbox: true
+			},
+				{
+					field: 'id',
+					title: '用户ID',
+					sortable: true
+				},
+				{
+					title: '头像',
+					field: 'avatar',
+					formatter: function (value, row, index) {
+						return $.table.imageView(value);
+					}
+				},
+				{
+					field: 'phone',
+					title: '手机',
+					sortable: true
+				},
+				{
+					field: 'nickName',
+					title: '昵称'
+				},
+				{
+					field: 'registerTime',
+					title: '注册时间',
+					sortable: true
+				},
+				{
+					field: 'loginTime',
+					title: '登陆时间',
+					sortable: true
+				}
+			]
+		};
+		$.table.init(options);
+	});
 </script>
 </body>
 </html>

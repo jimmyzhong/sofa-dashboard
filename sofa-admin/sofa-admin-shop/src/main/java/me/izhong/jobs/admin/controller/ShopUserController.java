@@ -101,6 +101,11 @@ public class ShopUserController {
 		if (user == null) {
 			throw BusinessException.build(String.format("用户不存在%s", userId));
 		}
+		ShopUser upperUser=new ShopUser();
+		if(null!=user.getInviteUserId()){
+			upperUser=shopServiceReference.userService.find(user.getInviteUserId());
+		}
+		model.addAttribute("upperUser", upperUser);
 		model.addAttribute("user", user);
 		return prefix + "/detail";
 	}
@@ -148,6 +153,22 @@ public class ShopUserController {
 	@AjaxWrapper
 	public PageModel<ShopOrder> pageList(HttpServletRequest request, @RequestParam(value = "userId") Long userId, OrderQueryParam param) {
 		PageModel<ShopOrder> page = shopServiceReference.orderService.pageList(PageRequestUtil.fromRequest(request),userId, param);
+		return page;
+	}
+	//下级用户
+	@RequestMapping("/inviteList")
+	@AjaxWrapper
+	public PageModel<ShopUser> inviteList(HttpServletRequest request, @RequestParam(value = "userId") Long userId, ShopUser shopUser) {
+		shopUser.setInviteUserId(userId);
+		PageModel<ShopUser> page = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request), shopUser);
+		return page;
+	}
+//	下下级用户
+	@RequestMapping("/invite2List")
+	@AjaxWrapper
+	public PageModel<ShopUser> invite2List(HttpServletRequest request, @RequestParam(value = "userId") Long userId, ShopUser shopUser) {
+		shopUser.setInviteUserId2(userId);
+		PageModel<ShopUser> page = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request), shopUser);
 		return page;
 	}
 //	orderDetail

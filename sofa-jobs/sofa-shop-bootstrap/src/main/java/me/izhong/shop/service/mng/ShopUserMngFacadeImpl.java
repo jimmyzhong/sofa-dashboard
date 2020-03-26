@@ -83,6 +83,8 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
         ExampleMatcher userMatcher = ExampleMatcher.matchingAny()
         		.withMatcher("nickName", match -> match.contains())
                 .withMatcher("phone", match -> match.contains())
+                .withMatcher("inviteUserId", match -> match.contains())
+                .withMatcher("inviteUserId2", match -> match.contains())
                 .withIgnorePaths("password");
 
         Example<User> example = Example.of(user, userMatcher);
