@@ -52,6 +52,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         SessionInfo session = null;
         if((session = CacheUtil.getSessionInfo(token)) == null) {
             throw new UserNotLoginException("用户未登陆,或者登陆已经过期");
+        } else if (session.getIsLocked() == Boolean.TRUE) {
+            throw BusinessException.build(ErrorCode.USER_LOCKED,"您的账户被冻结,请联系客服");
         }
 
         request.setAttribute("userId", session.getId());

@@ -3,6 +3,8 @@ package me.izhong.shop.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.shop.cache.CacheUtil;
+import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.consts.ErrorCode;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.dao.UserDao;
@@ -22,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -165,6 +169,23 @@ public class UserService implements IUserService {
         User user = findById(userId);
         user.setIsLocked(isLock);
         saveOrUpdate(user);
+        setUserSession(user);
+    }
+
+    @Override
+    public String setUserSession(User persistedUser) {
+        SessionInfo session = new SessionInfo();
+        session.setLasttimestamp(persistedUser.getLoginTime().toLocalDateTime()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+        String token = getToken(persistedUser);
+        session.setId(persistedUser.getId());
+        session.setIsLocked(persistedUser.getIsLocked());
+        CacheUtil.setSessionInfo(token, session);
+        return token;
+    }
+
+    private String getToken(User persistedUser) {
+        return persistedUser.getId() + UUID.randomUUID().toString().replaceAll("-", "");
     }
 
     @Override

@@ -167,7 +167,7 @@ public class OrderController {
 
 		Map<String, Integer> map = orderService.getCountOfStatus(getCurrentUserId(request),
 				Arrays.asList(MoneyTypeEnum.NORMAL_GOODS, MoneyTypeEnum.RESALE_GOODS),
-				Arrays.asList(WAIT_DELIVER, DELIVERED, WAIT_PAYING));
+				Arrays.asList(WAIT_DELIVER, DELIVERED, WAIT_PAYING, PAID));
 
 		return map;
     }

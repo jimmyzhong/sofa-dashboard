@@ -34,6 +34,6 @@ public class AppVersionsService implements IAppVersionsService {
 
 	@Override
 	public AppVersions latest(String type) {
-		return appVersionsDao.findFirstByTypeOrderByVersionDesc(type);
+		return appVersionsDao.findFirstByTypeOrderByCreateTimeDesc(type);
 	}
 }

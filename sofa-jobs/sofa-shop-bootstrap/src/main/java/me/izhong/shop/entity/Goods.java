@@ -77,4 +77,6 @@ public class Goods {
     private LocalDateTime updateTime;
     @Column(name = "CREATED_BY")
     private Long createdBy;
+    @Column(name = "SCORE_REDEEM", columnDefinition = "int(1) default 1")
+    private Integer scoreRedeem; //1 可以积分兑换, 0 不能积分兑换
 }

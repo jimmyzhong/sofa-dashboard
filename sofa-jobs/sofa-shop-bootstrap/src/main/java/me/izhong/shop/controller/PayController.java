@@ -250,13 +250,13 @@ public class PayController {
             throw BusinessException.build("内部订单号不一致:" + order.getOrderSn() + ", VS " + response.getOutTradeNo());
         }
 
-        BigDecimal totalAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getTotalAmount()));
-        if (!order.getTotalAmount().equals(totalAmountInResponse)) {
+        BigDecimal totalAmountInResponse = new BigDecimal(response.getTotalAmount());
+        if (order.getTotalAmount().compareTo(totalAmountInResponse) !=0) {
             log.warn("order total amount mismatch." + order.getTotalAmount() + ", VS " + response.getTotalAmount());
             throw BusinessException.build("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
         }
 
-        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(response.getBuyerPayAmount()));
+        BigDecimal payAmountInResponse = new BigDecimal(response.getBuyerPayAmount());
         String status = getPayStatus(response.getTradeStatus());
         String comment = getMessage(response.getMsg());
         order.setPayStatus(status);
@@ -410,7 +410,7 @@ public class PayController {
         }
 
         String totalAmount = params.get("total_amount");
-        if (!order.getTotalAmount().equals(BigDecimal.valueOf(Double.valueOf(totalAmount)))) {
+        if (order.getTotalAmount().compareTo(BigDecimal.valueOf(Double.valueOf(totalAmount)))!=0) {
             log.error("total amount mismatch. local:" + order.getTotalAmount().toString() + ", alipay:" + totalAmount);
             throw BusinessException.build("订单金额不相等");
         }

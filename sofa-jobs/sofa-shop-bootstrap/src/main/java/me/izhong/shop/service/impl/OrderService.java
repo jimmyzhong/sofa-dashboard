@@ -89,7 +89,7 @@ public class OrderService implements IOrderService {
 				.setNameFormat("order-status-updater").build());
 		orderStatusUpdater.scheduleAtFixedRate(() -> {
 			try {
-				updateExpiredOrders();
+				//updateExpiredOrders();
 			}catch (Throwable throwable) {
 				log.error("order update expired status error", throwable);
 			}
@@ -210,7 +210,8 @@ public class OrderService implements IOrderService {
 		order.setPayTradeNo(externalOrderNo);
 		order.setPayAmount(payAmount);
 
-		if (PayStatusEnum.SUCCESS.name().equals(state) && order.getStatus() < PAID.getState()) {
+		if (PayStatusEnum.SUCCESS.name().equals(state) && (order.getStatus() == WAIT_PAYING.getState()
+				|| order.getStatus() == EXPIRED.getState())) {
 			order.setStatus(PAID.getState());
 			record.setSysState(1);
 
@@ -302,6 +303,11 @@ public class OrderService implements IOrderService {
 
 	private void recordMoney(Order order, Long payerId, Long receiverId, Double returnFactor, int sysState,
 							 boolean updateUserMoney, MoneyTypeEnum type) {
+		BigDecimal totalAmount = order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor));
+		if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+			log.warn("log money amount 0. ignore");
+			return;
+		}
 		PayRecord moneyReturn = new PayRecord();
 		moneyReturn.setType(type.getDescription());
 		moneyReturn.setCreateTime(LocalDateTime.now());
@@ -407,6 +413,7 @@ public class OrderService implements IOrderService {
 		item.setQuantity(quantity);
 		item.setUserId(userId);
 		item.setProductPic(goods.getProductPic());
+		item.setScoreRedeem(goods.getScoreRedeem());
 		item.setUnitPrice(goods.getPromotionPrice()!=null ? goods.getPromotionPrice() : goods.getPrice());
 		if (goods.getAttributes()!=null && !goods.getAttributes().isEmpty()){
 			GoodsAttributes attributes = goods.getAttributes().get(0);
@@ -665,6 +672,16 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("用户积分不存在,请联系管理员");
 		}
 
+		if (MoneyTypeEnum.RESALE_GOODS.getType() == order.getOrderType()) {
+			throw BusinessException.build("订单里的商品不能使用积分.");
+		}
+
+		List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), userId);
+		for (OrderItem item: items) {
+			if ((item.getScoreRedeem() != null && item.getScoreRedeem() == 0)) {
+				throw BusinessException.build("订单里的商品不能使用积分.");
+			}
+		}
 		Long amount = BigDecimal.valueOf(order.getTotalAmount().doubleValue() * scorePayRate).longValue();
 		if (userScore.getAvailableScore().compareTo(amount) < 0) {
 			throw BusinessException.build("可用积分不足");

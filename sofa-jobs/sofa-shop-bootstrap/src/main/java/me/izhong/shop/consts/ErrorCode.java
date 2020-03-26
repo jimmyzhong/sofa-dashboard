@@ -6,4 +6,5 @@ public class ErrorCode {
     public static final int USER_NOT_CERTIFIED = 412;
     public static final int USER_ALIPAY_ACCOUNT_NOT_EXISTS = 413;
     public static final int USER_NOT_HAS_ASSETPASS = 414;
+    public static final int USER_LOCKED = 415;
 }

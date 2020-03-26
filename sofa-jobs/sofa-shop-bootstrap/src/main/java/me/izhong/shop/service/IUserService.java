@@ -28,6 +28,8 @@ public interface IUserService {
 
     void lock(Long userId, boolean isLock);
 
+    String setUserSession(User persistedUser);
+
     void attemptModifyPhone(User user, String newPhoneNumber);
 
     void attemptModifyEmail(User user, String email);

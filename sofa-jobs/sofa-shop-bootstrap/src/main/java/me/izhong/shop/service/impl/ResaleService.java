@@ -137,6 +137,7 @@ public class ResaleService {
             goods.setPromotionPrice(null);
             goods.setStock(goodsOrderItemMap.get(g.getId()).getQuantity());
             goods.setProductType(ProductTypeEnum.RESALE.getType());
+            goods.setScoreRedeem(0);
             newGoods.add(goods);
         }
         newGoods = goodsDao.saveAll(newGoods);

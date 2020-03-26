@@ -152,14 +152,8 @@ public class UserController {
 
         User persistedUser = authService.attemptLogin(phone, password);
 
-        SessionInfo session = new SessionInfo();
-        session.setLasttimestamp(persistedUser.getLoginTime().toLocalDateTime()
-                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        String token = getToken(persistedUser);
-        session.setId(persistedUser.getId());
-        CacheUtil.setSessionInfo(token, session);
+        String token = userService.setUserSession(persistedUser);
 
-        //response.addHeader(Constants.AUTHORIZATION, token);
         return new HashMap(){{
             put("token",token);
             put("userId",persistedUser.getId());

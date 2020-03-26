@@ -49,5 +49,6 @@ public class GoodsDTO {
 	private Boolean onIndexPage;
 	private String avatarOfCreatedBy;
 	private String nameOfCreatedBy;
+	private Integer scoreRedeem;
     private List<GoodsAttributes> attributes;
 }

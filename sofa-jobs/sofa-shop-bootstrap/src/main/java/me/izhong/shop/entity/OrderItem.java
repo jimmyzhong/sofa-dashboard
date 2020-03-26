@@ -37,4 +37,6 @@ public class OrderItem {
     private BigDecimal unitPrice;
     @Column(name = "PAID_PRICE")
     private BigDecimal paidPrice;
+    @Column(name = "SCORE_REDEEM")
+    private Integer scoreRedeem;
 }
