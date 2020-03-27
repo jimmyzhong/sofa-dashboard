@@ -23,7 +23,7 @@ import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AuthService;
 import me.izhong.shop.service.impl.ThirdPartyService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

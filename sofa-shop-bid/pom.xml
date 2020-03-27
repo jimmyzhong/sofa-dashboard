@@ -24,6 +24,17 @@
       <groupId>io.netty</groupId>
       <artifactId>netty-all</artifactId>
     </dependency>
+    <!--SOFARPC 依赖-->
+    <dependency>
+      <groupId>com.alipay.sofa</groupId>
+      <artifactId>rpc-sofa-boot-starter</artifactId>
+    </dependency>
+    <!--SOFARegistry 依赖-->
+    <dependency>
+      <groupId>com.alipay.sofa</groupId>
+      <artifactId>registry-client-all</artifactId>
+    </dependency>
+    <!--runtime 依赖-->
     <dependency>
       <groupId>com.alipay.sofa</groupId>
       <artifactId>runtime-sofa-boot-starter</artifactId>

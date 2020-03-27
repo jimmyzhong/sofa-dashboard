@@ -8,13 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 报价信息，1分钟做一个定时器，最后一分钟报价参数不允许修改，但是允许参与人报名
- * 最后10s不允许参与人报名
- * 报价开始剩余5s的时候上送报价信息，包含报价价格修改，时间修改，参与人修改，接口禁止
+ * 缓存的报价信息
  */
 @Getter
 @Setter
-public class BidUploadInfo implements Serializable {
+public class BidDownloadInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -54,8 +52,17 @@ public class BidUploadInfo implements Serializable {
     private Date endTime;
 
     /**
-     * 能够有权限参与报价的用户信息
+     * 报价创建时间
      */
-    private List<BidUserInfo> users;
+    private Date createTime;
+
+    /**
+     * 当前价格
+     */
+    private Long currentPrice;
+
+    private Boolean canBid;
+
+    private Boolean isOver;
 
 }
