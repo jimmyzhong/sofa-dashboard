@@ -33,26 +33,36 @@ public class Lots {
 	private Long lotCategoryId;
     @Column(name = "CONTENT")
 	private String content;
+    //起拍价
     @Column(name = "START_PRICE")
 	private BigDecimal startPrice;
+    //加价幅度
     @Column(name = "ADD_PRICE")
 	private BigDecimal addPrice;
+    //保证金
     @Column(name = "DEPOSIT")
 	private BigDecimal deposit;
+    //拍卖开始时间
     @Column(name = "START_TIME")
 	private LocalDateTime startTime;
+    //拍卖结束时间
     @Column(name = "END_TIME")
 	private LocalDateTime endTime;
+    //用户参与拍卖的级别
     @Column(name = "USER_LEVEL")
 	private Integer userLevel;
+    //房间密码
     @Column(name = "PASSWORD")
 	private String password;
     @Column(name = "FOLLOW_COUNT")
 	private Integer followCount;
+    //销售价
     @Column(name = "SALE_PRICE")
 	private BigDecimal salePrice;
+    //现价
     @Column(name = "NOW_PRICE")
 	private BigDecimal nowPrice;
+    //拍卖状态
     @Column(name = "PAY_STATUS")
 	private Integer payStatus;
     @Column(name = "ORDER_SN")
@@ -69,16 +79,22 @@ public class Lots {
 	private Integer applyType;
     @Column(name = "APPLY_STATUS")
 	private Integer applyStatus;
+    //是否发布
     @Column(name = "IS_REPUBLISH")
 	private Integer isRepublish;
+    //警示价
     @Column(name = "WARNING_PRICE")
 	private BigDecimal warningPrice;
+    //平台扣佣比例
     @Column(name = "PLATFORM_RATIO")
 	private Integer platformRatio;
+    //平台佣金
     @Column(name = "PLATFORM_AMOUNT")
 	private BigDecimal platformAmount;
+    //平台返佣
     @Column(name = "REVENUE_AMOUNT")
 	private BigDecimal revenueAmount;
+    //成交价
     @Column(name = "FINAL_PRICE")
 	private BigDecimal finalPrice;
     @Column(name = "CREATE_TIME")
