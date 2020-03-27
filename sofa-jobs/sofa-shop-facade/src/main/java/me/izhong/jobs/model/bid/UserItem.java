@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BidUserInfo {
+public class UserItem {
 
     private Long userId;
 

@@ -56,6 +56,6 @@ public class BidUploadInfo implements Serializable {
     /**
      * 能够有权限参与报价的用户信息
      */
-    private List<BidUserInfo> users;
+    private List<UserItem> users;
 
 }
