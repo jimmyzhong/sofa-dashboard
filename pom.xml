@@ -13,6 +13,7 @@
         <module>sofa-commons</module>
         <module>sofa-db-commons</module>
         <module>sofa-db-mongo-commons</module>
+        <module>sofa-shop-bid</module>
     </modules>
 
     <parent>
