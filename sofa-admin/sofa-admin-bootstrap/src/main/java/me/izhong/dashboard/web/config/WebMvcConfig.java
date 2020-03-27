@@ -22,6 +22,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -40,6 +41,7 @@ public class WebMvcConfig implements WebMvcConfigurer, InitializingBean {
     static {
         dateFormat = "yyyy-MM-dd HH:mm:ss";
         serializeConfig.put(Date.class, new SimpleDateFormatSerializer(dateFormat));
+        serializeConfig.put(LocalDate.class, new SimpleDateFormatSerializer(dateFormat));
         serializeConfig.put(LocalDateTime.class, new LocalDateTimeSerializer(dateFormat));
     }
 
