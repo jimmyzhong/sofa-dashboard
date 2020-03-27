@@ -36,6 +36,7 @@ public class AliPayProperties {
     //certified, used to transfer
     String certifiedAppId;
     String certifiedAppPrivateKey;
+    String certifiedAliPubKey;
     String certifiedAppPubKeyPath;
     String certifiedAliRootKeyPath;
     String certifiedAliPubKeyPath;

@@ -188,7 +188,7 @@ public class AliPayService {
      */
     public boolean verify(Map<String, String> params) {
         try {
-            boolean flag = AlipaySignature.rsaCheckV1(params, alipayProperties.getCertifiedAliPubKeyPath(),
+            boolean flag = AlipaySignature.rsaCertCheckV1(params, alipayProperties.getCertifiedAliPubKeyPath(),
                     alipayProperties.getCharset(), alipayProperties.getSignType());
             return flag;
         }catch (AlipayApiException e){
