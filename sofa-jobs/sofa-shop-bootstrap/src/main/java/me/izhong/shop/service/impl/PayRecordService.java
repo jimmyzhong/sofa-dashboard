@@ -8,13 +8,11 @@ import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.PayMethodEnum;
+import me.izhong.shop.dao.JobDao;
 import me.izhong.shop.dao.PayRecordDao;
 import me.izhong.shop.dao.UserMoneyDao;
 import me.izhong.shop.dto.PageQueryParamDTO;
-import me.izhong.shop.entity.PayRecord;
-import me.izhong.shop.entity.PayRecord_;
-import me.izhong.shop.entity.User;
-import me.izhong.shop.entity.UserMoney;
+import me.izhong.shop.entity.*;
 import me.izhong.shop.service.IUserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +21,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -51,102 +49,37 @@ public class PayRecordService {
     @Autowired private PayRecordDao payRecordDao;
     @Autowired private UserMoneyDao userMoneyDao;
     @Autowired private IUserService userService;
-
-    @PostConstruct
-    public void setUp() {
-        ScheduledExecutorService userMoneyUpdater = Executors.newSingleThreadScheduledExecutor(
-                new ThreadFactoryBuilder()
-                        .setNameFormat("user-money-updater").build());
-        userMoneyUpdater.scheduleAtFixedRate(() -> {
-            // updateUserMoneyJob();
-        }, 1, 1, TimeUnit.DAYS);
-    }
-
-    private void updateUserMoneyJob() {
-        try {
-            LocalDateTime now = LocalDateTime.now(); // TODO get last run time
-            LocalDateTime start = LocalDateTime.of(now.minusDays(1).toLocalDate(), LocalTime.of(23,00,00));
-            LocalDateTime end = LocalDateTime.of(now.toLocalDate(), LocalTime.of(23,00,00));
-            if (end.isAfter(now)) {
-                end = now;
-            }
-
-            Set<Long> userIds = getUserIdsWhoReceivedMoneyBetween(start, end);
-            userIds.addAll(getUserIdsWhoWithdrawMoneyBetween(start, end));
-
-            for (Long userId: userIds) {
-                updateUserMoney(userId, start, end);
-            }
-        }catch (Throwable throwable) {
-            log.error("order update expired status error", throwable);
-        }
-    }
+    @Autowired private JobDao jobDao;
 
     @Transactional
     public void updateUserMoney(Long userId, LocalDateTime start, LocalDateTime end) {
+        UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
         List<PayRecord> getMoneyRecords = payRecordDao.findAllByReceiverAndBetweenCreationDateAndTypeIn(userId, start, end,
                 0, Arrays.asList(MoneyTypeEnum.RETURN_MONEY.getDescription(),
                         MoneyTypeEnum.RESALE_GOODS.getDescription()));
         BigDecimal money = getMoneyRecords.stream().map(p->{
             p.setSysState(1);
             return p.getTotalAmount();
-        }).reduce((a, b) -> a.add(b)).get();
+        }).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
 
-        List<PayRecord> withdrawMoneyRecords = payRecordDao.findAllByPayerIdAndBetweenCreationDateAndTypeIn(userId, start, end,
-                0, Arrays.asList(MoneyTypeEnum.WITHDRAW_MONEY.getDescription()));
-        BigDecimal withDrawMoney = withdrawMoneyRecords.stream().map(p->{
-            p.setSysState(1);
-            return p.getTotalAmount();
-        }).reduce((a, b) -> a.add(b)).get();
 
         BigDecimal moneyFromResale = getMoneyRecords.stream().filter(p->MoneyTypeEnum.RESALE_GOODS.getDescription().equalsIgnoreCase(p.getType()))
                 .map(PayRecord::getTotalAmount)
-                .reduce((a, b) -> a.add(b)).get();
+                .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
 
-        UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
         userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(money));
-        userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().subtract(withDrawMoney));
         userMoney.setMoneySaleAmount(userMoney.getMoneySaleAmount().add(moneyFromResale));
         userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount().add(money.subtract(moneyFromResale)));
         userMoneyDao.save(userMoney);
-
         payRecordDao.saveAll(getMoneyRecords);
-        payRecordDao.saveAll(withdrawMoneyRecords);
 
         log.info("update user money done for " + userId);
     }
 
-    @Transactional
-    public void addWithdrawMoneyRecord(Long userId, BigDecimal amount, String alipayAccount) {
-        UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
-        if (userMoney == null) {
-            throw BusinessException.build("用户余额不存在,请联系管理员");
-        }
-
-        if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
-            throw BusinessException.build("可用余额不足");
-        }
-        userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
-        userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(amount));
-
-        PayRecord moneyWithdraw = new PayRecord();
-        moneyWithdraw.setType(MoneyTypeEnum.WITHDRAW_MONEY.getDescription());
-        moneyWithdraw.setCreateTime(LocalDateTime.now());
-        moneyWithdraw.setPayerId(userId);
-        moneyWithdraw.setTotalAmount(amount);
-        moneyWithdraw.setSysState(-1);
-        moneyWithdraw.setAccount(alipayAccount);
-        payRecordDao.save(moneyWithdraw);
-    }
-
-    private Set<Long> getUserIdsWhoReceivedMoneyBetween(LocalDateTime start, LocalDateTime end) {
+    public Set<Long> getUserIdsWhoReceivedMoneyBetween(LocalDateTime start, LocalDateTime end) {
         return payRecordDao.findReceiversBetweenCreationDateWithSysState(start, end, 0);
     }
 
-    private Set<Long> getUserIdsWhoWithdrawMoneyBetween(LocalDateTime start, LocalDateTime end) {
-        return payRecordDao.findPayersBetweenCreationDateWithSysStateAndTypeIn(start, end, 0,
-                Arrays.asList(MoneyTypeEnum.WITHDRAW_MONEY.getDescription()));
-    }
 
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
                                                       PageRequest pageRequest, Set<MoneyTypeEnum> types) {

@@ -247,6 +247,7 @@ public class OrderService implements IOrderService {
 				// 寄售商品付款到寄售人
 				if (StringUtils.equals(payType, RESALE_GOODS.getDescription())) {
 					record.setReceiverId(order.getResaleUser());
+					record.setSysState(0); // 需要后台处理
 				}
 			}
 
@@ -286,7 +287,7 @@ public class OrderService implements IOrderService {
 				order.setStatus(FINISHED.getState());
 				userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
 				order = orderDao.save(order);
-				recordMoney(order, user.getId(), null, 1.0, 0, false , WITHDRAW_MONEY);
+				recordMoney(order, user.getId(), null, 1.0, 1, false , WITHDRAW_MONEY);
 				userMoneyDao.save(userMoney);
 				return true;
 			}
