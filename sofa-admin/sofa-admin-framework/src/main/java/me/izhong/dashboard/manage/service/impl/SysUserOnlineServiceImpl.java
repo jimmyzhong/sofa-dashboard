@@ -75,7 +75,7 @@ public class SysUserOnlineServiceImpl implements SysUserOnlineService {
         Query query = new Query();
         query.addCriteria(Criteria.where("loginName").exists(true));
         List<SysUserOnline> results = selectList(query,fromRequest,sysUserOnline);
-        long count = doCount(null);
+        long count = doCount(query);
         return PageModel.instance(count, results);
     }
 
