@@ -65,4 +65,8 @@ public class BidDownloadInfo implements Serializable {
 
     private Boolean isOver;
 
+    /**
+     * 出价明细
+     */
+    private List<BidItems> bidItems;
 }
