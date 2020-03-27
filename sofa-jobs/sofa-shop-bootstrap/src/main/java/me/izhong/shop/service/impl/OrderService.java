@@ -196,7 +196,7 @@ public class OrderService implements IOrderService {
 		}
 		record.setInternalId(order.getOrderSn());
 		record.setExternalId(externalOrderNo);
-		record.setPayAmount(payAmount);
+		record.setPayAmount(totalAmount);
 		record.setTotalAmount(totalAmount);
 		record.setPayMethod(payMethod);
 		record.setType(payType);
@@ -208,7 +208,7 @@ public class OrderService implements IOrderService {
 
 		order.setPayType(PayMethodEnum.valueOf(payMethod).getCode());
 		order.setPayTradeNo(externalOrderNo);
-		order.setPayAmount(payAmount);
+		order.setPayAmount(totalAmount);
 
 		if (PayStatusEnum.SUCCESS.name().equals(state) && (order.getStatus() == WAIT_PAYING.getState()
 				|| order.getStatus() == EXPIRED.getState())) {

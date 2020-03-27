@@ -141,7 +141,8 @@ public class PayRecordService {
              }
 
              Predicate predicateOfSpend = cb.and(cb.equal(r.get(PayRecord_.payerId), userId),
-                     cb.equal(r.get(PayRecord_.payMethod), PayMethodEnum.MONEY.name()));
+                     cb.or(cb.equal(r.get(PayRecord_.payMethod), PayMethodEnum.MONEY.name()),
+                             cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.WITHDRAW_MONEY.getDescription())));
 
              if (state != null) {
                  if (state == 1) {

@@ -63,7 +63,7 @@ public class AliPayService {
             return alipayCertifiedClient.certificateExecute(request);//通过alipayClient调用API，获得对应的response类
         }catch (AlipayApiException e) {
             log.error("query order status outTradeNo="+outTradeNo+",tradeNo="+tradeNo, e);
-            throw BusinessException.build("查询订单信息失败:" + e.getMessage());
+            throw BusinessException.build("查询订单信息失败");
         }
     }
 

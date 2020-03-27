@@ -127,6 +127,7 @@ public class PayController {
         order.setCreateTime(LocalDateTime.now());
         order.setSubject("用户提现");
         order.setDescription("用户提现 " + user.getAlipayAccount());
+        order.setUserId(session.getId());
         orderService.saveOrUpdate(order);
 
         boolean success = orderService.transferMoney(user, orderNo, order, aliPayService);
@@ -240,8 +241,8 @@ public class PayController {
         AlipayTradeQueryResponse response = aliPayService.queryOrder(orderNo, params.getExternalTradeNo());
 
         if (!response.isSuccess()) {
-            log.warn("order does not succeed." + orderNo + "," + response.getSubMsg());
-            throw BusinessException.build("交易失败:" + response.getMsg());
+            log.warn("order does not succeed." + orderNo + "," + response.getBody());
+            throw BusinessException.build("交易失败");
         }
 
         res.setExternalTradeNo(response.getTradeNo());
@@ -256,6 +257,7 @@ public class PayController {
             throw BusinessException.build("订单金额不一致:" + order.getTotalAmount() + ", VS " + response.getTotalAmount());
         }
 
+        log.info("query " + orderNo + ", status:" + response.getTradeStatus());
         BigDecimal payAmountInResponse = new BigDecimal(response.getBuyerPayAmount());
         String status = getPayStatus(response.getTradeStatus());
         String comment = getMessage(response.getMsg());
@@ -423,6 +425,12 @@ public class PayController {
          orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), getDescriptionByState(order.getOrderType()), payAmountInResponse,
                 order.getTotalAmount(), status, null);
         log.info("trade status " + status + ", tradeNo:" + order.getPayTradeNo());
+    }
+
+    @PostMapping(path="/alipay/verify")
+    @ApiOperation(value="验证支付结果", httpMethod = "POST")
+    public boolean verify(@RequestBody  Map<String, String> params){
+        return aliPayService.verify(params);
     }
 
     private void expectMandatoryFieldForAlipay(Order order) {
