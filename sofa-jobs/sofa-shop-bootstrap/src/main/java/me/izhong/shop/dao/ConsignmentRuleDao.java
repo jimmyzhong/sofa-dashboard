@@ -7,4 +7,5 @@ import me.izhong.shop.entity.ConsignmentRule;
 
 @Repository
 public interface ConsignmentRuleDao extends JpaRepository<ConsignmentRule, Long> {
+    ConsignmentRule findFirstByIsDeleteIsNullOrIsDeleteOrderByCreateTime(Integer isDelete);
 }

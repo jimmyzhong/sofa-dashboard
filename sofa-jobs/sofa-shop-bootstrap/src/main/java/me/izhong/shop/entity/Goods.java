@@ -79,4 +79,10 @@ public class Goods {
     private Long createdBy;
     @Column(name = "SCORE_REDEEM", columnDefinition = "int(1) default 1")
     private Integer scoreRedeem; //1 可以积分兑换, 0 不能积分兑换
+    @Column(name="RESALE_REDUCE_FACTOR")
+    private Double resaleReduceValue;
+    @Column(name = "RESALE_TIME_STEP")
+    private Double resaleTimeStep;
+    @Column(name = "RESALE_LIMIT")
+    private Double resaleLimit;
 }

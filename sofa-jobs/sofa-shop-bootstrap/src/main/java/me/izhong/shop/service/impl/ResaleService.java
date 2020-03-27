@@ -5,13 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.consts.ProductTypeEnum;
+import me.izhong.shop.dao.ConsignmentRuleDao;
 import me.izhong.shop.dao.GoodsDao;
 import me.izhong.shop.dao.GoodsStoreDao;
 import me.izhong.shop.dao.OrderItemDao;
-import me.izhong.shop.entity.Goods;
-import me.izhong.shop.entity.GoodsStore;
-import me.izhong.shop.entity.Order;
-import me.izhong.shop.entity.OrderItem;
+import me.izhong.shop.entity.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +41,8 @@ public class ResaleService {
     OrderItemDao itemDao;
     @Autowired
     OrderService orderService;
+    @Autowired
+    ConsignmentRuleDao consignmentRuleDao;
 
     @Value("${order.resale.decay.period.hours}")
     private Integer decayPeriodHours;
@@ -73,15 +73,42 @@ public class ResaleService {
                 now.minusHours(decayPeriodHours), 0);
         log.info("get resale created more than one day " + goods.size());
         List<Goods> decayList = new ArrayList<>();
+
+        ResaleConfig resaleConfig = new ResaleConfig().invoke();
+        Double defaultTimeStep = resaleConfig.getTimeStep();
+        Double defaultReduceValue = resaleConfig.getReduceValue();
+        Double defaultReduceLimit = resaleConfig.getReduceLimit();
+
         for (Goods g: goods) {
+            Double reduceLimit = defaultReduceLimit;
+            Double reduceValue = defaultReduceValue;
+            Double timeStep = defaultTimeStep;
+
+            if (g.getResaleLimit() != null) {
+                reduceLimit = g.getResaleLimit();
+            }
+            if (g.getResaleReduceValue() != null) {
+                reduceValue = g.getResaleReduceValue();
+            }
+            if (g.getResaleTimeStep() != null) {
+                timeStep = g.getResaleTimeStep();
+            }
+
+            log.info("check adjust price of goods  " + g.getId() + "," +reduceLimit +"," + reduceValue + ","+ timeStep);
+
             BigDecimal price = g.getPrice();
-            BigDecimal limit = g.getOriginalPrice().multiply(BigDecimal.valueOf(decayLimit));
+            BigDecimal limit = g.getOriginalPrice().multiply(BigDecimal.valueOf(reduceLimit))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+            if (limit.compareTo(BigDecimal.ZERO) == 0) {
+                limit = g.getOriginalPrice();
+            }
             if (price.compareTo(limit) <= 0) {
                 continue;
             }
             Long hours = Duration.between(g.getCreateTime(), now).toHours();
-            Long e = hours / decayPeriodHours;
-            BigDecimal newPrice = g.getOriginalPrice().multiply(BigDecimal.valueOf(1-decayFactor).pow(e.intValue()));
+            Long e = hours / timeStep.longValue();
+            BigDecimal newPrice = g.getOriginalPrice().multiply(BigDecimal.valueOf(1-reduceValue).pow(e.intValue()))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
 
             if (newPrice.compareTo(limit) >=0) {
                 g.setPrice(newPrice);
@@ -121,6 +148,10 @@ public class ResaleService {
         List<Goods> existingGoods = goodsDao.findAllById(items.stream()
                 .map(OrderItem::getProductId).collect(Collectors.toSet()));
 
+        ResaleConfig resaleConfig = new ResaleConfig().invoke();
+        Double timeStep = resaleConfig.getTimeStep();
+        Double reduceValue = resaleConfig.getReduceValue();
+        Double reduceLimit = resaleConfig.getReduceLimit();
         // create new goods
         List<Goods> newGoods = new ArrayList<>();
         for (Goods g : existingGoods) {
@@ -138,6 +169,9 @@ public class ResaleService {
             goods.setStock(goodsOrderItemMap.get(g.getId()).getQuantity());
             goods.setProductType(ProductTypeEnum.RESALE.getType());
             goods.setScoreRedeem(0);
+            goods.setResaleReduceValue(reduceValue);
+            goods.setResaleLimit(reduceLimit);
+            goods.setResaleTimeStep(timeStep);
             newGoods.add(goods);
         }
         newGoods = goodsDao.saveAll(newGoods);
@@ -155,5 +189,42 @@ public class ResaleService {
         order.setStatus(OrderStateEnum.RESALED.getState());
         order.setUpdateTime(LocalDateTime.now());
         orderService.saveOrUpdate(order);
+    }
+
+    private class ResaleConfig {
+        private Double timeStep;
+        private Double reduceValue;
+        private Double reduceLimit;
+
+        public Double getTimeStep() {
+            return timeStep;
+        }
+
+        public Double getReduceValue() {
+            return reduceValue;
+        }
+
+        public Double getReduceLimit() {
+            return reduceLimit;
+        }
+
+        /**
+         * 商品配置 > 系统配置 > 应用默认配置
+         * @return
+         */
+        public ResaleConfig invoke() {
+            ConsignmentRule rule = consignmentRuleDao.findFirstByIsDeleteIsNullOrIsDeleteOrderByCreateTime(0);
+            timeStep = Double.valueOf(ResaleService.this.decayPeriodHours);
+            reduceValue = ResaleService.this.decayFactor;
+            reduceLimit = ResaleService.this.decayLimit;
+            if (rule != null) {
+                timeStep = Double.valueOf(rule.getTimeStep());
+                reduceValue = Double.valueOf(rule.getReduceValue());
+                if(reduceValue > 1) {
+                    reduceValue = reduceValue / 100.0;
+                }
+            }
+            return this;
+        }
     }
 }
