@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @AllArgsConstructor
-public class BidItems implements Serializable {
+public class BidItem implements Serializable {
 
 
     /**

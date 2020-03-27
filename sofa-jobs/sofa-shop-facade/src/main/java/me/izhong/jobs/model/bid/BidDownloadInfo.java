@@ -68,5 +68,5 @@ public class BidDownloadInfo implements Serializable {
     /**
      * 出价明细
      */
-    private List<BidItems> bidItems;
+    private List<BidItem> bidItems;
 }
