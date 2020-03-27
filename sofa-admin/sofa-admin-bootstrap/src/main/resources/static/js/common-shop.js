@@ -1,7 +1,7 @@
 $(function () {
-    console.log("shop-common-js=load==>end")
+    // autocomplete="off"
+    $("input").attr("autocomplete","off");
 })
-
 
 var SHOP_COMMON = {
     test: {

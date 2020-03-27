@@ -11,22 +11,22 @@
                 <div class="select-list">
                     <ul>
                         <li>
-                            商品名称：<input type="text" name="productName"/>
+                            标题：<input type="text" name="name"/>
                         </li>
-                        <li>
-                            上架状态：<select name="publishStatus">
-                            <option value="">所有</option>
-                            <option value="1">上架</option>
-                            <option value="0">下架</option>
-                        </select>
-                        <li>
-                        <li>
-                        推荐状态：<select name="onIndexPage">
-                            <option value="">所有</option>
-                            <option value=1>推荐</option>
-                            <option value=0>不推荐</option>
-                        </select>
-                        <li>
+<!--                        <li>-->
+<!--                            上架状态：<select name="publishStatus">-->
+<!--                            <option value="">所有</option>-->
+<!--                            <option value="1">上架</option>-->
+<!--                            <option value="0">下架</option>-->
+<!--                        </select>-->
+<!--                        <li>-->
+<!--                        <li>-->
+<!--                        推荐状态：<select name="onIndexPage">-->
+<!--                            <option value="">所有</option>-->
+<!--                            <option value=1>推荐</option>-->
+<!--                            <option value=0>不推荐</option>-->
+<!--                        </select>-->
+<!--                        <li>-->
                         <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
                                     class="fa fa-search"></i>&nbsp;搜索</a>
@@ -61,16 +61,16 @@
 
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
-        $.modal.openTab("商品详情", url);
+        $.modal.openTab("拍卖详情", url);
     }
 
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;
-        $.modal.openTab("编辑商品", url);
+        $.modal.openTab("编辑拍卖", url);
     }
     function gotoAdd() {
         var url = prefix + '/add';
-        $.modal.openTab("新增商品", url);
+        $.modal.openTab("新增拍卖", url);
     }
     $(function () {
         var options = {
@@ -81,62 +81,65 @@
             removeUrl: prefix + "/remove",
             sortName: "id",
             sortOrder: "asc",
-            modalName: "商品管理",
+            modalName: "拍卖管理",
             columns: [{
                 checkbox: true
             },
                 {
                     field: 'id',
-                    title: '商品ID',
+                    title: 'ID',
                     sortable: true
                 },
                 {
-                    field: 'productPic',
-                    title: '封面图',
-                    formatter: function (value, row, index) {
-                        return $.table.imageView(value,300,300);
-                    }
-                },
-                {
-                    field: 'productName',
+                    field: 'name',
                     title: '标题',
                     sortable: true
                 },
                 {
-                    field: 'description',
-                    title: '描述'
+                    field: 'startPrice',
+                    title: '起拍价',
+                    sortable: true
                 }, {
-                    field: 'price',
-                    title: '市场价',
+                    field: 'addPrice',
+                    title: '加价幅度',
+                    sortable: true
+                }, {
+                    field: 'salePrice',
+                    title: '销售价',
                     sortable: true
                 },
                 {
-                    field: 'promotionPrice',
-                    title: '一口价',
+                    field: 'nowPrice',
+                    title: '现价',
                     sortable: true
                 },
                 {
-                    field: 'stock',
-                    title: '库存',
+                    field: 'deposit',
+                    title: '保证金',
+                    sortable: true
+                },{
+                    field: 'platformRatio',
+                    title: '扣佣比例',
+                    sortable: true
+                },{
+                    field: 'platformAmount',
+                    title: '平台佣金',
                     sortable: true
                 },
                 {
-                    field: 'onIndexPage',
-                    title: '推荐状态',
-                    align: 'center',
-                    sortable: true,
-                    formatter: function (value, row, index) {
-                        return value?"推荐":"不推荐";
-                    }
+                    field: 'startTime',
+                    title: '拍卖开始时间',
+                    sortable: true
                 },
                 {
-                    field: 'publishStatus',
-                    title: '上架状态',
-                    align: 'center',
-                    sortable: true,
-                    formatter: function (value, row, index) {
-                        return value?"上架":"下架";
-                    }
+                    field: 'endTime',
+                    title: '拍卖结束时间',
+                    sortable: true
+                },
+                {
+                    field: 'userLevel',
+                    title: '拍卖的级别',
+                    sortable: true
                 },
                 {
                     title: '操作',
@@ -144,7 +147,7 @@
                     align: 'center',
                     formatter: function (value, row, index) {
                         var actions = [];
-                        actions.push('<a class="btn btn-primary btn-xs '+detailFlag+'" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
+                        // actions.push('<a class="btn btn-primary btn-xs '+detailFlag+'" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
                         actions.push('<a class="btn btn-primary btn-xs '+editFlag+'" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
                         actions.push('<a class="btn btn-warning btn-xs '+removeFlag+'" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
                         return actions.join('');

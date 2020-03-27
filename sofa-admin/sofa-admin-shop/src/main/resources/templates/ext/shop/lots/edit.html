@@ -7,24 +7,25 @@
 </head>
 <body class="white-bg">
 	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
-		<form class="form-horizontal m" id="form-shop-lots-add">
+		<form class="form-horizontal m" id="form-shop-lots-edit" th:object="${lots}">
+			<input id="id" name="id" type="hidden" th:field="*{id}"/>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">标题：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="name" id="name" required>
+					<input class="form-control" type="text" name="name" id="name" required th:field="*{name}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">拍卖描述：</label>
 				<div class="col-sm-8">
-					<textarea class="form-control" id="description" name="description" required></textarea>
+					<textarea class="form-control" id="description" name="description" required th:field="*{description}"></textarea>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">关联商品Id：</label>
 				<div class="col-sm-8">
 					<div class="input-group">
-						<input class="form-control" id="goodsId" name="goodsId" required />
+						<input class="form-control" id="goodsId" name="goodsId"  required th:field="*{goodsId}" />
 						<span class="input-group-btn">
 						<button type="button" class="btn btn-primary" onclick="selectRadioGood()">选择商品
                                         </button> </span>
@@ -34,19 +35,19 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">起拍价：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="startPrice" id="startPrice" required>
+					<input class="form-control" type="text" name="startPrice" id="startPrice" required th:field="*{startPrice}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">加价幅度：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="addPrice" id="addPrice" required>
+					<input class="form-control" type="text" name="addPrice" id="addPrice" required th:field="*{addPrice}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">保证金：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="deposit" id="deposit" required>
+					<input class="form-control" type="text" name="deposit" id="deposit" required th:field="*{deposit}">
 				</div>
 			</div>
 			<div class="form-group">
@@ -54,7 +55,7 @@
 				<div class="col-sm-8">
 					<div class="input-group date">
 						<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-						<input type="text" class="form-control" name="startTime" id="startTime" placeholder="yyyy-MM-dd HH:mm:ss">
+						<input type="text" class="form-control" name="startTime" id="startTime" placeholder="yyyy-MM-dd HH:mm:ss" required th:field="*{startTime}">
 					</div>
 				</div>
 			</div>
@@ -63,60 +64,61 @@
 				<div class="col-sm-8">
 					<div class="input-group date">
 						<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-						<input type="text" class="form-control" name="endTime" id="endTime" placeholder="yyyy-MM-dd HH:mm:ss">
+						<input type="text" class="form-control" name="endTime" id="endTime" placeholder="yyyy-MM-dd HH:mm:ss" required th:field="*{endTime}">
 					</div>
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">用户参与拍卖的级别：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="userLevel" id="userLevel" required>
+					<input class="form-control" type="text" name="userLevel" id="userLevel" required th:field="*{userLevel}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">房间密码：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="password" id="password" required>
+					<input class="form-control" type="text" name="password" id="password" required th:field="*{password}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">销售价：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="salePrice" id="salePrice" required>
+					<input class="form-control" type="text" name="salePrice" id="salePrice" required th:field="*{salePrice}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">现价：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="nowPrice" id="nowPrice" required>
+					<input class="form-control" type="text" name="nowPrice" id="nowPrice" required th:field="*{nowPrice}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">警示价：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="warningPrice" id="warningPrice" required>
+					<input class="form-control" type="text" name="warningPrice" id="warningPrice" required th:field="*{warningPrice}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">平台扣佣比例：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="platformRatio" id="platformRatio" required>
+					<input class="form-control" type="text" name="platformRatio" id="platformRatio" required th:field="*{platformRatio}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">平台佣金：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="platformAmount" id="platformAmount" required>
+					<input class="form-control" type="text" name="platformAmount" id="platformAmount" required th:field="*{platformAmount}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">平台返佣：</label>
 				<div class="col-sm-8">
-					<input class="form-control" type="text" name="revenueAmount" id="revenueAmount" required>
+					<input class="form-control" type="text" name="revenueAmount" id="revenueAmount" required th:field="*{revenueAmount}">
 				</div>
 			</div>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">拍卖内容：</label>
+				<input id="detail_desc_s" th:value="${lots.content}" type="hidden">
 				<div class="col-sm-8">
 					<div id="editor" class="summernote"></div>
 				</div>
@@ -155,19 +157,29 @@
 				format: "yyyy-mm-dd hh:ii:ss",
 				autoclose: true
 			});
+			$('.summernote').summernote({
+				placeholder: '请输入商品详情',
+				height: 192,
+				lang: 'zh-CN',
+				followingToolbar: false,
+				callbacks: {
+					onImageUpload: function (files) {
+						sendFile(files[0], this);
+					}
+				}
+			});
+			var content = $("#detail_desc_s").val();
+			$('#editor').summernote('code', content);
 		})
 		function selectRadioGood() {
 			$.modal.open("选择商品", prefix + "/goods");
 		}
-		function selectUsers(){
-			alert(1);
-		}
 		function submit() {
 			if ($.validate.form()) {
-				var data = $("#form-shop-lots-add").serializeArray();
+				var data = $("#form-shop-lots-edit").serializeArray();
 				var sHTML = $('.summernote').summernote('code');
 				data.push({"name": "content", "value": sHTML});
-				SHOP_COMMON.ajax.pageSave(prefix + "/add",data)
+				SHOP_COMMON.ajax.pageSave(prefix + "/edit",data)
 			}
 		}
 
