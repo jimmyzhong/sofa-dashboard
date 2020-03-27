@@ -60,7 +60,7 @@ public class AliPayService {
         }
         request.setBizContent(bizContent.toJSONString());
         try {
-            return alipayClient.execute(request);//通过alipayClient调用API，获得对应的response类
+            return alipayCertifiedClient.certificateExecute(request);//通过alipayClient调用API，获得对应的response类
         }catch (AlipayApiException e) {
             log.error("query order status outTradeNo="+outTradeNo+",tradeNo="+tradeNo, e);
             throw BusinessException.build("查询订单信息失败:" + e.getMessage());
@@ -166,7 +166,7 @@ public class AliPayService {
         request.setNotifyUrl(alipayProperties.getNotifyUrl());
         try {
             //这里和普通的接口调用不同，使用的是sdkExecute
-            AlipayTradeAppPayResponse response = alipayClient.sdkExecute(request);
+            AlipayTradeAppPayResponse response = alipayCertifiedClient.sdkExecute(request);
 
             if(response.isSuccess()){
                 System.out.println("调用成功");
@@ -188,7 +188,7 @@ public class AliPayService {
      */
     public boolean verify(Map<String, String> params) {
         try {
-            boolean flag = AlipaySignature.rsaCheckV1(params, alipayProperties.getAliPubKey(),
+            boolean flag = AlipaySignature.rsaCheckV1(params, alipayProperties.getCertifiedAliPubKeyPath(),
                     alipayProperties.getCharset(), alipayProperties.getSignType());
             return flag;
         }catch (AlipayApiException e){
