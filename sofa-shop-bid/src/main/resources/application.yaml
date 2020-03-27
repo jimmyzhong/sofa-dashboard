@@ -31,7 +31,6 @@ spring:
   #session
   session:
     store-type: redis
-
 server:
   # 服务器的HTTP端口，默认为80
   port: 52186
