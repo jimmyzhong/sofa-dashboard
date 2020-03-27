@@ -74,6 +74,7 @@ public class RadisConfig {
         return rateLimitLua;
     }
 
+
     @Bean("lua_bid_query")
     public DefaultRedisScript luaBidQuery() {
         DefaultRedisScript<List> rateLimitLua = new DefaultRedisScript<>();
@@ -82,4 +83,20 @@ public class RadisConfig {
         return rateLimitLua;
     }
 
+
+    @Bean("lua_bid_upload")
+    public DefaultRedisScript luaBidUpload() {
+        DefaultRedisScript<List> rateLimitLua = new DefaultRedisScript<>();
+        rateLimitLua.setLocation(new ClassPathResource("goods_bid_upload.lua"));
+        rateLimitLua.setResultType(List.class);
+        return rateLimitLua;
+    }
+
+    @Bean("lua_bid_update")
+    public DefaultRedisScript luaBidUpdate() {
+        DefaultRedisScript<List> rateLimitLua = new DefaultRedisScript<>();
+        rateLimitLua.setLocation(new ClassPathResource("goods_bid_update.lua"));
+        rateLimitLua.setResultType(List.class);
+        return rateLimitLua;
+    }
 }

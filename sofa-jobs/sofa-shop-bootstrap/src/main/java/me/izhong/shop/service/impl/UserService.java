@@ -14,7 +14,7 @@ import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.*;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.util.ShareCodeUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;

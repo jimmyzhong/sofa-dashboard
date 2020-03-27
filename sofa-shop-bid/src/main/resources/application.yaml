@@ -42,9 +42,9 @@ server:
     # tomcat的URI编码
     uri-encoding: UTF-8
     # tomcat最大线程数，默认为200
-    max-threads: 800
+    max-threads: 80
     # Tomcat启动初始化的线程数，默认值25
-    min-spare-threads: 30
+    min-spare-threads: 5
 service:
   unique:
     id: 1
@@ -54,7 +54,7 @@ com:
       rpc:
         registry:
           address: zookeeper://lpp.izhong.me:52181
-        bolt-port: 13304
+        bolt-port: 13305
 logging:
   pattern:
     file: "%d{yyyy-MM-dd'T'HH:mm:ss.SSS} %-5level [%.15thread][%X{_traceId}] %logger{36} - %.-4096msg%n"

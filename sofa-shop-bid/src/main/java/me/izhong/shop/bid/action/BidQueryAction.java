@@ -43,7 +43,7 @@ public class BidQueryAction implements IActionNode {
             if(start.longValue() < 1 || start.longValue() > 10000000) {
                 throw BusinessException.build("start必须大于1小于10000000");
             }
-            bidResponse.getBids().addAll(redisUtilService.getBidItems(bidId, start));
+            bidResponse.getBids().addAll(redisUtilService.poolBidItems(bidId, start));
         }
         context.setResponse(bidResponse);
         callback.onPostProcess(context);

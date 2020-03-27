@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import me.izhong.shop.config.AliCloudProperties;
 import me.izhong.shop.response.ali.CertifyServiceResponse;
 import me.izhong.shop.response.ali.SmsResponse;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.util.EntityUtils;
 
