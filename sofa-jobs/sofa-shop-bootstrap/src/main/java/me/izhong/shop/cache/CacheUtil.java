@@ -17,21 +17,22 @@ public class CacheUtil {
         return SpringUtil.getBean(StringRedisTemplate.class);
     }
 
-    private static final String SESSION_PREFIX = "_se_";
-    private static final int SESSION_TIMEOUT = 3600;
+    private static final String SESSION_PREFIX = "shop.user.{";
+    private static final String SESSION_SUFFIX = "}.token";
+    private static final int SESSION_TIMEOUT = 7200;
 
     public static void setSessionInfo(String key, SessionInfo sessionInfo) {
         ValueOperations ops = getRedisTemplate().opsForValue();
         String s = JSON.toJSONString(sessionInfo);
-        ops.set(SESSION_PREFIX + key,s,SESSION_TIMEOUT, TimeUnit.SECONDS);
+        ops.set(SESSION_PREFIX + key + SESSION_SUFFIX,s,SESSION_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public static SessionInfo getSessionInfo(String key) {
         ValueOperations ops = getRedisTemplate().opsForValue();
-        Object o = ops.get(SESSION_PREFIX + key);
+        Object o = ops.get(SESSION_PREFIX + key + SESSION_SUFFIX);
         if(o == null)
             return null;
-        getRedisTemplate().expire(SESSION_PREFIX + key,SESSION_TIMEOUT, TimeUnit.SECONDS);
+        getRedisTemplate().expire(SESSION_PREFIX + key + SESSION_SUFFIX,SESSION_TIMEOUT, TimeUnit.SECONDS);
         return JSONObject.parseObject(o.toString(),SessionInfo.class);
     }
 
