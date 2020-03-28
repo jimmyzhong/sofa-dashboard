@@ -84,7 +84,7 @@ spring:
 
 server:
   # 服务器的HTTP端口，默认为80
-  port: 52185
+  port: 52184
   servlet:
     # 应用的访问路径
     context-path: /
@@ -142,7 +142,7 @@ com:
           address: zookeeper://lpp.izhong.me:52181
         bolt-port: 13304
         virtual-host: lpp.izhong.me
-        
+
 alipay:
   certifiedAppPubKeyPath: /home/server/shop/crt/appCertPublicKey_2015071600173316.crt
   certifiedAliPubKeyPath: /home/server/shop/crt/alipayCertPublicKey_RSA2.crt

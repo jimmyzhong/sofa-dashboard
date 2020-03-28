@@ -66,6 +66,26 @@ public class BidDownloadInfo implements Serializable {
     private Boolean isOver;
 
     /**
+     * 最新出价的用户id
+     */
+    private Long currentUserId;
+
+    /**
+     * 最新出价时间
+     */
+    private Long lastBidTime;
+
+    /**
+     * 参与出价的人数
+     */
+    private Long userSize;
+
+    /**
+     * 已经出价的记录数
+     */
+    private Long bidSize;
+
+    /**
      * 出价明细
      */
     private List<BidItem> bidItems;
