@@ -97,6 +97,8 @@ public class Lots {
     //成交价
     @Column(name = "FINAL_PRICE")
 	private BigDecimal finalPrice;
+    @Column(name = "FINAL_USER")
+    private Long finalUser;
     @Column(name = "CREATE_TIME")
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")

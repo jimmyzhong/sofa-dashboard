@@ -17,6 +17,7 @@ import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.entity.*;
 import me.izhong.shop.service.IGoodsService;
+import me.izhong.shop.service.ILotsService;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IReceiveAddressService;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -254,6 +255,19 @@ public class OrderService implements IOrderService {
 			// 充值金额充值账户余额,直接到账
 			if (StringUtils.equals(payType, DEPOSIT_MONEY.getDescription())) {
 				recordMoney(order, null, order.getUserId(), 1.0, 1, true, DEPOSIT_MONEY, null);
+			}
+
+			// 保证金付款成功,冻结为余额
+			if (StringUtils.equals(payType, AUCTION_MARGIN.getDescription())) {
+				UserMoney userMoney = userMoneyDao.selectUserForUpdate(order.getUserId());
+				if (userMoney == null) {
+					userMoney = new UserMoney();
+					userMoney.setUserId(order.getUserId());
+					userMoney.setUnavailableAmount(order.getAuctionMargin());
+				} else {
+					userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(order.getAuctionMargin()));
+				}
+				userMoneyDao.save(userMoney);
 			}
 		}
 
@@ -709,5 +723,59 @@ public class OrderService implements IOrderService {
 				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  order.getTotalAmount(), order.getTotalAmount(),
 				PayStatusEnum.SUCCESS.name(), "");
 		userScoreDao.save(userScore);
+	}
+
+	@Autowired
+	ILotsService lotsService;
+
+	@Override
+	public Order submitAuction(Long userId, Long addressId, Long auctionId) {
+		UserReceiveAddress address = getUserReceiveAddress(userId, addressId);
+		if (address == null) {
+			throw BusinessException.build("地址不存在");
+		}
+
+		Lots lots = lotsService.findById(auctionId);
+		if (lots == null) {
+			throw BusinessException.build("拍品不存在");
+		}
+
+		GoodsDTO goods = null;
+		if(lots.getGoodsId() != null) {
+			goods = goodsService.findGoodsWithAttrById(lots.getGoodsId(), null);
+		}
+
+		if (goods == null) {
+			throw BusinessException.build("拍卖商品不存在");
+		}
+
+		Order order = new Order();
+		order.setOrderType(AUCTION_MARGIN.getType());
+		setReceiverInfoOfOrder(address, order);
+		order.setUserId(userId);
+		order.setCount(1);
+		order.setOrderSn(generateOrderNo());
+		order.setStatus(WAIT_PAYING.getState());
+		order.setCreateTime(LocalDateTime.now());
+		order.setDescription("拍卖保证金付款." + lots.getId());
+		order.setSubject("拍卖订单" + order.getOrderSn());
+
+		OrderItem item = new OrderItem();
+		item.setProductId(lots.getGoodsId());
+		item.setQuantity(1);
+		item.setUserId(userId);
+		item.setProductPic(goods.getProductPic());
+		item.setScoreRedeem(goods.getScoreRedeem());
+		item.setUnitPrice(goods.getPromotionPrice() != null ? goods.getPromotionPrice() : goods.getPrice());
+		order.setProductPic(item.getProductPic());
+		order.setTotalAmount(lots.getDeposit());
+		order.setAuctionMargin(lots.getDeposit());
+		order.setAuctionStartPrice(lots.getStartPrice());
+		order.setAuctionId(lots.getId());
+
+		order = orderDao.save(order);
+		item.setOrderId(order.getId());
+		orderItemDao.save(item);
+		return order;
 	}
 }

@@ -8,8 +8,13 @@ import me.izhong.common.util.DateUtil;
 import me.izhong.jobs.manage.IShopBidActionFacade;
 import me.izhong.jobs.model.bid.BidDownloadInfo;
 import me.izhong.jobs.model.bid.BidUploadInfo;
-import me.izhong.shop.dao.LotsDao;
+import me.izhong.jobs.model.bid.UserItem;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.consts.OrderStateEnum;
+import me.izhong.shop.dao.*;
 import me.izhong.shop.entity.Lots;
+import me.izhong.shop.entity.User;
+import me.izhong.shop.service.impl.JobService;
 import me.izhong.shop.service.impl.LotsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,19 +23,27 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class LotsServiceHelper {
+    public static final String JOB_NAME = "lots-service-helper";
     @Autowired
     LotsService service;
     @Autowired
     LotsDao lotsDao;
+    @Autowired
+    UserDao userDao;
+    @Autowired
+    LotsItemDao lotsItemDao;
+    @Autowired
+    JobService jobService;
+
     @SofaReference(interfaceType = IShopBidActionFacade.class,
             uniqueId = "${service.unique.id}",
             jvmFirst = false,
@@ -41,27 +54,37 @@ public class LotsServiceHelper {
     public void setUp() {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
                 new ThreadFactoryBuilder()
-                        .setNameFormat("lots-service-helper").build());
+                        .setNameFormat(JOB_NAME).build());
+
 
         scheduler.scheduleAtFixedRate(() -> {
-            findLots(scheduler);
+            subscribeBids(scheduler);
         }, 1, 30, TimeUnit.MINUTES);
     }
 
-    private void findLots(ScheduledExecutorService scheduler) {
+    private void subscribeBids(ScheduledExecutorService scheduler) {
+        LocalDateTime expect = LocalDateTime.now();
+        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusMinutes(10))) {
+            log.warn("unable to acquire job " + JOB_NAME);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenOrderByStartTime(now, now.plusMinutes(30));
         for (Lots lots : lotsList) {
-            BidUploadInfo bid = convert2Bid(lots);
-            bidActionFacade.uploadBid(bid);
-            // already start
-            if (lots.getStartTime().compareTo(LocalDateTime.now()) >= 0) {
-                bidActionFacade.startBid(bid.getBidId());
-            } else {
-                scheduleBidStart(scheduler, lots.getStartTime(), bid);
-            }
+            try {
+                BidUploadInfo bid = convert2Bid(lots);
+                bidActionFacade.uploadBid(bid);
+                // already start
+                if (lots.getStartTime().compareTo(LocalDateTime.now()) >= 0) {
+                    bidActionFacade.startBid(bid.getBidId());
+                } else {
+                    scheduleBidStart(scheduler, lots.getStartTime(), bid);
+                }
 
-            schedulerBidEnd(scheduler, lots.getEndTime(),  bid);
+                schedulerBidEnd(scheduler, lots.getEndTime(), bid);
+            }catch (Exception e) {
+                log.error("schedule bid error.", e);
+            }
         }
     }
 
@@ -74,7 +97,10 @@ public class LotsServiceHelper {
 
     private void endBid(BidUploadInfo bid) {
         BidDownloadInfo info = bidActionFacade.downloadBid(bid.getBidId(), 1L, null);
-
+        if (!info.getIsOver()) {
+            log.warn("拍卖没有结束" + bid.getBidId());
+        }
+        service.saveLots(bid.getBidId(), info);
     }
 
     private void scheduleBidStart(ScheduledExecutorService scheduler, LocalDateTime startTime, BidUploadInfo bid) {
@@ -93,11 +119,21 @@ public class LotsServiceHelper {
     private BidUploadInfo convert2Bid(Lots lots) {
         BidUploadInfo info = new BidUploadInfo();
         info.setBidId(lots.getId());
-        info.setEndPrice(lots.getFinalPrice().multiply(BigDecimal.valueOf(100)).longValue());
+        info.setEndPrice(lots.getWarningPrice().multiply(BigDecimal.valueOf(100)).longValue());
         info.setEndTime(DateUtil.convertToDate(lots.getEndTime()));
         info.setStartPrice(lots.getStartPrice().multiply(BigDecimal.valueOf(100)).longValue());
         info.setStartTime(DateUtil.convertToDate(lots.getStartTime()));
         info.setStepPrice(lots.getAddPrice().multiply(BigDecimal.valueOf(100)).longValue());
+
+        List<User> userList = userDao.selectAcutionUsers(MoneyTypeEnum.AUCTION_MARGIN.getType(), lots.getId(),
+                OrderStateEnum.PAID.getState());
+        info.setUsers(userList.stream().map(u->{
+            UserItem item = new UserItem();
+            item.setUserId(u.getId());
+            item.setAvatar(u.getAvatar());
+            item.setNickName(u.getNickName());
+            return item;
+        }).collect(Collectors.toList()));
         return info;
     }
 }

@@ -193,7 +193,10 @@ public class GoodsService implements IGoodsService {
 
 	@Override
 	public GoodsDTO findById(Long goodsId) {
-		Goods goods = goodsDao.findById(goodsId).orElseThrow(() -> new RuntimeException("unable to find goods by " + goodsId));
+		Goods goods = goodsDao.findById(goodsId).orElse(null);
+		if (goods == null) {
+			return null;
+		}
 		GoodsDTO dto = new GoodsDTO();
 		BeanUtils.copyProperties(goods, dto, "albumPics");
 		dto.setNextPriceTime(formatDateTime(generateNextPriceTime(goods)));

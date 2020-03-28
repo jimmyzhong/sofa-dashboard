@@ -92,6 +92,22 @@ public class OrderController {
 				.timeToPay(String.valueOf(orderExpireMinutes)).build();
 	}
 
+	@PostMapping(value = "/submitOrder/auction")
+	@ResponseBody
+	@RequireUserLogin
+	@ApiOperation(value="参与拍卖", httpMethod = "POST")
+	@ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+			value = "登录成功后response Authorization header", required = true)
+	public SubmitOrderResponse auction(@ApiParam(required = true, type = "object", value = "下单请求, like: \n{" +
+			"  \"auctionId\": 1" +
+			"}") @RequestBody SubmitOrderRequest submitOrder, HttpServletRequest request) {
+		Long userId = getCurrentUserId(request);
+		Order order = orderService.submitAuction(userId, submitOrder.getAddressId(), submitOrder.getAuctionId());
+		return SubmitOrderResponse.builder().orderNo(order.getOrderSn())
+				.status(getCommentByState(order.getStatus()))
+				.timeToPay(String.valueOf(orderExpireMinutes)).build();
+	}
+
     @PostMapping(value = "/confirmOrder")
     @ResponseBody
 	@RequireUserLogin

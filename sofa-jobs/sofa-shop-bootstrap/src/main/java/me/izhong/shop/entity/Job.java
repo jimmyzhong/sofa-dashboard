@@ -17,7 +17,7 @@ public class Job {
     @Id
     @GeneratedValue(generator = "APP_JOB_SEQ", strategy = GenerationType.SEQUENCE)
     private Integer id;
-    @Column(name = "NAME")
+    @Column(name = "NAME", unique = true)
     private String name;
     @Column(name = "LAST_STATE")
     private Integer lastRunState;

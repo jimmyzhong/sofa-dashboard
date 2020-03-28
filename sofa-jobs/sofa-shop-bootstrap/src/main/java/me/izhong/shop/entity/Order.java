@@ -110,4 +110,17 @@ public class Order {
     private String productPic;
     @Column(name = "UNIT_PRICE")
     private BigDecimal unitPrice;
+
+    // auction info
+    @Column(name = "AUCTION_MARGIN")
+    private BigDecimal auctionMargin;
+    //成交价
+    @Column(name = "AUCTION_DEAL_PRICE")
+    private BigDecimal auctionDealPrice;
+    //起拍价
+    @Column(name = "AUCTION_START_PRICE")
+    private BigDecimal auctionStartPrice;
+    @Column(name = "AUCTION_ID")
+    private Long auctionId;
+
 }

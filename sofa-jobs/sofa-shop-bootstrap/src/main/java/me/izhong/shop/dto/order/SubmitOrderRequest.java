@@ -13,4 +13,6 @@ public class SubmitOrderRequest{
     Long productId;
     Long productAttrId;
     Integer quantity;
+
+    Long auctionId;
 }

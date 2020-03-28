@@ -14,7 +14,8 @@ public enum OrderStateEnum {
     WAIT_DELIVER(5, "待发货"),
     DELIVERED(6, "已发货"),
     RESALED(7, "已申请寄售"),
-    FINISHED(8, "已完成");
+    FINISHED(8, "已完成"),
+    AUCTION_MARGIN_REFUND(9,"已退保证金");
 
     int state;
     String comment;
