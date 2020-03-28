@@ -66,6 +66,7 @@ public class LotsServiceHelper {
         LocalDateTime expect = LocalDateTime.now();
         if (!jobService.acquireJob(JOB_NAME, expect, expect.plusMinutes(10))) {
             log.warn("unable to acquire job " + JOB_NAME);
+            return;
         }
 
         LocalDateTime now = LocalDateTime.now();
