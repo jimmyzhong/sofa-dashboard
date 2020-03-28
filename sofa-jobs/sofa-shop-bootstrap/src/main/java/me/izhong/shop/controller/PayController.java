@@ -258,12 +258,11 @@ public class PayController {
         }
 
         log.info("query " + orderNo + ", status:" + response.getTradeStatus());
-        BigDecimal payAmountInResponse = new BigDecimal(response.getBuyerPayAmount());
         String status = getPayStatus(response.getTradeStatus());
         String comment = getMessage(response.getMsg());
         order.setPayStatus(status);
         order.setPayTradeNo(response.getTradeNo());
-        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), getDescriptionByState(order.getOrderType()), payAmountInResponse,
+        orderService.updatePayInfo(order,response.getTradeNo(), ALIPAY.name(), getDescriptionByState(order.getOrderType()), order.getTotalAmount(),
                 order.getTotalAmount(), status, comment);
         res.setTradeStatus(status);
         return res;
@@ -418,12 +417,12 @@ public class PayController {
         }
 
 
-        BigDecimal payAmountInResponse = BigDecimal.valueOf(Double.valueOf(params.get("buyer_pay_amount")));
         String status = getPayStatus(params.get("trade_status"));
         order.setPayStatus(status);
         order.setPayTradeNo(params.get("trade_no"));
-         orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(), getDescriptionByState(order.getOrderType()), payAmountInResponse,
-                order.getTotalAmount(), status, null);
+         orderService.updatePayInfo(order,params.get("trade_no"), ALIPAY.name(),
+                 getDescriptionByState(order.getOrderType()), order.getTotalAmount(),
+                 order.getTotalAmount(), status, null);
         log.info("trade status " + status + ", tradeNo:" + order.getPayTradeNo());
     }
 

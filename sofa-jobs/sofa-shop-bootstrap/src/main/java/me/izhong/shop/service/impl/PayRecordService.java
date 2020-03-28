@@ -48,8 +48,6 @@ import static me.izhong.common.util.DateUtil.convertToLocalDate;
 public class PayRecordService {
     @Autowired private PayRecordDao payRecordDao;
     @Autowired private UserMoneyDao userMoneyDao;
-    @Autowired private IUserService userService;
-    @Autowired private JobDao jobDao;
 
     @Transactional
     public void updateUserMoney(Long userId, LocalDateTime start, LocalDateTime end) {
@@ -57,19 +55,22 @@ public class PayRecordService {
         List<PayRecord> getMoneyRecords = payRecordDao.findAllByReceiverAndBetweenCreationDateAndTypeIn(userId, start, end,
                 0, Arrays.asList(MoneyTypeEnum.RETURN_MONEY.getDescription(),
                         MoneyTypeEnum.RESALE_GOODS.getDescription()));
-        BigDecimal money = getMoneyRecords.stream().map(p->{
-            p.setSysState(1);
-            return p.getTotalAmount();
-        }).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
-
+        BigDecimal amountBeforeUpdate = userMoney.getAvailableAmount();
+        BigDecimal increasedMoney = BigDecimal.ZERO;
+        for (PayRecord pr : getMoneyRecords) {
+            pr.setSysState(1);
+            increasedMoney = increasedMoney.add(pr.getPayAmount());
+            amountBeforeUpdate = amountBeforeUpdate.add(pr.getPayAmount());
+            pr.setTotalAmount(amountBeforeUpdate);
+        }
 
         BigDecimal moneyFromResale = getMoneyRecords.stream().filter(p->MoneyTypeEnum.RESALE_GOODS.getDescription().equalsIgnoreCase(p.getType()))
-                .map(PayRecord::getTotalAmount)
+                .map(PayRecord::getPayAmount)
                 .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
 
-        userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(money));
+        userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(increasedMoney));
         userMoney.setMoneySaleAmount(userMoney.getMoneySaleAmount().add(moneyFromResale));
-        userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount().add(money.subtract(moneyFromResale)));
+        userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount().add(increasedMoney.subtract(moneyFromResale)));
         userMoneyDao.save(userMoney);
         payRecordDao.saveAll(getMoneyRecords);
 

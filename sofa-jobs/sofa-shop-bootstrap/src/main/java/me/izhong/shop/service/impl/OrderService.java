@@ -196,7 +196,7 @@ public class OrderService implements IOrderService {
 		}
 		record.setInternalId(order.getOrderSn());
 		record.setExternalId(externalOrderNo);
-		record.setPayAmount(totalAmount);
+		record.setPayAmount(payAmount);
 		record.setTotalAmount(totalAmount);
 		record.setPayMethod(payMethod);
 		record.setType(payType);
@@ -235,10 +235,10 @@ public class OrderService implements IOrderService {
 				// 返现记录
 				User user = userService.findById(order.getUserId());
 				if (user.getInviteUserId() != null) {
-					recordMoneyReturn(order, user.getId(), user.getInviteUserId(), 0.03);  //TODO externalize
+					recordMoneyReturn(order, user.getId(), user.getInviteUserId(), 0.03, null);  //TODO externalize
 				}
 				if (user.getInviteUserId2() != null) {
-					recordMoneyReturn(order, user.getId(), user.getInviteUserId2(), 0.02);  //TODO externalize
+					recordMoneyReturn(order, user.getId(), user.getInviteUserId2(), 0.02, null);  //TODO externalize
 				}
 				// 付款成功,此处应该有积分奖励
 				if (!payMethod.equalsIgnoreCase(PayMethodEnum.SCORE.name())) {
@@ -253,7 +253,7 @@ public class OrderService implements IOrderService {
 
 			// 充值金额充值账户余额,直接到账
 			if (StringUtils.equals(payType, DEPOSIT_MONEY.getDescription())) {
-				recordMoney(order, null, order.getUserId(), 1.0, 1, true, DEPOSIT_MONEY);
+				recordMoney(order, null, order.getUserId(), 1.0, 1, true, DEPOSIT_MONEY, null);
 			}
 		}
 
@@ -287,7 +287,7 @@ public class OrderService implements IOrderService {
 				order.setStatus(FINISHED.getState());
 				userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
 				order = orderDao.save(order);
-				recordMoney(order, user.getId(), null, 1.0, 1, false , WITHDRAW_MONEY);
+				recordMoney(order, user.getId(), null, 1.0, 1, false , WITHDRAW_MONEY, userMoney.getAvailableAmount());
 				userMoneyDao.save(userMoney);
 				return true;
 			}
@@ -298,14 +298,25 @@ public class OrderService implements IOrderService {
 		return false;
 	}
 
-	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor) {
-		recordMoney(order, payerId, receiverId, returnFactor, 0, false, MoneyTypeEnum.RETURN_MONEY);
+	private void recordMoneyReturn(Order order, Long payerId, Long receiverId, Double returnFactor, BigDecimal accountAmount) {
+		recordMoney(order, payerId, receiverId, returnFactor, 0, false, MoneyTypeEnum.RETURN_MONEY, accountAmount);
 	}
 
+	/**
+	 * 记录支付记录
+	 * @param order
+	 * @param payerId
+	 * @param receiverId
+	 * @param returnFactor
+	 * @param sysState
+	 * @param updateUserMoney
+	 * @param type
+	 * @param accountAmount 账户当前余额
+	 */
 	private void recordMoney(Order order, Long payerId, Long receiverId, Double returnFactor, int sysState,
-							 boolean updateUserMoney, MoneyTypeEnum type) {
-		BigDecimal totalAmount = order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor));
-		if (totalAmount.compareTo(BigDecimal.ZERO) == 0) {
+							 boolean updateUserMoney, MoneyTypeEnum type, BigDecimal accountAmount) {
+		BigDecimal amount = order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor));
+		if (amount.compareTo(BigDecimal.ZERO) == 0) {
 			log.warn("log money amount 0. ignore");
 			return;
 		}
@@ -314,32 +325,36 @@ public class OrderService implements IOrderService {
 		moneyReturn.setCreateTime(LocalDateTime.now());
 		moneyReturn.setPayerId(payerId);
 		moneyReturn.setReceiverId(receiverId);
-		moneyReturn.setTotalAmount(order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor)));
+		moneyReturn.setTotalAmount(accountAmount);
+		moneyReturn.setPayAmount(amount);
 		moneyReturn.setInternalId(order.getOrderSn());
 		moneyReturn.setSysState(sysState);
-		payRecordDao.save(moneyReturn);
 
 		if (updateUserMoney) {
 			UserMoney userMoney = userMoneyDao.selectUserForUpdate(order.getUserId());
 			if (userMoney == null) {
 				userMoney = new UserMoney();
 				userMoney.setUserId(order.getUserId());
-				userMoney.setAvailableAmount(moneyReturn.getTotalAmount());
+				userMoney.setAvailableAmount(moneyReturn.getPayAmount());
 			} else {
-				userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getTotalAmount()));
+				userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(moneyReturn.getPayAmount()));
 			}
 			if (type == DEPOSIT_MONEY) {
 				userMoney.setMoneyDepositAmount(userMoney.getMoneyDepositAmount()
-						.add(moneyReturn.getTotalAmount()));
+						.add(moneyReturn.getPayAmount()));
+				moneyReturn.setTotalAmount(userMoney.getAvailableAmount());
 			} else if (type == RETURN_MONEY) {
 				userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount()
-						.add(moneyReturn.getTotalAmount()));
+						.add(moneyReturn.getPayAmount()));
+				moneyReturn.setTotalAmount(userMoney.getAvailableAmount());
 			} else if (type == RESALE_GOODS) {
 				userMoney.setMoneySaleAmount(userMoney.getMoneySaleAmount()
-						.add(moneyReturn.getTotalAmount()));
+						.add(moneyReturn.getPayAmount()));
+				moneyReturn.setTotalAmount(userMoney.getAvailableAmount());
 			}
 			userMoneyDao.save(userMoney);
 		}
+		payRecordDao.save(moneyReturn);
 	}
 
 	private void recordScoreReturn(Order order) {
@@ -347,13 +362,12 @@ public class OrderService implements IOrderService {
 		scoreReturn.setType(MoneyTypeEnum.RETURN_SCORE.getDescription());
 		scoreReturn.setCreateTime(LocalDateTime.now());
 		scoreReturn.setReceiverId(order.getUserId());
-		scoreReturn.setTotalAmount(order.getTotalAmount());
+		scoreReturn.setPayAmount(order.getTotalAmount());
 		scoreReturn.setInternalId(order.getOrderSn());
 		scoreReturn.setSysState(1);
-		payRecordDao.save(scoreReturn);
 
 		UserScore userScore = userScoreDao.findByUserId(order.getUserId());
-		Long score = BigDecimal.valueOf(scoreReturn.getTotalAmount().doubleValue() * scoreReturnRate).longValue();
+		Long score = BigDecimal.valueOf(scoreReturn.getPayAmount().doubleValue() * scoreReturnRate).longValue();
 		if (userScore == null) {
 			userScore = new UserScore();
 			userScore.setUserId(order.getUserId());
@@ -361,7 +375,9 @@ public class OrderService implements IOrderService {
 		} else {
 			userScore.setAvailableScore(userScore.getAvailableScore() + score);
 		}
+		scoreReturn.setTotalAmount(BigDecimal.valueOf(userScore.getAvailableScore()));
 		userScoreDao.save(userScore);
+		payRecordDao.save(scoreReturn);
 	}
 
 
@@ -660,7 +676,7 @@ public class OrderService implements IOrderService {
 
 		userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
 		updatePayInfo(order, null, PayMethodEnum.MONEY.name(),
-				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, amount,
+				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, userMoney.getAvailableAmount(),
 				PayStatusEnum.SUCCESS.name(), "");
 		userMoneyDao.save(userMoney);
 	}
