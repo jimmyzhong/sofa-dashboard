@@ -22,6 +22,9 @@ public class JobService {
 
         log.info("trying to get job " + jobName);
         job = jobDao.selectJobForUpdate(job.getId());
+        if (job.getLastRunTime().compareTo(lastRunTime) > 0) {
+            return false;
+        }
         job.setLastRunTime(updateLastRunTime);
         jobDao.save(job);
         return true;

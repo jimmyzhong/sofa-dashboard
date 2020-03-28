@@ -64,7 +64,7 @@ public class LotsServiceHelper {
 
     private void subscribeBids(ScheduledExecutorService scheduler) {
         LocalDateTime expect = LocalDateTime.now();
-        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusMinutes(10))) {
+        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusMinutes(30))) {
             log.warn("unable to acquire job " + JOB_NAME);
             return;
         }
