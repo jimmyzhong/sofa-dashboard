@@ -6,7 +6,9 @@ import java.lang.management.ManagementFactory;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
@@ -143,5 +145,15 @@ public class DateUtil extends org.apache.commons.lang3.time.DateUtils {
 
     public static LocalDate convertToLocalDate(Date date) {
         return date == null ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
+    public static LocalDateTime convertToLocalDateTime(Date date) {
+        return date == null ? null : date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    public static Date convertToDate(LocalDateTime dateTime) {
+        ZoneId zoneId = ZoneId.systemDefault();
+        ZonedDateTime zdt = dateTime.atZone(zoneId);
+        return Date.from(zdt.toInstant());
     }
 }
