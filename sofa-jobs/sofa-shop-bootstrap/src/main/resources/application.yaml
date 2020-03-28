@@ -106,6 +106,7 @@ com:
         registry:
           address: zookeeper://lpp.izhong.me:52181
         bolt-port: 13304
+
 order:
   expire:
     time: 5
@@ -133,6 +134,15 @@ user:
 spring:
   profiles: test
 
+com:
+  alipay:
+    sofa:
+      rpc:
+        registry:
+          address: zookeeper://lpp.izhong.me:52181
+        bolt-port: 13304
+        virtual-host: lpp.izhong.me
+        
 alipay:
   certifiedAppPubKeyPath: /home/server/shop/crt/appCertPublicKey_2015071600173316.crt
   certifiedAliPubKeyPath: /home/server/shop/crt/alipayCertPublicKey_RSA2.crt
