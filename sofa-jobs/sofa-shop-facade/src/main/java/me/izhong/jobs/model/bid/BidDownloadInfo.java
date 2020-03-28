@@ -73,7 +73,7 @@ public class BidDownloadInfo implements Serializable {
     /**
      * 最新出价时间
      */
-    private Long lastBidTime;
+    private Date lastBidTime;
 
     /**
      * 参与出价的人数
