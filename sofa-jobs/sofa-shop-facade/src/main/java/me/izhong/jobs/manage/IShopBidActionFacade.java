@@ -29,9 +29,9 @@ public interface IShopBidActionFacade {
 
     /**
      * 中途参加报价的，增加报价人信息
-     * @param bidKey
+     * @param bidId
      * @param users
      * @return
      */
-    Boolean addBidUsers(String bidKey , List<UserItem> users);
+    Boolean addBidUsers(Long bidId , List<UserItem> users);
 }
