@@ -64,16 +64,16 @@ public class BidDownloadInfo implements Serializable {
     private Boolean canBid;
 
     private Boolean isOver;
-    
+
     /**
      * 最新出价的用户id
      */
-    private Long currentUid;
+    private Long currentUserId;
 
     /**
      * 最新出价时间
      */
-    private Long currentTime;
+    private Long lastBidTime;
 
     /**
      * 参与出价的人数
