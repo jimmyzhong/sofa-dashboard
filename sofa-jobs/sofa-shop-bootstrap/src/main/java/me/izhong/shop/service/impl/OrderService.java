@@ -320,8 +320,9 @@ public class OrderService implements IOrderService {
 	 */
 	private void recordMoney(Order order, Long payerId, Long receiverId, Double returnFactor, int sysState,
 							 boolean updateUserMoney, MoneyTypeEnum type, BigDecimal accountAmount) {
-		BigDecimal amount = order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor));
-		if (amount.compareTo(BigDecimal.ZERO) == 0) {
+		BigDecimal amount = order.getTotalAmount().multiply(BigDecimal.valueOf(returnFactor))
+				.setScale(2, BigDecimal.ROUND_HALF_UP);
+		if (amount.compareTo(BigDecimal.valueOf(0.001)) < 0) {
 			log.warn("log money amount 0. ignore");
 			return;
 		}
