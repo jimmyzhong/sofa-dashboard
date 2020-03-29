@@ -51,7 +51,7 @@ public class CacheUtil {
      */
     public static void setSmsInfo(String key, String value) {
         ValueOperations ops = getRedisTemplate().opsForValue();
-        ops.set("_sms_" + key,value,120, TimeUnit.SECONDS);
+        ops.set("_sms_" + key,value,300, TimeUnit.SECONDS);
     }
 
     public static String getSmsInfo(String key) {
