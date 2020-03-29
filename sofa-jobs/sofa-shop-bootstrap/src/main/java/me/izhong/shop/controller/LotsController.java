@@ -42,8 +42,6 @@ public class LotsController {
     @PostMapping(value = "/items/{auctionId}")
     @ResponseBody
     @ApiOperation(value="拍卖出价明细", httpMethod = "POST")
-    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
-            value = "登录成功后response Authorization header", required = true)
     public PageModel<LotsItem> listItems(@PathVariable("auctionId")Long auctionId,  @RequestBody PageQueryParamDTO query) {
         return lotsService.listBidItems(auctionId, query);
     }
