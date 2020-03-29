@@ -28,7 +28,7 @@
 				<label class="col-sm-3 control-label is-required">广告类型：</label>
 				<div class="col-sm-8">
 					<select class="form-control" id="adType" name="adType" required onchange="adTypeChange()" th:field="*{adType}">
-						<option value="1" >网址</option>
+						<option value="1">网址</option>
 						<option value="2">内部商品</option>
 						<option value="3">内部拍品</option>
 						<option value="4">内部寄售商品</option>
@@ -125,9 +125,11 @@
 			}else if($("#adType").val()!="7"&&($("#adLink").val())){
 				var adType=$('#adType').val();
 				var adLink=$('#adLink').val();
-				if(adType==1&&!SHOP_COMMON.test.isURL(adLink)){
-					$.modal.alertWarning("链接格式不对");
-					return;
+				if(adType==1){
+					if(!SHOP_COMMON.test.isURL(adLink)){
+						$.modal.alertWarning("链接格式不对");
+						return;
+					}
 				}else{
 					var regPos = /^\d+$/; // 非负整数
 					var adLink=$('#adLink').val();

@@ -124,9 +124,11 @@
 			}else if($("#adType").val()!="7"&&($("#adLink").val())){
 				var adType=$('#adType').val();
 				var adLink=$('#adLink').val();
-				if(adType==1&&!SHOP_COMMON.test.isURL(adLink)){
-					$.modal.alertWarning("链接格式不对");
-					return;
+				if(adType==1){
+					if(!SHOP_COMMON.test.isURL(adLink)){
+						$.modal.alertWarning("链接格式不对");
+						return;
+					}
 				}else{
 					var regPos = /^\d+$/; // 非负整数
 					var adLink=$('#adLink').val();
