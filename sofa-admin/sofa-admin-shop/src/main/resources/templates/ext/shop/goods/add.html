@@ -146,6 +146,12 @@
 		})
 		$("#form-shop-goods-add").validate({
 			onkeyup: false,
+			rules: {
+				description: {
+					minlength: 5,
+					maxlength: 200
+				},
+			},
 			focusCleanup: true
 		});
 		function fetchGoodsTemplate() {

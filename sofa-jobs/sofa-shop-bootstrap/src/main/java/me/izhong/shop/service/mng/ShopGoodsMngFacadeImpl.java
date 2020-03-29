@@ -1,6 +1,7 @@
 package me.izhong.shop.service.mng;
 
 import java.lang.reflect.Field;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +75,7 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 		if (!CollectionUtils.isEmpty(shopGoods.getAlbumPics())) {
 			goods.setAlbumPics(StringUtils.join(shopGoods.getAlbumPics().toArray(), ","));
 		}
+		goods.setUpdateTime(LocalDateTime.now());
 		setCategoryPathInfo(goods);
 		goodsService.saveOrUpdate(goods);
 	}
@@ -173,6 +175,8 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 			goods.setAlbumPics(StringUtils.join(shopGoods.getAlbumPics().toArray(), ","));
 		}
 		setCategoryPathInfo(goods);
+		goods.setCreateTime(LocalDateTime.now());
+		goods.setUpdateTime(LocalDateTime.now());
 		goodsService.saveOrUpdate(goods);
 	}
 

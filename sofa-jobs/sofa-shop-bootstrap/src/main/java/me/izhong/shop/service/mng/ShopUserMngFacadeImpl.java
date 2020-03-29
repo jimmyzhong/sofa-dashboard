@@ -40,6 +40,7 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
     @Override
     public ShopUser find(Long userId) {
         User user = userService.findById(userId);
+        System.out.println(user);
         ShopUser shopUser = new ShopUser();
         BeanUtils.copyProperties(user, shopUser);
         return shopUser;
