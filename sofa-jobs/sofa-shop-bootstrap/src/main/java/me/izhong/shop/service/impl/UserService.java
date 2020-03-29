@@ -104,7 +104,7 @@ public class UserService implements IUserService {
             u.setInviteUserId(request.getInviteUserId());
         }
         if (request.getInviteUserId2() != null) {
-            u.setInviteUserId2(user.getInviteUserId2());
+            u.setInviteUserId2(request.getInviteUserId2());
         }
 
         ExampleMatcher matcher = ExampleMatcher.matchingAll()

@@ -108,13 +108,7 @@ public class OrderService implements IOrderService {
 			log.info("find orders : " + unpaidOrders.size());
 			if (!unpaidOrders.isEmpty()) {
 				for (Order order : unpaidOrders) {
-					List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
-					items.stream().forEach(i->{
-						GoodsStore store = storeDao.findByProductIdAndProductAttrId(i.getProductId(),
-								i.getProductAttributeId());
-						store.setPreStore(store.getPreStore() + i.getQuantity());
-						storeDao.save(store);
-					});
+					restoreStock(order);
 				}
 				orderDao.updateOrderStatus(unpaidOrders.stream().map(Order::getId).collect(Collectors.toList()),
 						EXPIRED.getState());
@@ -122,6 +116,16 @@ public class OrderService implements IOrderService {
 		} finally {
 			log.info("task finish time: " + (System.currentTimeMillis() - start));
 		}
+	}
+
+	private void restoreStock(Order order) {
+		List<OrderItem> items = orderItemDao.findAllByOrOrderIdAndUserId(order.getId(), order.getUserId());
+		items.stream().forEach(i->{
+			GoodsStore store = storeDao.findByProductIdAndProductAttrId(i.getProductId(),
+					i.getProductAttributeId());
+			store.setPreStore(store.getPreStore() + i.getQuantity());
+			storeDao.save(store);
+		});
 	}
 
 	@Override
@@ -526,10 +530,11 @@ public class OrderService implements IOrderService {
 
 	@Override
 	@Transactional
+	@NeedOptimisticLockRetry
 	public Order cancel(Long currentUserId, String orderNo) {
 		Order order = orderDao.findFirstByOrderSn(orderNo);
 		order.setStatus(CANCELED.getState());
-		// TODO 恢复预扣库存
+		restoreStock(order);
 		orderDao.save(order);
 		return order;
 	}
