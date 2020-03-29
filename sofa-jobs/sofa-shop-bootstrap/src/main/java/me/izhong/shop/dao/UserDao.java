@@ -20,7 +20,6 @@ public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExec
     @Query(value = "select count(*) from user t where t.register_time = ?1", nativeQuery = true)
     long countUserByRegisterTime(LocalDateTime registerTime);
 
-    // TODO order should be paid
     @Query(value = "select u.* from tx_order o, user u where o.user_id = u.id and o.order_type = ?1 " +
             "and o.AUCTION_ID = ?2 and o.status = ?3", nativeQuery = true)
     List<User> selectAcutionUsers(Integer type, Long auctionId, Integer status);

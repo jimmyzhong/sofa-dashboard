@@ -79,6 +79,8 @@ public class Lots {
 	private Integer applyType;
     @Column(name = "APPLY_STATUS")
 	private Integer applyStatus;
+    @Column(name = "IS_OVER")
+    private Boolean over;  //是否成交
     //是否发布
     @Column(name = "IS_REPUBLISH")
 	private Integer isRepublish;

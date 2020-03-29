@@ -13,10 +13,11 @@ public class PageQueryParamDTO extends PageRequest {
     //common
     private String code;
     private String query;
+    private Long userId;
+
     //good
     private String categoryPath;
     private Integer productType;
-    private Long userId;
     private Boolean onIndexPage;
     // user
     private Long inviteUserId;
