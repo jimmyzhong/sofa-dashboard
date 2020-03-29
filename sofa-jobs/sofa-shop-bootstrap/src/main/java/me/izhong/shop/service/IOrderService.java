@@ -91,4 +91,6 @@ public interface IOrderService {
     void payByScore(Long id, Order order);
 
     Order submitAuction(Long userId, Long addressId, Long auctionId);
+
+	Order payAuctionMarginByMoney(Long id, Long auctionId);
 }

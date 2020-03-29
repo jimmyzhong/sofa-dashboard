@@ -24,7 +24,6 @@ import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AliPayService;
 import me.izhong.shop.service.impl.PayRecordService;
-import me.izhong.shop.util.PasswordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -308,11 +307,9 @@ public class PayController {
             throw BusinessException.build("请求参数中拍品ID(auctionId)不存在.");
         }
         SessionInfo session = CacheUtil.getSessionInfo(request);
-        String orderNo = params.getOrderNo();
-        Order order  = orderService.findByOrderNo(orderNo);
-        orderService.payByMoney(session.getId(), order);
+        Order order = orderService.payAuctionMarginByMoney(session.getId(), params.getAuctionId());
         PayInfoDTO res = new PayInfoDTO();
-        res.setOrderNo(orderNo);
+        res.setOrderNo(order.getOrderSn());
         res.setTradeStatus("SUCCESS");
         return res;
     }

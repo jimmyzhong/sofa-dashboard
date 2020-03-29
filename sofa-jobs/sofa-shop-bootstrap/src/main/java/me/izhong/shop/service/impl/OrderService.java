@@ -213,7 +213,7 @@ public class OrderService implements IOrderService {
 
 		order.setPayType(PayMethodEnum.valueOf(payMethod).getCode());
 		order.setPayTradeNo(externalOrderNo);
-		order.setPayAmount(totalAmount);
+		order.setPayAmount(payAmount);
 
 		if (PayStatusEnum.SUCCESS.name().equals(state) && (order.getStatus() == WAIT_PAYING.getState()
 				|| order.getStatus() == EXPIRED.getState())) {
@@ -259,19 +259,6 @@ public class OrderService implements IOrderService {
 			// 充值金额充值账户余额,直接到账
 			if (StringUtils.equals(payType, DEPOSIT_MONEY.getDescription())) {
 				recordMoney(order, null, order.getUserId(), 1.0, 1, true, DEPOSIT_MONEY, null);
-			}
-
-			// 保证金付款成功,冻结为余额
-			if (StringUtils.equals(payType, AUCTION_MARGIN.getDescription())) {
-				UserMoney userMoney = userMoneyDao.selectUserForUpdate(order.getUserId());
-				if (userMoney == null) {
-					userMoney = new UserMoney();
-					userMoney.setUserId(order.getUserId());
-					userMoney.setUnavailableAmount(order.getAuctionMargin());
-				} else {
-					userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(order.getAuctionMargin()));
-				}
-				userMoneyDao.save(userMoney);
 			}
 		}
 
@@ -641,14 +628,16 @@ public class OrderService implements IOrderService {
 	}
 
 	private void setReceiverInfoOfOrder(UserReceiveAddress address, Order order) {
-		order.setReceiverCity(address.getCity());
-		order.setReceiverProvince(address.getProvince());
-		order.setReceiverPostCode(address.getPostCode());
-		order.setReceiverCounty(address.getDistrict());
-		order.setReceiverTown(address.getTown());
-		order.setReceiverDetailAddress(address.getDetailAddress());
-		order.setReceiverName(address.getUserName());
-		order.setReceiverPhone(address.getUserPhone());
+		if (address != null) {
+			order.setReceiverCity(address.getCity());
+			order.setReceiverProvince(address.getProvince());
+			order.setReceiverPostCode(address.getPostCode());
+			order.setReceiverCounty(address.getDistrict());
+			order.setReceiverTown(address.getTown());
+			order.setReceiverDetailAddress(address.getDetailAddress());
+			order.setReceiverName(address.getUserName());
+			order.setReceiverPhone(address.getUserPhone());
+		}
 	}
 
 	@Override
@@ -754,6 +743,10 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("拍卖商品不存在");
 		}
 
+		return generateAuctionMarginOrder(userId, address, lots, goods);
+	}
+
+	private Order generateAuctionMarginOrder(Long userId, UserReceiveAddress address, Lots lots, GoodsDTO goods) {
 		Order order = new Order();
 		order.setOrderType(AUCTION_MARGIN.getType());
 		setReceiverInfoOfOrder(address, order);
@@ -770,8 +763,8 @@ public class OrderService implements IOrderService {
 		item.setQuantity(1);
 		item.setUserId(userId);
 		item.setProductPic(goods.getProductPic());
-		item.setScoreRedeem(goods.getScoreRedeem());
-		item.setUnitPrice(goods.getPromotionPrice() != null ? goods.getPromotionPrice() : goods.getPrice());
+		item.setUnitPrice(goods.getPromotionPrice() != null ?
+				goods.getPromotionPrice() : goods.getPrice());
 		order.setProductPic(item.getProductPic());
 		order.setTotalAmount(lots.getDeposit());
 		order.setAuctionMargin(lots.getDeposit());
@@ -781,6 +774,46 @@ public class OrderService implements IOrderService {
 		order = orderDao.save(order);
 		item.setOrderId(order.getId());
 		orderItemDao.save(item);
+		return order;
+	}
+
+	@Override
+	@Transactional
+	public Order payAuctionMarginByMoney(Long userId, Long auctionId) {
+		Lots lots = lotsService.findById(auctionId);
+		if (lots == null) {
+			throw BusinessException.build("拍品不存在");
+		}
+
+		GoodsDTO goods = null;
+		if(lots.getGoodsId() != null) {
+			goods = goodsService.findGoodsWithAttrById(lots.getGoodsId(), null);
+		}
+
+		if (goods == null) {
+			throw BusinessException.build("拍卖商品不存在");
+		}
+
+		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
+		if (userMoney == null) {
+			throw BusinessException.build("用户余额不存在,请联系管理员");
+		}
+
+		BigDecimal amount = lots.getDeposit();
+		if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
+			throw BusinessException.build("可用余额不足");
+		}
+
+		Order order = generateAuctionMarginOrder(userId, null, lots, goods);
+		order.setPayType(PayMethodEnum.MONEY.getCode());
+
+		userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
+		userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(amount));
+		userMoneyDao.save(userMoney);
+
+		updatePayInfo(order, null, PayMethodEnum.MONEY.name(),
+				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, userMoney.getAvailableAmount(),
+				PayStatusEnum.SUCCESS.name(), "");
 		return order;
 	}
 }
