@@ -13,7 +13,7 @@ import java.util.Set;
 @Repository
 public interface PayRecordDao extends JpaRepository<PayRecord, Long>, JpaSpecificationExecutor {
 
-    PayRecord findFirstByInternalIdAndType(String internalOrderNo, String type);
+    PayRecord findFirstByInternalIdAndTypeAndPayerId(String internalOrderNo, String type, Long payerId);
 
     @Query(value = "select distinct(pr.receiver) from pay_record pr where pr.create_time > ?1 and pr.create_time <= ?2 " +
             "and pr.sys_state = ?3 and pr.receiver is not null", nativeQuery = true)

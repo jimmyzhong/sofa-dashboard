@@ -193,7 +193,7 @@ public class OrderService implements IOrderService {
 							  String payType, BigDecimal payAmount, BigDecimal totalAmount,
 							  String state, String comment) {
 		// 付款记录
-		PayRecord record = payRecordDao.findFirstByInternalIdAndType(order.getOrderSn(), payType);
+		PayRecord record = payRecordDao.findFirstByInternalIdAndTypeAndPayerId(order.getOrderSn(), payType, order.getUserId());
 		if (record == null) {
 			record = new PayRecord();
 			record.setSysState(0);

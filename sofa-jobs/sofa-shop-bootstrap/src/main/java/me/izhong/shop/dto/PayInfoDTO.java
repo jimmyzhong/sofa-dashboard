@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 @Data
 public class PayInfoDTO {
     private String orderNo;
+    private Long auctionId;
     private String externalTradeNo;
     private String tradeStatus;
     private String payInfo;

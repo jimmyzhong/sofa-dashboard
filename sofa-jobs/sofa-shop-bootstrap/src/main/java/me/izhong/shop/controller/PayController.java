@@ -282,23 +282,32 @@ public class PayController {
         if(StringUtils.isEmpty(params.getOrderNo())) {
             throw BusinessException.build("请求参数中商户订单(orderNo)不存在.");
         }
-        // TODO skip pass valid
-//        if (StringUtils.isEmpty(params.getPassword())) {
-//            throw BusinessException.build("请输入支付密码");
-//        }
-
         SessionInfo session = CacheUtil.getSessionInfo(request);
-//        User user = userService.findById(session.getId());
 
-//        if (StringUtils.isEmpty(user.getAssetPassword())) {
-//            throw BusinessException.build(ErrorCode.USER_NOT_HAS_ASSETPASS, "请设置支付密码");
-//        }
+        String orderNo = params.getOrderNo();
+        Order order  = orderService.findByOrderNo(orderNo);
+        orderService.payByMoney(session.getId(), order);
+        PayInfoDTO res = new PayInfoDTO();
+        res.setOrderNo(orderNo);
+        res.setTradeStatus("SUCCESS");
+        return res;
+    }
 
-//        if (!StringUtils.equals(PasswordUtils.encrypt(params.getPassword(), user.getAssetPasswordSalt()),
-//                user.getAssetPassword())) {
-//            throw BusinessException.build("支付密码不正确");
-//        }
-
+    @PostMapping(path="/money/auction", consumes = "application/json")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="余额支付拍卖保证金", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PayInfoDTO payAuctionByMoney(
+            @ApiParam(required = true, type = "object", value = "支付请求, like: \n{" +
+                    "  \"orderNo\": \"00001\"" +
+                    "}")
+            @RequestBody PayInfoDTO params, HttpServletRequest request) {
+        if(params.getAuctionId() == 0) {
+            throw BusinessException.build("请求参数中拍品ID(auctionId)不存在.");
+        }
+        SessionInfo session = CacheUtil.getSessionInfo(request);
         String orderNo = params.getOrderNo();
         Order order  = orderService.findByOrderNo(orderNo);
         orderService.payByMoney(session.getId(), order);
