@@ -22,6 +22,9 @@ public class PageQueryParamDTO extends PageRequest {
     // user
     private Long inviteUserId;
     private Long inviteUserId2;
+    // auction
+    private Integer lotsCategoryId;
+
     // 余额类型
     @JSONField(name="moneyTypes", deserializeUsing = CommaSplitList.class)
     private List<Integer> moneyTypes; // 0:普通商品,1:充值,2:寄售商品,10:返现

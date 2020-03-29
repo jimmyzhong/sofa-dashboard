@@ -99,6 +99,8 @@ public class UserService implements IUserService {
     public PageModel<User> list(Long userId, PageQueryParamDTO request) {
         User user = this.findById(userId);
 
+        log.info("invite1:" + request.getInviteUserId() + ",invite2:" + request.getInviteUserId2());
+
         User u = new User();
         if (request.getInviteUserId() != null) {
             u.setInviteUserId(request.getInviteUserId());

@@ -30,7 +30,7 @@ public class Lots {
     @Column(name = "GOODS_ID")
 	private Long goodsId;
     @Column(name = "LOT_CATEGORY_ID")
-	private Long lotCategoryId;
+	private Integer lotCategoryId;
     @Column(name = "CONTENT")
 	private String content;
     //起拍价

@@ -59,28 +59,22 @@ public class LotsServiceHelper {
 
         scheduler.scheduleAtFixedRate(() -> {
             subscribeBids(scheduler);
-        }, 1, 30, TimeUnit.MINUTES);
+        }, 1, 30, TimeUnit.SECONDS);
     }
 
     private void subscribeBids(ScheduledExecutorService scheduler) {
         LocalDateTime expect = LocalDateTime.now();
-        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusMinutes(30))) {
+        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusSeconds(30))) {
             log.warn("unable to acquire job " + JOB_NAME);
             return;
         }
 
         LocalDateTime now = LocalDateTime.now();
-        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenOrderByStartTime(now, now.plusMinutes(30));
+        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenOrderByStartTime(now, now.plusSeconds(30));
         for (Lots lots : lotsList) {
             try {
                 BidUploadInfo bid = convert2Bid(lots);
                 bidActionFacade.uploadBid(bid);
-                // already start
-                if (lots.getStartTime().compareTo(LocalDateTime.now()) >= 0) {
-                    bidActionFacade.startBid(bid.getBidId());
-                } else {
-                    scheduleBidStart(scheduler, lots.getStartTime(), bid);
-                }
 
                 schedulerBidEnd(scheduler, lots.getEndTime(), bid);
             }catch (Exception e) {
