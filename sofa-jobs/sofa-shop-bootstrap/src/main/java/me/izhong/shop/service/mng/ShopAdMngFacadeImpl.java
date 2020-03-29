@@ -50,6 +50,7 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 	public void edit(ShopAd shopAd) {
 		Ad ad = adService.findById(shopAd.getId());
 		ad.setAdName(shopAd.getAdName());
+		ad.setAdType(shopAd.getAdType());
 		ad.setAdLink(shopAd.getAdLink());
 		ad.setStatus(shopAd.getStatus());
 		if (!StringUtils.isEmpty(shopAd.getImageUrl())) {
