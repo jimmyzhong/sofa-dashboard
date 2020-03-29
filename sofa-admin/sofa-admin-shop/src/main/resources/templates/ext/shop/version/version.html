@@ -37,8 +37,8 @@
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "版本管理",
             columns: [{
                 checkbox: true
@@ -56,10 +56,10 @@
                     field: 'version',
                     title: '版本号'
                 },
-                {
-                    field: 'url',
-                    title: '链接'
-                },
+                // {
+                //     field: 'url',
+                //     title: '链接'
+                // },
                 {
                     field: 'forceUpdateVersion',
                     title: '最低更新版本'

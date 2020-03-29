@@ -49,8 +49,8 @@
             createUrl: prefix + "/add/"+$("#categoryId").val(),
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "商品子类别",
             columns: [{
                 checkbox: true
@@ -80,6 +80,10 @@
                 }, {
                     field: 'sort',
                     title: '排序',
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     title: '操作',

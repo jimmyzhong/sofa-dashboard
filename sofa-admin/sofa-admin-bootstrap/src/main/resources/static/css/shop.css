@@ -40,3 +40,8 @@
     border-color: #fde2e2;
     color: #f56c6c;
 }
+
+/*表单通用样式*/
+input[type=radio]{
+    margin-right: 7px;
+}

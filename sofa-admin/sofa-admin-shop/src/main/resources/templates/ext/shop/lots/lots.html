@@ -79,8 +79,8 @@
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "拍卖管理",
             columns: [{
                 checkbox: true
@@ -140,6 +140,10 @@
                     field: 'userLevel',
                     title: '拍卖的级别',
                     sortable: true
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     title: '操作',

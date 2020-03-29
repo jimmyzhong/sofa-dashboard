@@ -46,8 +46,8 @@
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "商品管理",
             columns: [{
                 checkbox: true
@@ -67,6 +67,7 @@
                 {
                     field: 'productName',
                     title: '标题',
+                    width:"500",
                     sortable: true
                 },
                 {
@@ -98,6 +99,10 @@
                     formatter: function (value, row, index) {
                         return value?"上架":"下架";
                     }
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     title: '操作',

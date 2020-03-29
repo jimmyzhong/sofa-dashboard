@@ -62,8 +62,8 @@
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "订单列表",
             columns: [{
                 checkbox: true
@@ -103,6 +103,10 @@
                     formatter: function (value, row, index) {
                         return {1:"支付宝",2:"微信"}[value]||"不详";
                     }
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     title: '操作',

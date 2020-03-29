@@ -15,10 +15,10 @@
                         </li>
                         <li>
                             广告状态：<select name="status">
-                                        <option value="">所有</option>
-                                        <option value="1">启用</option>
-                                        <option value="0">不启用</option>
-                                    </select>
+                            <option value="">所有</option>
+                            <option value="1">启用</option>
+                            <option value="0">不启用</option>
+                        </select>
                         <li>
                             <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
                                     class="fa fa-search"></i>&nbsp;搜索</a>
@@ -55,14 +55,17 @@
         var url = prefix + '/detail/' + id;
         $.modal.openTab("广告详情", url);
     }
+
     function addAd() {
         var url = prefix + '/add';
         $.modal.openTab("新增广告", url);
     }
+
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;
         $.modal.openTab("编辑广告", url);
     }
+
     $(function () {
         var options = {
             url: prefix + "/list",
@@ -70,60 +73,64 @@
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "广告",
             columns: [{
                 checkbox: true
             },
-            {
-                field: 'id',
-                title: 'ID',
-                sortable: true
-            },
-            {
-                field: 'adName',
-                title: '广告名称',
-                sortable: true
-            },
-            {
-                field: 'adType',
-                title: '广告类型',
-                formatter: function (value, row, index) {
-                    return {1:"网址",2:"内部商品",3:"内部拍品",4:"内部寄售商品",5:"内部文章",7:"无链接"}[value]
-                }
-            },
-            {
-                field: 'imageUrl',
-                title: '广告图片',
-                formatter: function (value, row, index) {
-                    return $.table.imageView(value,300,300,'',1);
-                }
-            },
-            {
-                field: 'status',
-                title: '状态',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    return value?"启用":"不启用";
-                }
-            },
-            {
-                field: 'sort',
-                title: '权重'
-            },
-            {
-                title: '操作',
-                width:"300",
-                align: 'center',
-                formatter: function (value, row, index) {
-                    var actions = [];
-                    actions.push('<a class="btn btn-primary btn-xs '+detailFlag+'" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
-                    actions.push('<a class="btn btn-primary btn-xs '+editFlag+'" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
-                    actions.push('<a class="btn btn-warning btn-xs '+removeFlag+'" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
-                    return actions.join('');
-                }
-            }]
+                {
+                    field: 'id',
+                    title: 'ID',
+                    sortable: true
+                },
+                {
+                    field: 'adName',
+                    title: '广告名称',
+                    sortable: true
+                },
+                {
+                    field: 'adType',
+                    title: '广告类型',
+                    formatter: function (value, row, index) {
+                        return {1: "网址", 2: "内部商品", 3: "内部拍品", 4: "内部寄售商品", 5: "内部文章", 7: "无链接"}[value]
+                    }
+                },
+                {
+                    field: 'imageUrl',
+                    title: '广告图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, 300, 300, '', 1);
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return value ? "启用" : "不启用";
+                    }
+                },
+                {
+                    field: 'sort',
+                    title: '权重'
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
+                },
+                {
+                    title: '操作',
+                    width: "300",
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
+                        actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
+                        actions.push('<a class="btn btn-warning btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
+                        return actions.join('');
+                    }
+                }]
         };
         $.table.init(options);
     });

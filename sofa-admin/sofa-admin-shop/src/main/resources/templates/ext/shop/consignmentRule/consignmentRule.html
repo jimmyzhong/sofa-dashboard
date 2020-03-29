@@ -29,8 +29,8 @@
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "寄售规则",
             columns: [{
                 checkbox: true
@@ -47,6 +47,10 @@
                 {
                     field: 'reduceValue',
                     title: '降价权重(%)'
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     title: '操作',

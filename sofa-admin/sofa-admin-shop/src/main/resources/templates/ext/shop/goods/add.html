@@ -126,6 +126,13 @@
 			width: 100%;
 			height: 100%;
 		}
+		#templateContent{
+			padding-top: 7px;
+		}
+		#templateContent>a{
+			margin-right: 10px;
+			text-decoration: underline;
+		}
 	</style>
 	<th:block th:include="include :: footer" />
 	<th:block th:include="include :: summernote-js" />
@@ -244,6 +251,13 @@
 				$("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
 			})
 		}
+		function delAlbumPics(obj,str) {
+			$(obj).parents("div.pic").remove();
+			var index = albumPics.indexOf(str);
+			if (index > -1) {
+				albumPics.splice(index, 1);
+			}
+		}
 		// 上传文件
 		function sendFile(file, obj) {
 			var data = new FormData();
@@ -252,6 +266,7 @@
 				$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
 			})
 		}
+
 	</script>
 </body>
 </html>

@@ -38,8 +38,8 @@
             createUrl: prefix + "/add/0",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
-            sortName: "id",
-            sortOrder: "asc",
+            sortName: "updateTime",
+            sortOrder: "desc",
             modalName: "商品类别",
             columns: [{
                 checkbox: true
@@ -70,6 +70,10 @@
                     formatter: function (value, row, index) {
                         return value?"启用":"不启用";
                     }
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     title: '操作',
