@@ -71,9 +71,6 @@ public class ShopAdController {
 
     @GetMapping("/edit/{adId}")
     public String edit(@PathVariable("adId") Long adId, ModelMap model) {
-		if (adId == null) {
-			throw BusinessException.build("adId不能为空");
-		}
 		ShopAd shopAd = shopServiceReference.adService.find(adId);
 		if (shopAd == null) {
 			throw BusinessException.build(String.format("广告不存在%s", adId));

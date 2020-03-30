@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.*;
 
 @Data
@@ -19,8 +21,16 @@ public class LotsCategory {
     private Integer id;
     @Column(name = "NAME", length = 50)
     private String name;
+    @Column(name = "LOGO", length = 500)
+    private String logo;
     @Column(name = "PASSWORD", length = 20)
     private String password;
     @Column(name = "ADMIN")
     private Long admin;
+    @Column(name = "SORT")
+    private Integer sort;
+    @Column(name = "CREATE_TIME")
+    private LocalDateTime createTime;
+    @Column(name = "UPDATE_TIME")
+    private LocalDateTime updateTime;
 }

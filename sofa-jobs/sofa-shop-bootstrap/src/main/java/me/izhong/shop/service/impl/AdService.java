@@ -1,24 +1,25 @@
 package me.izhong.shop.service.impl;
 
+import static org.springframework.data.domain.PageRequest.of;
+
 import java.util.List;
-import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
-import me.izhong.jobs.model.ShopAd;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import me.izhong.shop.dao.AdDao;
 import me.izhong.shop.entity.Ad;
 import me.izhong.shop.service.IAdService;
-
-import static org.springframework.data.domain.PageRequest.of;
 
 @Service
 public class AdService implements IAdService {

@@ -1,8 +1,11 @@
 package me.izhong.shop.dao;
 
-import io.swagger.models.auth.In;
-import me.izhong.shop.entity.LotsCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
 
-public interface LotsCategoryDao extends JpaRepository<LotsCategory, Integer> {
+import me.izhong.shop.entity.LotsCategory;
+
+@Repository
+public interface LotsCategoryDao extends JpaRepository<LotsCategory, Integer>, JpaSpecificationExecutor<LotsCategory> {
 }
