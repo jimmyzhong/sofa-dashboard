@@ -8,7 +8,6 @@ import javax.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-import me.izhong.shop.consts.ProductTypeEnum;
 
 import static me.izhong.shop.consts.ProductTypeEnum.NORMAL;
 

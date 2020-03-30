@@ -43,7 +43,6 @@ public class ShopGoodsController {
 	@PostMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopGoods> pageList(HttpServletRequest request, ShopGoods goods) {
-		goods.setProductType(0);//produceType为0 普通商品
 		PageModel<ShopGoods> page = shopServiceReference.goodsService.pageList(PageRequestUtil.fromRequest(request), goods);
 		return page;
 	}

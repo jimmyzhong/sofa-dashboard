@@ -1,16 +1,16 @@
 package me.izhong.shop.service.mng;
 
-import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -99,41 +99,47 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 	public PageModel<ShopGoods> pageList(PageRequest request, ShopGoods shopGoods) {
         Goods goods = new Goods();
         BeanUtils.copyProperties(shopGoods, goods);
-        removeWhiteSpaceParam(goods);
-
-        ExampleMatcher matcher = ExampleMatcher.matchingAny()
-                .withMatcher("productName", match -> match.contains());
-
-        Example<Goods> example = Example.of(goods, matcher);
-
-        Page<Goods> userPage = goodsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t -> {
-        	ShopGoods obj = new ShopGoods();
-            BeanUtils.copyProperties(t, obj);
-            return obj;
-        }).collect(Collectors.toList());
-        return PageModel.instance(userPage.getTotalElements(), shopGoodList);
+        goods.setProductType(0);
+        Specification<Goods> specification = getGoodsQuerySpeci(goods);
+        return getGoodsPageModel(request, specification);
 	}
 
 	@Override
     public PageModel<ShopGoods> pageConsignmentList(PageRequest request, ShopGoods shopGoods) {
         Goods goods = new Goods();
         BeanUtils.copyProperties(shopGoods, goods);
-        removeWhiteSpaceParam(goods);
         goods.setProductType(1);
+        Specification<Goods> specification = getGoodsQuerySpeci(goods);
+        return getGoodsPageModel(request, specification);
+    }
 
-        ExampleMatcher matcher = ExampleMatcher.matchingAny()
-                .withMatcher("productName", match -> match.contains());
+    private Specification<Goods> getGoodsQuerySpeci(Goods goods) {
+        return (r, cq, cb) -> {
+        	List<Predicate> predicates = Lists.newArrayList();
+        	if (!StringUtils.isEmpty(goods.getProductName())) {
+        		predicates.add(cb.like(r.get("productName"), "%" + goods.getProductName() + "%"));
+        	}
+        	if (goods.getProductType() != null) {
+        		predicates.add(cb.equal(r.get("productType"), goods.getProductType()));
+        	}
+        	if (goods.getPublishStatus() != null) {
+        		predicates.add(cb.equal(r.get("publishStatus"), goods.getPublishStatus()));
+        	}
+        	if (goods.getOnIndexPage() != null) {
+        		predicates.add(cb.equal(r.get("onIndexPage"), goods.getOnIndexPage()));
+        	}
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 
-        Example<Goods> example = Example.of(goods, matcher);
-
-        Page<Goods> userPage = goodsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-        List<ShopGoods> shopGoodList = userPage.getContent().stream().map(t -> {
-        	ShopGoods obj = new ShopGoods();
-            BeanUtils.copyProperties(t, obj);
-            return obj;
+    private PageModel<ShopGoods> getGoodsPageModel(PageRequest pageRequest, Specification<Goods> specification) {
+    	Page<Goods> page = goodsDao.findAll(specification, PageableConvertUtil.toDataPageable(pageRequest));
+        List<ShopGoods> list = page.getContent().stream().map(t -> {
+        	ShopGoods shopGoods = new ShopGoods();
+            BeanUtils.copyProperties(t, shopGoods);
+            return shopGoods;
         }).collect(Collectors.toList());
-        return PageModel.instance(userPage.getTotalElements(), shopGoodList);
+        return PageModel.instance(page.getTotalElements(), list);
     }
 
 	@Override
@@ -149,23 +155,6 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
 			return false;
 		}
 	}
-
-    private void removeWhiteSpaceParam(Goods goods) {
-        Field[] fields = Goods.class.getDeclaredFields();
-        try {
-            for (Field field : fields) {
-                if (field.getType() == String.class) {
-                    field.setAccessible(true);
-                    String value = (String) field.get(goods);
-                    if (StringUtils.isWhitespace(value)) {
-                        field.set(goods, null);
-                    }
-                    field.setAccessible(false);
-                }
-            }
-        } catch (Exception e) {
-        }
-    }
 
 	@Override
 	public void create(ShopGoods shopGoods) {

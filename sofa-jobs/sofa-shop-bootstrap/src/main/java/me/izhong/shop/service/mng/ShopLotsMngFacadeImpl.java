@@ -10,6 +10,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import com.alipay.sofa.rpc.common.utils.StringUtils;
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 
@@ -71,8 +72,11 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
 	}
 
 	@Override
-	public PageModel<ShopLots> pageList(PageRequest request) {
+	public PageModel<ShopLots> pageList(PageRequest request, String name) {
 		Lots lots = new Lots();
+		if (!StringUtils.isEmpty(name)) {
+			lots.setName(name);
+		}
         Example<Lots> example = Example.of(lots);
 		Page<Lots> page = lotsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
         List<ShopLots> list = page.getContent().stream().map(t -> {
