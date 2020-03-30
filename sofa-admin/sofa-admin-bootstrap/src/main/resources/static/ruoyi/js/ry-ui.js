@@ -88,7 +88,7 @@ var table = {
                     sortOrder: options.sortOrder,                       // 排序方式  asc 或者 desc
                     pagination: options.pagination,                     // 是否显示分页（*）
                     pageNumber: 1,                                      // 初始化加载第一页，默认第一页
-                    pageSize: options.pageSize,                         // 每页的记录行数（*） 
+                    pageSize: options.pageSize,                         // 每页的记录行数（*）
                     pageList: options.pageList,                         // 可供选择的每页的行数（*）
                     escape: options.escape,                             // 转义HTML字符串
                     firstLoad: options.firstLoad,                       // 是否首次请求加载数据，对于数据较大可以配置false
@@ -199,7 +199,6 @@ var table = {
                         } else {
                             table.rememberSelectedIds[table.options.id] = _[func]([], rowIds);
                         }
-                        console.log("q" + table.rememberSelectedIds[table.options.id])
 
                         var selectedRows = table.rememberSelecteds[table.options.id];
                         if($.common.isNotEmpty(selectedRows)) {
@@ -770,10 +769,16 @@ var table = {
                     url = "/404.html";
                 }
                 if ($.common.isEmpty(width)) {
-                    width = 800;
+                    width = ($(window).width() - 100);
+                }
+                if(!$.common.endWith(width,'px')) {
+                    width = width + 'px'
                 }
                 if ($.common.isEmpty(height)) {
                     height = ($(window).height() - 50);
+                }
+                if(!$.common.endWith(height,'px')) {
+                    height = height + 'px'
                 }
                 if ($.common.isEmpty(callback)) {
                     callback = function(index, layero) {
@@ -783,7 +788,7 @@ var table = {
                 }
                 layer.open({
                     type: 2,
-                    area: [width + 'px', height + 'px'],
+                    area: [width, height],
                     fix: false,
                     //不固定
                     maxmin: true,
@@ -811,13 +816,19 @@ var table = {
                         options.callBack(index, layero);
                     }
                 }
+                if(!$.common.endWith(_width,'px')) {
+                    _width = _width + 'px'
+                }
+                if(!$.common.endWith(_height,'px')) {
+                    _height = _height + 'px'
+                }
                 layer.open({
                     type: 2,
                     maxmin: true,
                     shade: 0.3,
                     title: _title,
                     fix: false,
-                    area: [_width + 'px', _height + 'px'],
+                    area: [_width , _height ],
                     content: _url,
                     shadeClose: $.common.isEmpty(options.shadeClose) ? true : options.shadeClose,
                     skin: options.skin,
