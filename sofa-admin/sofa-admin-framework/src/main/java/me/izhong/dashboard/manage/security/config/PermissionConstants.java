@@ -14,6 +14,7 @@ public class PermissionConstants {
         public static final String EXPORT = PREFIX + "export";
         public static final String IMPORT = PREFIX + "import";
         public static final String RESET_PWD = PREFIX + "resetPwd";
+        public static final String UNLOCK = PREFIX + "unlock";
     }
 
     public static class Dept {
@@ -87,7 +88,6 @@ public class PermissionConstants {
         public static final String VIEW = PREFIX + "view";
         public static final String REMOVE = PREFIX + "remove";
         public static final String EXPORT = PREFIX + "export";
-        public static final String UNLOCK = PREFIX + "unlock";
     }
 
     public static class UserOnline {

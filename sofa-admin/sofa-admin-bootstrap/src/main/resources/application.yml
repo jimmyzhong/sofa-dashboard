@@ -94,7 +94,14 @@ xss:
 dashboard:
   version: 4.0.0
   salt: salt@defalut
-  debugMode: false
+  debug:
+    mode: false
+    loginName: admin
+    password: password
+  password:
+    limit:
+      count: 3
+      time: 1
   filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
   ali:
     oss:

@@ -22,6 +22,10 @@ public interface SysUserService {
 
     SysUser recordLoginIp(Long userId, String loginIp);
 
+    SysUser recordLoginFail(Long userId,long passwordErrorCount);
+
+    SysUser resetLoginFail(Long userId);
+
     SysUser updateMyInfos(Long userId,String userName,String email,String phoneNumber,String sex);
 
     SysUser updateMyAvatar(Long userId,String avatar);

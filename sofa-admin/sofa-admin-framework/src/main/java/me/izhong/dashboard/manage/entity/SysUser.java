@@ -113,6 +113,9 @@ public class SysUser extends TimedBasedEntity {
 
     private String deptName;
 
+    private Long passwordErrorCount;
+    private Date passwordErrorTime;
+
     /**
      * 角色集合
      */

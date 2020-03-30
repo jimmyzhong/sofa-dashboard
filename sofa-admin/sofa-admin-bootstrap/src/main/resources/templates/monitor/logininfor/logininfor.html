@@ -49,9 +49,6 @@
             <a class="btn btn-danger" onclick="$.operate.clean()" shiro:hasPermission="monitor:loginInfo:remove">
                 <i class="fa fa-trash"></i> 清空
             </a>
-            <a class="btn btn-primary single disabled" onclick="unlock()" shiro:hasPermission="monitor:loginInfo:unlock">
-                <i class="fa fa-unlock"></i> 解锁
-            </a>
             <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="monitor:loginInfo:export">
                 <i class="fa fa-download"></i> 导出
             </a>
@@ -134,9 +131,6 @@
         };
         $.table.init(options);
     });
-    function unlock() {
-        $.operate.post(prefix + "/unlock?loginName=" + $.table.selectColumns("loginName"));
-    }
 </script>
 </body>
 </html>

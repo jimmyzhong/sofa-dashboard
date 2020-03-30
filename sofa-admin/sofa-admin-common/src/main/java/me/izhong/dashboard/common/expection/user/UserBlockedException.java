@@ -12,4 +12,8 @@ public class UserBlockedException extends UserException {
     public UserBlockedException(String message) {
         super(KEY, message);
     }
+
+    public UserBlockedException(String message,String loginName) {
+        super(KEY, message, loginName);
+    }
 }

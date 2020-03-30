@@ -75,6 +75,9 @@
                 <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:user:remove">
                     <i class="fa fa-remove"></i> 删除
                 </a>
+                <a class="btn btn-primary single disabled" onclick="unlock()" shiro:hasPermission="system:user:unlock">
+                    <i class="fa fa-unlock"></i> 解锁
+                </a>
                 <a class="btn btn-info" onclick="$.table.importExcel()" shiro:hasPermission="system:user:import">
                     <i class="fa fa-upload"></i> 导入
                 </a>
@@ -277,6 +280,10 @@
         $.modal.confirm("确认要启用用户吗？", function () {
             $.operate.post(prefix + "/changeStatus", {"userId": userId, "status": 0});
         })
+    }
+
+    function unlock() {
+        $.operate.post(prefix + "/unlock?userId=" + $.table.selectColumns("userId"));
     }
 </script>
 </body>

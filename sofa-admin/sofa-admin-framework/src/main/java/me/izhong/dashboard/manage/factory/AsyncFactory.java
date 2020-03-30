@@ -10,6 +10,7 @@ import me.izhong.dashboard.common.util.IpUtil;
 import me.izhong.dashboard.common.util.LogUtil;
 import me.izhong.dashboard.common.util.ServletUtil;
 import me.izhong.dashboard.common.util.SpringUtil;
+import me.izhong.dashboard.manage.service.SysUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,8 @@ public class AsyncFactory {
                 }
                 // 插入数据
                 SpringUtil.getBean(SysLoginInfoService.class).insert(logininfor);
+
+
             }
         };
     }
