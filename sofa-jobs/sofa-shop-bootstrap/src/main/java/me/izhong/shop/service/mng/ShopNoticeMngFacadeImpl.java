@@ -4,16 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
@@ -80,19 +82,32 @@ public class ShopNoticeMngFacadeImpl implements IShopNoticeMngFacade {
 		if (!StringUtils.isEmpty(title)) {
 			notice.setStatus(status);
 		}
+		Specification<Notice> specification = getNoticeQuerySpeci(notice);
+		return getNoticePageModel(request, specification);
+	}
 
-		ExampleMatcher matcher = ExampleMatcher.matchingAll()
-				.withMatcher("title", ExampleMatcher.GenericPropertyMatchers.contains());
-		Example<Notice> example = Example.of(notice, matcher);
+    private Specification<Notice> getNoticeQuerySpeci(Notice notice) {
+        return (r, cq, cb) -> {
+        	List<Predicate> predicates = Lists.newArrayList();
+        	if (!StringUtils.isEmpty(notice.getTitle())) {
+        		predicates.add(cb.like(r.get("title"), "%" + notice.getTitle() + "%"));
+        	}
+        	if (notice.getStatus() != null) {
+        		predicates.add(cb.equal(r.get("status"), notice.getStatus()));
+        	}
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 
-        Page<Notice> page = noticeDao.findAll(example, PageableConvertUtil.toDataPageable(request));
+    private PageModel<ShopNotice> getNoticePageModel(PageRequest pageRequest, Specification<Notice> specification) {
+    	Page<Notice> page = noticeDao.findAll(specification, PageableConvertUtil.toDataPageable(pageRequest));
         List<ShopNotice> list = page.getContent().stream().map(t -> {
-        	ShopNotice obj = new ShopNotice();
-            BeanUtils.copyProperties(t, obj);
-            return obj;
+        	ShopNotice shopNotice = new ShopNotice();
+            BeanUtils.copyProperties(t, shopNotice);
+            return shopNotice;
         }).collect(Collectors.toList());
         return PageModel.instance(page.getTotalElements(), list);
-	}
+    }
 
 	@Override
 	public ShopNotice find(Long id) {

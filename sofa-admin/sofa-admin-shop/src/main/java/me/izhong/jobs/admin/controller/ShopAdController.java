@@ -43,9 +43,8 @@ public class ShopAdController {
     public PageModel<ShopAd> list(
     		HttpServletRequest request,
 			@RequestParam(value = "name", required = false) String name,
-			@RequestParam(value = "content", required = false) String content,
 			@RequestParam(value = "status", required = false) Integer status) {
-		PageModel<ShopAd> page = shopServiceReference.adService.pageList(PageRequestUtil.fromRequest(request), name, content, status);
+		PageModel<ShopAd> page = shopServiceReference.adService.pageList(PageRequestUtil.fromRequest(request), name, status);
 		return page;
     }
 
@@ -63,6 +62,9 @@ public class ShopAdController {
     	checkField(shopAd.getImageUrl(), "广告图片");
     	if (shopAd.getStatus() == null) {
     		shopAd.setStatus(1);
+    	}
+    	if (shopAd.getSort() == null) {
+    		shopAd.setSort(0);
     	}
     	shopServiceReference.adService.create(shopAd);
     }
@@ -89,6 +91,9 @@ public class ShopAdController {
     	checkField(shopAd.getImageUrl(), "广告图片");
     	if (shopAd.getStatus() == null) {
     		shopAd.setStatus(1);
+    	}
+    	if (shopAd.getSort() == null) {
+    		shopAd.setSort(0);
     	}
 		shopServiceReference.adService.edit(shopAd);
     }

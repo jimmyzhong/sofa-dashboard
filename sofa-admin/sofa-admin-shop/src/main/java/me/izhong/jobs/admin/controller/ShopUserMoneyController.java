@@ -27,7 +27,6 @@ public class ShopUserMoneyController {
 	@Autowired(required = false)
 	private ShopServiceReference shopServiceReference;
 
-
 	@GetMapping
 	public String user() {
 		return prefix + "/user/money";

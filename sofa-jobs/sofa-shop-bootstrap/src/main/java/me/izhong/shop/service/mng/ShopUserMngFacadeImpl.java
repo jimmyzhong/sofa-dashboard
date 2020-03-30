@@ -42,7 +42,6 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
     @Override
     public ShopUser find(Long userId) {
         User user = userService.findById(userId);
-        System.out.println(user);
         ShopUser shopUser = new ShopUser();
         BeanUtils.copyProperties(user, shopUser);
         return shopUser;
@@ -89,6 +88,9 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
     private Specification<User> getUserQuerySpeci(User user) {
         return (r, cq, cb) -> {
         	List<Predicate> predicates = Lists.newArrayList();
+        	if (!StringUtils.isEmpty(user.getName())) {
+        		predicates.add(cb.like(r.get("name"), "%" + user.getName() + "%"));
+        	}
         	if (!StringUtils.isEmpty(user.getNickName())) {
         		predicates.add(cb.like(r.get("nickName"), "%" + user.getNickName() + "%"));
         	}

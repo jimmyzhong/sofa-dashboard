@@ -4,15 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
@@ -84,30 +87,40 @@ public class ShopAdMngFacadeImpl implements IShopAdMngFacade {
 	}
 
 	@Override
-	public PageModel<ShopAd> pageList(PageRequest request, String name, String content, Integer status) {
+	public PageModel<ShopAd> pageList(PageRequest request, String name, Integer status) {
 		Ad ad = new Ad();
-		ad.setPosition(1);
 		if (!StringUtils.isEmpty(name)) {
 			ad.setAdName(name);
-		}
-		if (!StringUtils.isEmpty(content)) {
-			ad.setContent(content);
 		}
 		if (status != null) {
 			ad.setStatus(status);
 		}
-
-        Example<Ad> example = Example.of(ad);
-		Page<Ad> userPage = adDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-        List<ShopAd> shopGoodCategoryList = userPage.getContent().stream().map(t -> {
-        	ShopAd obj = new ShopAd();
-            BeanUtils.copyProperties(t, obj);
-            return obj;
-        }).collect(Collectors.toList());
-        return PageModel.instance(userPage.getTotalElements(), shopGoodCategoryList);
+		Specification<Ad> specification = getAdQuerySpeci(ad);
+		return getAdPageModel(request, specification);
 	}
 
+    private Specification<Ad> getAdQuerySpeci(Ad ad) {
+        return (r, cq, cb) -> {
+        	List<Predicate> predicates = Lists.newArrayList();
+        	if (!StringUtils.isEmpty(ad.getAdName())) {
+        		predicates.add(cb.like(r.get("adName"), "%" + ad.getAdName() + "%"));
+        	}
+        	if (ad.getStatus() != null) {
+        		predicates.add(cb.equal(r.get("status"), ad.getStatus()));
+        	}
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 
+    private PageModel<ShopAd> getAdPageModel(PageRequest pageRequest, Specification<Ad> specification) {
+    	Page<Ad> page = adDao.findAll(specification, PageableConvertUtil.toDataPageable(pageRequest));
+        List<ShopAd> list = page.getContent().stream().map(t -> {
+        	ShopAd shopAd = new ShopAd();
+            BeanUtils.copyProperties(t, shopAd);
+            return shopAd;
+        }).collect(Collectors.toList());
+        return PageModel.instance(page.getTotalElements(), list);
+    }
 
 	@Override
 	public ShopAd find(Long adId) {

@@ -48,7 +48,8 @@ public class ShopArticlesMngFacadeImpl implements IShopArticlesMngFacade {
 	@Override
 	public void edit(ShopArticles shopArticles) {
 		Articles articles = articlesService.findById(shopArticles.getId());
-		articles.setTitle(shopArticles.getTitle());
+		articles.setTitle(articles.getTitle());
+		articles.setContent(articles.getContent());
 		articles.setUpdateTime(LocalDateTime.now());
 		articlesService.saveOrUpdate(articles);
 	}
