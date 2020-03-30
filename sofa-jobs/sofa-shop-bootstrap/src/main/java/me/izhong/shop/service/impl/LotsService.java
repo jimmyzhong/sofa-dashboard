@@ -102,6 +102,7 @@ public class LotsService implements ILotsService {
 
 		Specification<Lots> sp = (r, q, cb) -> {
 			Predicate p = cb.equal(r.get("lotCategoryId"), query.getLotsCategoryId());
+			// TODO add condition
 			return p;
 		};
 		Page<Lots> page = lotsDao.findAll(sp, pageableReq);

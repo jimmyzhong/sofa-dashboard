@@ -105,4 +105,6 @@ public class Lots {
     private LocalDateTime createTime;
     @Column(name = "UPDATE_TIME")
     private LocalDateTime updateTime;
+    @Column(name = "FREQUENCY")
+    private Integer auctionFrequency; // 出价频率
 }

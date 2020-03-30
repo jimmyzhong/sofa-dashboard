@@ -6,6 +6,7 @@ import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.util.json.CommaSplitList;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,6 +25,10 @@ public class PageQueryParamDTO extends PageRequest {
     private Long inviteUserId2;
     // auction
     private Integer lotsCategoryId;
+    private LocalDateTime startTime;
+    private Boolean isPublic;
+    private Boolean isVip;
+    private Long requiredAuctionMargin;
 
     // 余额类型
     @JSONField(name="moneyTypes", deserializeUsing = CommaSplitList.class)

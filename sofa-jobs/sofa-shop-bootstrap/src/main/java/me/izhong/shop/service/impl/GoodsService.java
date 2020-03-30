@@ -118,6 +118,8 @@ public class GoodsService implements IGoodsService {
 	@Override
 	public PageModel<GoodsDTO> list(PageQueryParamDTO queryParam) {
 		Goods goods = new Goods();
+		goods.setPublishStatus(1);
+
 		if (!StringUtils.isEmpty(queryParam.getQuery())) {
 			goods.setProductName(queryParam.getQuery());
 		}
@@ -142,7 +144,10 @@ public class GoodsService implements IGoodsService {
 
 		ExampleMatcher matcher = ExampleMatcher.matchingAll()
 				.withMatcher("productName", ExampleMatcher.GenericPropertyMatchers.contains())
-				.withMatcher("categoryPath", ExampleMatcher.GenericPropertyMatchers.startsWith());
+				.withMatcher("categoryPath", ExampleMatcher.GenericPropertyMatchers.startsWith())
+				.withMatcher("publishStatus", ExampleMatcher.GenericPropertyMatchers.exact())
+				.withMatcher("productType", ExampleMatcher.GenericPropertyMatchers.exact())
+				.withMatcher("onIndexPage", ExampleMatcher.GenericPropertyMatchers.exact());
 
 		Example<Goods> example = Example.of(goods, matcher);
 
