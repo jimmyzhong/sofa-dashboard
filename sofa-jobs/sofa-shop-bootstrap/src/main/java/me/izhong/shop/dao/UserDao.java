@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import me.izhong.shop.entity.User;
 
 @Repository
-public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExecutor {
+public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExecutor<User> {
 
     User findFirstByEmail(String email);
     User findFirstByPhone(String phone);

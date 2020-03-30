@@ -12,7 +12,7 @@ public interface IShopLotsMngFacade {
 
     boolean remove(String ids);
 
-	PageModel<ShopLots> pageList(PageRequest request);
+	PageModel<ShopLots> pageList(PageRequest request, String name);
 
 	ShopLots find(Long id);
 }

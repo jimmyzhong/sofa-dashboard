@@ -4,16 +4,18 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
@@ -32,10 +34,10 @@ import me.izhong.shop.util.PageableConvertUtil;
 public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
 
     @Autowired
-    UserDao userDao;
+    private UserDao userDao;
 
     @Autowired
-    IUserService userService;
+    private IUserService userService;
 
     @Override
     public ShopUser find(Long userId) {
@@ -80,23 +82,40 @@ public class ShopUserMngFacadeImpl implements IShopUserMngFacade {
         User user = new User();
         BeanUtils.copyProperties(shopUser, user);
         removeWhiteSpaceParam(user);
+        Specification<User> specification = getUserQuerySpeci(user);
+        return getUserPageModel(request, specification);
+    }
 
-        ExampleMatcher userMatcher = ExampleMatcher.matchingAny()
-        		.withMatcher("nickName", match -> match.contains())
-                .withMatcher("phone", match -> match.contains())
-                .withMatcher("inviteUserId", match -> match.contains())
-                .withMatcher("inviteUserId2", match -> match.contains())
-                .withIgnorePaths("password");
+    private Specification<User> getUserQuerySpeci(User user) {
+        return (r, cq, cb) -> {
+        	List<Predicate> predicates = Lists.newArrayList();
+        	if (!StringUtils.isEmpty(user.getNickName())) {
+        		predicates.add(cb.like(r.get("nickName"), "%" + user.getNickName() + "%"));
+        	}
+        	if (!StringUtils.isEmpty(user.getPhone())) {
+        		predicates.add(cb.like(r.get("phone"), "%" + user.getPhone() + "%"));
+        	}
+        	if (user.getInviteUserId() != null) {
+        		predicates.add(cb.equal(r.get("inviteUserId"), user.getInviteUserId()));
+        	}
+        	if (user.getInviteUserId() != null) {
+        		predicates.add(cb.equal(r.get("inviteUserId2"), user.getInviteUserId2()));
+        	}
+            if (user.getIsLocked() != null) {
+            	predicates.add(cb.equal(r.<Boolean>get("isLocked"), user.getIsLocked()));
+            }
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
 
-        Example<User> example = Example.of(user, userMatcher);
-
-        Page<User> userPage = userDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-        List<ShopUser> shopUsers = userPage.getContent().stream().map(u -> {
-            ShopUser suser = new ShopUser();
-            BeanUtils.copyProperties(u, suser);
-            return suser;
+    private PageModel<ShopUser> getUserPageModel(PageRequest pageRequest, Specification<User> specification) {
+    	Page<User> page = userDao.findAll(specification, PageableConvertUtil.toDataPageable(pageRequest));
+        List<ShopUser> list = page.getContent().stream().map(t -> {
+            ShopUser shopUser = new ShopUser();
+            BeanUtils.copyProperties(t, shopUser);
+            return shopUser;
         }).collect(Collectors.toList());
-        return PageModel.instance(userPage.getTotalElements(), shopUsers);
+        return PageModel.instance(page.getTotalElements(), list);
     }
 
     private void removeWhiteSpaceParam(User user) {

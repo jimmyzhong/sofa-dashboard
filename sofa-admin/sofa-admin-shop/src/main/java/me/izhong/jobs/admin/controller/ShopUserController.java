@@ -130,6 +130,8 @@ public class ShopUserController {
 	@GetMapping("/balanceDetail/{userId}")
 	public String balanceDetail(@PathVariable("userId") Long userId, Model model) {
 		model.addAttribute("userId", userId);
+		ShopUser user = shopServiceReference.userService.find(userId);
+		model.addAttribute("user", user);
 		return prefix + "/balanceDetail";
 	}
 

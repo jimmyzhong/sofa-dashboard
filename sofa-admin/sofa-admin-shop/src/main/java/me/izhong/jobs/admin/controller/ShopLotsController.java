@@ -37,9 +37,8 @@ public class ShopLotsController {
 	@RequiresPermissions(ShopPermissions.Lots.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
-    public PageModel<ShopLots> list(
-    		HttpServletRequest request) {
-		PageModel<ShopLots> page = shopServiceReference.lotsService.pageList(PageRequestUtil.fromRequest(request));
+    public PageModel<ShopLots> list(HttpServletRequest request, String name) {
+		PageModel<ShopLots> page = shopServiceReference.lotsService.pageList(PageRequestUtil.fromRequest(request), name);
 		return page;
     }
 
