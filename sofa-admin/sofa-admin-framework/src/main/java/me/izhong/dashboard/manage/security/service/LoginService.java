@@ -1,6 +1,7 @@
 package me.izhong.dashboard.manage.security.service;
 
 import lombok.extern.slf4j.Slf4j;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.common.constants.Global;
 import me.izhong.dashboard.common.constants.ShiroConstants;
 import me.izhong.dashboard.common.constants.SystemConstants;
@@ -21,6 +22,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
+
 /**
  * 登录校验方法
  */
@@ -39,10 +42,17 @@ public class LoginService {
     public SysUser login(String username, String password) {
 
         if(Global.isDebugMode()) {
+            String debugUserName = Global.getDebugLoginName();
+            String debugPassword = Global.getDebugPassword();
+            if(!org.apache.commons.lang3.StringUtils.equals(debugUserName,username)) {
+                throw BusinessException.build("维护中，"+username+"不能登陆");
+            }
+            if(!org.apache.commons.lang3.StringUtils.equals(debugPassword,password)) {
+                throw BusinessException.build("维护中，"+username+"密码不正确，不能登陆");
+            }
             SysUser user = sysUserService.findUserByLoginName(username);
             if (user == null) {
-                AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.not.exists")));
-                throw new UserNotFoundException(username);
+                throw BusinessException.build("虚拟" + username + "不存在");
             }
             log.info("DebugMode用户{}登陆成功",username);
             return user;
@@ -57,20 +67,19 @@ public class LoginService {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("not.null")));
             throw new UserNotFoundException(username);
         }
-        // 密码如果不在指定范围内 错误
-        if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
-                || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
-            AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
-            throw new UserPasswordNotMatchException();
-        }
 
         // 用户名不在指定范围内 错误
         if (username.length() < UserConstants.USERNAME_MIN_LENGTH
                 || username.length() > UserConstants.USERNAME_MAX_LENGTH) {
             AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
-            throw new UserPasswordNotMatchException();
+            throw new UserPasswordNotMatchException("用户名长度不正确，长度应该在"+ UserConstants.USERNAME_MIN_LENGTH +"和" + UserConstants.USERNAME_MAX_LENGTH + "之间",username);
         }
-
+        // 密码如果不在指定范围内 错误
+        if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
+                || password.length() > UserConstants.PASSWORD_MAX_LENGTH) {
+            AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, SystemConstants.LOGIN_FAIL, MessageUtil.message("user.password.not.match")));
+            throw new UserPasswordNotMatchException("密码长度不正确，长度应该在"+ UserConstants.PASSWORD_MIN_LENGTH +"和" + UserConstants.PASSWORD_MAX_LENGTH + "之间",username);
+        }
         // 查询用户信息
         SysUser user = sysUserService.findUserByLoginName(username);
 

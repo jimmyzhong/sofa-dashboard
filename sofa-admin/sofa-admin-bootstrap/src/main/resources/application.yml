@@ -94,15 +94,22 @@ xss:
 dashboard:
   version: 4.0.0
   salt: salt@defalut
-  debugMode: false
-  filepath: /shop/dashboard
+  debug:
+    mode: false
+    loginName: admin
+    password: password
+  password:
+    limit:
+      count: 3
+      time: 1
+  filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
   ali:
     oss:
-      enable: true
-      bucket: lpp-cn-pic
-      endpoint: oss-cn-hangzhou.aliyuncs.com
-      accessKey: LTAI4FtwBZR8p8RzSijUvFbs
-      accessSecret: 6xxnifu3vJGFo4brtpTPCKsolGPt0n
+      enable: false
+      bucket:
+      endpoint:
+      accessKey:
+      accessSecret:
   upload:
     filepath: ${dashboard.filepath}/upload/
     #filepath: /oss/upload
@@ -129,10 +136,12 @@ com:
 
 ---
 spring:
-  profiles: zz
+  profiles: home
+
   data:
     mongodb:
-      uri: mongodb://10.10.51.212:27017/training
+      uri: mongodb://10.10.51.212:27017/jobs
+
 com:
   alipay:
     sofa:

@@ -155,6 +155,31 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
 
     @Transactional
     @Override
+    public SysUser recordLoginFail(Long userId, long passwordErrorCount) throws BusinessException {
+        Assert.notNull(userId, "用户不能为空");
+        SysUser dbuser = userDao.findByUserId(userId);
+        if(dbuser != null) {
+            dbuser.setPasswordErrorCount(passwordErrorCount);
+            dbuser.setPasswordErrorTime(new Date());
+            dbuser = userDao.save(dbuser);
+        }
+        return dbuser;
+    }
+    @Transactional
+    @Override
+    public SysUser resetLoginFail(Long userId) throws BusinessException {
+        Assert.notNull(userId, "用户不能为空");
+        SysUser dbuser = userDao.findByUserId(userId);
+        if(dbuser != null && dbuser.getPasswordErrorTime() != null) {
+            dbuser.setPasswordErrorCount(0L);
+            dbuser.setPasswordErrorTime(null);
+            dbuser = userDao.save(dbuser);
+        }
+        return dbuser;
+    }
+
+    @Transactional
+    @Override
     public SysUser updateMyInfos(Long userId,String userName,String email,String phoneNumber,String sex) throws BusinessException {
         Assert.notNull(userId, "用户不能为空");
         SysUser dbuser = userDao.findByUserId(userId);

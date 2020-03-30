@@ -95,9 +95,20 @@ public class Global {
     }
 
     public static boolean isDebugMode() {
-        return StringUtils.equals(getConfig("dashboard.debugMode"), "true");
+        return StringUtils.equals(getConfig("dashboard.debug.mode"), "true");
     }
-
+    public static String getDebugLoginName() {
+        return StringUtils.trim(getConfig("dashboard.debug.loginName"));
+    }
+    public static String getDebugPassword() {
+        return StringUtils.trim(getConfig("dashboard.debug.password"));
+    }
+    public static long getPasswordLimitCount() {
+        return Long.valueOf(getConfig("dashboard.password.limit.count"));
+    }
+    public static long getPasswordLimitTime() {
+        return Long.valueOf(getConfig("dashboard.password.limit.time"));
+    }
 
     /**
      * 获取文件上传路径

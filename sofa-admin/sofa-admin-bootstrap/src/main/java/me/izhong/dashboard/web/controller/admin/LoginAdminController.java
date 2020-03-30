@@ -3,6 +3,7 @@ package me.izhong.dashboard.web.controller.admin;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
+import me.izhong.dashboard.common.expection.user.UserException;
 import me.izhong.dashboard.common.util.ServletUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -46,7 +47,11 @@ public class LoginAdminController {
             if (StringUtils.isNotEmpty(e.getMessage())) {
                 msg = e.getMessage();
             }
-            throw BusinessException.build(msg);
+            if(e.getCause() instanceof UserException) {
+                throw (UserException)e.getCause();
+            } else {
+                throw BusinessException.build(msg);
+            }
             //return msg;
         }
     }

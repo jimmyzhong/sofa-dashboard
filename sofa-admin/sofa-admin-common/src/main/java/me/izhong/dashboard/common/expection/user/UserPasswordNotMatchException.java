@@ -12,4 +12,8 @@ public class UserPasswordNotMatchException extends UserException {
     public UserPasswordNotMatchException(String message, String loginName) {
         super(KEY, message, loginName);
     }
+
+    public UserPasswordNotMatchException(String message) {
+        super(KEY, message);
+    }
 }

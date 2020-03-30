@@ -323,7 +323,7 @@ public class UserAdminController {
         user.setSalt(Global.getSalt());
         user.setPassword(passwordService.encryptPassword(user.getPassword(), user.getSalt()));
         //解锁账户
-        passwordService.unlock(dbUser.getUserName());
+        sysUserService.resetLoginFail(dbUser.getUserId());
 
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
@@ -371,11 +371,17 @@ public class UserAdminController {
         sysUserService.checkUserAllowed(user,"修改状态");
         SysUser u = sysUserService.findUser(user.getUserId());
         UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,u.getDeptId());
-        //解锁账户
-        passwordService.unlock(u.getUserName());
         u.setStatus(user.getStatus());
         sysUserService.saveUser(u);
         return 1;
+    }
+
+    @RequiresPermissions(PermissionConstants.User.UNLOCK)
+    @Log(title = "账户解锁", businessType = BusinessType.OTHER)
+    @PostMapping("/unlock")
+    @AjaxWrapper
+    public void unlock(Long userId) {
+        sysUserService.resetLoginFail(userId);
     }
 
 }

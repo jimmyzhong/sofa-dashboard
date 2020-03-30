@@ -70,12 +70,4 @@ public class SysLoginInfoController {
         return sysLoginInfoService.clearAll();
     }
 
-    @RequiresPermissions(PermissionConstants.LoginInfo.UNLOCK)
-    @Log(title = "账户解锁", businessType = BusinessType.OTHER)
-    @PostMapping("/unlock")
-    @AjaxWrapper
-    public void unlock(String loginName)
-    {
-        passwordService.unlock(loginName);
-    }
 }
