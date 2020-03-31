@@ -102,7 +102,25 @@ public class LotsService implements ILotsService {
 
 		Specification<Lots> sp = (r, q, cb) -> {
 			Predicate p = cb.equal(r.get("lotCategoryId"), query.getLotsCategoryId());
-			// TODO add condition
+			if (query.getStartTime() != null) {
+				p = cb.and(p, cb.greaterThanOrEqualTo(r.get("startTime"),
+						query.getStartTime().toLocalDate().atStartOfDay()));
+			}
+			if (query.getEndTime() != null) {
+				p = cb.and(p, cb.lessThan(r.get("startTime"), query.getEndTime()));
+			}
+			if (query.getIsVip() != null && query.getIsVip()) {
+				p = cb.and(p, cb.isNotNull(r.get("vipLevel")));
+			}
+			if (query.getRequiredAuctionMargin() != null) {
+				if (query.getRequiredAuctionMargin() == 0) {
+					p = cb.and(p, cb.lessThanOrEqualTo(r.get("deposit"), BigDecimal.valueOf(0.001)));
+				} else {
+					p = cb.and(p, cb.lessThanOrEqualTo(r.get("deposit"),
+							BigDecimal.valueOf(query.getRequiredAuctionMargin())));
+				}
+
+			}
 			return p;
 		};
 		Page<Lots> page = lotsDao.findAll(sp, pageableReq);

@@ -107,4 +107,6 @@ public class Lots {
     private LocalDateTime updateTime;
     @Column(name = "FREQUENCY")
     private Integer auctionFrequency; // 出价频率
+    @Column(name = "VIP_LEVEL")
+    private Integer vipLevel; // vip等级
 }
