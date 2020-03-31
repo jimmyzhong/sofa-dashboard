@@ -50,6 +50,10 @@
 					<input class="form-control" type="text" name="deposit" id="deposit" required th:field="*{deposit}">
 				</div>
 			</div>
+<!--			<p th:text="${lots.startTime}"></p>-->
+<!--			<p th:text="${lots.endTime}"></p>-->
+<!--			<p th:text="${lots.updateTime}"></p>-->
+			<p></p>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">拍卖开始时间：</label>
 				<div class="col-sm-8">
@@ -151,10 +155,12 @@
 		$(function () {
 			$("#startTime").datetimepicker({
 				format: "yyyy-mm-dd hh:ii:ss",
+				initialDate:$('#startTime').val(),
 				autoclose: true
 			});
 			$("#endTime").datetimepicker({
 				format: "yyyy-mm-dd hh:ii:ss",
+				initialDate:$('#endTime').val(),
 				autoclose: true
 			});
 			$('.summernote').summernote({
