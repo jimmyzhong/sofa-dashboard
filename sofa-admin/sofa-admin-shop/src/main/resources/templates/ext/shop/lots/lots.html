@@ -131,8 +131,21 @@
                     }
                 },
                 {
-                    field: '',
-                    title: '拍卖状态'
+                    field: 'startTime',
+                    title: '拍卖状态',
+                    formatter: function (value, row, index) {
+                        // 预展中，拍卖中，已结束
+                        var startTem=new Date(row.startTime).getTime();
+                        var endTem=new Date(row.endTime).getTime();
+                        var currentTem=new Date().getTime();
+                        if(currentTem<startTem){
+                            return "预展中"
+                        }else if(currentTem<endTem){
+                            return "拍卖中"
+                        }else{
+                            return "已结束"
+                        }
+                    }
                 },
                 {
                     title: '操作',
