@@ -21,7 +21,7 @@ public class ShopLots implements Serializable {
 	private String name;
 	private String description;
 	private Long goodsId;
-	private Long lotCategoryId;
+	private Integer lotCategoryId;
 	private String content;
 	private BigDecimal startPrice;
 	private BigDecimal addPrice;
@@ -49,6 +49,7 @@ public class ShopLots implements Serializable {
 	private BigDecimal platformAmount;
 	private BigDecimal revenueAmount;
 	private BigDecimal finalPrice;
+    private Integer maxMemberCount;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
 }
