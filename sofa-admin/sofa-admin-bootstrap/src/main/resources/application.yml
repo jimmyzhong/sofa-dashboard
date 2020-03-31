@@ -105,11 +105,11 @@ dashboard:
   filepath: ${BASE_DIR:/Users/jimmy/tmp}/data/job
   ali:
     oss:
-      enable: false
-      bucket:
-      endpoint:
-      accessKey:
-      accessSecret:
+      enable: true
+      bucket: lpp-cn-pic
+      endpoint: oss-cn-hangzhou.aliyuncs.com
+      accessKey: LTAI4FtwBZR8p8RzSijUvFbs
+      accessSecret: 6xxnifu3vJGFo4brtpTPCKsolGPt0n
   upload:
     filepath: ${dashboard.filepath}/upload/
     #filepath: /oss/upload
