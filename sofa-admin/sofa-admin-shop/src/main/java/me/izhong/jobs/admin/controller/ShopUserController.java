@@ -44,6 +44,7 @@ public class ShopUserController {
 	}
 
 	@GetMapping("/edit/{userId}")
+	@RequiresPermissions(ShopPermissions.User.EDIT)
 	public String edit(@PathVariable("userId") Long userId, Model model) {
 		if (userId == null) {
 			throw BusinessException.build("userId不能为空");
@@ -56,7 +57,7 @@ public class ShopUserController {
 		return prefix + "/edit";
 	}
 
-	@Log(title = "APP用户", businessType = BusinessType.UPDATE)
+	@Log(title = "会员管理", businessType = BusinessType.UPDATE)
 	@RequiresPermissions(ShopPermissions.User.EDIT)
 	@PostMapping("/edit")
 	@AjaxWrapper
@@ -81,6 +82,7 @@ public class ShopUserController {
 
 	//冻结用户
 	@RequiresPermissions(ShopPermissions.User.EDIT)
+	@Log(title = "会员管理", businessType = BusinessType.UPDATE)
 	@PostMapping("/disable/{userId}")
 	@AjaxWrapper
 	public void disable(@PathVariable("userId") Long userId) {
@@ -89,6 +91,7 @@ public class ShopUserController {
 
 	//解结用户
 	@RequiresPermissions(ShopPermissions.User.EDIT)
+	@Log(title = "会员管理", businessType = BusinessType.UPDATE)
 	@PostMapping("/enable/{userId}")
 	@AjaxWrapper
 	public void enable(@PathVariable("userId") Long userId) {
@@ -96,6 +99,7 @@ public class ShopUserController {
 	}
 
 	@GetMapping("/detail/{userId}")
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	public String detail(@PathVariable("userId") Long userId, Model model) {
 		ShopUser user = shopServiceReference.userService.find(userId);
 		if (user == null) {
@@ -110,7 +114,7 @@ public class ShopUserController {
 		return prefix + "/detail";
 	}
 
-	@Log(title = "APP用户", businessType = BusinessType.DELETE)
+	@Log(title = "会员管理", businessType = BusinessType.DELETE)
 	@RequiresPermissions(ShopPermissions.User.REMOVE)
 	@RequestMapping("/remove")
 	@AjaxWrapper
@@ -122,12 +126,14 @@ public class ShopUserController {
 	}
 
 	@GetMapping("/scoreDetail/{userId}")
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	public String scoreDetail(@PathVariable("userId") Long userId, Model model) {
 		model.addAttribute("userId", userId);
 		return prefix + "/scoreDetail";
 	}
 
 	@GetMapping("/balanceDetail/{userId}")
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	public String balanceDetail(@PathVariable("userId") Long userId, Model model) {
 		model.addAttribute("userId", userId);
 		ShopUser user = shopServiceReference.userService.find(userId);
@@ -136,6 +142,7 @@ public class ShopUserController {
 	}
 
 	@GetMapping("/certification/{userId}")
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	public String certification(@PathVariable("userId") Long userId, Model model) {
 		ShopUser user = shopServiceReference.userService.find(userId);
 		if (user == null) {
@@ -146,6 +153,7 @@ public class ShopUserController {
 	}
 
 	@GetMapping("/orderDetail/{userId}")
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	public String orderDetail(@PathVariable("userId") Long userId, Model model) {
 		model.addAttribute("userId", userId);
 		return prefix + "/orderDetail";
@@ -153,19 +161,22 @@ public class ShopUserController {
 
 	@RequestMapping("/orderList")
 	@AjaxWrapper
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	public PageModel<ShopOrder> pageList(HttpServletRequest request, @RequestParam(value = "userId") Long userId, OrderQueryParam param) {
 		PageModel<ShopOrder> page = shopServiceReference.orderService.pageList(PageRequestUtil.fromRequest(request),userId, param);
 		return page;
 	}
 	//下级用户
 	@RequestMapping("/inviteList")
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	@AjaxWrapper
 	public PageModel<ShopUser> inviteList(HttpServletRequest request, @RequestParam(value = "userId") Long userId, ShopUser shopUser) {
 		shopUser.setInviteUserId(userId);
 		PageModel<ShopUser> page = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request), shopUser);
 		return page;
 	}
-//	下下级用户
+	//	下下级用户
+	@RequiresPermissions(ShopPermissions.User.VIEW)
 	@RequestMapping("/invite2List")
 	@AjaxWrapper
 	public PageModel<ShopUser> invite2List(HttpServletRequest request, @RequestParam(value = "userId") Long userId, ShopUser shopUser) {

@@ -55,12 +55,12 @@
 
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
-        $.modal.openTab("用户详情", url);
+        $.modal.openView("用户详情", url);
     }
 
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;
-        $.modal.openTab("用户编辑", url);
+        $.modal.open("用户编辑", url);
     }
 
     function integraldetail(id) {
