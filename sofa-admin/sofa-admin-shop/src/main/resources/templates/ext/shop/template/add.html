@@ -142,35 +142,19 @@
 				$.operate.saveTab(prefix + "/add",data);
 			}
 		}
-	    function uploadImg(){
+		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#productPic")[0].files[0]);
-			$.modal.loading("图片上传中");
-			$.ajax({
-				url: ctx + "ext/shop/oss/upload",
-				data: formdata,
-				type: "post",
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					$("#productPicInput").val(result.data.pictureUrl)
-					$("#productPic_img").attr("src",result.data.pictureUrl)
-				},
-				error: function(error) {
-					$.modal.closeLoading();
-					$.modal.alertWarning("图片上传失败。");
-				}
+			SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
+				$("#productPicInput").val(result.data.pictureUrl)
+				$("#productPic_img").attr("src",result.data.pictureUrl)
 			})
 		}
 		function fetchGoodsCategory() {
-			$.ajax({
-				url: ctx + "ext/shop/category/queryAll",
-				type: "get",
-				success: function (result){
-					_categoryAll=result.categoryList;
-					for(var i=0;i<_categoryAll.length;i++){
-						$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
-					}
+			SHOP_COMMON.ajax.get(ctx + "ext/shop/category/queryAll","",function (result) {
+				_categoryAll=result.data.categoryList;
+				for(var i=0;i<_categoryAll.length;i++){
+					$("#productCategoryIds").append('<option value="'+_categoryAll[i].value+'">'+_categoryAll[i].label+'</option>')
 				}
 			})
 		}
@@ -200,22 +184,17 @@
 		function upAlbumPics(){
 			var formdata = new FormData();
 			formdata.append("file", $("#uploadAlbumPics")[0].files[0]);
-			$.modal.loading("图片上传中");
-			$.ajax({
-				url: ctx + "ext/shop/oss/upload",
-				data: formdata,
-				type: "post",
-				processData: false,
-				contentType: false,
-				success: function (result) {
-					albumPics.push(result.data.pictureUrl)
-					$("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
-				},
-				error: function(error) {
-					$.modal.closeLoading();
-					$.modal.alertWarning("图片上传失败。");
-				}
+			SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
+				albumPics.push(result.data.pictureUrl)
+				$("#upAlbumPics_content").append("<div class='pic'><img src='"+result.data.pictureUrl+"'><p style='text-align: center'><a onclick=delAlbumPics(this,'"+result.data.pictureUrl+"')>删除</a></p></div>")
 			})
+		}
+		function delAlbumPics(obj,str) {
+			$(obj).parents("div.pic").remove();
+			var index = albumPics.indexOf(str);
+			if (index > -1) {
+				albumPics.splice(index, 1);
+			}
 		}
 		// 上传文件
 		function sendFile(file, obj) {
