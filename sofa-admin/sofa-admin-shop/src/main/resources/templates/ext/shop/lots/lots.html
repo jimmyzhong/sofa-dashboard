@@ -103,27 +103,10 @@
                     field: 'addPrice',
                     title: '加价幅度',
                     sortable: true
-                }, {
-                    field: 'salePrice',
-                    title: '销售价',
-                    sortable: true
-                },
-                {
-                    field: 'nowPrice',
-                    title: '现价',
-                    sortable: true
                 },
                 {
                     field: 'deposit',
                     title: '保证金',
-                    sortable: true
-                },{
-                    field: 'platformRatio',
-                    title: '扣佣比例',
-                    sortable: true
-                },{
-                    field: 'platformAmount',
-                    title: '平台佣金',
                     sortable: true
                 },
                 {
@@ -137,13 +120,19 @@
                     sortable: true
                 },
                 {
-                    field: 'userLevel',
-                    title: '拍卖的级别',
-                    sortable: true
-                },
-                {
                     field: 'updateTime',
                     title: '更新时间'
+                },
+                {
+                    field: 'applyType',
+                    title: '拍卖类型',
+                    formatter: function (value, row, index) {
+                        return {1: "二次拍卖", 2: "平台转拍"}[value]
+                    }
+                },
+                {
+                    field: '',
+                    title: '拍卖状态'
                 },
                 {
                     title: '操作',

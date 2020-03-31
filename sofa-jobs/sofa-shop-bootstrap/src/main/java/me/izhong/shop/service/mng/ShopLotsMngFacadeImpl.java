@@ -50,9 +50,22 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
 		Lots lots = lotsService.findById(shopLots.getId());
 		lots.setName(shopLots.getName());
 		lots.setDescription(shopLots.getDescription());
+		lots.setGoodsId(shopLots.getGoodsId());
+		lots.setLotCategoryId(shopLots.getLotCategoryId());
 		lots.setStartPrice(shopLots.getStartPrice());
 		lots.setAddPrice(shopLots.getAddPrice());
+		lots.setDeposit(shopLots.getDeposit());
+		lots.setStartTime(shopLots.getStartTime());
+		lots.setEndTime(shopLots.getEndTime());
+		lots.setUserLevel(shopLots.getUserLevel());
+		lots.setSalePrice(shopLots.getSalePrice());
+		lots.setNowPrice(shopLots.getNowPrice());
 		lots.setIsRepublish(1);
+		lots.setPlatformRatio(shopLots.getPlatformRatio());
+		lots.setPlatformAmount(shopLots.getPlatformAmount());
+		lots.setRevenueAmount(shopLots.getRevenueAmount());
+		lots.setFinalPrice(shopLots.getFinalPrice());
+		lots.setMaxMemberCount(shopLots.getMaxMemberCount());
 		lots.setUpdateTime(LocalDateTime.now());
 		lotsService.saveOrUpdate(lots);
 	}
