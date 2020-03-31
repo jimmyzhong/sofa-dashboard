@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择分区')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var prefix = ctx + "ext/shop/lotsCategory";
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            modalName: "分区管理",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: '专区id',
+                    sortable: true
+                },
+                {
+                    field: 'name',
+                    title: '标题',
+                    sortable: true
+                },
+                {
+                    field: 'logo',
+                    title: '封面图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value,300,300);
+                    }
+                },
+                {
+                    field: 'password',
+                    title: '专区密码'
+                },{
+                    field: 'admin',
+                    title: '管理员',
+                    sortable: true
+                }, {
+                    field: 'updateTime',
+                    title: '更新时间',
+                    sortable: true
+                }]
+        };
+        $.table.init(options);
+    });
+
+    /* 添加用户-选择用户-提交 */
+    function submitHandler() {
+        var rows = $.table.selectFirstColumns();
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.close();
+        // // 父页面的方法
+        // // parent.selectUsers();
+        // // 父页面的变量
+        parent.$('#goodsId').val(rows.join());
+        // alert(rows.join());
+    }
+</script>
+</body>
+</html>

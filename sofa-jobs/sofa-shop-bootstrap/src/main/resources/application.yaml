@@ -144,3 +144,6 @@ alipay:
   certifiedAppPubKeyPath: /home/server/shop/crt/appCertPublicKey_2015071600173316.crt
   certifiedAliPubKeyPath: /home/server/shop/crt/alipayCertPublicKey_RSA2.crt
   certifiedAliRootKeyPath: /home/server/shop/crt/alipayRootCert.crt
+#  certifiedAppPubKeyPath: ./sofa-jobs/sofa-shop-bootstrap/target/classes/crt/appCertPublicKey_2015071600173316.crt
+#  certifiedAliPubKeyPath: ./sofa-jobs/sofa-shop-bootstrap/target/classes/crt/alipayCertPublicKey_RSA2.crt
+#  certifiedAliRootKeyPath: ./sofa-jobs/sofa-shop-bootstrap/target/classes/crt/alipayRootCert.crt
