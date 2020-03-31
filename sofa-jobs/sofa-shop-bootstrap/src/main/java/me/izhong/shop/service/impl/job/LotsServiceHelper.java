@@ -95,7 +95,7 @@ public class LotsServiceHelper {
         if (!info.getIsOver()) {
             log.warn("拍卖没有结束" + bid.getBidId());
         }
-        service.saveLots(bid.getBidId(), info);
+        service.saveLots(Long.valueOf(bid.getBidId()), info);
     }
 
     private void scheduleBidStart(ScheduledExecutorService scheduler, LocalDateTime startTime, BidUploadInfo bid) {
@@ -113,7 +113,7 @@ public class LotsServiceHelper {
 
     private BidUploadInfo convert2Bid(Lots lots) {
         BidUploadInfo info = new BidUploadInfo();
-        info.setBidId(lots.getId());
+        info.setBidId(lots.getId() + "");
         info.setEndPrice(lots.getWarningPrice().multiply(BigDecimal.valueOf(100)).longValue());
         info.setEndTime(DateUtil.convertToDate(lots.getEndTime()));
         info.setStartPrice(lots.getStartPrice().multiply(BigDecimal.valueOf(100)).longValue());

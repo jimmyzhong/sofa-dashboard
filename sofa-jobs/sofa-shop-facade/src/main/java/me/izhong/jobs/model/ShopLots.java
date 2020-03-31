@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,7 +26,9 @@ public class ShopLots implements Serializable {
 	private BigDecimal startPrice;
 	private BigDecimal addPrice;
 	private BigDecimal deposit;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime startTime;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
 	private LocalDateTime endTime;
 	private Integer userLevel;
 	private String password;

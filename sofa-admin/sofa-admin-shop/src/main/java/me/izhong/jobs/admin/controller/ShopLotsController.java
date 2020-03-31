@@ -70,10 +70,6 @@ public class ShopLotsController {
 		model.addAttribute("lots", shopLots);
 		return prefix + "/edit";
     }
-    @GetMapping("/goods")
-    public String goods( ModelMap model) {
-		return prefix + "/goods";
-    }
 
 	@RequiresPermissions(ShopPermissions.Lots.EDIT)
     @PostMapping("/edit")
