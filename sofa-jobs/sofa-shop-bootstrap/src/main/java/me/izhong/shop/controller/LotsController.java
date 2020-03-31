@@ -19,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Controller
@@ -51,6 +53,13 @@ public class LotsController {
     @ApiOperation(value="拍卖区列表", httpMethod = "POST")
     public PageModel<LotsCategory> listCats(@RequestBody PageQueryParamDTO query) {
         return lotsService.listCategory(query);
+    }
+
+    @GetMapping(value = "/cats/public")
+    @ResponseBody
+    @ApiOperation(value="公共拍卖区列", httpMethod = "GET")
+    public Map publicCat() {
+        return  new HashMap(){{put("id", "1000");}};
     }
 
     @PostMapping(value = "/listByCategory")

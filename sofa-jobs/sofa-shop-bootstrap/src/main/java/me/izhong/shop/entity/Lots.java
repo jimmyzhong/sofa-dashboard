@@ -23,6 +23,8 @@ public class Lots {
 	@Id
     @GeneratedValue
     private Long id;
+    @Column(name = "LOTS_NO")
+    private String lotsNo; // 拍品编号
     @Column(name = "NAME")
 	private String name;
     @Column(name = "DESCRIPTION")
@@ -107,6 +109,4 @@ public class Lots {
     private LocalDateTime updateTime;
     @Column(name = "FREQUENCY")
     private Integer auctionFrequency; // 出价频率
-    @Column(name = "VIP_LEVEL")
-    private Integer vipLevel; // vip等级
 }

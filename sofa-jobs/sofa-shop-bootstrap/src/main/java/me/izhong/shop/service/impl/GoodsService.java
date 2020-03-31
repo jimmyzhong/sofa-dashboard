@@ -214,7 +214,7 @@ public class GoodsService implements IGoodsService {
 			User createdByUser = userService.findById(goods.getCreatedBy());
 			if (createdByUser != null) {
 				dto.setAvatarOfCreatedBy(createdByUser.getAvatar());
-				dto.setNameOfCreatedBy(createdByUser.getName());
+				dto.setNameOfCreatedBy(createdByUser.getNickName());
 			}
 		}
 
