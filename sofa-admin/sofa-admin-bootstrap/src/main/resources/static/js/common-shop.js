@@ -1,6 +1,6 @@
 $(function () {
     // autocomplete="off"
-    $("input").attr("autocomplete","off");
+    $("input").attr("autocomplete", "off");
 })
 
 var SHOP_COMMON = {
@@ -86,7 +86,7 @@ var SHOP_COMMON = {
             })
         },
         post: function (url, data, sucBack) {
-            $.modal.loading("数据获取中");
+            $.modal.loading("请求中");
             $.ajax({
                 url: url,
                 type: "post",
@@ -104,6 +104,33 @@ var SHOP_COMMON = {
                 error: function (err) {
                     $.modal.closeLoading();
                     $.modal.alertError("数据请求失败" + err.status);
+                }
+            })
+        },
+        form: function (url, data, sucBack) {
+            var sendData = {}
+            for (var i = 0; i < data.length; i++) {
+                sendData[data[i].name] = data[i].value;
+            }
+            console.log(JSON.stringify(sendData))
+            $.modal.loading("数据提交中");
+            $.ajax({
+                cache: true,
+                url: url,
+                type: "POST",
+                data: sendData,
+                async: false,
+                success: function (result) {
+                    $.modal.closeLoading();
+                    if (result.code == web_status.SUCCESS) {
+                        sucBack(result)
+                    } else {
+                        $.modal.alertError(result.msg);
+                    }
+                },
+                error: function (err) {
+                    $.modal.closeLoading();
+                    $.modal.alertError("系统错误");
                 }
             })
         },

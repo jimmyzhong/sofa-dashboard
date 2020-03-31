@@ -45,3 +45,7 @@
 input[type=radio]{
     margin-right: 7px;
 }
+.input-group label.error {
+    z-index: 99;
+    right: 84px;
+}
