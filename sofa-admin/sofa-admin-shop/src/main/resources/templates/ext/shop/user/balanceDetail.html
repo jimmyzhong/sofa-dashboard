@@ -32,7 +32,6 @@
             <table id="bootstrap-table" data-mobile-responsive="true"></table>
         </div>
         <input id="userId" name="userId" th:value="${userId}" type="hidden">
-
     </div>
 </div>
 <th:block th:include="include :: footer"/>
@@ -106,18 +105,6 @@
                     title: '创建时间',
                     sortable: true
                 }
-                // {
-                // 	title: '操作',
-                // 	width: 400,
-                // 	align: 'center',
-                // 	formatter: function (value, row, index) {
-                // 		var actions = [];
-                // 		actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
-                // 		actions.push('<a class="btn btn-warning btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a> ');
-                // 		actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
-                // 		return actions.join('');
-                // 	}
-                // }
             ]
         };
         $.table.init(options);
