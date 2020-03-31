@@ -23,6 +23,8 @@ public class Lots {
 	@Id
     @GeneratedValue
     private Long id;
+    @Column(name = "LOTS_NO")
+    private String lotsNo; // 拍品编号
     @Column(name = "NAME")
 	private String name;
     @Column(name = "DESCRIPTION")

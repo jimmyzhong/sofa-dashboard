@@ -11,6 +11,7 @@ import me.izhong.shop.dao.LotsItemDao;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,10 +40,20 @@ public class LotsService implements ILotsService {
 	private LotsItemDao lotsItemDao;
 	@Autowired
 	private LotsCategoryDao lotsCategoryDao;
+	@Autowired
+	private IDGeneratorService idGeneratorService;
 
 	@Override
 	@Transactional
 	public void saveOrUpdate(Lots lots) {
+		if (StringUtils.isEmpty(lots.getLotsNo())) {
+			String catId = lots.getLotCategoryId().toString();
+			if (catId.length() < 4) {
+				catId = StringUtils.leftPad(catId, 4, '0'); // make sure at least
+			}
+			String lotsNo = idGeneratorService.nextID("LOTS" , catId);
+			lots.setLotsNo(lotsNo);
+		}
 		lotsDao.save(lots);
 	}
 
@@ -102,7 +113,25 @@ public class LotsService implements ILotsService {
 
 		Specification<Lots> sp = (r, q, cb) -> {
 			Predicate p = cb.equal(r.get("lotCategoryId"), query.getLotsCategoryId());
-			// TODO add condition
+			if (query.getStartTime() != null) {
+				p = cb.and(p, cb.greaterThanOrEqualTo(r.get("startTime"),
+						query.getStartTime()));
+			}
+			if (query.getEndTime() != null) {
+				p = cb.and(p, cb.lessThan(r.get("startTime"), query.getEndTime()));
+			}
+			if (query.getIsVip() != null && query.getIsVip()) {
+				p = cb.and(p, cb.gt(r.get("userLevel"), 0));
+			}
+			if (query.getRequiredAuctionMargin() != null) {
+				if (query.getRequiredAuctionMargin() == 0) {
+					p = cb.and(p, cb.lessThanOrEqualTo(r.get("deposit"), BigDecimal.valueOf(0.001)));
+				} else {
+					p = cb.and(p, cb.lessThanOrEqualTo(r.get("deposit"),
+							BigDecimal.valueOf(query.getRequiredAuctionMargin())));
+				}
+
+			}
 			return p;
 		};
 		Page<Lots> page = lotsDao.findAll(sp, pageableReq);

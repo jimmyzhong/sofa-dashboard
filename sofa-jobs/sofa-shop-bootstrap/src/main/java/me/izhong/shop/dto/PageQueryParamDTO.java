@@ -26,6 +26,7 @@ public class PageQueryParamDTO extends PageRequest {
     // auction
     private Integer lotsCategoryId;
     private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Boolean isPublic;
     private Boolean isVip;
     private Long requiredAuctionMargin;
