@@ -104,7 +104,15 @@ public class ShopLotsController {
     		throw BusinessException.build("删除失败");
     	}
     }
+	@GetMapping("/goods")
+	public String goods( ModelMap model) {
+		return prefix + "/goods";
+	}
 
+	@GetMapping("/category")
+	public String category( ModelMap model) {
+		return prefix + "/category";
+	}
     /**
      * 
      * @param field
