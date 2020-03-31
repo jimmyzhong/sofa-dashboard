@@ -68,6 +68,7 @@ public class ShopUserController {
 		}
 		ShopUser newUser = new ShopUser();
 		newUser.setId(shopUser.getId());
+		newUser.setPhone(shopUser.getPhone());
 		if (StringUtils.isNotBlank(shopUser.getLoginName())) {
 			newUser.setLoginName(shopUser.getLoginName());
 		}

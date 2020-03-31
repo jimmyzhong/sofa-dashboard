@@ -33,8 +33,7 @@
 		function submitHandler() {
 	        if ($.validate.form()) {
 				var data = $("#form-shop-user-edit").serializeArray();
-				console.log("submit user==>",data)
-	        	$.operate.saveTab(prefix + "/edit", data);
+				$.operate.save(prefix + "/edit", data);
 	        }
 	    }
 	</script>
