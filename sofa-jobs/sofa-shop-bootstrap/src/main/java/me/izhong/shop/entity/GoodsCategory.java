@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 @Entity
 @Table(name = "PRODUCT_CATEGORY")
-public class GoodsCategory {
+public class GoodsCategory extends EditableEntity{
 
 	@Id
     @GeneratedValue
