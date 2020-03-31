@@ -79,7 +79,7 @@ public class DemoOperateController {
      * 查询数据
      */
     @PostMapping("/list")
-    @ResponseBody
+    @AjaxWrapper
     public PageModel list(HttpServletRequest request, UserOperateModel userModel) {
         PageModel rspData = new PageModel();
         List<UserOperateModel> userList = new ArrayList<UserOperateModel>(users.values());
