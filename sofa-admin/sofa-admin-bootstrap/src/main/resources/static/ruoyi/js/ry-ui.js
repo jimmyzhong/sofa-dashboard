@@ -759,71 +759,81 @@ var table = {
                 });
             },
             // 弹出层指定宽度
-            open: function (title, url, width, height, callback) {
-                //如果是移动端，就使用自适应大小弹窗
-                if ($.common.isMobile()) {
-                    width = 'auto';
-                    height = 'auto';
-                }
-                if ($.common.isEmpty(title)) {
-                    title = false;
-                }
-                if ($.common.isEmpty(url)) {
-                    url = "/404.html";
-                }
-                if ($.common.isEmpty(width)) {
-                    width = ($(window).width() - 100);
-                }
-                if(!$.common.endWith(width,'px')) {
-                    width = width + 'px'
-                }
-                if ($.common.isEmpty(height)) {
-                    height = ($(window).height() - 50);
-                }
-                if(!$.common.endWith(height,'px')) {
-                    height = height + 'px'
-                }
-                if ($.common.isEmpty(callback)) {
-                    callback = function(index, layero) {
-                        var iframeWin = layero.find('iframe')[0];
-                        iframeWin.contentWindow.submitHandler(index, layero);
-                    }
-                }
-                layer.open({
+            openViewLarge: function (title, url) {
+                $.modal.openOptionsSubmitHandle({
                     type: 2,
-                    area: [width, height],
-                    fix: false,
-                    //不固定
-                    maxmin: true,
-                    shade: 0.3,
+                    width: $(window).width() - 100,
                     title: title,
-                    content: url,
-                    btn: ['确定', '关闭'],
-                    // 弹层外区域关闭
-                    shadeClose: true,
-                    yes: callback,
-                    cancel: function (index) {
-                        return true;
+                    url: url,
+                    btn: ['<i class="fa fa-close"></i> 关闭'],
+                    yes: function (index, layero) {
+                        layer.close(index);
                     }
                 });
+            },
+            openView: function (title, url) {
+                $.modal.openOptionsSubmitHandle({
+                    type: 2,
+                    title: title,
+                    url: url,
+                    btn: ['<i class="fa fa-close"></i> 关闭'],
+                    yes: function (index, layero) {
+                        layer.close(index);
+                    }
+                });
+            },
+            openLarge: function (title, url, callback) {
+                $.modal.openOptionsSubmitHandle({
+                    type: 2,
+                    width: $(window).width() - 100,
+                    title: title,
+                    url: url,
+                    yes: callback
+                });
+            },
+            // 弹出层指定宽度
+            open: function (title, url, width, height, callback) {
+                $.modal.openOptionsSubmitHandle({
+                    type: 2,
+                    title: title,
+                    width: width,
+                    height: height,
+                    url: url,
+                    yes: callback
+                });
+            },
+            openOptionsSubmitHandle: function (options) {
+                if ($.common.isEmpty(options.callback)) {
+                    options.callback = function(index, layero) {
+                        var iframeWin = layero.find('iframe')[0];
+                        if(iframeWin.contentWindow.submitHandler != null)
+                            iframeWin.contentWindow.submitHandler(index, layero);
+                    }
+                }
+                $.modal.openOptions(options);
             },
             // 弹出层指定参数选项
             openOptions: function (options) {
                 var _url = $.common.isEmpty(options.url) ? "/404.html" : options.url;
                 var _title = $.common.isEmpty(options.title) ? "系统窗口" : options.title;
-                var _width = $.common.isEmpty(options.width) ? "800" : options.width;
+                var _width = $.common.isEmpty(options.width) ? ("80%"): options.width;
                 var _height = $.common.isEmpty(options.height) ? ($(window).height() - 50) : options.height;
                 var _btn = ['<i class="fa fa-check"></i> 确认', '<i class="fa fa-close"></i> 关闭'];
                 if ($.common.isEmpty(options.yes)) {
                     options.yes = function (index, layero) {
-                        options.callBack(index, layero);
+                        if(options.callback != null)
+                            options.callback(index, layero);
                     }
                 }
-                if(!$.common.endWith(_width,'px')) {
+                if($.common.isIntNum(_width)) {
                     _width = _width + 'px'
                 }
-                if(!$.common.endWith(_height,'px')) {
+                if($.common.isIntNum(_height)) {
                     _height = _height + 'px'
+                }
+                if ($.common.isMobile()) {
+                    _width = 'auto';
+                    _height = 'auto';
                 }
                 layer.open({
                     type: 2,
@@ -843,27 +853,15 @@ var table = {
                 });
             },
             // 弹出层全屏
-            openFull: function (title, url, width, height) {
-                //如果是移动端，就使用自适应大小弹窗
-                if ($.common.isMobile()) {
-                    width = 'auto';
-                    height = 'auto';
-                }
+            openFull: function (title, url) {
                 if ($.common.isEmpty(title)) {
                     title = false;
                 }
                 if ($.common.isEmpty(url)) {
                     url = "/404.html";
                 }
-                if ($.common.isEmpty(width)) {
-                    width = 800;
-                }
-                if ($.common.isEmpty(height)) {
-                    height = ($(window).height() - 50);
-                }
                 var index = layer.open({
                     type: 2,
-                    area: [width + 'px', height + 'px'],
                     fix: false,
                     //不固定
                     maxmin: true,
@@ -983,28 +981,13 @@ var table = {
                 $.operate.submit(url, "get", "json", "", callback);
             },
             // 详细信息
-            detail: function(id, width, height) {
+            detail: function(id) {
                 table.set();
-                var _url = $.operate.detailUrl(id);
-                var _width = $.common.isEmpty(width) ? "800" : width;
-                var _height = $.common.isEmpty(height) ? ($(window).height() - 50) : height;
-                //如果是移动端，就使用自适应大小弹窗
-                if ($.common.isMobile()) {
-                    _width = 'auto';
-                    _height = 'auto';
-                }
-                var options = {
-                    title: table.options.modalName + "详细",
-                    width: _width,
-                    height: _height,
-                    url: _url,
-                    skin: 'layui-layer-gray',
-                    btn: ['关闭'],
-                    yes: function (index, layero) {
-                        layer.close(index);
-                    }
-                };
-                $.modal.openOptions(options);
+                $.modal.openView(table.options.modalName + "详细", $.operate.detailUrl(id));
+            },
+            detailLarge: function(id) {
+                table.set();
+                $.modal.openViewLarge(table.options.modalName + "详细", $.operate.detailUrl(id));
             },
             // 详细访问地址
             detailUrl: function (id) {
@@ -1093,6 +1076,10 @@ var table = {
                 table.set();
                 $.modal.open("添加" + table.options.modalName, $.operate.addUrl(id));
             },
+            addLarge: function (id) {
+                table.set();
+                $.modal.openLarge("添加" + table.options.modalName, $.operate.addUrl(id));
+            },
             // 添加信息，以tab页展现
             addTab: function (id) {
                 table.set();
@@ -1110,18 +1097,35 @@ var table = {
                 return url;
             },
             // 修改信息
-            edit: function(id) {
+            edit: function(id,title) {
                 table.set();
-                if($.common.isEmpty(id) && table.options.type == table_type.bootstrapTreeTable) {
-                    var row = $("#" + table.options.id).bootstrapTreeTable('getSelections')[0];
-                    if ($.common.isEmpty(row)) {
-                        $.modal.alertWarning("请至少选择一条记录");
-                        return;
-                    }
-                    var url = table.options.updateUrl.replace("{id}", row[table.options.uniqueId]);
-                    $.modal.open("修改" + table.options.modalName, url);
-                } else {
-                    $.modal.open("修改" + table.options.modalName, $.operate.editUrl(id));
+                if($.common.isEmpty(title)) {
+                    title = "修改" + table.options.modalName;
+                }
+                var eUrl = $.operate.editUrl(id);
+                if($.common.isNotEmpty(eUrl)) {
+                    $.modal.open(title, eUrl);
+                }
+            },
+            editLarge: function(id, title) {
+                table.set();
+                if($.common.isEmpty(title)) {
+                    title = "修改" + table.options.modalName;
+                }
+                var eUrl = $.operate.editUrl(id);
+                if($.common.isNotEmpty(eUrl)) {
+                    $.modal.openLarge(title, eUrl);
+                }
+            },
+            // 修改信息 全屏
+            editFull: function(id,title) {
+                table.set();
+                if($.common.isEmpty(title)) {
+                    title = "修改" + table.options.modalName;
+                }
+                var eUrl = $.operate.editUrl(id);
+                if($.common.isNotEmpty(eUrl)) {
+                    $.modal.openFull(title, eUrl);
                 }
             },
             // 修改信息，以tab页展现
@@ -1129,14 +1133,13 @@ var table = {
                 table.set();
                 $.modal.openTab("修改" + table.options.modalName, $.operate.editUrl(id));
             },
-            // 修改信息 全屏
-            editFull: function(id) {
-                table.set();
+            // 修改访问地址
+            editUrl: function(id) {
                 var url = "/404.html";
                 if ($.common.isNotEmpty(id)) {
                     url = table.options.updateUrl.replace("{id}", id);
                 } else {
-                    if(table.options.type == table_type.bootstrapTreeTable) {
+                    if (table.options.type == table_type.bootstrapTreeTable) {
                         var row = $("#" + table.options.id).bootstrapTreeTable('getSelections')[0];
                         if ($.common.isEmpty(row)) {
                             $.modal.alertWarning("请至少选择一条记录");
@@ -1144,24 +1147,13 @@ var table = {
                         }
                         url = table.options.updateUrl.replace("{id}", row[table.options.uniqueId]);
                     } else {
-                        var row = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
-                        url = table.options.updateUrl.replace("{id}", row);
+                        var id = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
+                        if (id.length == 0) {
+                            $.modal.alertWarning("请至少选择一条记录");
+                            return;
+                        }
+                        url = table.options.updateUrl.replace("{id}", id);
                     }
-                }
-                $.modal.openFull("修改" + table.options.modalName, url);
-            },
-            // 修改访问地址
-            editUrl: function(id) {
-                var url = "/404.html";
-                if ($.common.isNotEmpty(id)) {
-                    url = table.options.updateUrl.replace("{id}", id);
-                } else {
-                    var id = $.common.isEmpty(table.options.uniqueId) ? $.table.selectFirstColumns() : $.table.selectColumns(table.options.uniqueId);
-                    if (id.length == 0) {
-                        $.modal.alertWarning("请至少选择一条记录");
-                        return;
-                    }
-                    url = table.options.updateUrl.replace("{id}", id);
                 }
                 return url;
             },
@@ -1647,6 +1639,15 @@ var table = {
                     }
                 }
                 return count;
+            },
+            isIntNum(val){
+                var regPos = /^\d+$/; // 非负整数
+                var regNeg = /^\-[1-9][0-9]*$/; // 负整数
+                if(regPos.test(val) || regNeg.test(val)){
+                    return true;
+                } else {
+                    return false;
+                }
             },
             // 判断移动端
             isMobile: function () {
