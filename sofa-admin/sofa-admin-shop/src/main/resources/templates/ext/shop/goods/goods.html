@@ -6,38 +6,6 @@
 <body class="gray-bg">
 <div class="container-div">
     <div class="row">
-        <div class="col-sm-12 search-collapse">
-            <form id="job-form">
-                <div class="select-list">
-                    <ul>
-                        <li>
-                            商品名称：<input type="text" name="productName"/>
-                        </li>
-                        <li>
-                            上架状态：<select name="publishStatus">
-                            <option value="">所有</option>
-                            <option value="1">上架</option>
-                            <option value="0">下架</option>
-                        </select>
-                        <li>
-                        <li>
-                        推荐状态：<select name="onIndexPage">
-                            <option value="">所有</option>
-                            <option value=1>推荐</option>
-                            <option value=0>不推荐</option>
-                        </select>
-                        <li>
-                        <li>
-                            <a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i
-                                    class="fa fa-search"></i>&nbsp;搜索</a>
-                            <a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i
-                                    class="fa fa-refresh"></i>&nbsp;重置</a>
-                        </li>
-                    </ul>
-                </div>
-            </form>
-        </div>
-
         <div class="btn-group-sm" id="toolbar" role="group">
             <a class="btn btn-success" onclick="gotoAdd()" shiro:hasPermission="ext:shop:goods:add">
                 <i class="fa fa-plus"></i> 新增

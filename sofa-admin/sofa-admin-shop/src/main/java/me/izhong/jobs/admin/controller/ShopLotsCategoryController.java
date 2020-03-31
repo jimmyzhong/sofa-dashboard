@@ -94,7 +94,10 @@ public class ShopLotsCategoryController {
 		model.addAttribute("lotsCategory", shopLotsCategory);
 		return prefix + "/detail";
 	}
-
+	@GetMapping("/admin")
+	public String admin( Model model) {
+		return prefix + "/admin";
+	}
 	@RequiresPermissions(ShopPermissions.LotsCategory.REMOVE)
     @PostMapping("/remove")
     @AjaxWrapper
