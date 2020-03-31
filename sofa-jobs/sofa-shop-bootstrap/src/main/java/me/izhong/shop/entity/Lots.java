@@ -75,6 +75,7 @@ public class Lots {
 	private String payNo;
     @Column(name = "IS_APPLY")
 	private Integer isApply;
+    //1是二次拍卖，2是平台转拍
     @Column(name = "APPLY_TYPE")
 	private Integer applyType;
     @Column(name = "APPLY_STATUS")
