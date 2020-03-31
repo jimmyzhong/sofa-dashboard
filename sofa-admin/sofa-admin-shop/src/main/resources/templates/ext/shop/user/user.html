@@ -64,16 +64,16 @@
     }
 
     function integraldetail(id) {
-        $.modal.open("用户积分明细", prefix + "/scoreDetail/" + id);
+        $.modal.openViewLarge("用户积分明细", prefix + "/scoreDetail/" + id);
     }
     function certification(id) {
-        $.modal.open("用户实名信息", prefix + "/certification/" + id);
+        $.modal.openView("用户实名信息", prefix + "/certification/" + id);
     }
     function orderDetail(id) {
-        $.modal.open("用户订单信息", prefix + "/orderDetail/" + id);
+        $.modal.openViewLarge("用户订单信息", prefix + "/orderDetail/" + id);
     }
     function balanceDetail(id) {
-        $.modal.open("用户余额明细", prefix + "/balanceDetail/" + id);
+        $.modal.openViewLarge("用户余额明细", prefix + "/balanceDetail/" + id);
     }
     function gotoDisabled(userId){
         SHOP_COMMON.ajax.post(prefix + "/disable/"+userId,'',function (result) {

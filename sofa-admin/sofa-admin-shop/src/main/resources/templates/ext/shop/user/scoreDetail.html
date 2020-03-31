@@ -25,6 +25,10 @@
 			createUrl: prefix + "/add",
 			updateUrl: prefix + "/edit/{id}",
 			removeUrl: prefix + "/remove",
+			showSearch: false,
+			showRefresh: false,
+			showToggle: false,
+			showColumns: false,
 			sortName: "id",
 			sortOrder: "asc",
 			modalName: "用户积分明细",
@@ -88,15 +92,6 @@
 		};
 		$.table.init(options);
 	});
-
-	/* 添加用户-选择用户-提交 */
-	function submitHandler(index, layero) {
-		$.modal.close();
-		// // 父页面的方法
-		// // parent.selectUsers();
-		// // 父页面的变量
-		// parent.$('#userids').html(rows.join());
-	}
 </script>
 </body>
 </html>
