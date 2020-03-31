@@ -50,9 +50,9 @@
 					<input class="form-control" type="text" name="deposit" id="deposit" required th:field="*{deposit}">
 				</div>
 			</div>
-<!--			<p th:text="${lots.startTime}"></p>-->
-<!--			<p th:text="${lots.endTime}"></p>-->
-<!--			<p th:text="${lots.updateTime}"></p>-->
+			<p th:text="${lots.startTime}"></p>
+			<p th:text="${lots.endTime}"></p>
+			<p th:text="${lots.updateTime}"></p>
 			<p></p>
 			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">拍卖开始时间：</label>
@@ -152,6 +152,7 @@
 	<th:block th:include="include :: datetimepicker-js" />
 	<script type="text/javascript" th:inline="javascript">
 		var prefix = ctx + "ext/shop/lots";
+		var goodsPrefix = ctx + "ext/shop/goods";
 		$(function () {
 			$("#startTime").datetimepicker({
 				format: "yyyy-mm-dd hh:ii:ss",
@@ -178,7 +179,7 @@
 			$('#editor').summernote('code', content);
 		})
 		function selectRadioGood() {
-			$.modal.open("选择商品", prefix + "/goods");
+			$.modal.open("选择商品", goodsPrefix);
 		}
 		function submit() {
 			if ($.validate.form()) {

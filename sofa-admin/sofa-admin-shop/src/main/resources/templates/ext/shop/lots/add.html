@@ -146,6 +146,7 @@
 	<th:block th:include="include :: datetimepicker-js" />
 	<script type="text/javascript" th:inline="javascript">
 		var prefix = ctx + "ext/shop/lots";
+		var goodsPrefix = ctx + "ext/shop/goods";
 		$(function () {
 			$("#startTime").datetimepicker({
 				format: "yyyy-mm-dd hh:ii:ss",
@@ -157,7 +158,7 @@
 			});
 		})
 		function selectRadioGood() {
-			$.modal.open("选择商品", prefix + "/goods");
+			$.modal.open("选择商品", goodsPrefix);
 		}
 		function selectUsers(){
 			alert(1);
