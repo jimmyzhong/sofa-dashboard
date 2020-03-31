@@ -41,7 +41,6 @@
             <artifactId>sofa-admin-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>me.izhong.sofa</groupId>
             <artifactId>sofa-shop-facade</artifactId>
