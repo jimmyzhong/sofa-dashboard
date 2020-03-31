@@ -16,7 +16,6 @@ import lombok.experimental.Accessors;
 @Entity
 @Table(name = "PRODUCT_CATEGORY")
 public class GoodsCategory extends EditableEntity{
-
 	@Id
     @GeneratedValue
     private Long id;
