@@ -112,7 +112,13 @@ public class LotsService implements ILotsService {
 				Long.valueOf(query.getPageSize()).intValue(), sort);
 
 		Specification<Lots> sp = (r, q, cb) -> {
-			Predicate p = cb.equal(r.get("lotCategoryId"), query.getLotsCategoryId());
+			Predicate p = null;
+			if (query.getIsAgent() == null || !query.getIsAgent()) {
+				p = cb.equal(r.get("lotCategoryId"), query.getPublicCategoryId());
+			} else if (query.getIsAgent() != null && query.getIsAgent()){
+				p = cb.notEqual(r.get("lotCategoryId"), query.getPublicCategoryId());
+			}
+
 			if (query.getStartTime() != null) {
 				p = cb.and(p, cb.greaterThanOrEqualTo(r.get("startTime"),
 						query.getStartTime()));

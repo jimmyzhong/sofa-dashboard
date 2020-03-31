@@ -24,10 +24,10 @@ public class PageQueryParamDTO extends PageRequest {
     private Long inviteUserId;
     private Long inviteUserId2;
     // auction
-    private Integer lotsCategoryId;
+    private Integer publicCategoryId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Boolean isPublic;
+    private Boolean isAgent;
     private Boolean isVip;
     private Long requiredAuctionMargin;
 
