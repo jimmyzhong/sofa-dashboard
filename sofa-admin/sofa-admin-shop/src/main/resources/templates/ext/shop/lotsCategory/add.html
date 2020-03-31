@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('新增专区信息')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-shop-lotsCategory-add">
+			<div class="form-group tc">
+				<label class="col-sm-3 control-label is-required">封面图：</label>
+				<div class="col-sm-8">
+					<img id="productPic_img" class="img-circle img-lg">
+					<label>
+						<a type="button" class="btn btn-w-m btn-primary">选择图片</a>
+						<input onchange ="uploadImg()" style="display: none" type="file" class="" id="productPic" accept="image/*"/>
+					</label>
+					<input name="logo" id="productPicInput"  type="hidden"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">专区名称：</label>
+				<div class="col-sm-8">
+					<input class="form-control" id="name" name="name" required />
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">管理员：</label>
+				<div class="col-sm-8">
+					<div class="input-group">
+						<input class="form-control" id="admin" name="admin" required />
+						<span class="input-group-btn">
+						<button type="button" class="btn btn-primary" onclick="selectRadioAdmin()">选择管理员
+                                        </button> </span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">专区密码：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="password" id="password" required>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<a type="button" class="btn btn-w-m btn-primary" onclick="submit()">提交</a>
+				</div>
+			</div>
+		</form>
+	</div>
+	<style>
+		#upAlbumPics_content>div{
+			width: 100px;
+			height:50px;
+			display: inline-block;
+			margin-right: 10px;
+		}
+		#upAlbumPics_content>div>img{
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript" th:inline="javascript">
+		var prefix = ctx + "ext/shop/lotsCategory";
+		function selectRadioAdmin() {
+			$.modal.open("选择管理员", prefix + "/admin");
+		}
+
+		function submit() {
+			if ($.validate.form()) {
+				var data = $("#form-shop-lotsCategory-add").serializeArray();
+				SHOP_COMMON.ajax.pageSave(prefix + "/add",data)
+			}
+		}
+		//
+		function uploadImg(){
+			var formdata = new FormData();
+			formdata.append("file", $("#productPic")[0].files[0]);
+			SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
+				$("#productPicInput").val(result.data.pictureUrl)
+				$("#productPic_img").attr("src",result.data.pictureUrl)
+			})
+		}
+	</script>
+</body>
+</html>

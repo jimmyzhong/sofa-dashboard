@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('查看专区信息')" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m shop-detail-contain" id="form-shop-lotscategory-detail" th:object="${lotsCategory}">
+			<input name="id" type="hidden" th:field="*{id}"/>
+			<div class="form-group tc">
+				<label class="col-sm-3 control-label">封面图：</label>
+				<div class="col-sm-8">
+					<img id="ad_img" class="img-lg" th:src="*{lotsCategory.logo}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">专区名称：</label>
+				<div class="col-sm-8">
+					<p type="text" name="name" id="name" th:text="${lotsCategory.name}"></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">管理员：</label>
+				<div class="col-sm-8">
+					<p type="text" name="admin" id="admin" th:text="${lotsCategory.admin}"></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">专区密码：</label>
+				<div class="col-sm-8">
+					<p type="text" name="password" id="password" th:text="${lotsCategory.password}"></p>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<button type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</button>
+					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<script type="text/javascript" th:inline="javascript">
+		var prefix = ctx + "ext/shop/lotsCategory";
+		function gotoEdit() {
+			var url = prefix + '/edit/' + $("#id").val();
+			$.modal.openTab("编辑专区", url);
+		}
+	</script>
+</body>
+</html>
