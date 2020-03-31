@@ -15,9 +15,9 @@ public interface IShopBidActionFacade {
      */
     Boolean uploadBid(BidUploadInfo bid);
 
-    Boolean stopBid(Long bidId);
+    Boolean stopBid(String bidId);
 
-    Boolean startBid(Long bidId);
+    Boolean startBid(String bidId);
 
     /**
      * 下载报价信息
@@ -25,7 +25,7 @@ public interface IShopBidActionFacade {
      * @param startIndex 开始id ，从1开始， 默认填1，如果不下载报价明细，只看报价信息，这个填null
      * @param max 下载数量，防止超过报文大小，开始先填null 下载全部
      */
-    BidDownloadInfo downloadBid(Long bidId, Long startIndex, Long max);
+    BidDownloadInfo downloadBid(String bidId, Long startIndex, Long max);
 
     /**
      * 中途参加报价的，增加报价人信息
@@ -33,5 +33,14 @@ public interface IShopBidActionFacade {
      * @param users
      * @return
      */
-    Boolean addBidUsers(Long bidId , List<UserItem> users);
+    Boolean addBidUsers(String bidId , List<UserItem> users);
+
+    /**
+     * 用户进入房间
+     * @param bidId
+     * @param users
+     * @return
+     */
+    Boolean userEnterRoom(String bidId , List<UserItem> users);
+
 }
