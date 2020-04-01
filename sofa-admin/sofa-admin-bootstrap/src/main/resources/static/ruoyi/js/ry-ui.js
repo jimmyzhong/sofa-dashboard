@@ -745,14 +745,14 @@ var table = {
                 layer.closeAll();
             },
             // 确认窗体
-            confirm: function (content, callBack) {
+            confirm: function (content, callback) {
                 layer.confirm(content, {
                     icon: 3,
                     title: "系统提示",
                     btn: ['确认', '取消']
                 }, function (index) {
                     layer.close(index);
-                    callBack(true);
+                    callback(true);
                 });
             },
             // 弹出层指定宽度
