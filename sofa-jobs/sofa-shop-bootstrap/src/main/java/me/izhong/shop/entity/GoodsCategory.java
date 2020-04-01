@@ -10,12 +10,14 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
+import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Entity
 @Table(name = "PRODUCT_CATEGORY")
-public class GoodsCategory extends EditableEntity{
+public class GoodsCategory{
 	@Id
     @GeneratedValue
     private Long id;
@@ -41,4 +43,11 @@ public class GoodsCategory extends EditableEntity{
     private String description;
     @Column(name = "PATH")
     private String path;
+    @Column(name = "CREATE_TIME")
+    private LocalDateTime createTime;
+    @Column(name = "UPDATE_TIME")
+    private LocalDateTime updateTime;
+
+    private String updatedBy;
+    protected String createdBy;
 }
