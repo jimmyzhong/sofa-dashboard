@@ -71,7 +71,7 @@ public class ZJobLogServiceImpl extends CrudBaseServiceImpl<Long,ZJobLog> implem
         return super.selectList(query,null,null);
     }
 
-    @Transactional
+    //@Transactional
     @Override
     public ZJobLog insertTriggerBeginMessage(Long jobId, Long jobGroupId, String jobDesc, Date triggerTime, String triggerType,
                                              Integer finalFailRetryCount,Long executorTimeout,String executorParam, String blockStrategy) {
@@ -88,7 +88,7 @@ public class ZJobLogServiceImpl extends CrudBaseServiceImpl<Long,ZJobLog> implem
         return super.insert(jobLog);
     }
 
-    @Transactional
+    //@Transactional
     @Override
     public void updateTriggerDoneMessage(Long jobLogId, String executorParam, Integer triggerCode, String triggerMsg) {
         Assert.notNull(jobLogId,"");

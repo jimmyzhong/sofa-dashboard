@@ -115,7 +115,7 @@
             title: '部门选择',
             width: "380",
             url: prefix + "/selectDeptTree?deptId=" + $("#treeId").val()+"&viewPerm=system:dept:view",
-            callBack: doSubmit
+            callback: doSubmit
         };
         $.modal.openOptions(options);
     }
