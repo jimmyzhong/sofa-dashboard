@@ -19,6 +19,7 @@ import me.izhong.jobs.manage.IShopOrderMngFacade;
 import me.izhong.jobs.manage.IShopPayRecordMngFacade;
 import me.izhong.jobs.manage.IShopReceiveAddressMngFacade;
 import me.izhong.jobs.manage.IShopRegionMngFacade;
+import me.izhong.jobs.manage.IShopSuppliersMngFacade;
 import me.izhong.jobs.manage.IShopTemplateMngFacade;
 import me.izhong.jobs.manage.IShopUserMngFacade;
 
@@ -120,4 +121,10 @@ public class ShopServiceReference {
     		jvmFirst = false,
     		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
     public IShopLotsCategoryMngFacade lotsCategoryService;
+
+    @SofaReference(interfaceType = IShopSuppliersMngFacade.class,
+    		uniqueId = "${service.unique.id}",
+    		jvmFirst = false,
+    		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
+    public IShopSuppliersMngFacade suppliersService;
 }
