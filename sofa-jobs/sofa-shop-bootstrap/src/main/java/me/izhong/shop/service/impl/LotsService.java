@@ -1,16 +1,24 @@
 package me.izhong.shop.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import me.izhong.common.domain.PageModel;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.DateUtil;
 import me.izhong.jobs.model.bid.BidDownloadInfo;
 import me.izhong.jobs.model.bid.BidItem;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dao.LotsCategoryDao;
+import me.izhong.shop.dao.LotsDao;
 import me.izhong.shop.dao.LotsItemDao;
+import me.izhong.shop.dto.GoodsDTO;
+import me.izhong.shop.dto.LotsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
+import me.izhong.shop.service.IGoodsService;
+import me.izhong.shop.service.ILotsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,19 +29,16 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import me.izhong.common.exception.BusinessException;
-import me.izhong.shop.dao.LotsDao;
-import me.izhong.shop.entity.Lots;
-import me.izhong.shop.service.ILotsService;
-
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class LotsService implements ILotsService {
-
+	@Autowired
+	private IGoodsService goodsService;
 	@Autowired
 	private LotsDao lotsDao;
 	@Autowired
@@ -54,6 +59,15 @@ public class LotsService implements ILotsService {
 			String lotsNo = idGeneratorService.nextID("LOTS" , catId);
 			lots.setLotsNo(lotsNo);
 		}
+		if (lots.getGoodsId() != null) {
+			GoodsDTO g = goodsService.findById(lots.getGoodsId());
+			if (g != null) {
+				lots.setProductPic(g.getProductPic());
+				if(g.getAlbumPics() != null && !g.getAlbumPics().isEmpty()) {
+					lots.setAlbumPics(JSONArray.toJSONString(g.getAlbumPics()));
+				}
+			}
+		}
 		lotsDao.save(lots);
 	}
 
@@ -66,6 +80,11 @@ public class LotsService implements ILotsService {
 	@Override
 	public Lots findById(Long id) {
 		return lotsDao.findById(id).orElseThrow(()-> BusinessException.build("找不到拍卖品" + id));
+	}
+
+	@Override
+	public Lots findByLotsNo(String lotsNo) {
+		return lotsDao.findFirstByLotsNo(lotsNo);
 	}
 
 	@Override
@@ -106,7 +125,7 @@ public class LotsService implements ILotsService {
 	}
 
 	@Override
-	public PageModel<Lots> listLotsOfCategory(PageQueryParamDTO query) {
+	public PageModel<LotsDTO> listLotsOfCategory(PageQueryParamDTO query) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
@@ -141,7 +160,14 @@ public class LotsService implements ILotsService {
 			return p;
 		};
 		Page<Lots> page = lotsDao.findAll(sp, pageableReq);
-		return PageModel.instance(page.getTotalElements(), page.getContent());
+		List<LotsDTO> dto = page.getContent().stream().map(l-> LotsDTO.builder()
+				.id(l.getId()).addPrice(l.getAddPrice()).deposit(l.getDeposit())
+				.description(l.getDescription()).content(l.getContent()).endTime(l.getEndTime())
+				.startTime(l.getStartTime()).finalPrice(l.getFinalPrice()).followCount(l.getFollowCount())
+				.maxMemberCount(l.getMaxMemberCount()).lotsNo(l.getLotsNo()).productPic(l.getProductPic())
+				.startPrice(l.getStartPrice()).name(l.getName()).bidTimes(l.getBidTimes())
+				.build()).collect(Collectors.toList());
+		return PageModel.instance(page.getTotalElements(), dto);
 	}
 
 	@Override
@@ -169,5 +195,11 @@ public class LotsService implements ILotsService {
 		};
 		Page<LotsItem> bidItems = lotsItemDao.findAll(sp, pageableReq);
 		return PageModel.instance(bidItems.getTotalElements(), bidItems.getContent());
+	}
+
+	@Override
+	public PageModel<LotsItem> listBidItems(String lotsNo, PageQueryParamDTO query) {
+		Lots lots = findByLotsNo(lotsNo);
+		return listBidItems(lots.getId(), query);
 	}
 }

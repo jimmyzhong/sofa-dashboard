@@ -18,8 +18,10 @@ import me.izhong.shop.consts.ErrorCode;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PayInfoDTO;
+import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.User;
+import me.izhong.shop.service.ILotsService;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IUserService;
 import me.izhong.shop.service.impl.AliPayService;
@@ -54,6 +56,8 @@ public class PayController {
 
     @Autowired
     IOrderService orderService;
+    @Autowired
+    ILotsService lotsService;
     @Autowired
     AliPayService aliPayService;
     @Autowired
@@ -303,10 +307,19 @@ public class PayController {
                     "  \"orderNo\": \"00001\"" +
                     "}")
             @RequestBody PayInfoDTO params, HttpServletRequest request) {
-        if(params.getAuctionId() == 0) {
-            throw BusinessException.build("请求参数中拍品ID(auctionId)不存在.");
+        if(params.getAuctionId() == null && params.getLotsNo() == null) {
+            throw BusinessException.build("请求参数中拍品ID不存在.");
         }
+        if (params.getAuctionId() == null && !StringUtils.isEmpty(params.getLotsNo())) {
+            Lots lot = lotsService.findByLotsNo(params.getLotsNo());
+            if (lot == null) {
+                throw BusinessException.build("拍品不存在");
+            }
+            params.setAuctionId(lot.getId());
+        }
+        
         SessionInfo session = CacheUtil.getSessionInfo(request);
+
         Order order = orderService.payAuctionMarginByMoney(session.getId(), params.getAuctionId());
         PayInfoDTO res = new PayInfoDTO();
         res.setOrderNo(order.getOrderSn());

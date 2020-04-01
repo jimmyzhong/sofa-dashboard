@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 public class PayInfoDTO {
     private String orderNo;
     private Long auctionId;
+    private String lotsNo;
     private String externalTradeNo;
     private String tradeStatus;
     private String payInfo;
