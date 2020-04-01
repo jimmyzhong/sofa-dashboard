@@ -10,6 +10,6 @@ public class MongoConfig  {
 
     @Bean
     MongoTransactionManager mongoTransactionManager(MongoDbFactory factory) {
-        return new MongoTransactionManager(factory);
+        return new RetryMongoTransactionManager(factory);
     }
 }

@@ -20,7 +20,7 @@ public class MongoSequenceService {
     @Autowired
     protected MongoTemplate mongoTemplate;
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public long getNextId(String collectionName) {
         Query query = new Query(Criteria.where("collectionName").is(collectionName));
         Update update = new Update();
