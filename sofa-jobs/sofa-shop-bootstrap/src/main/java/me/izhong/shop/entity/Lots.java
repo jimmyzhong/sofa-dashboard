@@ -90,6 +90,9 @@ public class Lots {
     //警示价
     @Column(name = "WARNING_PRICE")
 	private BigDecimal warningPrice;
+    //保留价
+    @Column(name = "RESERVE_PRICE")
+	private BigDecimal reservePrice;
     //平台扣佣比例
     @Column(name = "PLATFORM_RATIO")
 	private Integer platformRatio;

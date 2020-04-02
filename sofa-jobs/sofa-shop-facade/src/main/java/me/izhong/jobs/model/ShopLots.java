@@ -45,6 +45,7 @@ public class ShopLots implements Serializable {
 	private Integer applyStatus;
 	private Integer isRepublish;
 	private BigDecimal warningPrice;
+	private BigDecimal reservePrice;
 	private Integer platformRatio;
 	private BigDecimal platformAmount;
 	private BigDecimal revenueAmount;
