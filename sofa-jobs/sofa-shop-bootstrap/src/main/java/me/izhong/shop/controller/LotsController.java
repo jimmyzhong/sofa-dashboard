@@ -45,10 +45,10 @@ public class LotsController {
         return lotsService.listOfUser(CacheUtil.getSessionInfo(request).getId(), query);
     }
 
-    @PostMapping(value = "/items/{LotsNo}")
+    @PostMapping(value = "/items/{lotsNo}")
     @ResponseBody
     @ApiOperation(value="拍卖出价明细", httpMethod = "POST")
-    public PageModel<LotsItem> listItems(@PathVariable("LotsNo")String lotsNo,  @RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsItem> listItems(@PathVariable("lotsNo")String lotsNo,  @RequestBody PageQueryParamDTO query) {
         return lotsService.listBidItems(lotsNo, query);
     }
 
@@ -121,7 +121,7 @@ public class LotsController {
     @GetMapping(value = "/detail/{lotsNo}")
     @ResponseBody
     @ApiOperation(value="拍卖详情", httpMethod = "GET")
-    public LotsDTO detail(@PathVariable("LotsNo") String lotsNo) {
+    public LotsDTO detail(@PathVariable("lotsNo") String lotsNo) {
         Lots lots = lotsService.findByLotsNo(lotsNo);
         if (lots == null) {
             throw BusinessException.build("拍品不存在:" + lotsNo);
