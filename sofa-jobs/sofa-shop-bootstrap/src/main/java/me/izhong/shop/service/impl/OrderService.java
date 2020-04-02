@@ -75,6 +75,10 @@ public class OrderService implements IOrderService {
 	private UserMoneyDao userMoneyDao;
 	@Autowired
 	private UserScoreDao userScoreDao;
+	@Autowired
+	private UserDao userDao;
+	@Autowired
+	private LotsDao lotsDao;
 
 	@Value("${order.expire.time}")
 	private Long orderExpireMinutes;
@@ -724,6 +728,7 @@ public class OrderService implements IOrderService {
 	ILotsService lotsService;
 
 	@Override
+	@Deprecated // NOT USED
 	public Order submitAuction(Long userId, Long addressId, Long auctionId) {
 		UserReceiveAddress address = getUserReceiveAddress(userId, addressId);
 		if (address == null) {
@@ -781,6 +786,11 @@ public class OrderService implements IOrderService {
 	@Override
 	@Transactional
 	public Order payAuctionMarginByMoney(Long userId, Long auctionId) {
+		User u = userDao.getAuctionUser(AUCTION_MARGIN.getType(), auctionId, PAID.getState(), userId);
+		if (u != null) {
+			throw BusinessException.build("用户已报名,无需重复报名");
+		}
+
 		Lots lots = lotsService.findById(auctionId);
 		if (lots == null) {
 			throw BusinessException.build("拍品不存在");
@@ -795,6 +805,8 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("拍卖商品不存在");
 		}
 
+		checkSeatAvailable(lots);
+
 		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
 		if (userMoney == null) {
 			throw BusinessException.build("用户余额不存在,请联系管理员");
@@ -805,6 +817,16 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("可用余额不足");
 		}
 
+		// TODO update money and available seat here
+		lots = lotsDao.selectForUpdate(auctionId);
+		checkSeatAvailable(lots);
+		if (lots.getFollowCount() == null) {
+			lots.setFollowCount(1);
+		} else {
+			lots.setFollowCount(lots.getFollowCount() + 1);
+		}
+		lotsDao.save(lots);
+
 		Order order = generateAuctionMarginOrder(userId, null, lots, goods);
 		order.setPayType(PayMethodEnum.MONEY.getCode());
 
@@ -812,9 +834,17 @@ public class OrderService implements IOrderService {
 		userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().add(amount));
 		userMoneyDao.save(userMoney);
 
+
 		updatePayInfo(order, null, PayMethodEnum.MONEY.name(),
 				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, userMoney.getAvailableAmount(),
 				PayStatusEnum.SUCCESS.name(), "");
 		return order;
+	}
+
+	private void checkSeatAvailable(Lots lots) {
+		if (lots.getMaxMemberCount() != null && lots.getMaxMemberCount() > 0) {
+			if (lots.getFollowCount() != null && (lots.getFollowCount() + 1) > lots.getMaxMemberCount())
+				throw BusinessException.build("拍卖房间已满");
+		}
 	}
 }

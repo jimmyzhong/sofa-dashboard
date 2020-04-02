@@ -1,5 +1,6 @@
 package me.izhong.shop.controller;
 
+import com.alibaba.fastjson.JSONArray;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -10,12 +11,13 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.consts.Constants;
+import me.izhong.shop.dto.LotsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
 import me.izhong.shop.service.ILotsService;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -43,11 +45,11 @@ public class LotsController {
         return lotsService.listOfUser(CacheUtil.getSessionInfo(request).getId(), query);
     }
 
-    @PostMapping(value = "/items/{auctionId}")
+    @PostMapping(value = "/items/{LotsNo}")
     @ResponseBody
     @ApiOperation(value="拍卖出价明细", httpMethod = "POST")
-    public PageModel<LotsItem> listItems(@PathVariable("auctionId")Long auctionId,  @RequestBody PageQueryParamDTO query) {
-        return lotsService.listBidItems(auctionId, query);
+    public PageModel<LotsItem> listItems(@PathVariable("LotsNo")String lotsNo,  @RequestBody PageQueryParamDTO query) {
+        return lotsService.listBidItems(lotsNo, query);
     }
 
     @PostMapping(value = "/cats")
@@ -67,14 +69,14 @@ public class LotsController {
     @PostMapping(value = "/listByCategory")
     @ResponseBody
     @ApiOperation(value="拍卖区列表", httpMethod = "POST")
-    public PageModel<Lots> listLotsOfCategory(@RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsDTO> listLotsOfCategory(@RequestBody PageQueryParamDTO query) {
         return lotsService.listLotsOfCategory(query);
     }
 
     @PostMapping(value = "/list/new")
     @ResponseBody
     @ApiOperation(value="新手专区", httpMethod = "POST")
-    public PageModel<Lots> listLotsOfNewCategory(@RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsDTO> listLotsOfNewCategory(@RequestBody PageQueryParamDTO query) {
         query.setRequiredAuctionMargin(200L);
         query.setPublicCategoryId(Integer.valueOf(publicCat().get("id").toString()));
         return lotsService.listLotsOfCategory(query);
@@ -82,7 +84,7 @@ public class LotsController {
     @PostMapping(value = "/list/zero")
     @ResponseBody
     @ApiOperation(value="0元专区", httpMethod = "POST")
-    public PageModel<Lots> listLotsOfZeroCategory(@RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsDTO> listLotsOfZeroCategory(@RequestBody PageQueryParamDTO query) {
         query.setRequiredAuctionMargin(0L);
         query.setPublicCategoryId(Integer.valueOf(publicCat().get("id").toString()));
         return lotsService.listLotsOfCategory(query);
@@ -90,7 +92,7 @@ public class LotsController {
     @PostMapping(value = "/list/vip")
     @ResponseBody
     @ApiOperation(value="vip专区", httpMethod = "POST")
-    public PageModel<Lots> listLotsOfVipCategory(@RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsDTO> listLotsOfVipCategory(@RequestBody PageQueryParamDTO query) {
         query.setPublicCategoryId(Integer.valueOf(publicCat().get("id").toString()));
         query.setIsVip(true);
         return lotsService.listLotsOfCategory(query);
@@ -99,7 +101,7 @@ public class LotsController {
     @PostMapping(value = "/list/time")
     @ResponseBody
     @ApiOperation(value="按时间筛选公共专区", httpMethod = "POST")
-    public PageModel<Lots> listLotsOfPubCategoryBetween(@RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsDTO> listLotsOfPubCategoryBetween(@RequestBody PageQueryParamDTO query) {
         if (query.getStartTime() == null || query.getEndTime() == null) {
             throw BusinessException.build("请指定起始结束时间");
         }
@@ -110,9 +112,26 @@ public class LotsController {
     @PostMapping(value = "/list/agent")
     @ResponseBody
     @ApiOperation(value="高手专区(代理)", httpMethod = "POST")
-    public PageModel<Lots> listLotsOfAgentCategory(@RequestBody PageQueryParamDTO query) {
+    public PageModel<LotsDTO> listLotsOfAgentCategory(@RequestBody PageQueryParamDTO query) {
         query.setPublicCategoryId(Integer.valueOf(publicCat().get("id").toString()));
         query.setIsAgent(true);
         return lotsService.listLotsOfCategory(query);
     }
+
+    @GetMapping(value = "/detail/{lotsNo}")
+    @ResponseBody
+    @ApiOperation(value="拍卖详情", httpMethod = "GET")
+    public LotsDTO detail(String lotsNo) {
+        Lots lots = lotsService.findByLotsNo(lotsNo);
+        if (lots == null) {
+            throw BusinessException.build("拍品不存在:" + lotsNo);
+        }
+        LotsDTO dto = new LotsDTO();
+        BeanUtils.copyProperties(lots, dto, "albumPics");
+        if (lots.getAlbumPics() != null) {
+            dto.setAlbumPics(JSONArray.parseArray(lots.getAlbumPics(), String.class));
+        }
+        return dto;
+    }
+
 }

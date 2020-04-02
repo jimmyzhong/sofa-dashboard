@@ -2,6 +2,7 @@ package me.izhong.shop.service;
 
 import me.izhong.common.domain.PageModel;
 import me.izhong.jobs.model.bid.BidDownloadInfo;
+import me.izhong.shop.dto.LotsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.LotsCategory;
@@ -16,14 +17,18 @@ public interface ILotsService {
 
 	Lots findById(Long id);
 
+    Lots findByLotsNo(String lotsNo);
+
     @Transactional
     void saveLots(Long bidId, BidDownloadInfo info);
 
     PageModel<Lots> listOfUser(Long id, PageQueryParamDTO query);
 
-    PageModel<Lots> listLotsOfCategory(PageQueryParamDTO query);
+    PageModel<LotsDTO> listLotsOfCategory(PageQueryParamDTO query);
 
     PageModel<LotsCategory> listCategory(PageQueryParamDTO query);
 
     PageModel<LotsItem> listBidItems(Long auctionId, PageQueryParamDTO query);
+
+    PageModel<LotsItem> listBidItems(String lotsNo, PageQueryParamDTO query);
 }

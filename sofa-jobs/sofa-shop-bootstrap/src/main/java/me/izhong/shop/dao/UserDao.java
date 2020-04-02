@@ -23,4 +23,8 @@ public interface UserDao extends JpaRepository<User, Long>, JpaSpecificationExec
     @Query(value = "select u.* from tx_order o, user u where o.user_id = u.id and o.order_type = ?1 " +
             "and o.AUCTION_ID = ?2 and o.status = ?3", nativeQuery = true)
     List<User> selectAcutionUsers(Integer type, Long auctionId, Integer status);
+
+    @Query(value = "select u.* from tx_order o, user u where o.user_id = u.id and o.order_type = ?1 " +
+            "and o.AUCTION_ID = ?2 and o.status = ?3 and u.id = ?4", nativeQuery = true)
+    User getAuctionUser(Integer type, Long auctionId, Integer status, Long userId);
 }
