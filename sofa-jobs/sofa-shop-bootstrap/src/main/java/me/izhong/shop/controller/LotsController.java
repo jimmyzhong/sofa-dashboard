@@ -121,7 +121,7 @@ public class LotsController {
     @GetMapping(value = "/detail/{lotsNo}")
     @ResponseBody
     @ApiOperation(value="拍卖详情", httpMethod = "GET")
-    public LotsDTO detail(String lotsNo) {
+    public LotsDTO detail(@PathVariable("LotsNo") String lotsNo) {
         Lots lots = lotsService.findByLotsNo(lotsNo);
         if (lots == null) {
             throw BusinessException.build("拍品不存在:" + lotsNo);
