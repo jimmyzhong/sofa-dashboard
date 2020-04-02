@@ -6,17 +6,20 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.DateUtil;
 import me.izhong.jobs.model.bid.BidDownloadInfo;
 import me.izhong.jobs.model.bid.BidItem;
+import me.izhong.shop.consts.LotsStatusEnum;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dao.LotsCategoryDao;
 import me.izhong.shop.dao.LotsDao;
 import me.izhong.shop.dao.LotsItemDao;
+import me.izhong.shop.dao.LotsItemStatsDao;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.LotsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
+import me.izhong.shop.entity.LotsItemStats;
 import me.izhong.shop.service.IGoodsService;
 import me.izhong.shop.service.ILotsService;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +36,8 @@ import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -43,6 +48,8 @@ public class LotsService implements ILotsService {
 	private LotsDao lotsDao;
 	@Autowired
 	private LotsItemDao lotsItemDao;
+	@Autowired
+	private LotsItemStatsDao itemStatsDao;
 	@Autowired
 	private LotsCategoryDao lotsCategoryDao;
 	@Autowired
@@ -89,16 +96,28 @@ public class LotsService implements ILotsService {
 
 	@Override
 	@Transactional
-	public void saveLots(Long bidId, BidDownloadInfo info) {
-		Lots lot = findById(bidId);
+	public void saveLots(String lotsNo, BidDownloadInfo info) {
+		Lots lot = findByLotsNo(lotsNo);
 		lot.setNowPrice(BigDecimal.valueOf(info.getCurrentPrice()).divide(BigDecimal.valueOf(100)));
 		lot.setFinalUser(info.getCurrentUserId());
 		if (info.getIsOver()) {
 			lot.setFinalPrice(lot.getNowPrice());
 			lot.setOver(true);
 		}
+		if (lot.getNowPrice().compareTo(lot.getReservePrice())<0) {
+			lot.setOver(false);
+			lot.setPayStatus(LotsStatusEnum.NOT_DEAL.getType());
+		}
+		if (lot.getNowPrice().compareTo(lot.getWarningPrice()) >= 0) {
+			lot.setOver(false);
+			lot.setPayStatus(LotsStatusEnum.DEAL.getType());
+		}
 
 		List<BidItem> items = info.getBidItems();
+		lot.setBidTimes(items.size());
+		lotsDao.save(lot);
+
+		// persistent bids items
 		List<LotsItem> lotsItems = new ArrayList<>();
 		for (BidItem item : items) {
 			LotsItem lotItem = new LotsItem();
@@ -109,8 +128,28 @@ public class LotsService implements ILotsService {
 			lotItem.setSeqId(item.getSeqId());
 			lotsItems.add(lotItem);
 		}
-		lotsDao.save(lot);
 		lotsItemDao.saveAll(lotsItems);
+
+		// calculate user stats
+		Map<Long, List<BidItem>> userMap = items.stream().collect(Collectors.groupingBy(i->i.getUserId()));
+		List<LotsItemStats> userStats = new ArrayList<>();
+		for (Map.Entry<Long, List<BidItem>> entry: userMap.entrySet()) {
+			Long userId = entry.getKey();
+			List<BidItem> userBids = entry.getValue();
+			LotsItemStats stats = new LotsItemStats();
+			stats.setUserId(userId);
+			stats.setTimes(userBids.size());
+			stats.setAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(stats.getTimes()))
+					.setScale(2, BigDecimal.ROUND_HALF_UP));
+			stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(0.1))); // TODO 返利累计加价10%
+			userStats.add(stats);
+		}
+		itemStatsDao.saveAll(userStats);
+
+		if (lot.getPayStatus() == LotsStatusEnum.DEAL.getType()) {
+			// TODO generate an order of AUCTION_REMAINING, 提现final user付尾款
+
+		}
 	}
 
 	@Override
@@ -202,4 +241,15 @@ public class LotsService implements ILotsService {
 		Lots lots = findByLotsNo(lotsNo);
 		return listBidItems(lots.getId(), query);
 	}
+
+	@Override
+	public PageModel<LotsItemStats> listStatsItems(String lotsNo, PageQueryParamDTO query) {
+		Sort sort = Sort.by(Sort.Direction.DESC, "offerAmount");
+		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
+				Long.valueOf(query.getPageSize()).intValue(), sort);
+		Page<LotsItemStats> items = itemStatsDao.findByLotsNo(lotsNo, pageableReq);
+		return PageModel.instance(items.getTotalElements(), items.getContent());
+	}
+
+
 }

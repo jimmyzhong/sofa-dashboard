@@ -45,10 +45,12 @@ public class LotsItem {
     /**
      * 出价价格，单位分
      */
+    @Column(name = "PRICE")
     private Long price;
 
     /**
      * 出价时间
      */
+    @Column(name = "BID_TIME")
     private LocalDateTime bidTime;
 }

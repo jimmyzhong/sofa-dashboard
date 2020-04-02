@@ -7,6 +7,7 @@ import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
+import me.izhong.shop.entity.LotsItemStats;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface ILotsService {
@@ -20,7 +21,7 @@ public interface ILotsService {
     Lots findByLotsNo(String lotsNo);
 
     @Transactional
-    void saveLots(Long bidId, BidDownloadInfo info);
+    void saveLots(String lotsNo, BidDownloadInfo info);
 
     PageModel<Lots> listOfUser(Long id, PageQueryParamDTO query);
 
@@ -31,4 +32,6 @@ public interface ILotsService {
     PageModel<LotsItem> listBidItems(Long auctionId, PageQueryParamDTO query);
 
     PageModel<LotsItem> listBidItems(String lotsNo, PageQueryParamDTO query);
+
+    PageModel<LotsItemStats> listStatsItems(String lotsNo, PageQueryParamDTO query);
 }

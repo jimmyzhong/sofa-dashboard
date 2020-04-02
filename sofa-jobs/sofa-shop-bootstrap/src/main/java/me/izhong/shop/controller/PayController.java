@@ -317,7 +317,7 @@ public class PayController {
             }
             params.setAuctionId(lot.getId());
         }
-        
+
         SessionInfo session = CacheUtil.getSessionInfo(request);
 
         Order order = orderService.payAuctionMarginByMoney(session.getId(), params.getAuctionId());

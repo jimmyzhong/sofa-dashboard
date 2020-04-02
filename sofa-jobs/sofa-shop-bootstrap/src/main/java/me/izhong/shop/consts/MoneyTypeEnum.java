@@ -12,6 +12,7 @@ public enum MoneyTypeEnum {
     RESALE_GOODS (2, "寄售商品"),
     WITHDRAW_MONEY (3, "提现"),
     AUCTION_MARGIN(4, "拍卖保证金"),
+    AUCTION_REMAIN(5, "拍卖尾款"),
     // 仅付款类型
     RETURN_MONEY (10, "返现"),
     RETURN_SCORE (11, "返积分"),

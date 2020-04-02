@@ -16,6 +16,7 @@ import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
+import me.izhong.shop.entity.LotsItemStats;
 import me.izhong.shop.service.ILotsService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,13 @@ public class LotsController {
     @ApiOperation(value="拍卖出价明细", httpMethod = "POST")
     public PageModel<LotsItem> listItems(@PathVariable("lotsNo")String lotsNo,  @RequestBody PageQueryParamDTO query) {
         return lotsService.listBidItems(lotsNo, query);
+    }
+
+    @PostMapping(value = "/stats/{lotsNo}")
+    @ResponseBody
+    @ApiOperation(value="拍卖统计明细", httpMethod = "POST")
+    public PageModel<LotsItemStats> listStatsItems(@PathVariable("lotsNo")String lotsNo, @RequestBody PageQueryParamDTO query) {
+        return lotsService.listStatsItems(lotsNo, query);
     }
 
     @PostMapping(value = "/cats")

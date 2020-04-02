@@ -38,12 +38,6 @@ public class Lots {
     //起拍价
     @Column(name = "START_PRICE")
 	private BigDecimal startPrice;
-    //成交下限,低于此价格不成交
-    @Column(name = "LOW_LIMIT")
-    private BigDecimal lowerLimit;
-    //成交上限,高于此价格自动成交
-    @Column(name = "HIGH_LIMIT")
-    private BigDecimal higherLimit;
     //加价幅度
     @Column(name = "ADD_PRICE")
 	private BigDecimal addPrice;
