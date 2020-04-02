@@ -244,7 +244,7 @@ public class LotsService implements ILotsService {
 
 	@Override
 	public PageModel<LotsItemStats> listStatsItems(String lotsNo, PageQueryParamDTO query) {
-		Sort sort = Sort.by(Sort.Direction.DESC, "offerAmount");
+		Sort sort = Sort.by(Sort.Direction.DESC, "OFFER_AMOUNT");
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
 		Page<LotsItemStats> items = itemStatsDao.findByLotsNo(lotsNo, pageableReq);
