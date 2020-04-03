@@ -19,7 +19,7 @@ public class BidDownloadInfo implements Serializable {
     /**
      * 报价实体id
      */
-    private Long bidId;
+    private String bidId;
 
     /**
      * 报价开始价格，单位分
