@@ -28,6 +28,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.UUID;
 
+import static me.izhong.shop.consts.MoneyTypeEnum.AUCTION_MARGIN;
+import static me.izhong.shop.consts.OrderStateEnum.PAID;
+
 @Service
 @Slf4j
 public class UserService implements IUserService {
@@ -316,4 +319,13 @@ public class UserService implements IUserService {
 	public void deleteById(Long userId) {
 		userDao.deleteById(userId);
 	}
+
+	@Override
+    public boolean checkIfUserSignUpAuction(Long userId, Long auctionId) {
+        User u = userDao.getAuctionUser(AUCTION_MARGIN.getType(), auctionId, PAID.getState(), userId);
+        if (u != null) {
+            return true;
+        }
+        return false;
+    }
 }

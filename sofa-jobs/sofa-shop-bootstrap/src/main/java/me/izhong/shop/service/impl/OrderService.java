@@ -786,8 +786,7 @@ public class OrderService implements IOrderService {
 	@Override
 	@Transactional
 	public Order payAuctionMarginByMoney(Long userId, Long auctionId) {
-		User u = userDao.getAuctionUser(AUCTION_MARGIN.getType(), auctionId, PAID.getState(), userId);
-		if (u != null) {
+		if(userService.checkIfUserSignUpAuction(userId, auctionId)) {
 			throw BusinessException.build("用户已报名,无需重复报名");
 		}
 

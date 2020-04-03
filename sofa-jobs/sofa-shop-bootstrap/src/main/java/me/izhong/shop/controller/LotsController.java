@@ -18,6 +18,7 @@ import me.izhong.shop.entity.LotsCategory;
 import me.izhong.shop.entity.LotsItem;
 import me.izhong.shop.entity.LotsItemStats;
 import me.izhong.shop.service.ILotsService;
+import me.izhong.shop.service.IUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,6 +36,8 @@ import java.util.Map;
 public class LotsController {
     @Autowired
     ILotsService lotsService;
+    @Autowired
+    IUserService userService;
 
     @PostMapping(value = "/listOfUser")
     @ResponseBody
@@ -142,4 +145,26 @@ public class LotsController {
         return dto;
     }
 
+    @GetMapping(value = "/check/signUp/{lotsNo}")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiOperation(value="查看当前用户是否报名", httpMethod = "GET")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public Map checkIfSignUp(@PathVariable("lotsNo") String lotsNo, HttpServletRequest request) {
+        Lots lots = lotsService.findByLotsNo(lotsNo);
+        if (lots == null) {
+            throw BusinessException.build("拍品不存在:" + lotsNo);
+        }
+
+        boolean signUp;
+        try {
+            signUp = userService.checkIfUserSignUpAuction(CacheUtil.getSessionInfo(request).getId(), lots.getId());
+        }catch (BusinessException e) {
+            signUp = false;
+        }
+        Map map = new HashMap();
+        map.put("signUp", signUp);
+        return map;
+    }
 }

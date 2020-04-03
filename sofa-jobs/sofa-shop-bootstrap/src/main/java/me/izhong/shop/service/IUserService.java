@@ -55,4 +55,6 @@ public interface IUserService {
     void setAlipayAccount(Long userId, String alipayAccount, String alipayName);
 
 	void deleteById(Long userId);
+
+    boolean checkIfUserSignUpAuction(Long userId, Long auctionId);
 }

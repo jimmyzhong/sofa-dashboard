@@ -75,7 +75,7 @@ public class LotsServiceHelper {
             try {
                 BidUploadInfo bid = convert2Bid(lots);
                 bidActionFacade.uploadBid(bid);
-
+                log.info("upload bid {} success.", bid.getBidId());
                 schedulerBidEnd(scheduler, lots.getEndTime(), bid);
             }catch (Exception e) {
                 log.error("schedule bid error.", e);
@@ -88,6 +88,7 @@ public class LotsServiceHelper {
         scheduler.schedule(()->{
             endBid(bid);
         }, seconds, TimeUnit.SECONDS);
+        log.info("subscribe bid end at {} seconds later", seconds.toString());
     }
 
     private void endBid(BidUploadInfo bid) {
