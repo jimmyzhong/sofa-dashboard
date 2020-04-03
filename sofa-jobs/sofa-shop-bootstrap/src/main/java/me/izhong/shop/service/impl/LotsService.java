@@ -100,16 +100,19 @@ public class LotsService implements ILotsService {
 		Lots lot = findByLotsNo(lotsNo);
 		lot.setNowPrice(BigDecimal.valueOf(info.getCurrentPrice()).divide(BigDecimal.valueOf(100)));
 		lot.setFinalUser(info.getCurrentUserId());
+		lot.setPayStatus(LotsStatusEnum.NOT_DEAL.getType());
 		if (info.getIsOver()) {
 			lot.setFinalPrice(lot.getNowPrice());
 			lot.setOver(true);
+			lot.setPayStatus(LotsStatusEnum.DEAL.getType());
 		}
+
 		if (lot.getNowPrice().compareTo(lot.getReservePrice())<0) {
 			lot.setOver(false);
 			lot.setPayStatus(LotsStatusEnum.NOT_DEAL.getType());
 		}
 		if (lot.getNowPrice().compareTo(lot.getWarningPrice()) >= 0) {
-			lot.setOver(false);
+			lot.setOver(true);
 			lot.setPayStatus(LotsStatusEnum.DEAL.getType());
 		}
 

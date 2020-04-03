@@ -70,7 +70,8 @@ public class LotsServiceHelper {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenOrderByStartTime(now, now.plusSeconds(30));
+        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenOrderByStartTime(now.minusSeconds(30), now.plusSeconds(30));
+        log.info("prepare to upload bids size {}", lotsList == null ? 0 : lotsList.size());
         for (Lots lots : lotsList) {
             try {
                 BidUploadInfo bid = convert2Bid(lots);
