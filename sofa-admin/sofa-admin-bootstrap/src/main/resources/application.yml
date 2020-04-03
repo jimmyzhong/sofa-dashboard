@@ -3,7 +3,7 @@ spring:
     banner-mode: "OFF"
   data:
     mongodb:
-      uri: mongodb://shop:shop%40mongo@lpp.izhong.me:27017/shop?authMechanism=SCRAM-SHA-256
+      uri: mongodb://shop:shop%40mongo@t1.test.kejinmai.cn:27017/shop?authMechanism=SCRAM-SHA-256
   http:
     encoding:
       charset: UTF-8
@@ -131,7 +131,7 @@ com:
     sofa:
       rpc:
         registry:
-          address: zookeeper://lpp.izhong.me:52181
+          address: zookeeper://t1.test.kejinmai.cn:52181
         bolt-port: 13301
 
 ---
@@ -158,6 +158,6 @@ com:
     sofa:
       rpc:
         registry:
-          address: zookeeper://lpp.izhong.me:52181
+          address: zookeeper://t1.test.kejinmai.cn:52181
         bolt-port: 13303
-        virtual-host: lpp.izhong.me
+        virtual-host: t1.test.kejinmai.cn
