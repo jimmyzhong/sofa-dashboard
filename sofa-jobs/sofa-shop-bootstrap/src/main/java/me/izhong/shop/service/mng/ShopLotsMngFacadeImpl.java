@@ -94,7 +94,7 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
 		Page<Lots> page = lotsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
         List<ShopLots> list = page.getContent().stream().map(t -> {
         	ShopLots obj = new ShopLots();
-            BeanUtils.copyProperties(t, obj);
+            BeanUtils.copyProperties( t, obj);
             return obj;
         }).collect(Collectors.toList());
         return PageModel.instance(page.getTotalElements(), list);

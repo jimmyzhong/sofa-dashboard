@@ -62,7 +62,7 @@ public class ShopLotsController {
     }
 
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap model) {
+    public String X(@PathVariable("id") Long id, ModelMap model) {
 		ShopLots shopLots = shopServiceReference.lotsService.find(id);
 		if (shopLots == null) {
 			throw BusinessException.build(String.format("拍卖品不存在%s", id));

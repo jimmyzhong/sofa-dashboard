@@ -18,6 +18,7 @@ public class ShopLots implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long id;
+	private String lotsNo; // 拍品编号
 	private String name;
 	private String description;
 	private Long goodsId;
@@ -53,4 +54,9 @@ public class ShopLots implements Serializable {
     private Integer maxMemberCount;
     private LocalDateTime createTime;
     private LocalDateTime updateTime;
+    //上传状态
+    private Integer uploaded;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private LocalDateTime uploadedTime;
+    private String uploadedMsg;
 }
