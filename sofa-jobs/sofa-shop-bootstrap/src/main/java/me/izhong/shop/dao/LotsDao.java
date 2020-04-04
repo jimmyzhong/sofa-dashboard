@@ -14,8 +14,8 @@ import java.util.List;
 
 @Repository
 public interface LotsDao extends JpaRepository<Lots, Long>, JpaSpecificationExecutor {
-    List<Lots> findAllByStartTimeBetweenAndUploadedOrderByStartTime(LocalDateTime from, LocalDateTime to, Boolean uploaded);
-    List<Lots> findAllByStartTimeLessThanEqualAndUploaded(LocalDateTime startTime, Boolean uploaded);
+    List<Lots> findAllByStartTimeBetweenAndUploadedOrderByStartTime(LocalDateTime from, LocalDateTime to, Integer uploaded);
+    List<Lots> findAllByStartTimeLessThanEqualAndUploaded(LocalDateTime startTime, Integer uploaded);
 
     @Query(value = "select au.* from lots au, tx_order o, user u where o.user_id = u.id and o.order_type = ?2 " +
             "and u.id = ?1 and o.status = ?3 and au.id=o.auction_id ORDER BY ?#{#pageable}", nativeQuery = true)

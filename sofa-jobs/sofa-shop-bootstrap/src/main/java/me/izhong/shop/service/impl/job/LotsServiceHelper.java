@@ -61,7 +61,11 @@ public class LotsServiceHelper {
 
         //15s就执行一次
         scheduler.scheduleAtFixedRate(() -> {
-            subscribeBids(scheduler);
+            try {
+                subscribeBids(scheduler);
+            }catch (Exception e){
+                log.error("schedule error",e);
+            }
         }, 1, 15, TimeUnit.SECONDS);
     }
 
@@ -74,7 +78,7 @@ public class LotsServiceHelper {
 
         LocalDateTime now = LocalDateTime.now();
         //1分钟将要开始的上架
-        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.plusSeconds(60),now, false);
+        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.minusSeconds(60),now.plusSeconds(60), 0);
         log.info("prepare to upload bids size {}", lotsList == null ? 0 : lotsList.size());
         for (Lots lots : lotsList) {
             try {
