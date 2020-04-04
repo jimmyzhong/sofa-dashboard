@@ -32,12 +32,12 @@ public interface LotsDao extends JpaRepository<Lots, Long>, JpaSpecificationExec
 
     @Modifying
     @Transactional
-    @Query(value = "update Lots t set t.uploaded = 1,t.uploadedTime=?2,t.uploadMsg=?3 where t.id = ?1")
+    @Query(value = "update Lots t set t.uploaded = 1,t.uploadedTime=?2,t.uploadedMsg=?3 where t.id = ?1")
     void markAsUploadedSuccess(Long id, LocalDateTime time, String msg);
 
     @Modifying
     @Transactional
-    @Query(value = "update Lots t set t.uploaded = 2,t.uploadedTime=?2,t.uploadMsg=?3 where t.id = ?1")
+    @Query(value = "update Lots t set t.uploaded = 2,t.uploadedTime=?2,t.uploadedMsg=?3 where t.id = ?1")
     void markAsUploadedFail(Long id, LocalDateTime time, String msg);
 
     Lots findFirstByLotsNo(String lotsNo);

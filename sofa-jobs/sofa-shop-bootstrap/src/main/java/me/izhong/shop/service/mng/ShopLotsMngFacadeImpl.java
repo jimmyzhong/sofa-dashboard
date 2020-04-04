@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import me.izhong.common.exception.BusinessException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -48,6 +49,17 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
 	@Override
 	public void edit(ShopLots shopLots) {
 		Lots lots = lotsService.findById(shopLots.getId());
+		//如果结束了，不允许编辑
+		LocalDateTime now = LocalDateTime.now();
+		if(lots.getEndTime().isBefore(now)) {
+			throw BusinessException.build("拍卖已经结束，不能修改");
+		}
+		if(lots.getStartTime().isBefore(now)) {
+			throw BusinessException.build("拍卖已经开始，不能修改");
+		}
+		if(lots.getStartTime().plusMinutes(1).isBefore(now)) {
+			throw BusinessException.build("拍卖即将开始，不能修改");
+		}
 		lots.setName(shopLots.getName());
 		lots.setDescription(shopLots.getDescription());
 		lots.setGoodsId(shopLots.getGoodsId());

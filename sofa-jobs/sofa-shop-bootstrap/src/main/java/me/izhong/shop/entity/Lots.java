@@ -126,5 +126,5 @@ public class Lots {
     @Column(name = "UPLOADED_TIME")
     private LocalDateTime uploadedTime;
     @Column(name = "UPLOADED_MSG")
-    private String uploadMsg;
+    private String uploadedMsg;
 }
