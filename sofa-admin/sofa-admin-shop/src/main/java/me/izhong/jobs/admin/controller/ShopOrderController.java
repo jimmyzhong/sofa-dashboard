@@ -41,16 +41,6 @@ public class ShopOrderController {
 		return prefix + "/order";
 	}
 
-	@GetMapping
-	public String userOrder() {
-		return prefix + "/userOrder";
-	}
-
-	@GetMapping
-	public String consignmentOrder() {
-		return prefix + "/consignmentOrder";
-	}
-
 	/**
 	 * 查询订单
 	 * @param request
