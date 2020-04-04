@@ -19,6 +19,7 @@ public class ShopOrder implements Serializable {
     private Long userId;
     private String orderSn;
     private String nickName;
+    private String productName;
     /** 订单总金额  */
     private BigDecimal totalAmount;
     /** 应付金额(实际支付金额) */
@@ -35,7 +36,7 @@ public class ShopOrder implements Serializable {
     private Integer sourceType;
     /** 订单状态: 0->待付款;1->待发货;2->已发货;3->已完成;4->已关闭;5->无效订单 */
     private Integer status;
-    /** 订单类型: 1->正常订单;2->秒杀订单  */
+    /** 订单类型: 1->正常订单;2->寄售订单  */
     private Integer orderType;
     /** 物流公司(配送方式) */
     private String deliveryCompany;

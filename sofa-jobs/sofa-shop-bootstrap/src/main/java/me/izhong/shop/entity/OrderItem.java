@@ -1,11 +1,17 @@
 package me.izhong.shop.entity;
 
+import java.math.BigDecimal;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
-
-import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -27,7 +33,7 @@ public class OrderItem {
     private Long productAttributeId;
     @Column(name = "NAME")
     private String name;
-    @Column(name = "ORDER_ID")
+//    @Column(name = "ORDER_ID")
     private Long orderId;
     @Column(name = "QUANTITY")
     private Integer quantity;

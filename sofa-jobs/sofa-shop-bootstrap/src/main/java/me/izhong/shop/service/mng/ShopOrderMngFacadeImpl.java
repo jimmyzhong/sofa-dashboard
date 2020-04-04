@@ -1,25 +1,22 @@
 package me.izhong.shop.service.mng;
 
-import static org.springframework.data.domain.PageRequest.of;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.izhong.shop.util.PageableConvertUtil;
+import javax.persistence.criteria.Predicate;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+import com.google.common.collect.Lists;
 
-import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.jobs.dto.OrderDeliveryParam;
@@ -30,8 +27,8 @@ import me.izhong.jobs.model.ShopOrder;
 import me.izhong.shop.dao.OrderDao;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.service.IOrderService;
+import me.izhong.shop.util.PageableConvertUtil;
 
-@Slf4j
 @Service
 @SofaService(interfaceType = IShopOrderMngFacade.class, uniqueId = "${service.unique.id}", bindings = { @SofaServiceBinding(bindingType = "bolt") })
 public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
@@ -44,33 +41,42 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
 
 	@Override
 	public PageModel<ShopOrder> pageList(PageRequest request, OrderQueryParam param) {
-		Order order = new Order();
-		BeanUtils.copyProperties(param, order);
-        Example<Order> example = Example.of(order);
+		Specification<Order> specification = getOrderQuerySpeci(param.getOrderSn(), param.getStart(), param.getEnd(), param.getStatus(), param.getUserId());
+		return getOrderPageModel(request, specification);
+	}
 
-        Page<Order> page = orderDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-        List<ShopOrder> shopGoodCategoryList = page.getContent().stream().map(t -> {
-        	ShopOrder obj = new ShopOrder();
-            BeanUtils.copyProperties(t, obj);
-            return obj;
+    private Specification<Order> getOrderQuerySpeci(String orderSn, LocalDateTime start, LocalDateTime end, Integer status, Long userId) {
+        return (r, cq, cb) -> {
+        	List<Predicate> predicates = Lists.newArrayList();
+        	if (!StringUtils.isEmpty(orderSn)) {
+        		predicates.add(cb.like(r.get("orderSn"), "%" + orderSn + "%"));
+        	}
+        	if (start != null) {
+        		predicates.add(cb.greaterThan(r.get("createTime"), start));
+        	}
+        	if (end != null) {
+        		predicates.add(cb.lessThanOrEqualTo(r.get("createTime"), end));
+        	}
+        	if (status != null) {
+        		predicates.add(cb.equal(r.get("status"), status));
+        	}
+        	if (userId != null) {
+        		predicates.add(cb.equal(r.get("userId"), status));
+        	}
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        };
+    }
+
+    private PageModel<ShopOrder> getOrderPageModel(PageRequest pageRequest, Specification<Order> specification) {
+    	Page<Order> page = orderDao.findAll(specification, PageableConvertUtil.toDataPageable(pageRequest));
+        List<ShopOrder> list = page.getContent().stream().map(t -> {
+        	ShopOrder shopOrder = new ShopOrder();
+            BeanUtils.copyProperties(t, shopOrder);
+            return shopOrder;
         }).collect(Collectors.toList());
-        return PageModel.instance(page.getTotalElements(), shopGoodCategoryList);
-	}
-	@Override
-	public PageModel<ShopOrder> pageList(PageRequest request,Long userId, OrderQueryParam param) {
-		Order order = new Order();
-		BeanUtils.copyProperties(param, order);
-		order.setUserId(userId);
-		Example<Order> example = Example.of(order);
+        return PageModel.instance(page.getTotalElements(), list);
+    }
 
-		Page<Order> page = orderDao.findAll(example, PageableConvertUtil.toDataPageable(request));
-		List<ShopOrder> shopGoodCategoryList = page.getContent().stream().map(t -> {
-			ShopOrder obj = new ShopOrder();
-			BeanUtils.copyProperties(t, obj);
-			return obj;
-		}).collect(Collectors.toList());
-		return PageModel.instance(page.getTotalElements(), shopGoodCategoryList);
-	}
 	@Override
 	public void delivery(List<OrderDeliveryParam> deliveryParamList) {
 		orderService.delivery(deliveryParamList);
