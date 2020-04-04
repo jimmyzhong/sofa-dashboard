@@ -805,7 +805,7 @@ public class OrderService implements IOrderService {
 	}
 
 	@Override
-	@Transactional(propagation= Propagation.NESTED)
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public void refundMargin(Long userId, Lots auction) {
 		Order marginOrder = orderDao.getOrderOfAuction(AUCTION_MARGIN.getType(), auction.getId(), PAID.getState(), userId);
 
@@ -824,6 +824,8 @@ public class OrderService implements IOrderService {
 			log.error("insufficient frozen money in user account " + userId +
 						", required:" + marginOrder.getTotalAmount() + ",but has:" + userMoney.getUnavailableAmount());
 		}
+		marginOrder.setStatus(AUCTION_MARGIN_REFUND.getState());
+		orderDao.save(marginOrder);
 	}
 
 	@Override
@@ -849,6 +851,17 @@ public class OrderService implements IOrderService {
 
 		checkLotsAvailable(lots);
 
+		// TODO update money and available seat here
+		// 枷锁顺序 同 lotsService.saveLots
+		lots = lotsDao.selectForUpdate(auctionId);
+		checkLotsAvailable(lots);
+		if (lots.getFollowCount() == null) {
+			lots.setFollowCount(1);
+		} else {
+			lots.setFollowCount(lots.getFollowCount() + 1);
+		}
+		lotsDao.save(lots);
+
 		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
 		if (userMoney == null) {
 			throw BusinessException.build("用户余额不存在,请联系管理员");
@@ -858,16 +871,6 @@ public class OrderService implements IOrderService {
 		if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
 			throw BusinessException.build("可用余额不足");
 		}
-
-		// TODO update money and available seat here
-		lots = lotsDao.selectForUpdate(auctionId);
-		checkLotsAvailable(lots);
-		if (lots.getFollowCount() == null) {
-			lots.setFollowCount(1);
-		} else {
-			lots.setFollowCount(lots.getFollowCount() + 1);
-		}
-		lotsDao.save(lots);
 
 		Order order = generateAuctionMarginOrder(userId, null, lots, goods);
 		order.setPayType(PayMethodEnum.MONEY.getCode());

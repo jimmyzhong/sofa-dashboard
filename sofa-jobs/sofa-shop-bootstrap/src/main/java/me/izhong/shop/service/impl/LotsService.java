@@ -10,17 +10,11 @@ import me.izhong.jobs.model.bid.BidItem;
 import me.izhong.shop.consts.LotsStatusEnum;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
-import me.izhong.shop.dao.LotsCategoryDao;
-import me.izhong.shop.dao.LotsDao;
-import me.izhong.shop.dao.LotsItemDao;
-import me.izhong.shop.dao.LotsItemStatsDao;
+import me.izhong.shop.dao.*;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.LotsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
-import me.izhong.shop.entity.Lots;
-import me.izhong.shop.entity.LotsCategory;
-import me.izhong.shop.entity.LotsItem;
-import me.izhong.shop.entity.LotsItemStats;
+import me.izhong.shop.entity.*;
 import me.izhong.shop.service.IGoodsService;
 import me.izhong.shop.service.ILotsService;
 import me.izhong.shop.service.IOrderService;
@@ -59,6 +53,8 @@ public class LotsService implements ILotsService {
 	private IDGeneratorService idGeneratorService;
 	@Autowired
 	private IOrderService orderService;
+	@Autowired
+	private UserDao userDao;
 
 	@Override
 	@Transactional
@@ -105,11 +101,35 @@ public class LotsService implements ILotsService {
 	@Override
 	@Transactional
 	public void saveLots(String lotsNo, BidDownloadInfo info) {
-		Lots lot = findByLotsNo(lotsNo);
+		Lots l = findByLotsNo(lotsNo);
+		boolean isEnd = isEnd(l);
+
+		if (isEnd && l.getPayStatus() != null) {
+			log.warn(lotsNo + " already saved " + LotsStatusEnum.getMsgByType(l.getPayStatus()));
+			return;
+		}
+
+		Lots lot = lotsDao.selectForUpdate(l.getId());
+		// check again
+		isEnd = isEnd(lot);
+		if (isEnd && lot.getPayStatus() != null) {
+			log.warn(lotsNo + " already saved " + LotsStatusEnum.getMsgByType(lot.getPayStatus()));
+			return;
+		}
+
+		if (info == null && isEnd) {
+			info = new BidDownloadInfo();
+		} else if(!isEnd){
+			log.warn("{} bid is not end", lotsNo);
+			return;
+		}
+
+		if (info.getCurrentPrice() == null) info.setCurrentPrice(0L);
+
 		lot.setNowPrice(BigDecimal.valueOf(info.getCurrentPrice()).divide(BigDecimal.valueOf(100)));
 		lot.setFinalUser(info.getCurrentUserId());
 		lot.setPayStatus(LotsStatusEnum.NOT_DEAL.getType());
-		if (info.getIsOver()) {
+		if (info.getIsOver() != null && info.getIsOver()) {
 			lot.setFinalPrice(lot.getNowPrice());
 			lot.setOver(true);
 			lot.setPayStatus(LotsStatusEnum.DEAL.getType());
@@ -126,37 +146,40 @@ public class LotsService implements ILotsService {
 		}
 
 		List<BidItem> items = info.getBidItems();
-		lot.setBidTimes(items.size());
+		lot.setBidTimes(items == null ? 0 : items.size());
 		lotsDao.save(lot);
 
 		// persistent bids items
 		List<LotsItem> lotsItems = new ArrayList<>();
-		for (BidItem item : items) {
-			LotsItem lotItem = new LotsItem();
-			lotItem.setBidTime(DateUtil.convertToLocalDateTime(item.getBidTime()));
-			lotItem.setLotsId(lot.getId());
-			lotItem.setPrice(item.getPrice());
-			lotItem.setUserId(item.getUserId());
-			lotItem.setSeqId(item.getSeqId());
-			lotsItems.add(lotItem);
-		}
-		lotsItemDao.saveAll(lotsItems);
+		if (items != null) {
+			for (BidItem item : items) {
+				LotsItem lotItem = new LotsItem();
+				lotItem.setBidTime(DateUtil.convertToLocalDateTime(item.getBidTime()));
+				lotItem.setLotsId(lot.getId());
+				lotItem.setPrice(item.getPrice());
+				lotItem.setUserId(item.getUserId());
+				lotItem.setSeqId(item.getSeqId());
+				lotsItems.add(lotItem);
+			}
+			lotsItemDao.saveAll(lotsItems);
 
-		// calculate user stats
-		Map<Long, List<BidItem>> userMap = items.stream().collect(Collectors.groupingBy(i->i.getUserId()));
-		List<LotsItemStats> userStats = new ArrayList<>();
-		for (Map.Entry<Long, List<BidItem>> entry: userMap.entrySet()) {
-			Long userId = entry.getKey();
-			List<BidItem> userBids = entry.getValue();
-			LotsItemStats stats = new LotsItemStats();
-			stats.setUserId(userId);
-			stats.setTimes(userBids.size());
-			stats.setAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(stats.getTimes()))
-					.setScale(2, BigDecimal.ROUND_HALF_UP));
-			stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(0.1))); // TODO 返利累计加价10%
-			userStats.add(stats);
+			// calculate user stats
+			Map<Long, List<BidItem>> userMap = items.stream().collect(Collectors.groupingBy(i->i.getUserId()));
+			List<LotsItemStats> userStats = new ArrayList<>();
+			for (Map.Entry<Long, List<BidItem>> entry: userMap.entrySet()) {
+				Long userId = entry.getKey();
+				List<BidItem> userBids = entry.getValue();
+				LotsItemStats stats = new LotsItemStats();
+				stats.setUserId(userId);
+				stats.setTimes(userBids.size());
+				stats.setAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(stats.getTimes()))
+						.setScale(2, BigDecimal.ROUND_HALF_UP));
+				stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(0.1))); // TODO 返利累计加价10%
+				userStats.add(stats);
+			}
+			itemStatsDao.saveAll(userStats); // TODO 以获得的奖励，反应在用户余额里
 		}
-		itemStatsDao.saveAll(userStats); // TODO 以获得的奖励，反应在用户余额里
+
 
 		boolean isDeal = lot.getPayStatus() == LotsStatusEnum.DEAL.getType();
 		// 成交需要拍卖成功者付尾款
@@ -165,16 +188,23 @@ public class LotsService implements ILotsService {
 			BigDecimal finalPrice = lot.getFinalPrice();
 			orderService.generateAuctionRemainingOrder(userId, lot, finalPrice);
 		}
+
+		List<User> userList = userDao.selectAcutionUsers(MoneyTypeEnum.AUCTION_MARGIN.getType(), lot.getId(),
+				OrderStateEnum.PAID.getState());
 		// 拍卖失败所有人退保证金; 拍卖成功,其余人退保证金
-		userMap.keySet().stream()
-				.filter(uId->(isDeal && uId != lot.getFinalUser()) || !isDeal)
-				.forEach(uId->{
+		userList.stream()
+				.filter(u->(isDeal && u.getId() != lot.getFinalUser()) || !isDeal)
+				.forEach(u->{
 					try {
-						orderService.refundMargin(uId, lot);
+						orderService.refundMargin(u.getId(), lot);
 					}catch (Exception e) {
-						log.error("refund margin error for " + uId, e);
+						log.error("refund margin error for " + u.getId(), e);
 					}
 				});
+	}
+
+	private boolean isEnd(Lots lot) {
+		return lot.getEndTime().compareTo(LocalDateTime.now())<0 && lot.getUploaded()==1;
 	}
 
 	@Override

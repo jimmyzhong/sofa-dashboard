@@ -68,6 +68,27 @@ public class LotsServiceHelper {
                 log.error("schedule error",e);
             }
         }, 1, 15, TimeUnit.SECONDS);
+
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                processEndedLots();
+            }catch (Exception e){
+                log.error("process ended lots error", e);
+            }
+        }, 1, 5, TimeUnit.MINUTES);
+    }
+
+    private void processEndedLots() {
+        List<Lots> list = lotsDao.findAllByEndTimeBeforeAndUploadedAndFollowCountGreaterThanAndPayStatusIsNull(
+                LocalDateTime.now().minusMinutes(5), 1, 0);
+
+        for (Lots lot: list) {
+            try {
+                endBid(lot.getLotsNo());
+            }catch (Exception e) {
+                log.error("end bid error", e);
+            }
+        }
     }
 
     private void subscribeBids(ScheduledExecutorService scheduler) {
@@ -107,17 +128,23 @@ public class LotsServiceHelper {
     private void schedulerBidEnd(ScheduledExecutorService scheduler, LocalDateTime endTime, BidUploadInfo bid) {
         Long seconds = Duration.between(LocalDateTime.now(), endTime).getSeconds() + 5 * 60;
         scheduler.schedule(()->{
-            endBid(bid);
+            endBid(bid.getBidId());
         }, seconds, TimeUnit.SECONDS);
         log.info("subscribe bid end at {} seconds later", seconds.toString());
     }
 
-    private void endBid(BidUploadInfo bid) {
-        BidDownloadInfo info = bidActionFacade.downloadBid(bid.getBidId(), 1L, null);
-        if (!info.getIsOver()) {
-            log.warn("拍卖没有结束" + bid.getBidId());
+    private void endBid(String bidId) {
+        BidDownloadInfo info = null;
+        try{
+            info = bidActionFacade.downloadBid(bidId, 1L, null);
+        }catch (Exception e) {
+            log.error("download bid error " + bidId, e);
         }
-        service.saveLots(bid.getBidId(), info);
+
+        if (info!= null && !info.getIsOver()) {
+            log.warn("拍卖没有结束" + bidId);
+        }
+        service.saveLots(bidId, info);
     }
 
     private void scheduleBidStart(ScheduledExecutorService scheduler, LocalDateTime startTime, BidUploadInfo bid) {
