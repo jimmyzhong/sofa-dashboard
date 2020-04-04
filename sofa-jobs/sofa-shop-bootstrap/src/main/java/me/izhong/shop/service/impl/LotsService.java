@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -274,8 +275,14 @@ public class LotsService implements ILotsService {
 
 	@Override
 	@Transactional
-	public void markLotsAsUploaded(Lots lot) {
-		lotsDao.markAsUploaded(lot.getId());
+	public void markLotsAsUploadedSuccess(Lots lot, String msg) {
+		lotsDao.markAsUploadedSuccess(lot.getId(), LocalDateTime.now(),msg);
+	}
+
+	@Override
+	@Transactional
+	public void markLotsAsUploadedFail(Lots lot, String msg) {
+		lotsDao.markAsUploadedSuccess(lot.getId(), LocalDateTime.now(),msg);
 	}
 
 

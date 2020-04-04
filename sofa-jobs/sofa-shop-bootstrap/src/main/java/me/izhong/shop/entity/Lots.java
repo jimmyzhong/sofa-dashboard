@@ -122,5 +122,9 @@ public class Lots {
     @Column(name = "BID_TIMES")
     private Integer bidTimes; //出价次数
     @Column(name = "UPLOADED", columnDefinition = "int(1) default 0")
-    private Boolean uploaded;
+    private Integer uploaded;
+    @Column(name = "UPLOADED_TIME")
+    private LocalDateTime uploadedTime;
+    @Column(name = "UPLOADED_MSG")
+    private String uploadMsg;
 }

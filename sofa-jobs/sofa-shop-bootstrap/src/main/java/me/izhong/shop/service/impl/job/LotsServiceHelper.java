@@ -5,6 +5,7 @@ import com.alipay.sofa.runtime.api.annotation.SofaReferenceBinding;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.util.DateUtil;
+import me.izhong.common.util.IpUtil;
 import me.izhong.jobs.manage.IShopBidActionFacade;
 import me.izhong.jobs.model.bid.BidDownloadInfo;
 import me.izhong.jobs.model.bid.BidUploadInfo;
@@ -52,35 +53,48 @@ public class LotsServiceHelper {
 
     @PostConstruct
     public void setUp() {
-        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(
+        //8个线程，防止某个卡住
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(8,
                 new ThreadFactoryBuilder()
                         .setNameFormat(JOB_NAME).build());
 
 
+        //15s就执行一次
         scheduler.scheduleAtFixedRate(() -> {
             subscribeBids(scheduler);
-        }, 1, 30, TimeUnit.SECONDS);
+        }, 1, 15, TimeUnit.SECONDS);
     }
 
     private void subscribeBids(ScheduledExecutorService scheduler) {
         LocalDateTime expect = LocalDateTime.now();
-        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusSeconds(30))) {
+        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusSeconds(15))) {
             log.warn("unable to acquire job " + JOB_NAME);
             return;
         }
 
         LocalDateTime now = LocalDateTime.now();
-        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.minusHours(1),now.plusSeconds(30), false);
+        //1分钟将要开始的上架
+        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.plusSeconds(60),now, false);
         log.info("prepare to upload bids size {}", lotsList == null ? 0 : lotsList.size());
         for (Lots lots : lotsList) {
             try {
                 BidUploadInfo bid = convert2Bid(lots);
-                bidActionFacade.uploadBid(bid);
-                log.info("upload bid {} success.", bid.getBidId());
-                schedulerBidEnd(scheduler, lots.getEndTime(), bid);
-                service.markLotsAsUploaded(lots);
-            }catch (Exception e) {
+                log.info("begin upload bid {} .", bid.getBidId());
+                Boolean resu = bidActionFacade.uploadBid(bid);
+                if(resu != null && resu.booleanValue()) {
+                    //上架成功
+                    log.info("upload bid {} success.", bid.getBidId());
+                    schedulerBidEnd(scheduler, lots.getEndTime(), bid);
+                    service.markLotsAsUploadedSuccess(lots,"上架成功"+ IpUtil.getHostName());
+                } else {
+                    //上架失败
+                    log.info("upload bid {} fail.", bid.getBidId());
+                    service.markLotsAsUploadedFail(lots,"上架失败");
+                }
+            } catch (Exception e) {
+                //上架失败
                 log.error("schedule bid error.", e);
+                service.markLotsAsUploadedFail(lots,"上架失败：" + e.getMessage());
             }
         }
     }

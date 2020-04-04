@@ -35,5 +35,6 @@ public interface ILotsService {
 
     PageModel<LotsItemStats> listStatsItems(String lotsNo, PageQueryParamDTO query);
 
-    void markLotsAsUploaded(Lots lots);
+    void markLotsAsUploadedSuccess(Lots lots, String msg);
+    void markLotsAsUploadedFail(Lots lots, String msg);
 }
