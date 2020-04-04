@@ -80,6 +80,9 @@ public class LotsService implements ILotsService {
 				}
 			}
 		}
+		if (lots.getUploaded() == null) {
+			lots.setUploaded(0);
+		}
 		lotsDao.save(lots);
 	}
 

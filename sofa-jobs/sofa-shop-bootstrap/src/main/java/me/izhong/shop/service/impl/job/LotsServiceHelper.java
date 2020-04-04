@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -78,7 +79,7 @@ public class LotsServiceHelper {
 
         LocalDateTime now = LocalDateTime.now();
         //1分钟将要开始的上架
-        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.minusSeconds(60),now.plusSeconds(60), 0);
+        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.minusMinutes(2),now.plusSeconds(60), 0);
         log.info("prepare to upload bids size {}", lotsList == null ? 0 : lotsList.size());
         for (Lots lots : lotsList) {
             try {
@@ -144,12 +145,27 @@ public class LotsServiceHelper {
         List<User> userList = userDao.selectAcutionUsers(MoneyTypeEnum.AUCTION_MARGIN.getType(), lots.getId(),
                 OrderStateEnum.PAID.getState());
         info.setUsers(userList.stream().map(u->{
-            UserItem item = new UserItem();
-            item.setUserId(u.getId());
-            item.setAvatar(u.getAvatar());
-            item.setNickName(u.getNickName());
+            UserItem item = getUserItem(u);
             return item;
         }).collect(Collectors.toList()));
         return info;
+    }
+
+    private UserItem getUserItem(User u) {
+        UserItem item = new UserItem();
+        item.setUserId(u.getId());
+        item.setAvatar(u.getAvatar());
+        item.setNickName(u.getNickName());
+        return item;
+    }
+
+    public void addUser(String lotsNo, Long userId) {
+        User user = userDao.findById(userId).get();
+        if (user == null) {
+            log.warn("user does not exist." + userId);
+            return;
+        }
+        UserItem item = getUserItem(user);
+        bidActionFacade.addBidUsers(lotsNo, Arrays.asList(item));
     }
 }

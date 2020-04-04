@@ -20,6 +20,7 @@ import me.izhong.shop.service.IGoodsService;
 import me.izhong.shop.service.ILotsService;
 import me.izhong.shop.service.IOrderService;
 import me.izhong.shop.service.IReceiveAddressService;
+import me.izhong.shop.service.impl.job.LotsServiceHelper;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -77,9 +78,9 @@ public class OrderService implements IOrderService {
 	@Autowired
 	private UserScoreDao userScoreDao;
 	@Autowired
-	private UserDao userDao;
-	@Autowired
 	private LotsDao lotsDao;
+	@Autowired
+	private LotsServiceHelper lotsServiceHelper;
 
 	@Value("${order.expire.time}")
 	private Long orderExpireMinutes;
@@ -846,7 +847,7 @@ public class OrderService implements IOrderService {
 			throw BusinessException.build("拍卖商品不存在");
 		}
 
-		checkSeatAvailable(lots);
+		checkLotsAvailable(lots);
 
 		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
 		if (userMoney == null) {
@@ -860,7 +861,7 @@ public class OrderService implements IOrderService {
 
 		// TODO update money and available seat here
 		lots = lotsDao.selectForUpdate(auctionId);
-		checkSeatAvailable(lots);
+		checkLotsAvailable(lots);
 		if (lots.getFollowCount() == null) {
 			lots.setFollowCount(1);
 		} else {
@@ -879,13 +880,21 @@ public class OrderService implements IOrderService {
 		updatePayInfo(order, null, PayMethodEnum.MONEY.name(),
 				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, userMoney.getAvailableAmount(),
 				PayStatusEnum.SUCCESS.name(), "");
+
+		LocalDateTime now = LocalDateTime.now();
+		if (lots.getStartTime().compareTo(now)<=0 && lots.getEndTime().compareTo(now) >0) {
+			lotsServiceHelper.addUser(lots.getLotsNo(), userId);
+		}
 		return order;
 	}
 
-	private void checkSeatAvailable(Lots lots) {
+	private void checkLotsAvailable(Lots lots) {
 		if (lots.getMaxMemberCount() != null && lots.getMaxMemberCount() > 0) {
 			if (lots.getFollowCount() != null && (lots.getFollowCount() + 1) > lots.getMaxMemberCount())
 				throw BusinessException.build("拍卖房间已满");
+		}
+		if (lots.getEndTime().compareTo(LocalDateTime.now())<=0) {
+			throw BusinessException.build("拍卖已结束");
 		}
 	}
 }

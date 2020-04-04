@@ -121,7 +121,7 @@ public class Lots {
     private String albumPics;
     @Column(name = "BID_TIMES")
     private Integer bidTimes; //出价次数
-    @Column(name = "UPLOADED", columnDefinition = "int(1) default 0")
+    @Column(name = "UPLOADED", columnDefinition = "int(11) default 0")
     private Integer uploaded;
     @Column(name = "UPLOADED_TIME")
     private LocalDateTime uploadedTime;
