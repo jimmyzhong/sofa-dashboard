@@ -85,10 +85,10 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
 	}
 
 	@Override
-	public PageModel<ShopLots> pageList(PageRequest request, String name) {
+	public PageModel<ShopLots> pageList(PageRequest request, ShopLots search) {
 		Lots lots = new Lots();
-		if (!StringUtils.isEmpty(name)) {
-			lots.setName(name);
+		if(search != null) {
+			BeanUtils.copyProperties(search, lots);
 		}
         Example<Lots> example = Example.of(lots);
 		Page<Lots> page = lotsDao.findAll(example, PageableConvertUtil.toDataPageable(request));
