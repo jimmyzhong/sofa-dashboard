@@ -2,14 +2,16 @@ package me.izhong.jobs.admin.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
-import me.izhong.jobs.dto.OrderQueryParam;
-import me.izhong.jobs.model.ShopOrder;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -160,13 +162,6 @@ public class ShopUserController {
 		return prefix + "/orderDetail";
 	}
 
-	@RequestMapping("/orderList")
-	@AjaxWrapper
-	@RequiresPermissions(ShopPermissions.User.VIEW)
-	public PageModel<ShopOrder> pageList(HttpServletRequest request, @RequestParam(value = "userId") Long userId, OrderQueryParam param) {
-		PageModel<ShopOrder> page = shopServiceReference.orderService.pageList(PageRequestUtil.fromRequest(request),userId, param);
-		return page;
-	}
 	//下级用户
 	@RequestMapping("/inviteList")
 	@RequiresPermissions(ShopPermissions.User.VIEW)
@@ -176,7 +171,8 @@ public class ShopUserController {
 		PageModel<ShopUser> page = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request), shopUser);
 		return page;
 	}
-	//	下下级用户
+
+	//下下级用户
 	@RequiresPermissions(ShopPermissions.User.VIEW)
 	@RequestMapping("/invite2List")
 	@AjaxWrapper
@@ -185,5 +181,4 @@ public class ShopUserController {
 		PageModel<ShopUser> page = shopServiceReference.userService.pageList(PageRequestUtil.fromRequest(request), shopUser);
 		return page;
 	}
-//	orderDetail
 }

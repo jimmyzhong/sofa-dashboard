@@ -1,10 +1,14 @@
 package me.izhong.jobs.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class OrderQueryParam {
 
 	/**
@@ -27,8 +31,8 @@ public class OrderQueryParam {
      * 订单来源：0->h5订单；1->app订单
      */
     private Integer sourceType;
-    /**
-     * 订单提交时间
-     */
-    private String createTime;
+    private Long userId;
+
+    private LocalDateTime start;
+    private LocalDateTime end;
 }

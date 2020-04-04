@@ -2,9 +2,13 @@ package me.izhong.shop.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,6 +31,7 @@ public class Order {
     private String orderSn;
     @Column(name = "NICK_NAME")
     private String nickName;
+    private String customerName;
     @Column(name = "TOTAL_AMOUNT")
     private BigDecimal totalAmount;
     @Column(name = "PAY_AMOUNT")
@@ -122,5 +127,4 @@ public class Order {
     private BigDecimal auctionStartPrice;
     @Column(name = "AUCTION_ID")
     private Long auctionId;
-
 }

@@ -37,8 +37,18 @@ public class ShopOrderController {
 	private ShopServiceReference shopServiceReference;
 
 	@GetMapping
-	public String goods() {
+	public String order() {
 		return prefix + "/order";
+	}
+
+	@GetMapping
+	public String userOrder() {
+		return prefix + "/userOrder";
+	}
+
+	@GetMapping
+	public String consignmentOrder() {
+		return prefix + "/consignmentOrder";
 	}
 
 	/**
@@ -51,6 +61,7 @@ public class ShopOrderController {
 	@PostMapping("/list")
 	@AjaxWrapper
 	public PageModel<ShopOrder> pageList(HttpServletRequest request, OrderQueryParam param) {
+		log.info("query order param:{}", param.toString());
 		PageModel<ShopOrder> page = shopServiceReference.orderService.pageList(PageRequestUtil.fromRequest(request), param);
 		return page;
 	}

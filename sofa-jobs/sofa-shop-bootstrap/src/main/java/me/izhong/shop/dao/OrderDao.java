@@ -4,19 +4,18 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import me.izhong.shop.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import me.izhong.jobs.model.ShopReceiverInfo;
 import me.izhong.shop.entity.Order;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface OrderDao extends JpaRepository<Order, Long>, JpaSpecificationExecutor {
+public interface OrderDao extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
 
 	Order findFirstByOrderSn(String orderSn);
 
