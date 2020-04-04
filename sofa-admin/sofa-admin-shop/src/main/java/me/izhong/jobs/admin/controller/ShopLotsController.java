@@ -37,8 +37,8 @@ public class ShopLotsController {
 	@RequiresPermissions(ShopPermissions.Lots.VIEW)
     @PostMapping("/list")
     @AjaxWrapper
-    public PageModel<ShopLots> list(HttpServletRequest request, String name) {
-		PageModel<ShopLots> page = shopServiceReference.lotsService.pageList(PageRequestUtil.fromRequest(request), name);
+    public PageModel<ShopLots> list(HttpServletRequest request, ShopLots search) {
+		PageModel<ShopLots> page = shopServiceReference.lotsService.pageList(PageRequestUtil.fromRequest(request), search);
 		return page;
     }
 
@@ -62,7 +62,7 @@ public class ShopLotsController {
     }
 
     @GetMapping("/edit/{id}")
-    public String edit(@PathVariable("id") Long id, ModelMap model) {
+    public String X(@PathVariable("id") Long id, ModelMap model) {
 		ShopLots shopLots = shopServiceReference.lotsService.find(id);
 		if (shopLots == null) {
 			throw BusinessException.build(String.format("拍卖品不存在%s", id));

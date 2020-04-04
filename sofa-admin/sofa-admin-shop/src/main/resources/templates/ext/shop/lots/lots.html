@@ -11,6 +11,9 @@
                 <div class="select-list">
                     <ul>
                         <li>
+                            拍卖编号：<input type="text" name="lotsNo"/>
+                        </li>
+                        <li>
                             标题：<input type="text" name="name"/>
                         </li>
                         <li>
@@ -64,6 +67,8 @@
     var editFlag = [[${@permission.hasPermi('ext:shop:lots:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:lots:remove')}]];
     var prefix = ctx + "ext/shop/lots";
+    var uploadedDatas = [[${@dict.getType('shop_lot_uploaded')}]];
+    var applyTypeDatas = [[${@dict.getType('shop_lot_apply_type')}]];
 
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
@@ -94,6 +99,11 @@
                 {
                     field: 'id',
                     title: 'ID',
+                    sortable: true
+                },
+                {
+                    field: 'lotsNo',
+                    title: '拍品编号',
                     sortable: true
                 },
                 {
@@ -133,8 +143,26 @@
                     field: 'applyType',
                     title: '拍卖类型',
                     formatter: function (value, row, index) {
-                        return {1: "二次拍卖", 2: "平台拍卖"}[value]
+                        return $.table.selectDictLabel(applyTypeDatas, value);
                     }
+                },
+                {
+                    field: 'uploaded',
+                    title: '上传状态',
+                    visible: false,
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(uploadedDatas, value);
+                    }
+                },
+                {
+                    field: 'uploadedTime',
+                    title: '上传时间',
+                    visible: false
+                },
+                {
+                    field: 'uploadedMsg',
+                    title: '上传描述',
+                    visible: false
                 },
                 {
                     field: '',

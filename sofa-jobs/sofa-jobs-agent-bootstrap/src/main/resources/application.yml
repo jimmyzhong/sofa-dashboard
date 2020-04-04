@@ -27,7 +27,7 @@ com:
     sofa:
       rpc:
         registry:
-          address: zookeeper://10.10.51.212:2181
+          address: zookeeper://172.30.251.92:2181
         bolt-port: 13303
 
 ---
