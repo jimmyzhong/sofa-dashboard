@@ -363,7 +363,8 @@ var table = {
                     var search = $.common.formToJSON(currentId);
                     if($.common.isNotEmpty(data)){
                         $.each(data, function(key) {
-                            search[key] = data[key];
+                            if($.common.isNotEmpty(data[key]))
+                                search[key] = data[key];
                         });
                     }
                     search.pageSize = params.limit;
@@ -1622,10 +1623,12 @@ var table = {
             formToJSON: function(formId) {
                 var json = {};
                 $.each($("#" + formId).serializeArray(), function(i, field) {
-                    if(json[field.name]) {
-                        json[field.name] += ("," + field.value);
-                    } else {
-                        json[field.name] = field.value;
+                    if ($.common.isNotEmpty(field.value)){
+                        if (json[field.name]) {
+                            json[field.name] += ("," + field.value);
+                        } else {
+                            json[field.name] = field.value;
+                        }
                     }
                 });
                 return json;
