@@ -1,6 +1,7 @@
 package me.izhong.shop.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.DateUtil;
@@ -22,6 +23,7 @@ import me.izhong.shop.entity.LotsItem;
 import me.izhong.shop.entity.LotsItemStats;
 import me.izhong.shop.service.IGoodsService;
 import me.izhong.shop.service.ILotsService;
+import me.izhong.shop.service.IOrderService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -37,9 +39,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class LotsService implements ILotsService {
 	@Autowired
@@ -54,6 +56,8 @@ public class LotsService implements ILotsService {
 	private LotsCategoryDao lotsCategoryDao;
 	@Autowired
 	private IDGeneratorService idGeneratorService;
+	@Autowired
+	private IOrderService orderService;
 
 	@Override
 	@Transactional
@@ -114,6 +118,7 @@ public class LotsService implements ILotsService {
 		if (lot.getNowPrice().compareTo(lot.getWarningPrice()) >= 0) {
 			lot.setOver(true);
 			lot.setPayStatus(LotsStatusEnum.DEAL.getType());
+			lot.setFinalPrice(lot.getNowPrice());
 		}
 
 		List<BidItem> items = info.getBidItems();
@@ -147,12 +152,25 @@ public class LotsService implements ILotsService {
 			stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(0.1))); // TODO 返利累计加价10%
 			userStats.add(stats);
 		}
-		itemStatsDao.saveAll(userStats);
+		itemStatsDao.saveAll(userStats); // TODO 以获得的奖励，反应在用户余额里
 
-		if (lot.getPayStatus() == LotsStatusEnum.DEAL.getType()) {
-			// TODO generate an order of AUCTION_REMAINING, 提现final user付尾款
-
+		boolean isDeal = lot.getPayStatus() == LotsStatusEnum.DEAL.getType();
+		// 成交需要拍卖成功者付尾款
+		if (isDeal) {
+			Long userId = lot.getFinalUser();
+			BigDecimal finalPrice = lot.getFinalPrice();
+			orderService.generateAuctionRemainingOrder(userId, lot, finalPrice);
 		}
+		// 拍卖失败所有人退保证金; 拍卖成功,其余人退保证金
+		userMap.keySet().stream()
+				.filter(uId->(isDeal && uId != lot.getFinalUser()) || !isDeal)
+				.forEach(uId->{
+					try {
+						orderService.refundMargin(uId, lot);
+					}catch (Exception e) {
+						log.error("refund margin error for " + uId, e);
+					}
+				});
 	}
 
 	@Override
@@ -252,6 +270,12 @@ public class LotsService implements ILotsService {
 				Long.valueOf(query.getPageSize()).intValue(), sort);
 		Page<LotsItemStats> items = itemStatsDao.findByLotsNo(lotsNo, pageableReq);
 		return PageModel.instance(items.getTotalElements(), items.getContent());
+	}
+
+	@Override
+	@Transactional
+	public void markLotsAsUploaded(Lots lot) {
+		lotsDao.markAsUploaded(lot.getId());
 	}
 
 

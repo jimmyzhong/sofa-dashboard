@@ -121,4 +121,6 @@ public class Lots {
     private String albumPics;
     @Column(name = "BID_TIMES")
     private Integer bidTimes; //出价次数
+    @Column(name = "UPLOADED", columnDefinition = "int(1) default 0")
+    private Boolean uploaded;
 }

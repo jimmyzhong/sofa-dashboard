@@ -70,7 +70,7 @@ public class LotsServiceHelper {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenOrderByStartTime(now.minusSeconds(30), now.plusSeconds(30));
+        List<Lots> lotsList = lotsDao.findAllByStartTimeBetweenAndUploadedOrderByStartTime(now.minusHours(1),now.plusSeconds(30), false);
         log.info("prepare to upload bids size {}", lotsList == null ? 0 : lotsList.size());
         for (Lots lots : lotsList) {
             try {
@@ -78,6 +78,7 @@ public class LotsServiceHelper {
                 bidActionFacade.uploadBid(bid);
                 log.info("upload bid {} success.", bid.getBidId());
                 schedulerBidEnd(scheduler, lots.getEndTime(), bid);
+                service.markLotsAsUploaded(lots);
             }catch (Exception e) {
                 log.error("schedule bid error.", e);
             }

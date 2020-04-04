@@ -31,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -781,6 +782,47 @@ public class OrderService implements IOrderService {
 		item.setOrderId(order.getId());
 		orderItemDao.save(item);
 		return order;
+	}
+
+	@Override
+	@Transactional
+	public Order generateAuctionRemainingOrder(Long userId, Lots auction, BigDecimal finalPrice) {
+		Order marginOrder = orderDao.getOrderOfAuction(AUCTION_MARGIN.getType(), auction.getId(), PAID.getState(), userId);
+
+		marginOrder.setOrderType(AUCTION_REMAIN.getType());
+		marginOrder.setStatus(WAIT_PAYING_AUCTION_REMAIN.getState());
+		marginOrder.setCreateTime(LocalDateTime.now());
+		marginOrder.setDescription("拍卖付尾款." + auction.getLotsNo());
+		marginOrder.setSubject("拍卖付尾款订单" + marginOrder.getOrderSn());
+		marginOrder.setAuctionDealPrice(finalPrice);
+		marginOrder.setTotalAmount(finalPrice.subtract(marginOrder.getAuctionMargin())
+				.setScale(2, BigDecimal.ROUND_HALF_UP));
+
+		marginOrder = orderDao.save(marginOrder);
+		log.info("generate an order of auction remaining," + marginOrder.getOrderSn() + ",total:" + marginOrder.getTotalAmount());
+		return marginOrder;
+	}
+
+	@Override
+	@Transactional(propagation= Propagation.NESTED)
+	public void refundMargin(Long userId, Lots auction) {
+		Order marginOrder = orderDao.getOrderOfAuction(AUCTION_MARGIN.getType(), auction.getId(), PAID.getState(), userId);
+
+		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
+		if (userMoney == null) {
+			log.error("refund margin fail due to no money record for user " + userId);
+			return;
+		}
+
+		if (userMoney.getUnavailableAmount().compareTo(marginOrder.getTotalAmount()) >= 0) {
+			userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().subtract(marginOrder.getTotalAmount())
+					.setScale(2, BigDecimal.ROUND_HALF_UP));
+			userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(marginOrder.getTotalAmount())
+					.setScale(2, BigDecimal.ROUND_HALF_UP));
+		} else {
+			log.error("insufficient frozen money in user account " + userId +
+						", required:" + marginOrder.getTotalAmount() + ",but has:" + userMoney.getUnavailableAmount());
+		}
 	}
 
 	@Override

@@ -12,9 +12,11 @@ import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dto.PageQueryParamDTO;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
+import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.Order;
 import me.izhong.shop.entity.User;
 import me.izhong.shop.service.impl.AliPayService;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 public interface IOrderService {
@@ -92,6 +94,18 @@ public interface IOrderService {
 
 	@Deprecated // NOT USED
     Order submitAuction(Long userId, Long addressId, Long auctionId);
+
+	/**
+	 * 创建拍卖尾款订单
+	 * @param userId
+	 * @param auction 拍品
+	 * @param finalPrice 拍卖价
+	 * @return
+	 */
+    Order generateAuctionRemainingOrder(Long userId, Lots auction, BigDecimal finalPrice);
+
+	@Transactional(propagation= Propagation.NESTED)
+	void refundMargin(Long userId, Lots auction);
 
 	Order payAuctionMarginByMoney(Long id, Long auctionId);
 }
