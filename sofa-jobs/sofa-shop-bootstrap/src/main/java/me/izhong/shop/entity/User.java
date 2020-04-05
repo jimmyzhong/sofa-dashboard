@@ -30,7 +30,7 @@ public class User extends EditableEntity {
     private String name;
     @Column(name = "NICK_NAME", length = 50)
     private String nickName;
-    @Column(name = "PHONE",  length = 20)
+    @Column(name = "PHONE",  unique = true, length = 20)
     private String phone;
     @Column(name = "EMAIL", length = 20)
     private String email;
