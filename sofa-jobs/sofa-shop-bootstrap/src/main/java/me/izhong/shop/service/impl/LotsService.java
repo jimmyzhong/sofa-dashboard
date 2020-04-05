@@ -209,7 +209,7 @@ public class LotsService implements ILotsService {
 	}
 
 	private boolean isEnd(Lots lot) {
-		return lot.getEndTime().compareTo(LocalDateTime.now())<0 && lot.getUploaded()==1;
+		return lot.getEndTime().compareTo(LocalDateTime.now())<0;
 	}
 
 	@PersistenceContext

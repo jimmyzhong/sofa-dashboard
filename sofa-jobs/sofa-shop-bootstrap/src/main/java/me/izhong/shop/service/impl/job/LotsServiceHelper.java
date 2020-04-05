@@ -79,8 +79,8 @@ public class LotsServiceHelper {
     }
 
     private void processEndedLots() {
-        List<Lots> list = lotsDao.findAllByEndTimeBeforeAndUploadedAndFollowCountGreaterThanAndPayStatusIsNull(
-                LocalDateTime.now().minusMinutes(5), 1, 0);
+        List<Lots> list = lotsDao.findAllByEndTimeBeforeAndFollowCountGreaterThanAndPayStatusIsNull(
+                LocalDateTime.now().minusMinutes(5),  0);
 
         for (Lots lot: list) {
             try {
