@@ -155,7 +155,7 @@ spring:
 
   data:
     mongodb:
-      uri: mongodb://172.16.38.201,172.16.38.205,172.16.38.207:27017/?replicaSet=rs0&connectTimeoutMS=3000
+      uri: mongodb://172.16.38.201:27017,172.16.38.205:27017,172.16.38.207:27017/?replicaSet=rs0&connectTimeoutMS=3000
 
   alipay:
     sofa:
