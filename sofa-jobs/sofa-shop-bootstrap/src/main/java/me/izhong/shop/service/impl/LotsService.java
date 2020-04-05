@@ -186,7 +186,9 @@ public class LotsService implements ILotsService {
 		if (isDeal) {
 			Long userId = lot.getFinalUser();
 			BigDecimal finalPrice = lot.getFinalPrice();
-			orderService.generateAuctionRemainingOrder(userId, lot, finalPrice);
+			Order o = orderService.generateAuctionRemainingOrder(userId, lot, finalPrice);
+			lot.setOrderSn(o.getOrderSn());
+			lotsDao.save(lot);
 		}
 
 		List<User> userList = userDao.selectAcutionUsers(MoneyTypeEnum.AUCTION_MARGIN.getType(), lot.getId(),
