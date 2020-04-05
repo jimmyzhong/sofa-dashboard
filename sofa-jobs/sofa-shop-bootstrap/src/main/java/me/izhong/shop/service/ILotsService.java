@@ -23,7 +23,7 @@ public interface ILotsService {
     @Transactional
     void saveLots(String lotsNo, BidDownloadInfo info);
 
-    PageModel<Lots> listOfUser(Long id, PageQueryParamDTO query);
+    PageModel<LotsDTO> listOfUser(Long id, PageQueryParamDTO query);
 
     PageModel<LotsDTO> listLotsOfCategory(PageQueryParamDTO query);
 

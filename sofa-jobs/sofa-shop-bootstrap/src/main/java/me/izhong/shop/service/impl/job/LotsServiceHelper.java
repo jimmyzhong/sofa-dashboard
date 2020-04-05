@@ -93,10 +93,10 @@ public class LotsServiceHelper {
 
     private void subscribeBids(ScheduledExecutorService scheduler) {
         LocalDateTime expect = LocalDateTime.now();
-        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusSeconds(15))) {
-            log.warn("unable to acquire job " + JOB_NAME);
-            return;
-        }
+//        if (!jobService.acquireJob(JOB_NAME, expect, expect.plusSeconds(15))) {
+//            log.warn("unable to acquire job " + JOB_NAME);
+//            return;
+//        }
 
         LocalDateTime now = LocalDateTime.now();
         //1分钟将要开始的上架

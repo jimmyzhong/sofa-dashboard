@@ -1,5 +1,6 @@
 package me.izhong.shop.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
@@ -28,6 +29,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -209,15 +212,37 @@ public class LotsService implements ILotsService {
 		return lot.getEndTime().compareTo(LocalDateTime.now())<0 && lot.getUploaded()==1;
 	}
 
+	@PersistenceContext
+	EntityManager entityManager;
+
 	@Override
-	public PageModel<Lots> listOfUser(Long userId, PageQueryParamDTO query) {
+	public PageModel<LotsDTO> listOfUser(Long userId, PageQueryParamDTO query) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "CREATE_TIME");
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
+		Page<Map<String, Object>> page = lotsDao.listOfUser(userId, 1,1,1, pageableReq);
 
-		Page<Lots> page = lotsDao.findAllByUser(userId, MoneyTypeEnum.AUCTION_MARGIN.getType(),OrderStateEnum.PAID.getState(), pageableReq);
+		List<LotsDTO> dto = page.getContent().stream().map(m-> {
+			Integer type = null;
+			if(m.containsKey("order_type")){
+				type = Integer.valueOf(m.get("order_type").toString());
+			}
+			Integer status = null;
+			if(m.containsKey("order_status")){
+				status = Integer.valueOf(m.get("order_status").toString());;
+			}
 
-		return PageModel.instance(page.getTotalElements(), page.getContent());
+			Lots l = JSON.parseObject(JSON.toJSON(m).toString(), Lots.class);
+			LotsDTO d = buildListDTO(l);
+			if (status != null) {
+				d.setOrderStatus(OrderStateEnum.getCommentByState(status));
+			}
+			if (type != null) {
+				d.setOrderType(MoneyTypeEnum.getByType(type).name());
+			}
+			return d;
+		}).collect(Collectors.toList());
+		return PageModel.instance(page.getTotalElements(), dto);
 	}
 
 	@Override
@@ -256,14 +281,22 @@ public class LotsService implements ILotsService {
 			return p;
 		};
 		Page<Lots> page = lotsDao.findAll(sp, pageableReq);
-		List<LotsDTO> dto = page.getContent().stream().map(l-> LotsDTO.builder()
-				.id(l.getId()).addPrice(l.getAddPrice()).deposit(l.getDeposit())
-				.description(l.getDescription()).content(l.getContent()).endTime(l.getEndTime())
-				.startTime(l.getStartTime()).finalPrice(l.getFinalPrice()).followCount(l.getFollowCount())
-				.maxMemberCount(l.getMaxMemberCount()).lotsNo(l.getLotsNo()).productPic(l.getProductPic())
-				.startPrice(l.getStartPrice()).name(l.getName()).bidTimes(l.getBidTimes())
-				.build()).collect(Collectors.toList());
+		List<LotsDTO> dto = converToDTO(page);
 		return PageModel.instance(page.getTotalElements(), dto);
+	}
+
+	private List<LotsDTO> converToDTO(Page<Lots> page) {
+		return page.getContent().stream().map(l-> buildListDTO(l)).collect(Collectors.toList());
+	}
+
+	private LotsDTO buildListDTO(Lots l) {
+		return LotsDTO.builder()
+					.id(l.getId()).addPrice(l.getAddPrice()).deposit(l.getDeposit())
+					.description(l.getDescription()).content(l.getContent()).endTime(l.getEndTime())
+					.startTime(l.getStartTime()).finalPrice(l.getFinalPrice()).followCount(l.getFollowCount())
+					.payStatus(l.getPayStatus()).maxMemberCount(l.getMaxMemberCount()).lotsNo(l.getLotsNo())
+					.productPic(l.getProductPic()).startPrice(l.getStartPrice()).name(l.getName()).bidTimes(l.getBidTimes())
+					.build();
 	}
 
 	@Override

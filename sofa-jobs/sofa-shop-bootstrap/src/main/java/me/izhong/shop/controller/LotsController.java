@@ -45,7 +45,7 @@ public class LotsController {
     @ApiOperation(value="用户拍卖列表", httpMethod = "POST")
     @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
             value = "登录成功后response Authorization header", required = true)
-    public PageModel<Lots> list(@RequestBody PageQueryParamDTO query, HttpServletRequest request) {
+    public PageModel<LotsDTO> list(@RequestBody PageQueryParamDTO query, HttpServletRequest request) {
         return lotsService.listOfUser(CacheUtil.getSessionInfo(request).getId(), query);
     }
 

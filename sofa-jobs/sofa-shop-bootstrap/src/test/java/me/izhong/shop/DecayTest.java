@@ -1,6 +1,8 @@
 package me.izhong.shop;
 
 import com.alibaba.fastjson.JSON;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.util.ShareCodeUtil;
 import org.junit.Test;
 
@@ -77,5 +79,21 @@ public class DecayTest {
 
         value = "aa11aa11"; // 数字字母组合
         System.out.println(value+ ":" + value.matches(regex));
+    }
+
+    @Test
+    public void test2() {
+        String select = "select au.* from lots au, tx_order o, user u " +
+                "where o.user_id = u.id and au.id=o.auction_id and u.id = ?1 and ";
+
+        String subSignup = " ( o.order_type = " + MoneyTypeEnum.AUCTION_MARGIN.getType()
+                + "and o.status = " + OrderStateEnum.PAID.getState() + " ) ";
+
+        String subDeal = " ( o.order_type = " + MoneyTypeEnum.AUCTION_REMAIN.getType() + " ) ";
+        String subRefund = " ( o.order_type = " + MoneyTypeEnum.AUCTION_MARGIN.getType()
+                + "and o.status = " + OrderStateEnum.AUCTION_MARGIN_REFUND.getState() + " ) ";
+        String auctionOfUserSql = select + " (" +subSignup + subDeal + subRefund +") ORDER BY ?#{#pageable}";
+
+        System.out.println(auctionOfUserSql);
     }
 }

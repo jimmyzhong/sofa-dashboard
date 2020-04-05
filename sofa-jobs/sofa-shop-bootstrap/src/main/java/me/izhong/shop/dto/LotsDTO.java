@@ -75,4 +75,6 @@ public class LotsDTO {
     private String productPic;
     private List<String> albumPics;
     private Integer bidTimes;
+    private String orderStatus;
+    private String orderType;
 }
