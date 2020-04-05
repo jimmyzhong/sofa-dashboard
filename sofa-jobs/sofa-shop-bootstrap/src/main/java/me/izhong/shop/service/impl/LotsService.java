@@ -220,7 +220,17 @@ public class LotsService implements ILotsService {
 		Sort sort = Sort.by(Sort.Direction.DESC, "CREATE_TIME");
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
-		Page<Map<String, Object>> page = lotsDao.listOfUser(userId, 1,1,1, pageableReq);
+		Integer fetchSignedUp = 1, fetchDeal = 1, fetchMarginRefund = 1;
+		if (query.getAuctionFilter() != null) {
+			if (query.getAuctionFilter() == 0) {
+				fetchDeal = fetchMarginRefund = 0;
+			} else if (query.getAuctionFilter() == 1) {
+				fetchSignedUp = fetchMarginRefund = 0;
+			} else if (query.getAuctionFilter() == 2) {
+				fetchSignedUp = fetchDeal = 0;
+			}
+		}
+		Page<Map<String, Object>> page = lotsDao.listOfUser(userId, fetchSignedUp,fetchDeal,fetchMarginRefund, pageableReq);
 
 		List<LotsDTO> dto = page.getContent().stream().map(m-> {
 			Integer type = null;

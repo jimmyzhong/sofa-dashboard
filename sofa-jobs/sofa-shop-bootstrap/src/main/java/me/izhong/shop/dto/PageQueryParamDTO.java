@@ -30,6 +30,10 @@ public class PageQueryParamDTO extends PageRequest {
     private Boolean isAgent;
     private Boolean isVip;
     private Long requiredAuctionMargin;
+    /**
+     * null: all, 0:signedUp, 1: Deal, 2: Refund
+     */
+    private Integer auctionFilter;
 
     // 余额类型
     @JSONField(name="moneyTypes", deserializeUsing = CommaSplitList.class)
