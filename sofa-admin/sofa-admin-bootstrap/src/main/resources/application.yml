@@ -153,7 +153,10 @@ com:
 spring:
   profiles: test
 
-com:
+  data:
+    mongodb:
+      uri: mongodb://172.16.38.201,172.16.38.205,172.16.38.207,:27017/?replicaSet=rs0&connectTimeoutMS=3000
+      
   alipay:
     sofa:
       rpc:
@@ -161,3 +164,4 @@ com:
           address: zookeeper://t1.test.kejinmai.cn:52181
         bolt-port: 13303
         virtual-host: t1.test.kejinmai.cn
+
