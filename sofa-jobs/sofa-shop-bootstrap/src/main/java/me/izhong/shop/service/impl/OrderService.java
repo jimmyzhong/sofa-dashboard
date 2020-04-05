@@ -891,6 +891,44 @@ public class OrderService implements IOrderService {
 		return order;
 	}
 
+	@Override
+	@Transactional
+	public Order payAuctionRemainByMoney(Long userId, Long auctionId) {
+
+		Lots lots = lotsService.findById(auctionId);
+		if (lots == null) {
+			throw BusinessException.build("拍品不存在");
+		}
+
+		Order order = findByOrderNo(lots.getOrderSn());
+		if (order == null) {
+			throw BusinessException.build("拍品余额订单不存在");
+		}
+		UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
+		if (userMoney == null) {
+			throw BusinessException.build("用户余额不存在,请联系管理员");
+		}
+
+		BigDecimal margin = order.getAuctionMargin();
+		BigDecimal amount = order.getTotalAmount(); // 要付的尾款
+		if (userMoney.getAvailableAmount().compareTo(amount) < 0) {
+			throw BusinessException.build("可用余额不足");
+		}
+
+		order.setPayType(PayMethodEnum.MONEY.getCode());
+
+		userMoney.setAvailableAmount(userMoney.getAvailableAmount().subtract(amount));
+		userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().subtract(margin));
+		userMoneyDao.save(userMoney);
+
+		updatePayInfo(order, null, PayMethodEnum.MONEY.name(),
+				MoneyTypeEnum.getDescriptionByState(order.getOrderType()),  amount, userMoney.getAvailableAmount(),
+				PayStatusEnum.SUCCESS.name(), "");
+
+		return order;
+	}
+
+
 	private void checkLotsAvailable(Lots lots) {
 		if (lots.getMaxMemberCount() != null && lots.getMaxMemberCount() > 0) {
 			if (lots.getFollowCount() != null && (lots.getFollowCount() + 1) > lots.getMaxMemberCount())

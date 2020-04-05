@@ -13,10 +13,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
-import me.izhong.shop.consts.Constants;
-import me.izhong.shop.consts.ErrorCode;
-import me.izhong.shop.consts.MoneyTypeEnum;
-import me.izhong.shop.consts.OrderStateEnum;
+import me.izhong.shop.consts.*;
 import me.izhong.shop.dto.PayInfoDTO;
 import me.izhong.shop.entity.Lots;
 import me.izhong.shop.entity.Order;
@@ -310,17 +307,42 @@ public class PayController {
         if(params.getAuctionId() == null && params.getLotsNo() == null) {
             throw BusinessException.build("请求参数中拍品ID不存在.");
         }
+        Lots lot = null;
         if (params.getAuctionId() == null && !StringUtils.isEmpty(params.getLotsNo())) {
-            Lots lot = lotsService.findByLotsNo(params.getLotsNo());
-            if (lot == null) {
-                throw BusinessException.build("拍品不存在");
-            }
-            params.setAuctionId(lot.getId());
+            lot = lotsService.findByLotsNo(params.getLotsNo());
         }
+
+        if (lot == null) {
+            throw BusinessException.build("拍品不存在");
+        }
+        params.setAuctionId(lot.getId());
 
         SessionInfo session = CacheUtil.getSessionInfo(request);
 
-        Order order = orderService.payAuctionMarginByMoney(session.getId(), params.getAuctionId());
+        LocalDateTime now = LocalDateTime.now();
+        Order order;
+        if (lot.getEndTime().compareTo(now) >=0 && (lot.getPayStatus()==null
+                || lot.getPayStatus() == LotsStatusEnum.NOT_DEAL.getType())) { // 还没结束也没成交,应该是要报名
+            log.info("paying for auction margin " + lot.getLotsNo() + ", user:" + session.getId());
+            order = orderService.payAuctionMarginByMoney(session.getId(), params.getAuctionId());
+        } else {
+            // 这就是要付尾款了
+            // 尾款订单没生成、拍卖状态依然不是成交状态、最终出价人不存在
+            if (StringUtils.isEmpty(lot.getOrderSn()) || lot.getPayStatus() == null
+                    || lot.getPayStatus() != LotsStatusEnum.DEAL.getType() || lot.getFinalUser() == null) {
+                throw BusinessException.build("拍卖信息正在统计,请拍卖结束后5~10分钟再试");
+            }
+
+            // 最终出价者不是你啊
+            if (lot.getFinalUser() != session.getId()) {
+                throw BusinessException.build("最终出价者非本人,无法付款");
+            }
+
+            log.info("paying for auction remain " + lot.getLotsNo() + ", user:" + session.getId());
+            // 终于能付款了
+            order = orderService.payAuctionRemainByMoney(session.getId(), params.getAuctionId());
+        }
+
         PayInfoDTO res = new PayInfoDTO();
         res.setOrderNo(order.getOrderSn());
         res.setTradeStatus("SUCCESS");

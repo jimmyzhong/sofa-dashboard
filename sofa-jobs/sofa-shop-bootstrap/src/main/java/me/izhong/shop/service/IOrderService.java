@@ -108,4 +108,6 @@ public interface IOrderService {
 	void refundMargin(Long userId, Lots auction);
 
 	Order payAuctionMarginByMoney(Long id, Long auctionId);
+
+	Order payAuctionRemainByMoney(Long id, Long auctionId);
 }
