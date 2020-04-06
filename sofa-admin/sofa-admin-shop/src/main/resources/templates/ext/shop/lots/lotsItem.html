@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('出价列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<input id="id" name="id" th:value="${id}" type="hidden">
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "ext/shop/lotsItem";
+    $(function () {
+        var options = {
+            url: prefix + "/list?id=" + $("#id").val(),
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            sortName: "id",
+            sortOrder: "asc",
+            modalName: "报名人列表",
+            columns: [{
+                    field: 'id',
+                    title: 'ID',
+                    sortable: true
+                },
+                {
+                    field: 'lotsId',
+                    title: '拍品编号',
+                    sortable: true
+                },
+                // {
+                //     field: 'phone',
+                //     title: '拍品名称',
+                // },
+                {
+                    field: 'userNick',
+                    title: '出价人'
+                },
+                {
+                    field: 'price',
+                    title: '出价金额'
+                },{
+                    field: 'bidTime',
+                    title: '出价时间'
+                }
+                // {
+                //     field: 'name',
+                //     title: '加价幅度'
+                // },{
+                //     field: 'name',
+                //     title: '红包奖励'
+                // },{
+                //     field: 'name',
+                //     title: '拍卖类型'
+                // },{
+                //     field: 'name',
+                //     title: '是否成交'
+                // },
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

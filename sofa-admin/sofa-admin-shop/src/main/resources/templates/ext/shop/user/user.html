@@ -35,10 +35,10 @@
                shiro:hasPermission="ext:shop:user:edit">
                 <i class="fa fa-edit"></i> 修改
             </a>
-<!--            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"-->
-<!--               shiro:hasPermission="ext:shop:user:remove">-->
-<!--                <i class="fa fa-remove"></i> 删除-->
-<!--            </a>-->
+            <!--            <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()"-->
+            <!--               shiro:hasPermission="ext:shop:user:remove">-->
+            <!--                <i class="fa fa-remove"></i> 删除-->
+            <!--            </a>-->
         </div>
         <div class="col-sm-12 select-table table-striped">
             <table id="bootstrap-table" data-mobile-responsive="true"></table>
@@ -66,25 +66,38 @@
     function integraldetail(id) {
         $.modal.openViewLarge("用户积分明细", prefix + "/scoreDetail/" + id);
     }
+
     function certification(id) {
         $.modal.openView("用户实名信息", prefix + "/certification/" + id);
     }
+
     function orderDetail(id) {
         $.modal.openViewLarge("用户订单信息", prefix + "/orderDetail/" + id);
     }
+
     function balanceDetail(id) {
         $.modal.openViewLarge("用户余额明细", prefix + "/balanceDetail/" + id);
     }
-    function gotoDisabled(userId){
-        SHOP_COMMON.ajax.post(prefix + "/disable/"+userId,'',function (result) {
+
+    function gotoDisabled(userId) {
+        SHOP_COMMON.ajax.post(prefix + "/disable/" + userId, '', function (result) {
             $.table.refresh()
         })
     }
 
-    function gotoEnable(userId){
-        SHOP_COMMON.ajax.post(prefix + "/enable/"+userId,'',function (result) {
+    function gotoEnable(userId) {
+        SHOP_COMMON.ajax.post(prefix + "/enable/" + userId, '', function (result) {
             $.table.refresh()
         })
+    }
+
+    /* 用户状态显示 */
+    function statusTools(row) {
+        if (row.isLocked) {
+            return '<i class=\"fa fa-toggle-off text-info fa-2x\" onclick="gotoEnable(\'' + row.id + '\')"></i> ';
+        } else {
+            return '<i class=\"fa fa-toggle-on text-info fa-2x\" onclick="gotoDisabled(\'' + row.id + '\')"></i> ';
+        }
     }
 
     $(function () {
@@ -126,6 +139,13 @@
                     title: '姓名'
                 },
                 {
+                    title: '用户状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return statusTools(row);
+                    }
+                },
+                {
                     field: 'registerTime',
                     title: '注册时间',
                     sortable: true
@@ -142,11 +162,11 @@
                     formatter: function (value, row, index) {
                         var actions = [];
                         actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEdit(\'' + row.id + '\')"><i class="fa fa-edit"></i> 修改</a> ');
-                        if (row.isLocked) {
-                            actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEnable(\'' + row.id + '\')"><i class="fa fa-remove"></i>解冻用户</a> ');
-                        } else {
-                            actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoDisabled(\'' + row.id + '\')"><i class="fa fa-remove"></i>冻结用户</a> ');
-                        }
+                        // if (row.isLocked) {
+                        //     actions.push('<a class="btn btn-primary btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoEnable(\'' + row.id + '\')"><i class="fa fa-remove"></i>解冻用户</a> ');
+                        // } else {
+                        //     actions.push('<a class="btn btn-warning btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="gotoDisabled(\'' + row.id + '\')"><i class="fa fa-remove"></i>冻结用户</a> ');
+                        // }
                         actions.push('<a class="btn btn-primary btn-xs ' + detailFlag + '" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
                         actions.push('<div class="btn-group">' +
                             '<a data-toggle="dropdown" class="btn btn-primary btn-xs">更多操作 <span class="caret"></span></a>' +
@@ -165,26 +185,29 @@
     });
 </script>
 <style>
-    .user-more-action{
+    .user-more-action {
         width: 315px;
         margin-left: -315px;
         margin-top: -30px;
         border-radius: 5px;
         box-shadow: 0 0 26px rgba(86, 96, 117, 0.3);
     }
-    .user-more-action>li{
+
+    .user-more-action > li {
         display: inline-block;
     }
-    .user-more-action>li>a{
+
+    .user-more-action > li > a {
         display: inline-block;
         padding: 3px 10px;
     }
-    .caret{
-        transform:rotate(90deg);
-        -ms-transform:rotate(90deg); 	/* IE 9 */
-        -moz-transform:rotate(90deg); 	/* Firefox */
-        -webkit-transform:rotate(90deg); /* Safari 和 Chrome */
-        -o-transform:rotate(90deg); 	/* Opera */
+
+    .caret {
+        transform: rotate(90deg);
+        -ms-transform: rotate(90deg); /* IE 9 */
+        -moz-transform: rotate(90deg); /* Firefox */
+        -webkit-transform: rotate(90deg); /* Safari 和 Chrome */
+        -o-transform: rotate(90deg); /* Opera */
     }
 </style>
 </body>

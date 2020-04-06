@@ -132,8 +132,14 @@ public class PayRecordService {
     private Specification<PayRecord> getMoneyReturnQuery(Long userId, Integer state, LocalDate start, LocalDate end, Set<MoneyTypeEnum> types) {
         return (r, q, cb) -> {
             Predicate predicateOfReceive = cb.equal(r.get(PayRecord_.receiverId), userId);
+            Predicate predicateOfSpend = cb.and(cb.equal(r.get(PayRecord_.payerId), userId),
+                    cb.or(cb.equal(r.get(PayRecord_.payMethod), PayMethodEnum.MONEY.name()),
+                            cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.WITHDRAW_MONEY.getDescription())));
              if (types != null && !types.isEmpty()) {
+                 System.out.println("moneyTys==》");
                  predicateOfReceive = cb.and(predicateOfReceive, r.get(PayRecord_.type).in(types.stream()
+                         .map(MoneyTypeEnum::getDescription).collect(Collectors.toList())));
+                 predicateOfSpend = cb.and(predicateOfSpend, r.get(PayRecord_.type).in(types.stream()
                          .map(MoneyTypeEnum::getDescription).collect(Collectors.toList())));
              } else {
                  predicateOfReceive = cb.and(predicateOfReceive, r.get(PayRecord_.type).in(Stream.of(MoneyTypeEnum.RESALE_GOODS,
@@ -141,9 +147,7 @@ public class PayRecordService {
                          .map(MoneyTypeEnum::getDescription).collect(Collectors.toList())));
              }
 
-             Predicate predicateOfSpend = cb.and(cb.equal(r.get(PayRecord_.payerId), userId),
-                     cb.or(cb.equal(r.get(PayRecord_.payMethod), PayMethodEnum.MONEY.name()),
-                             cb.equal(r.get(PayRecord_.type), MoneyTypeEnum.WITHDRAW_MONEY.getDescription())));
+
 
              if (state != null) {
                  if (state == 1) {

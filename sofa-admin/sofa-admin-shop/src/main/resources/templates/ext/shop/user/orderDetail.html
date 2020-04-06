@@ -17,10 +17,31 @@
     var detailFlag = [[${@permission.hasPermi('ext:shop:user:view')}]];
     var editFlag = [[${@permission.hasPermi('ext:shop:user:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:user:remove')}]];
-    var prefix = ctx + "ext/shop/user";
+    var prefix = ctx + "ext/shop/order";
+    var statusMap = {
+        0: "待付款",
+        1: "已支付",
+        2: "未支付",
+        3: "确认收货",
+        4: "用户取消",
+        5: "待发货",
+        6: "已发货",
+        7: "已申请寄售",
+        8: "已完成",
+        9: "已退保证金",
+        10: "等待付尾款",
+        "-1": "无效订单"
+    };
+    var payTypeMap={
+        0: "支付宝",
+        1: "微信",
+        2: "刷卡",
+        3:"余额",
+        4:"积分",
+    }
     $(function () {
         var _orderOptions = {
-            url: prefix + "/orderList?userId=" + $("#userId").val(),
+            url: prefix + "/list?userId=" + $("#userId").val(),
             detailUrl: prefix + "/detail/{id}",
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
@@ -41,34 +62,40 @@
                     sortable: true
                 },
                 {
-                    field: 'nickName',
-                    title: '用户',
-                    formatter: function (value, row, index) {
-                        return $.table.imageView(value, 300, 300);
-                    }
-                },
-                {
-                    field: 'totalAmount',
-                    title: '订单总金额',
+                    field: 'orderSn',
+                    title: '订单号',
                     sortable: true
                 },
                 {
-                    field: 'payAmount',
-                    title: '应付金额'
-                }, {
-                    field: 'freightAmount',
-                    title: '运费金额'
+                    field: 'receiverName',
+                    title: '用户',
                 },
                 {
-                    field: 'promotionPrice',
-                    title: '优惠价'
+                    field: 'totalAmount',
+                    title: '订单金额'
+                },
+                {
+                    field: 'payAmount',
+                    title: '支付金额'
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
                 },
                 {
                     field: 'payType',
                     title: '支付方式',
                     align: 'center',
                     formatter: function (value, row, index) {
-                        return {1: "支付宝", 2: "微信"}[value] || "不详";
+                        return payTypeMap[value] || "不详";
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '订单状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return statusMap[value] || "不详";
                     }
                 }
             ]

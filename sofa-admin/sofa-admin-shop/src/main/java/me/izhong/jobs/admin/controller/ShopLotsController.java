@@ -123,6 +123,16 @@ public class ShopLotsController {
 		}
 		return PageModel.instance(list.size(), list);
 	}
+	@GetMapping("/acution/{id}")
+	public String auctionUser(@PathVariable("id") Long id, ModelMap model) {
+		model.addAttribute("auctionId", id);
+		return prefix + "/acutionDetail";
+	}
+	@GetMapping("/lotsItem/{id}")
+	public String lotsItem(@PathVariable("id") Long id, ModelMap model) {
+		model.addAttribute("id", id);
+		return prefix + "/lotsItem";
+	}
 
 	@GetMapping("/goods")
 	public String goods( ModelMap model) {

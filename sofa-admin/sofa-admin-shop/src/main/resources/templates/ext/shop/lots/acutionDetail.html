@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('报名人列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<input id="auctionId" name="auctionId" th:value="${auctionId}" type="hidden">
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "ext/shop/lots";
+    $(function () {
+        var options = {
+            url: prefix + "/auctionUserList?auctionId=" + $("#auctionId").val(),
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            pagination:false,
+            sortName: "id",
+            sortOrder: "asc",
+            modalName: "报名人列表",
+            columns: [{
+                    field: 'id',
+                    title: 'ID',
+                    sortable: true
+                },
+                {
+                    field: 'id',
+                    title: '用户ID',
+                    sortable: true
+                },
+                {
+                    title: '头像',
+                    field: 'avatar',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value);
+                    }
+                },
+                {
+                    field: 'phone',
+                    title: '手机',
+                    sortable: true
+                },
+                {
+                    field: 'nickName',
+                    title: '昵称'
+                },
+                {
+                    field: 'name',
+                    title: '姓名'
+                },
+            ]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>
