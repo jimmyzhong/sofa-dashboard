@@ -152,6 +152,7 @@ public class LotsService implements ILotsService {
 		lot.setBidTimes(items == null ? 0 : items.size());
 		lotsDao.save(lot);
 
+		log.info("bid items from cache, size:" + (items == null ? 0 : items.size()));
 		// persistent bids items
 		List<LotsItem> lotsItems = new ArrayList<>();
 		if (items != null) {
