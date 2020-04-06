@@ -1,5 +1,6 @@
 package me.izhong.jobs.admin.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -112,10 +114,14 @@ public class ShopLotsController {
 	@RequiresPermissions(ShopPermissions.Lots.VIEW)
     @PostMapping("/auctionUserList")
     @AjaxWrapper
-	public List<ShopUser> auctionUserList(
+	public PageModel<ShopUser> auctionUserList(
 			HttpServletRequest request,
 			@RequestParam(value = "auctionId", required = false) Long auctionId) {
-		return shopServiceReference.lotsService.auctionUserPageList(PageRequestUtil.fromRequest(request), auctionId);
+		List<ShopUser> list = shopServiceReference.lotsService.auctionUserPageList(PageRequestUtil.fromRequest(request), auctionId);
+		if (CollectionUtils.isEmpty(list)) {
+			return PageModel.instance(0L, new ArrayList<>());
+		}
+		return PageModel.instance(list.size(), list);
 	}
 
 	@GetMapping("/goods")
