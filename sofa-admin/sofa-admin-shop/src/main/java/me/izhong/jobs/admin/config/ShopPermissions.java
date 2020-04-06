@@ -108,6 +108,14 @@ public class ShopPermissions {
         public static final String ADD = PREFIX + "add";
     }
 
+    public static class LotsItem {
+        public static final String PREFIX = PERM_PREFIX + "lotsItem:";
+        public static final String VIEW = PREFIX + "view";
+        public static final String EDIT = PREFIX + "edit";
+        public static final String REMOVE = PREFIX + "remove";
+        public static final String ADD = PREFIX + "add";
+    }
+
     public static class Supplier {
         public static final String PREFIX = PERM_PREFIX + "supplier:";
         public static final String VIEW = PREFIX + "view";
