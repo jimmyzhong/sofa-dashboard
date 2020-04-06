@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('新增供应商')" />
+	<th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-shop-supplier-add">
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">供应商名称：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="name" id="name" required>
+				</div>
+			</div>
+			<div class="form-group tc">
+				<label class="col-sm-3 control-label is-required">logo：</label>
+				<div class="col-sm-8">
+					<img id="imageUrlCover" class="img-lg">
+					<label>
+						<a type="button" class="btn btn-w-m btn-primary">选择图片</a>
+						<input style="display: none" onchange ="uploadImg()" type="file" class="" id="imageFile" accept="image/*"/>
+					</label>
+					<input name="logo" id="imageUrl"  type="hidden"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label is-required" id="categoryLabel">供应商简介：</label>
+				<div class="col-sm-8">
+					<textarea class="form-control" name="description" id="description" required></textarea>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">供应商详情：</label>
+				<div class="col-sm-8">
+					<div class="summernote"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label"></label>
+				<div class="col-sm-8">
+					<a type="button" class="btn btn-w-m btn-primary" onclick="submit()">提交</a>
+				</div>
+			</div>
+
+		</form>
+	</div>
+	<th:block th:include="include :: footer" />
+	<th:block th:include="include :: summernote-js" />
+	<script type="text/javascript" th:inline="javascript">
+		var prefix = ctx + "ext/shop/suppliers";
+		$("#form-shop-supplier-add").validate({
+			onkeyup: false,
+			rules: {
+				content: {
+					minlength: 5,
+					maxlength: 200
+				},
+			},
+			focusCleanup: true
+		});
+		$('.summernote').summernote({
+			placeholder: '请输入文章内容',
+			height : 400,
+			lang : 'zh-CN',
+			followingToolbar: false,
+			callbacks: {
+				onImageUpload: function (files) {
+					sendFile(files[0], this);
+				}
+			}
+		});
+		function uploadImg(){
+			var formdata = new FormData();
+			formdata.append("file", $("#imageFile")[0].files[0]);
+			SHOP_COMMON.ajax.uploadImg(formdata,function (result) {
+				$("#imageUrl").val(result.data.pictureUrl)
+				$("#imageUrlCover").attr("src",result.data.pictureUrl)
+			})
+		}
+
+		function submit() {
+			if ($.validate.form()) {
+				var data = $("#form-shop-supplier-add").serializeArray();
+				var sHTML = $('.summernote').summernote('code');
+				data.push({"name": "content", "value": sHTML});
+				SHOP_COMMON.ajax.pageSave(prefix + "/add",data)
+				// $.operate.save(prefix + "/add", data);
+			}
+		}
+	</script>
+</body>
+</html>

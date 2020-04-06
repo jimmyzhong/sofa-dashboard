@@ -10,7 +10,7 @@
 			<div class="form-group tc">
 				<label class="col-sm-3 control-label">广告图片：</label>
 				<div class="col-sm-8">
-					<img id="ad_img" class="img-lg" th:src="*{imageUrl}">
+					<img id="ad_img" class="img-lg" th:src="${ad.imageUrl}" />
 				</div>
 			</div>
 			<div class="form-group">
@@ -67,8 +67,8 @@
 			<div class="form-group">
 				<label class="col-sm-3 control-label"></label>
 				<div class="col-sm-8">
-					<button type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</button>
-					<button type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</button>
+					<a type="button" class="btn btn-w-m btn-primary" onclick="gotoEdit()">修改</a>
+					<a type="button" class="btn btn-w-m btn-primary" onclick="$.modal.closeTab();">返回</a>
 				</div>
 			</div>
 		</form>
