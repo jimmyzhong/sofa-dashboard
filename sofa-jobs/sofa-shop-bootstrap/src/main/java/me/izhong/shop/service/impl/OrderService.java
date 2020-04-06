@@ -222,7 +222,7 @@ public class OrderService implements IOrderService {
 		order.setPayAmount(payAmount);
 
 		if (PayStatusEnum.SUCCESS.name().equals(state) && (order.getStatus() == WAIT_PAYING.getState()
-				|| order.getStatus() == EXPIRED.getState())) {
+				|| order.getStatus() == EXPIRED.getState() || order.getStatus() == WAIT_PAYING_AUCTION_REMAIN.getState())) {
 			order.setStatus(PAID.getState());
 			record.setSysState(1);
 
@@ -826,6 +826,18 @@ public class OrderService implements IOrderService {
 		}
 		marginOrder.setStatus(AUCTION_MARGIN_REFUND.getState());
 		orderDao.save(marginOrder);
+
+		PayRecord record = new PayRecord();
+		record.setSysState(1);
+		record.setCreateTime(LocalDateTime.now());
+		record.setInternalId(marginOrder.getOrderSn());
+		record.setPayAmount(marginOrder.getTotalAmount());
+		record.setTotalAmount(userMoney.getAvailableAmount());
+		record.setPayMethod(marginOrder.getPayType().toString());
+		record.setType(MoneyTypeEnum.getDescriptionByState(marginOrder.getOrderType()));
+		record.setReceiverId(marginOrder.getUserId());
+		record.setComment("退还保证金");
+		payRecordDao.save(record);
 	}
 
 	@Override
