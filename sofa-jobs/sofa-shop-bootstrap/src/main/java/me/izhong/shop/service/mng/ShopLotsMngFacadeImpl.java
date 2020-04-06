@@ -4,25 +4,31 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import me.izhong.common.exception.BusinessException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import com.alipay.sofa.rpc.common.utils.StringUtils;
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
+import com.google.common.collect.Lists;
 
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.common.exception.BusinessException;
 import me.izhong.common.util.Convert;
 import me.izhong.jobs.manage.IShopLotsMngFacade;
 import me.izhong.jobs.model.ShopLots;
+import me.izhong.jobs.model.ShopUser;
+import me.izhong.shop.consts.MoneyTypeEnum;
+import me.izhong.shop.consts.OrderStateEnum;
 import me.izhong.shop.dao.LotsDao;
+import me.izhong.shop.dao.UserDao;
 import me.izhong.shop.entity.Lots;
+import me.izhong.shop.entity.User;
 import me.izhong.shop.service.ILotsService;
 import me.izhong.shop.util.PageableConvertUtil;
 
@@ -33,6 +39,9 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
 	
 	@Autowired
 	private LotsDao lotsDao;
+
+	@Autowired
+	private UserDao userDao;
 
 	@Autowired
 	private ILotsService lotsService;
@@ -110,6 +119,19 @@ public class ShopLotsMngFacadeImpl implements IShopLotsMngFacade {
             return obj;
         }).collect(Collectors.toList());
         return PageModel.instance(page.getTotalElements(), list);
+	}
+
+	@Override
+	public List<ShopUser> auctionUserPageList(PageRequest request, Long auctionId) {
+		List<User> userList = userDao.selectAcutionUsers(MoneyTypeEnum.AUCTION_MARGIN.getType(), auctionId, OrderStateEnum.PAID.getState());
+		if (!CollectionUtils.isEmpty(userList)) {
+			return userList.stream().map(t -> {
+	            ShopUser shopUser = new ShopUser();
+	            BeanUtils.copyProperties(t, shopUser);
+	            return shopUser;
+	        }).collect(Collectors.toList());
+		}
+		return Lists.newArrayList();
 	}
 
 	@Override

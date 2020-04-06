@@ -1,5 +1,7 @@
 package me.izhong.jobs.admin.controller;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.domain.PageModel;
@@ -19,6 +22,7 @@ import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.jobs.admin.config.ShopPermissions;
 import me.izhong.jobs.admin.service.ShopServiceReference;
 import me.izhong.jobs.model.ShopLots;
+import me.izhong.jobs.model.ShopUser;
 
 @Controller
 @RequestMapping("/ext/shop/lots")
@@ -104,6 +108,16 @@ public class ShopLotsController {
     		throw BusinessException.build("删除失败");
     	}
     }
+
+	@RequiresPermissions(ShopPermissions.Lots.VIEW)
+    @PostMapping("/auctionUserList")
+    @AjaxWrapper
+	public List<ShopUser> auctionUserList(
+			HttpServletRequest request,
+			@RequestParam(value = "auctionId", required = false) Long auctionId) {
+		return shopServiceReference.lotsService.auctionUserPageList(PageRequestUtil.fromRequest(request), auctionId);
+	}
+
 	@GetMapping("/goods")
 	public String goods( ModelMap model) {
 		return prefix + "/goods";
