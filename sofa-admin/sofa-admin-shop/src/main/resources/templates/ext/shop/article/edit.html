@@ -71,7 +71,7 @@
 				var data = $("#form-shop-article-edit").serializeArray();
 				var sHTML = $('.summernote').summernote('code');
 				data.push({"name": "content", "value": sHTML});
-				SHOP_COMMON.ajax.pageSave(prefix + "/add",data)
+				SHOP_COMMON.ajax.pageSave(prefix + "/edit",data)
 				// $.operate.save(prefix + "/add", data);
 			}
 		}
