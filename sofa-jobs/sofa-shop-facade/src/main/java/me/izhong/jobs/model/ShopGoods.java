@@ -53,4 +53,5 @@ public class ShopGoods implements Serializable {
     private Boolean onIndexPage;
     private String createdBy;
     private LocalDateTime createTime;
+    private Long supplier;
 }
