@@ -833,7 +833,7 @@ public class OrderService implements IOrderService {
 		record.setInternalId(marginOrder.getOrderSn());
 		record.setPayAmount(marginOrder.getTotalAmount());
 		record.setTotalAmount(userMoney.getAvailableAmount());
-		record.setPayMethod(marginOrder.getPayType().toString());
+		record.setPayMethod(PayMethodEnum.getEnumByState(marginOrder.getPayType()).name());
 		record.setType(MoneyTypeEnum.getDescriptionByState(marginOrder.getOrderType()));
 		record.setReceiverId(marginOrder.getUserId());
 		record.setComment("退还保证金");

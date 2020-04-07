@@ -133,7 +133,7 @@ public class LotsServiceHelper {
         log.info("subscribe bid end at {} seconds later", seconds.toString());
     }
 
-    private void endBid(String bidId) {
+    public void endBid(String bidId) {
         BidDownloadInfo info = null;
         try{
             info = bidActionFacade.downloadBid(bidId, 1L, null);

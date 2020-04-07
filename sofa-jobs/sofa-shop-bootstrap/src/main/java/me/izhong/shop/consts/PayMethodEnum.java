@@ -1,5 +1,9 @@
 package me.izhong.shop.consts;
 
+import me.izhong.common.exception.BusinessException;
+
+import java.util.Arrays;
+
 public enum PayMethodEnum {
     ALIPAY(0),
     WECHAT(1),
@@ -13,5 +17,10 @@ public enum PayMethodEnum {
 
     public int getCode() {
         return code;
+    }
+
+    public static PayMethodEnum getEnumByState(int state) {
+        return Arrays.stream(PayMethodEnum.values()).filter(e->e.code==state).findFirst()
+                .orElseThrow(()-> BusinessException.build(""));
     }
 }

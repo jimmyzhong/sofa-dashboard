@@ -142,7 +142,7 @@ public class LotsService implements ILotsService {
 			lot.setOver(false);
 			lot.setPayStatus(LotsStatusEnum.NOT_DEAL.getType());
 		}
-		if (lot.getNowPrice().compareTo(lot.getWarningPrice()) >= 0) {
+		if (lot.getNowPrice().compareTo(lot.getWarningPrice()) >= 0 || lot.getNowPrice().compareTo(lot.getReservePrice()) >=0) {
 			lot.setOver(true);
 			lot.setPayStatus(LotsStatusEnum.DEAL.getType());
 			lot.setFinalPrice(lot.getNowPrice());

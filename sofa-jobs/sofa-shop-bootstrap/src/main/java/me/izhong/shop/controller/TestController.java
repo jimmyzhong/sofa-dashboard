@@ -1,5 +1,7 @@
 package me.izhong.shop.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.annotation.AjaxWrapper;
 import me.izhong.common.exception.BusinessException;
@@ -7,6 +9,9 @@ import me.izhong.shop.annotation.RequireUserLogin;
 import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.cache.SessionInfo;
 import me.izhong.shop.config.AliCloudProperties;
+import me.izhong.shop.consts.Constants;
+import me.izhong.shop.entity.Lots;
+import me.izhong.shop.service.impl.job.LotsServiceHelper;
 import me.izhong.shop.util.AliCloudUtils;
 import me.izhong.shop.util.ShareCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +40,9 @@ public class TestController {
 
     @Autowired
     private AliCloudProperties cloudProperties;
+
+    @Autowired
+    private LotsServiceHelper lotsServiceHelper;
 
     @GetMapping("/usercode/{id}")
     public String userCode(@PathVariable("id") Long id) {
@@ -133,4 +141,13 @@ public class TestController {
         return sessionInfo;
     }
 
+    @PostMapping(value = "/endBid/{lotsNo}")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiOperation(value="结束拍卖", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public void endBid(@PathVariable("lotsNo") String lotsNo, HttpServletRequest request) {
+        lotsServiceHelper.endBid(lotsNo);
+    }
 }
