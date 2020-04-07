@@ -350,7 +350,11 @@ public class UserController {
         user.setName(params.get("name"));
         user.setIdentityID(params.get("idCard"));
         boolean certified = userService.certify(user);
-        return new HashMap(){{put("certified", certified);}};
+        return new HashMap(){{
+            put("certified", certified);
+            put("name", user.getName());
+            put("idCard", user.getIdentityID());
+        }};
     }
 
     @GetMapping("/certify")
@@ -364,7 +368,11 @@ public class UserController {
         Long userId = session.getId();
         User user = userService.findById(Long.valueOf(userId));
 
-        return new HashMap(){{put("certified", user.getIsCertified());}};
+        return new HashMap(){{
+            put("certified", user.getIsCertified());
+            put("name", user.getName());
+            put("idCard", user.getIdentityID());
+        }};
     }
 
     @RequestMapping("/phoneCode")
