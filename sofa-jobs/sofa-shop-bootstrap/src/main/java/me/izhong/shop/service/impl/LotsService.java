@@ -179,6 +179,7 @@ public class LotsService implements ILotsService {
 				LotsItemStats stats = new LotsItemStats();
 				stats.setUserId(userId);
 				stats.setTimes(userBids.size());
+				stats.setLotsId(lot.getId());
 				stats.setAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(stats.getTimes()))
 						.setScale(2, BigDecimal.ROUND_HALF_UP));
 				stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(0.1))); // TODO 返利累计加价10%
