@@ -20,7 +20,11 @@ public interface ILotsService {
 
     Lots findByLotsNo(String lotsNo);
 
-    @Transactional
+    /**
+     * 拍卖结束时，统计保存拍卖信息
+     * @param lotsNo
+     * @param info
+     */
     void saveLots(String lotsNo, BidDownloadInfo info);
 
     PageModel<LotsDTO> listOfUser(Long id, PageQueryParamDTO query);
@@ -37,4 +41,15 @@ public interface ILotsService {
 
     void markLotsAsUploadedSuccess(Lots lots, String msg);
     void markLotsAsUploadedFail(Lots lots, String msg);
+
+    /**
+     * 转拍
+     * @param originalLotsNo
+     * @param userId
+     * @return
+     */
+    Lots reCreateLots(String originalLotsNo, Long userId);
+
+    @Transactional
+    Long saleAsScore(String lotsNo, Long userId);
 }

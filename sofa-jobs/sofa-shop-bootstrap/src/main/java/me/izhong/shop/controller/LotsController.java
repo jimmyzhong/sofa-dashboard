@@ -167,4 +167,30 @@ public class LotsController {
         map.put("signUp", signUp);
         return map;
     }
+
+    @PostMapping(value = "/renew/{lotsNo}")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiOperation(value="转拍", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public Map reCreateLots(@PathVariable("lotsNo") String lotsNo, HttpServletRequest request) {
+        Lots lot = lotsService.reCreateLots(lotsNo, CacheUtil.getSessionInfo(request).getId());
+        Map map = new HashMap();
+        map.put("lotsNo", lot.getLotsNo());
+        return map;
+    }
+
+    @PostMapping(value = "/toScore/{lotsNo}")
+    @RequireUserLogin
+    @ResponseBody
+    @ApiOperation(value="换积分", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public Map toScore(@PathVariable("lotsNo") String lotsNo, HttpServletRequest request) {
+        Long score = lotsService.saleAsScore(lotsNo, CacheUtil.getSessionInfo(request).getId());
+        Map map = new HashMap();
+        map.put("score", score);
+        return map;
+    }
 }

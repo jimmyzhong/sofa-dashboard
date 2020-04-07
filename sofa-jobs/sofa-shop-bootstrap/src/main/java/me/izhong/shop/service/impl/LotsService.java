@@ -59,6 +59,9 @@ public class LotsService implements ILotsService {
 	@Autowired
 	private UserDao userDao;
 
+	@Autowired
+	private UserScoreDao userScoreDao;
+
 	@Override
 	@Transactional
 	public void saveOrUpdate(Lots lots) {
@@ -364,5 +367,88 @@ public class LotsService implements ILotsService {
 		lotsDao.markAsUploadedSuccess(lot.getId(), LocalDateTime.now(),msg);
 	}
 
+	@Override
+	@Transactional
+	public Lots reCreateLots(String originalLotsNo, Long userId) {
+		Lots lot = findByLotsNo(originalLotsNo);
+		if (lot.getFinalUser() == null || lot.getFinalUser() != userId || lot.getOrderSn() == null ||
+				(lot.getPayStatus() != null && !lot.getPayStatus().equals(LotsStatusEnum.DEAL.getType()))) {
+			log.error("unable to re-create lots due to:" +lot.getFinalUser() +
+					", userId:" +userId + ",order:"+ lot.getOrderSn());
+			throw BusinessException.build("无法为当前用户创建拍卖");
+		}
 
+		lot.setPayStatus(LotsStatusEnum.DONE.getType());
+		lot.setComment("已转拍");
+
+		//TODO externalize rule.
+		BigDecimal moneyFactor = BigDecimal.ONE.divide(BigDecimal.valueOf(0.925), 6, BigDecimal.ROUND_HALF_UP);
+		Integer daysLag = 7;
+
+		Lots newLot = new Lots();
+		newLot.setAlbumPics(lot.getAlbumPics());
+		newLot.setProductPic(lot.getProductPic());
+		newLot.setLotCategoryId(lot.getLotCategoryId());
+		newLot.setMaxMemberCount(lot.getMaxMemberCount());
+		newLot.setGoodsId(lot.getGoodsId());
+		newLot.setName(lot.getName());
+		newLot.setDescription(lot.getDescription());
+		newLot.setSalePrice(lot.getSalePrice());
+		newLot.setContent(lot.getContent());
+		newLot.setAuctionFrequency(lot.getAuctionFrequency());
+		newLot.setPassword(lot.getPassword());
+		newLot.setUserLevel(lot.getUserLevel());
+		newLot.setApplyType(lot.getApplyType());
+		newLot.setApplyStatus(lot.getApplyStatus());
+		newLot.setIsRepublish(lot.getIsRepublish());
+		newLot.setIsApply(lot.getIsApply());
+		newLot.setPlatformRatio(lot.getPlatformRatio());
+		newLot.setRevenueAmount(lot.getRevenueAmount());
+
+		newLot.setLotsNo(idGeneratorService.nextID("LOTS" , newLot.getLotCategoryId().toString()));
+		newLot.setAddPrice(lot.getAddPrice().multiply(moneyFactor));
+		newLot.setDeposit(lot.getDeposit().multiply(moneyFactor));
+		newLot.setWarningPrice(lot.getWarningPrice().multiply(moneyFactor));
+		newLot.setReservePrice(lot.getReservePrice().multiply(moneyFactor));
+		newLot.setStartPrice(lot.getStartPrice().multiply(moneyFactor));
+
+		newLot.setStartTime(lot.getStartTime().plusDays(daysLag));
+		newLot.setEndTime(lot.getEndTime().plusDays(daysLag));
+
+		newLot.setCreateTime(LocalDateTime.now());
+		newLot.setCreatedBy(userId);
+
+		newLot = lotsDao.save(newLot);
+		lotsDao.save(lot);
+
+		return newLot;
+	}
+
+	@Override
+	@Transactional
+	public Long saleAsScore(String lotsNo, Long userId) {
+		Lots lot = findByLotsNo(lotsNo);
+		if (lot.getFinalUser() == null || lot.getFinalUser() != userId || lot.getOrderSn() == null ||
+				(lot.getPayStatus() != null && !lot.getPayStatus().equals(LotsStatusEnum.DEAL.getType()))) {
+			log.error("unable to sale into score due to:" +lot.getFinalUser() +
+					", userId:" +userId + ",order:"+ lot.getOrderSn());
+			throw BusinessException.build("无法转积分");
+		}
+
+		lot.setPayStatus(LotsStatusEnum.DONE.getType());
+		lot.setComment("已换积分");
+
+		// TODO externalize score ratio 1:100
+		Integer ratio = 100;
+
+		BigDecimal finalPrice = lot.getFinalPrice();
+		Long score = finalPrice.multiply(BigDecimal.valueOf(ratio))
+				.setScale(2, BigDecimal.ROUND_HALF_UP).longValue();
+
+		UserScore userScore = userScoreDao.selectUserForUpdate(userId);
+		userScore.setAvailableScore(userScore.getAvailableScore() + score);
+		userScoreDao.save(userScore);
+
+		return score;
+	}
 }

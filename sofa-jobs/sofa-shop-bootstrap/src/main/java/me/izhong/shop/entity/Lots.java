@@ -127,4 +127,8 @@ public class Lots {
     private LocalDateTime uploadedTime;
     @Column(name = "UPLOADED_MSG")
     private String uploadedMsg;
+    @Column(name = "CREATED_BY")
+    private Long createdBy; // 转拍人
+    @Column(name = "COMMENT", length = 50)
+    private String comment;
 }
