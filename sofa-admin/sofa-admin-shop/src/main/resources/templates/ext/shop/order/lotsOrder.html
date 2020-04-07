@@ -81,8 +81,8 @@
             removeUrl: prefix + "/remove",
             sortName: "updateTime",
             sortOrder: "desc",
-            orderType:0,
-            modalName: "商品订单列表",
+            orderType:5,
+            modalName: "拍卖订单列表",
             columns: [{
                 checkbox: true
             },
@@ -90,14 +90,21 @@
                     field: 'orderSn',
                     title: '订单号',
                     sortable: true
-                },
-                {
-                    field: 'receiverName',
-                    title: '用户',
+                },{
+                    field: '',
+                    title: '寄售商品名称',
+                    sortable: true
                 },
                 {
                     field: 'totalAmount',
                     title: '订单金额'
+                },
+                {
+                    field: 'receiverName',
+                    title: '买家',
+                },{
+                    field: '',
+                    title: '寄售人',
                 },
                 {
                     field: 'payAmount',

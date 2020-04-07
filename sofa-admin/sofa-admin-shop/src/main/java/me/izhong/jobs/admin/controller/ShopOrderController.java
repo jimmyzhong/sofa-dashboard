@@ -40,6 +40,16 @@ public class ShopOrderController {
 	public String order() {
 		return prefix + "/order";
 	}
+	//寄售商品订单列表
+	@GetMapping("/consignment")
+	public String consignment(Model model) {
+		return prefix + "/consignmentOrder";
+	}
+	//拍卖订单列表
+	@GetMapping("/lots")
+	public String lotsOrder(Model model) {
+		return prefix + "/lotsOrder";
+	}
 
 	/**
 	 * 查询订单
@@ -88,6 +98,8 @@ public class ShopOrderController {
 	public void delete(@RequestParam("ids") List<Long> ids) {
 		shopServiceReference.orderService.delete(ids);
 	}
+
+
 
 	/**
 	 * 订单详情、商品信息
