@@ -49,6 +49,16 @@ public class LotsController {
         return lotsService.listOfUser(CacheUtil.getSessionInfo(request).getId(), query);
     }
 
+    @PostMapping(value = "/renew/listOfUser")
+    @ResponseBody
+    @RequireUserLogin
+    @ApiOperation(value="用户专拍列表", httpMethod = "POST")
+    @ApiImplicitParam(paramType = "header", dataType = "String", name = Constants.AUTHORIZATION,
+            value = "登录成功后response Authorization header", required = true)
+    public PageModel<LotsDTO> reNewList(@RequestBody PageQueryParamDTO query, HttpServletRequest request) {
+        return lotsService.reNewListOfUser(CacheUtil.getSessionInfo(request).getId(), query);
+    }
+
     @PostMapping(value = "/items/{lotsNo}")
     @ResponseBody
     @ApiOperation(value="拍卖出价明细", httpMethod = "POST")

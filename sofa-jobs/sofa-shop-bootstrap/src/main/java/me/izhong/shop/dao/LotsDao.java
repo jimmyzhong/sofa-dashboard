@@ -18,7 +18,6 @@ public interface LotsDao extends JpaRepository<Lots, Long>, JpaSpecificationExec
 
 
     List<Lots> findAllByStartTimeBetweenAndUploadedOrderByStartTime(LocalDateTime from, LocalDateTime to, Integer uploaded);
-    List<Lots> findAllByStartTimeLessThanEqualAndUploaded(LocalDateTime startTime, Integer uploaded);
     List<Lots> findAllByEndTimeBeforeAndFollowCountGreaterThanAndPayStatusIsNull(
             LocalDateTime endTime, Integer followCount);
 

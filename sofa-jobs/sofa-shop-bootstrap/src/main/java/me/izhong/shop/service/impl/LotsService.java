@@ -226,9 +226,6 @@ public class LotsService implements ILotsService {
 		return lot.getEndTime().compareTo(LocalDateTime.now())<0;
 	}
 
-	@PersistenceContext
-	EntityManager entityManager;
-
 	@Override
 	public PageModel<LotsDTO> listOfUser(Long userId, PageQueryParamDTO query) {
 		Sort sort = Sort.by(Sort.Direction.DESC, "CREATE_TIME");
@@ -461,5 +458,21 @@ public class LotsService implements ILotsService {
 		userScoreDao.save(userScore);
 
 		return score;
+	}
+
+	@Override
+	public PageModel<LotsDTO> reNewListOfUser(Long userId, PageQueryParamDTO query) {
+		Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
+				Long.valueOf(query.getPageSize()).intValue(), sort);
+
+		Specification<Lots> sp = (r, q, cb) ->{
+			Predicate p = cb.equal(r.get("createdBy"), userId);
+			return p;
+		};
+
+		Page<Lots> page = lotsDao.findAll(sp, pageableReq);
+		List<LotsDTO> dto = converToDTO(page);
+		return PageModel.instance(page.getTotalElements(), dto);
 	}
 }

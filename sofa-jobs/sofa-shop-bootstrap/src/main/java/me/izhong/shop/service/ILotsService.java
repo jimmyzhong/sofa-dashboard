@@ -52,4 +52,6 @@ public interface ILotsService {
 
     @Transactional
     Long saleAsScore(String lotsNo, Long userId);
+
+    PageModel<LotsDTO> reNewListOfUser(Long id, PageQueryParamDTO query);
 }
