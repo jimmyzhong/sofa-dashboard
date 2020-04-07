@@ -84,4 +84,6 @@ public class Goods {
     private Double resaleTimeStep;
     @Column(name = "RESALE_LIMIT")
     private Double resaleLimit;
+    @Column(name = "SUPPLIER")
+    private Long supplier;
 }

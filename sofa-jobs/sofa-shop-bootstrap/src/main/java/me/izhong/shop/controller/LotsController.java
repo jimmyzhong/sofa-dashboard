@@ -13,12 +13,10 @@ import me.izhong.shop.cache.CacheUtil;
 import me.izhong.shop.consts.Constants;
 import me.izhong.shop.dto.LotsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
-import me.izhong.shop.entity.Lots;
-import me.izhong.shop.entity.LotsCategory;
-import me.izhong.shop.entity.LotsItem;
-import me.izhong.shop.entity.LotsItemStats;
+import me.izhong.shop.entity.*;
 import me.izhong.shop.service.ILotsService;
 import me.izhong.shop.service.IUserService;
+import me.izhong.shop.service.impl.SuppliersService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,6 +36,8 @@ public class LotsController {
     ILotsService lotsService;
     @Autowired
     IUserService userService;
+    @Autowired
+    SuppliersService suppliersService;
 
     @PostMapping(value = "/listOfUser")
     @ResponseBody
@@ -192,5 +192,11 @@ public class LotsController {
         Map map = new HashMap();
         map.put("score", score);
         return map;
+    }
+
+    @GetMapping(value = "/supplier/detail/{supplierId}")
+    @ResponseBody
+    public Suppliers supplierDetail(@PathVariable("supplierId") Long supplierId) {
+        return suppliersService.findById(supplierId);
     }
 }

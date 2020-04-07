@@ -50,5 +50,6 @@ public class GoodsDTO {
 	private String avatarOfCreatedBy;
 	private String nameOfCreatedBy;
 	private Integer scoreRedeem;
+	private Long supplier;
     private List<GoodsAttributes> attributes;
 }

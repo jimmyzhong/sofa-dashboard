@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
 
+import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,4 +78,6 @@ public class LotsDTO {
     private Integer bidTimes;
     private String orderStatus;
     private String orderType;
+    private Long supplier; // 供应商
+    private String supplierName; // 供应商名称
 }

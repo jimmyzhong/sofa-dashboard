@@ -58,6 +58,8 @@ public class LotsService implements ILotsService {
 	private IOrderService orderService;
 	@Autowired
 	private UserDao userDao;
+	@Autowired
+	private SuppliersService suppliersService;
 
 	@Autowired
 	private UserScoreDao userScoreDao;
@@ -79,6 +81,12 @@ public class LotsService implements ILotsService {
 				lots.setProductPic(g.getProductPic());
 				if(g.getAlbumPics() != null && !g.getAlbumPics().isEmpty()) {
 					lots.setAlbumPics(JSONArray.toJSONString(g.getAlbumPics()));
+				}
+
+				if (g.getSupplier() != null) {
+					Suppliers suppliers = suppliersService.findById(g.getSupplier());
+					lots.setSupplier(g.getSupplier());
+					lots.setSupplierName(suppliers.getName());
 				}
 			}
 		}
@@ -166,6 +174,7 @@ public class LotsService implements ILotsService {
 				lotItem.setPrice(item.getPrice());
 				lotItem.setUserId(item.getUserId());
 				lotItem.setSeqId(item.getSeqId());
+				lotItem.setOfferAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(100)).longValue() / 10); // TODO 返利累计加价10%
 				lotsItems.add(lotItem);
 			}
 			lotsItemDao.saveAll(lotsItems);
@@ -310,6 +319,7 @@ public class LotsService implements ILotsService {
 					.description(l.getDescription()).content(l.getContent()).endTime(l.getEndTime())
 					.startTime(l.getStartTime()).finalPrice(l.getFinalPrice()).followCount(l.getFollowCount())
 					.payStatus(l.getPayStatus()).maxMemberCount(l.getMaxMemberCount()).lotsNo(l.getLotsNo())
+					.supplier(l.getSupplier()).supplierName(l.getSupplierName())
 					.productPic(l.getProductPic()).startPrice(l.getStartPrice()).name(l.getName()).bidTimes(l.getBidTimes())
 					.build();
 	}

@@ -131,4 +131,8 @@ public class Lots {
     private Long createdBy; // 转拍人
     @Column(name = "COMMENT", length = 50)
     private String comment;
+    @Column(name = "SUPPLIER")
+    private Long supplier; // 供应商
+    @Column(name = "SUPPLIER_NAME", length = 10)
+    private String supplierName; // 供应商名称
 }

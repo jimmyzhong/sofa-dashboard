@@ -49,6 +49,12 @@ public class LotsItem {
     private Long price;
 
     /**
+     * 本次出价的收益，单位分
+     */
+    @Column(name = "OFFER_AMOUNT")
+    private Long offerAmount;
+
+    /**
      * 出价时间
      */
     @Column(name = "BID_TIME")
