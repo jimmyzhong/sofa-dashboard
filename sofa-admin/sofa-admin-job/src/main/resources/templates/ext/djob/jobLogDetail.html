@@ -114,7 +114,7 @@
                 dataType : "json",
                 success : function(ret){
 
-                    if (ret.code == "SUCCESS") {
+                    if (ret.code == 200) {
                         if (!ret.data.logContent) {
                             console.log('pullLog fail');
                             return;
