@@ -39,6 +39,9 @@ public interface LotsDao extends JpaRepository<Lots, Long>, JpaSpecificationExec
                                          LocalDateTime currentTime, Pageable pageable);
 
 
+    @Query(value = "select t.password from Lots t where t.lotsNo = ?1")
+    String getPasswordOfLots(String lotsNo);
+
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "select t from Lots t where t.id =?1 ")
     Lots selectForUpdate(Long id);

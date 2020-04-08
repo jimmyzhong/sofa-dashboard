@@ -25,6 +25,8 @@ public class PageQueryParamDTO extends PageRequest {
     private Long inviteUserId2;
     // auction
     private Integer publicCategoryId;
+    private Integer agentCategoryId;
+    private String agentPassword;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Boolean isAgent;

@@ -37,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -273,12 +274,26 @@ public class LotsService implements ILotsService {
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
 
+		if (query.getAgentCategoryId() != null) {
+			Optional<LotsCategory> category = lotsCategoryDao.findById(query.getAgentCategoryId());
+			if (!category.isPresent()) {
+				log.error("cats not exist " + query.getAgentCategoryId());
+				throw BusinessException.build("专区编号或密码不正确");
+			}
+			if (!StringUtils.equalsIgnoreCase(category.get().getPassword(), query.getAgentPassword())) {
+				log.error("agent password mismatch, agentID: " + query.getAgentCategoryId());
+				throw BusinessException.build("专区编号或密码不正确");
+			}
+		}
 		Specification<Lots> sp = (r, q, cb) -> {
 			Predicate p = null;
 			if (query.getIsAgent() == null || !query.getIsAgent()) {
 				p = cb.equal(r.get("lotCategoryId"), query.getPublicCategoryId());
 			} else if (query.getIsAgent() != null && query.getIsAgent()){
 				p = cb.notEqual(r.get("lotCategoryId"), query.getPublicCategoryId());
+			}
+			if (query.getAgentCategoryId() != null) {
+				p = cb.equal(r.get("lotCategoryId"), query.getAgentCategoryId());
 			}
 
 			if (query.getStartTime() != null) {
