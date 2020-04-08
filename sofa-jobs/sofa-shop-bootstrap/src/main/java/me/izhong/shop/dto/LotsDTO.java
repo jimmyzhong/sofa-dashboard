@@ -60,6 +60,8 @@ public class LotsDTO {
     private Integer isRepublish;
     //警示价
     private BigDecimal warningPrice;
+    //保留价
+    private BigDecimal reservePrice;
     //平台扣佣比例
     private Integer platformRatio;
     //平台佣金

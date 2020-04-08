@@ -16,7 +16,9 @@ public enum OrderStateEnum {
     RESALED(7, "已申请寄售"),
     FINISHED(8, "已完成"),
     AUCTION_MARGIN_REFUND(9,"已退保证金"),
-    WAIT_PAYING_AUCTION_REMAIN(10,"等待付尾款");
+    WAIT_PAYING_AUCTION_REMAIN(10,"等待付尾款"),
+    AUCTION_TO_SCORED(11,"已转积分"),
+    AUCTION_RENEWED(12,"已转拍"),;
 
     int state;
     String comment;

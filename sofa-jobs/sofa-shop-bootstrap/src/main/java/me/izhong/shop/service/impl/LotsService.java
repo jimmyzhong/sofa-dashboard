@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -231,17 +232,17 @@ public class LotsService implements ILotsService {
 		Sort sort = Sort.by(Sort.Direction.DESC, "CREATE_TIME");
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
-		Integer fetchSignedUp = 1, fetchDeal = 1, fetchMarginRefund = 1;
-		if (query.getAuctionFilter() != null) {
-			if (query.getAuctionFilter() == 0) {
-				fetchDeal = fetchMarginRefund = 0;
-			} else if (query.getAuctionFilter() == 1) {
-				fetchSignedUp = fetchMarginRefund = 0;
-			} else if (query.getAuctionFilter() == 2) {
-				fetchSignedUp = fetchDeal = 0;
-			}
+		int[] args = new int[5]; // 5 state of lots for now, 0:已参加 1:竞拍中 2:拍中待付款 3:已付款 4:已完成
+		if (query.getAuctionFilter() != null && (query.getAuctionFilter() <= 0 || query.getAuctionFilter() > args.length )) {
+			throw BusinessException.build("状态未知");
 		}
-		Page<Map<String, Object>> page = lotsDao.listOfUser(userId, fetchSignedUp,fetchDeal,fetchMarginRefund, pageableReq);
+		if (query.getAuctionFilter() != null) {
+			args[query.getAuctionFilter() - 1] = 1;
+		} else {
+			for(int i=0; i< args.length; i++) args[i] = 1;
+		}
+		Page<Map<String, Object>> page = lotsDao.listOfUser(userId, args[0], args[1],args[2], args[3], args[4],
+				LocalDateTime.now(), pageableReq);
 
 		List<LotsDTO> dto = page.getContent().stream().map(m-> {
 			Integer type = null;
@@ -385,6 +386,13 @@ public class LotsService implements ILotsService {
 					", userId:" +userId + ",order:"+ lot.getOrderSn());
 			throw BusinessException.build("无法为当前用户创建拍卖");
 		}
+		// TODO need to check order is paid or not
+		Order order = orderService.findByOrderNo(lot.getOrderSn());
+		if (order == null || order.getStatus() != OrderStateEnum.PAID.getState()) {
+			throw BusinessException.build("无法为当前用户创建拍卖,未付款");
+		}
+		order.setStatus(OrderStateEnum.AUCTION_RENEWED.getState());
+		orderService.saveOrUpdate(order);
 
 		lot.setPayStatus(LotsStatusEnum.DONE.getType());
 		lot.setComment("已转拍");
@@ -443,6 +451,13 @@ public class LotsService implements ILotsService {
 			throw BusinessException.build("无法转积分");
 		}
 
+		Order order = orderService.findByOrderNo(lot.getOrderSn());
+		if (order == null || order.getStatus() != OrderStateEnum.PAID.getState()) {
+			throw BusinessException.build("无法为当前用户创建拍卖,未付款");
+		}
+		order.setStatus(OrderStateEnum.AUCTION_TO_SCORED.getState());
+		orderService.saveOrUpdate(order);
+
 		lot.setPayStatus(LotsStatusEnum.DONE.getType());
 		lot.setComment("已换积分");
 
@@ -466,8 +481,34 @@ public class LotsService implements ILotsService {
 		Pageable pageableReq = PageRequest.of(Long.valueOf(query.getPageNum()-1).intValue(),
 				Long.valueOf(query.getPageSize()).intValue(), sort);
 
+		Integer filter = query.getAuctionFilter();
 		Specification<Lots> sp = (r, q, cb) ->{
 			Predicate p = cb.equal(r.get("createdBy"), userId);
+			if (filter == null) {
+				return p;
+			}
+			LocalDateTime now = LocalDateTime.now();
+			// 预展中
+			if (filter == 1) {
+				p = cb.and(p, cb.greaterThan(r.get("startTime"), now));
+			}
+			// 竞拍中
+			else if (filter == 2) {
+				p = cb.and(p, cb.lessThanOrEqualTo(r.get("startTime"), now));
+				p = cb.and(p, cb.greaterThan(r.get("endTime"), now));
+			}
+			// 已成交或违约
+			else if (filter == 3) {
+				Predicate statusPredicate = cb.or(
+						cb.equal(r.get("payStatus"), LotsStatusEnum.DONE.getType()),
+						cb.equal(r.get("payStatus"), LotsStatusEnum.DEAL.getType()),
+						cb.equal(r.get("payStatus"), LotsStatusEnum.EXPIRED.getType()));
+				p = cb.and(p, statusPredicate);
+			}
+			// 流拍
+			else if (filter == 4) {
+				p = cb.and(p, cb.equal(r.get("payStatus"), LotsStatusEnum.NOT_DEAL.getType()));
+			}
 			return p;
 		};
 

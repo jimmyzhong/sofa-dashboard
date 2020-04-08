@@ -9,7 +9,8 @@ public enum LotsStatusEnum {
     DEAL(0, "成交"),
     NOT_DEAL(1, "流拍"),
     WAIT_PAY(2, "待付尾款"),
-    DONE(3, "结束");
+    DONE(3, "结束"),
+    EXPIRED(4, "违约");
 
     int type;
     String msg;
