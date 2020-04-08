@@ -71,6 +71,16 @@ public class ShopSuppliersController {
 		return prefix + "/edit";
     }
 
+    @GetMapping("/goods/{id}")
+    public String goods(@PathVariable("id") Long id, ModelMap model) {
+		ShopSuppliers shopSuppliers = shopServiceReference.suppliersService.find(id);
+		if (shopSuppliers == null) {
+			throw BusinessException.build(String.format("供应商不存在%s", id));
+		}
+		model.addAttribute("id", id);
+		return prefix + "/goods";
+    }
+
 	@RequiresPermissions(ShopPermissions.Supplier.EDIT)
     @PostMapping("/edit")
     @AjaxWrapper

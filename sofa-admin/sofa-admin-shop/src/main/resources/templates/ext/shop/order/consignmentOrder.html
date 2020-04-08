@@ -74,14 +74,13 @@
 
     $(function () {
         var options = {
-            url: prefix + "/list",
+            url: prefix + "/list?orderType=3",
             detailUrl: prefix + "/detail/{id}",
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
             sortName: "updateTime",
             sortOrder: "desc",
-            orderType:3,
             modalName: "寄售商品订单列表",
             columns: [{
                 checkbox: true
