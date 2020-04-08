@@ -66,6 +66,17 @@
 				</div>
 			</div>
 			<div class="form-group">
+				<label class="col-sm-3 control-label is-required">供应商：</label>
+				<div class="col-sm-8">
+					<div class="input-group">
+						<input class="form-control" id="supplier" name="supplier" required />
+						<span class="input-group-btn">
+						<button type="button" class="btn btn-primary" onclick="selectRadioSupplier()">选择供应商
+                                        </button> </span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
 				<label class="col-sm-3 control-label is-required">商品描述：</label>
 				<div class="col-sm-8">
 					<textarea class="form-control" id="description" name="description" required></textarea>
@@ -144,6 +155,9 @@
 			fetchGoodsCategory();
 			fetchGoodsTemplate();
 		})
+		function selectRadioSupplier() {
+			$.modal.open("选择供应商", prefix + "/supplier");
+		}
 		$("#form-shop-goods-add").validate({
 			onkeyup: false,
 			rules: {

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('选择供应商')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+    var prefix = ctx + "ext/shop/suppliers";
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            modalName: "选择供应商",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            columns: [{
+                radio: true
+            },
+                {
+                    field: 'id',
+                    title: 'ID',
+                    sortable: true
+                },
+                {
+                    field: 'logo',
+                    title: '供应商logo',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, 300, 300, '', 1);
+                    }
+                }, {
+                    field: 'name',
+                    title: '供应商名称',
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间',
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
+                }]
+        };
+        $.table.init(options);
+    });
+
+    /* 添加用户-选择用户-提交 */
+    function submitHandler() {
+        var rows = $.table.selectFirstColumns();
+        if (rows.length == 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.modal.close();
+        // // 父页面的方法
+        // // parent.selectUsers();
+        // // 父页面的变量
+        parent.$('#supplier').val(rows.join());
+        // alert(rows.join());
+    }
+</script>
+</body>
+</html>
