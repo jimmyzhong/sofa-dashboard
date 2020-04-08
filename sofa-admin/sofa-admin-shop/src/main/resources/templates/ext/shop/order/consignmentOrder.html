@@ -41,77 +41,103 @@
     var editFlag = [[${@permission.hasPermi('ext:shop:order:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:order:remove')}]];
     var prefix = ctx + "ext/shop/order";
-
+    var statusMap = {
+        0: "待付款",
+        1: "已支付",
+        2: "未支付",
+        3: "确认收货",
+        4: "用户取消",
+        5: "待发货",
+        6: "已发货",
+        7: "已申请寄售",
+        8: "已完成",
+        9: "已退保证金",
+        10: "等待付尾款",
+        "-1": "无效订单"
+    };
+    var payTypeMap={
+        0: "支付宝",
+        1: "微信",
+        2: "刷卡",
+        3:"余额",
+        4:"积分",
+    }
     function gotoDetail(id) {
         var url = prefix + '/detail/' + id;
         $.modal.openTab("订单详情", url);
     }
+
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;
         $.modal.openTab("编辑商品", url);
     }
+
     $(function () {
         var options = {
-            url: prefix + "/list",
+            url: prefix + "/list?orderType=3",
             detailUrl: prefix + "/detail/{id}",
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
             removeUrl: prefix + "/remove",
             sortName: "updateTime",
             sortOrder: "desc",
-            modalName: "订单列表",
+            modalName: "寄售商品订单列表",
             columns: [{
                 checkbox: true
             },
-            {
-                field: 'orderSn',
-                title: '订单号',
-                sortable: true
-            },
-            {
-                field: 'nickName',
-                title: '用户',
-                formatter: function (value, row, index) {
-                    return $.table.imageView(value,300,300);
-                }
-            },
-            {
-                field: 'totalAmount',
-                title: '订单金额'
-            },
-            {
-                field: 'payAmount',
-                title: '支付金额'
-            },
-            {
-                field: 'paymentTime',
-                title: '支付时间'
-            },
-            {
-                field: 'payType',
-                title: '支付方式',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    return {1:"支付宝",2:"微信"}[value]||"不详";
-                }
-            },
-            {
-                field: 'deliverySn',
-                title: '订单状态'
-            },
-            {
-                field: 'confirmStatus',
-                title: '发货状态'
-            },
-            {
-                title: '操作',
-                align: 'center',
-                formatter: function (value, row, index) {
-                    var actions = [];
-                    actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
-                    return actions.join('');
-                }
-            }]
+                {
+                    field: 'orderSn',
+                    title: '订单号',
+                    sortable: true
+                },{
+                    field: '',
+                    title: '寄售商品名称',
+                    sortable: true
+                },
+                {
+                    field: 'totalAmount',
+                    title: '订单金额'
+                },
+                {
+                    field: 'receiverName',
+                    title: '买家',
+                },{
+                    field: '',
+                    title: '寄售人',
+                },
+                {
+                    field: 'payAmount',
+                    title: '支付金额'
+                },
+                {
+                    field: 'updateTime',
+                    title: '更新时间'
+                },
+                {
+                    field: 'payType',
+                    title: '支付方式',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return payTypeMap[value] || "不详";
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '订单状态',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        return statusMap[value] || "不详";
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-primary btn-xs" href="javascript:void(0)" onclick="gotoDetail(\'' + row.id + '\')"><i class="fa fa-search"></i> 查看详情</a> ');
+                        return actions.join('');
+                    }
+                }]
         };
         $.table.init(options);
     });

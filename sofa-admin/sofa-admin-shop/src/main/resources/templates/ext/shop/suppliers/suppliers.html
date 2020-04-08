@@ -54,16 +54,14 @@
         var url = prefix + '/add';
         $.modal.openTab("新增供应商", url);
     }
-
     function gotoEdit(id) {
         var url = prefix + '/edit/' + id;
         $.modal.openTab("编辑供应商", url);
     }
     function relationShop(id) {
-        var url = prefix + '/edit/' + id;
-        $.modal.openTab("关联商品", url);
+        var url = prefix + '/goods/' + id;
+        $.modal.open("关联商品", url);
     }
-
     $(function () {
         var options = {
             url: prefix + "/list",

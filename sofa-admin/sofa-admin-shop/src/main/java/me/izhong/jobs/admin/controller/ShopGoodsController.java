@@ -52,6 +52,11 @@ public class ShopGoodsController {
         return prefix + "/add";
     }
 
+    @GetMapping("/supplier")
+    public String supplier() {
+        return prefix + "/supplier";
+    }
+
 	@RequiresPermissions(ShopPermissions.Goods.ADD)
     @PostMapping("/add")
     @AjaxWrapper

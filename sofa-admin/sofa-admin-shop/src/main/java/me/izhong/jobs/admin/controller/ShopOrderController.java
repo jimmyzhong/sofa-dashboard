@@ -25,6 +25,7 @@ import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.dto.OrderQueryParam;
 import me.izhong.jobs.dto.ReceiverInfoParam;
 import me.izhong.jobs.model.ShopOrder;
+import me.izhong.jobs.model.ShopOrderItem;
 
 @Slf4j
 @Controller
@@ -39,6 +40,16 @@ public class ShopOrderController {
 	@GetMapping
 	public String order() {
 		return prefix + "/order";
+	}
+	//寄售商品订单列表
+	@GetMapping("/consignment")
+	public String consignment(Model model) {
+		return prefix + "/consignmentOrder";
+	}
+	//拍卖订单列表
+	@GetMapping("/lots")
+	public String lotsOrder(Model model) {
+		return prefix + "/lotsOrder";
 	}
 
 	/**
@@ -89,6 +100,8 @@ public class ShopOrderController {
 		shopServiceReference.orderService.delete(ids);
 	}
 
+
+
 	/**
 	 * 订单详情、商品信息
 	 * @param id
@@ -99,6 +112,8 @@ public class ShopOrderController {
 	public String detail(@PathVariable Long id, Model model) {
 		ShopOrder order = shopServiceReference.orderService.detail(id);
 		model.addAttribute("order", order);
+		List<ShopOrderItem> orderItems = shopServiceReference.orderItemService.query(order.getId());
+		model.addAttribute("orderItems", orderItems);
 		return prefix + "/detail";
 	}
 

@@ -63,6 +63,7 @@ public class ShopOrder implements Serializable {
     private String receiverRegion;
     /** 详细地址 */
     private String receiverDetailAddress;
+    private String description;
     /** 订单备注 */
     private String note;
     /** 确认收货状态: 0->未确认;1->已确认 */

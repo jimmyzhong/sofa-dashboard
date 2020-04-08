@@ -41,13 +41,16 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
 
 	@Override
 	public PageModel<ShopOrder> pageList(PageRequest request, OrderQueryParam param) {
-		Specification<Order> specification = getOrderQuerySpeci(param.getOrderSn(), param.getStart(), param.getEnd(), param.getStatus(), param.getUserId());
+		Specification<Order> specification = getOrderQuerySpeci(param.getOrderType(), param.getOrderSn(), param.getStart(), param.getEnd(), param.getStatus(), param.getUserId());
 		return getOrderPageModel(request, specification);
 	}
 
-    private Specification<Order> getOrderQuerySpeci(String orderSn, LocalDateTime start, LocalDateTime end, Integer status, Long userId) {
+    private Specification<Order> getOrderQuerySpeci(Integer orderType, String orderSn, LocalDateTime start, LocalDateTime end, Integer status, Long userId) {
         return (r, cq, cb) -> {
         	List<Predicate> predicates = Lists.newArrayList();
+        	if (orderType != null) {
+        		predicates.add(cb.equal(r.get("orderType"), orderType));
+        	}
         	if (!StringUtils.isEmpty(orderSn)) {
         		predicates.add(cb.like(r.get("orderSn"), "%" + orderSn + "%"));
         	}

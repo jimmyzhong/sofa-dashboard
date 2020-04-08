@@ -128,6 +128,9 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         	if (goods.getOnIndexPage() != null) {
         		predicates.add(cb.equal(r.get("onIndexPage"), goods.getOnIndexPage()));
         	}
+        	if (goods.getSupplier() != null) {
+        		predicates.add(cb.equal(r.get("supplier"), goods.getSupplier()));
+        	}
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }
