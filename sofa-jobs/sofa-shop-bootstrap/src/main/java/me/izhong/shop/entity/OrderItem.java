@@ -33,7 +33,7 @@ public class OrderItem {
     private Long productAttributeId;
     @Column(name = "NAME")
     private String name;
-//    @Column(name = "ORDER_ID")
+    @Column(name = "ORDER_ID")
     private Long orderId;
     @Column(name = "QUANTITY")
     private Integer quantity;

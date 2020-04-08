@@ -25,6 +25,7 @@ import me.izhong.jobs.dto.OrderDeliveryParam;
 import me.izhong.jobs.dto.OrderQueryParam;
 import me.izhong.jobs.dto.ReceiverInfoParam;
 import me.izhong.jobs.model.ShopOrder;
+import me.izhong.jobs.model.ShopOrderItem;
 
 @Slf4j
 @Controller
@@ -111,6 +112,8 @@ public class ShopOrderController {
 	public String detail(@PathVariable Long id, Model model) {
 		ShopOrder order = shopServiceReference.orderService.detail(id);
 		model.addAttribute("order", order);
+		List<ShopOrderItem> orderItems = shopServiceReference.orderItemService.query(order.getId());
+		model.addAttribute("orderItems", orderItems);
 		return prefix + "/detail";
 	}
 

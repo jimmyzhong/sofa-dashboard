@@ -1,5 +1,7 @@
 package me.izhong.jobs.admin.controller;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +64,9 @@ public class ShopLotsController {
     	checkField(shopLots.getAddPrice(), "加价幅度");
     	checkField(shopLots.getDeposit(), "保证金");
     	checkField(shopLots.getStartTime(), "开始时间");
+    	if (shopLots.getStartTime().isBefore(LocalDateTime.now())) {
+    		throw BusinessException.build("开始时间必须大于当前时间");
+    	}
     	checkField(shopLots.getEndTime(), "结束时间");
     	checkField(shopLots.getUserLevel(), "最低会员级别");
     	shopServiceReference.lotsService.create(shopLots);
@@ -86,6 +91,9 @@ public class ShopLotsController {
     	checkField(shopLots.getAddPrice(), "加价幅度");
     	checkField(shopLots.getDeposit(), "保证金");
     	checkField(shopLots.getStartTime(), "开始时间");
+    	if (shopLots.getStartTime().isBefore(LocalDateTime.now())) {
+    		throw BusinessException.build("开始时间必须大于当前时间");
+    	}
     	checkField(shopLots.getEndTime(), "结束时间");
     	checkField(shopLots.getUserLevel(), "最低会员级别");
 		shopServiceReference.lotsService.edit(shopLots);
