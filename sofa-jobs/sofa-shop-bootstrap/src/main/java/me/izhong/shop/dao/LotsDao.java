@@ -25,10 +25,18 @@ public interface LotsDao extends JpaRepository<Lots, Long>, JpaSpecificationExec
             "and u.id = ?1 and o.status = ?3 and au.id=o.auction_id ORDER BY ?#{#pageable}", nativeQuery = true)
     Page<Lots> findAllByUser(Long userId, Integer orderType, Integer orderStatus, Pageable pageable);
 
+    // TODO jpa query is better
     @Query(value = "select au.*, o.order_type, o.status order_status from lots au, tx_order o, user u where o.user_id = u.id and au.id=o.auction_id and u.id = ?1 and  " +
-            "( ( o.order_type = 4 and o.status = 1 and 1 = ?2 )  or ( o.order_type = 5 and 1 = ?3 ) or ( o.order_type = 4 and o.status = 9 and 1 = ?4 ) ) " +
+            "( ( o.order_type = 4 and o.status = 1 and START_TIME > ?7 and 1 = ?2 ) or " +
+            " ( o.order_type = 4 and o.status = 1 and START_TIME < ?7 and END_TIME > ?7 and 1 = ?3 ) " +
+            "or ( o.order_type = 5 AND o.status = 10 and 1 = ?4 ) " +
+            "or ( o.order_type = 5 AND o.status = 1 and 1 = ?5 ) " +
+            "or ( (o.status = 9 or au.pay_status=3 or au.pay_status=4 or au.pay_status=1) and 1 = ?6 ) ) " +
             "ORDER BY ?#{#pageable}", nativeQuery = true)
-    Page<Map<String, Object>> listOfUser(Long userId, Integer fetchSignedUp, Integer fetchDeal, Integer fetchMarginRefund, Pageable pageable);
+    Page<Map<String, Object>> listOfUser(Long userId,
+                                         Integer signUpNotStart, Integer signUpOnGoing,
+                                         Integer fetchDealNotPaid, Integer fetchDealPaid, Integer done,
+                                         LocalDateTime currentTime, Pageable pageable);
 
 
     @Lock(value = LockModeType.PESSIMISTIC_WRITE)
