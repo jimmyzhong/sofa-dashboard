@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.alipay.sofa.runtime.api.annotation.SofaService;
 import com.alipay.sofa.runtime.api.annotation.SofaServiceBinding;
 import com.google.common.collect.Lists;
@@ -64,7 +65,7 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
         		predicates.add(cb.equal(r.get("status"), status));
         	}
         	if (userId != null) {
-        		predicates.add(cb.equal(r.get("userId"), status));
+        		predicates.add(cb.equal(r.get("userId"), userId));
         	}
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
@@ -72,11 +73,13 @@ public class ShopOrderMngFacadeImpl implements IShopOrderMngFacade {
 
     private PageModel<ShopOrder> getOrderPageModel(PageRequest pageRequest, Specification<Order> specification) {
     	Page<Order> page = orderDao.findAll(specification, PageableConvertUtil.toDataPageable(pageRequest));
+    	System.out.println(JSON.toJSONString(page.getContent()));
         List<ShopOrder> list = page.getContent().stream().map(t -> {
         	ShopOrder shopOrder = new ShopOrder();
             BeanUtils.copyProperties(t, shopOrder);
             return shopOrder;
         }).collect(Collectors.toList());
+        System.out.println(JSON.toJSONString(list));
         return PageModel.instance(page.getTotalElements(), list);
     }
 
