@@ -74,7 +74,7 @@
 
     $(function () {
         var options = {
-            url: prefix + "/list?orderType=3",
+            url: prefix + "/list?orderType=2",
             detailUrl: prefix + "/detail/{id}",
             createUrl: prefix + "/add",
             updateUrl: prefix + "/edit/{id}",
@@ -90,9 +90,8 @@
                     title: '订单号',
                     sortable: true
                 },{
-                    field: '',
-                    title: '寄售商品名称',
-                    sortable: true
+                    field: 'description',
+                    title: '寄售商品信息'
                 },
                 {
                     field: 'totalAmount',
@@ -102,7 +101,7 @@
                     field: 'receiverName',
                     title: '买家',
                 },{
-                    field: '',
+                    field: 'nickName',
                     title: '寄售人',
                 },
                 {
