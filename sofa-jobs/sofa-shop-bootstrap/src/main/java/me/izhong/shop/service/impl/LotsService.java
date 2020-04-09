@@ -29,8 +29,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -39,11 +37,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
 public class LotsService implements ILotsService {
+	public static final int AUCTION_PER_RETURN_PERCENTAGE = 5;
+	public static final int AUCTION_PER_RETURN_SCORE_PERCENTAGE = 5;
+
 	@Autowired
 	private IGoodsService goodsService;
 	@Autowired
@@ -176,7 +176,7 @@ public class LotsService implements ILotsService {
 				lotItem.setPrice(item.getPrice());
 				lotItem.setUserId(item.getUserId());
 				lotItem.setSeqId(item.getSeqId());
-				lotItem.setOfferAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(100)).longValue() / 10); // TODO 返利累计加价10%
+				lotItem.setOfferAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(AUCTION_PER_RETURN_PERCENTAGE)).longValue()); // TODO 返利累计加价10%
 				lotsItems.add(lotItem);
 			}
 			lotsItemDao.saveAll(lotsItems);
@@ -193,7 +193,8 @@ public class LotsService implements ILotsService {
 				stats.setLotsId(lot.getId());
 				stats.setAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(stats.getTimes()))
 						.setScale(2, BigDecimal.ROUND_HALF_UP));
-				stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(0.1))); // TODO 返利累计加价10%
+				stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(AUCTION_PER_RETURN_PERCENTAGE))
+						.divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)); // TODO 返利累计加价10%
 				userStats.add(stats);
 			}
 			itemStatsDao.saveAll(userStats); // TODO 以获得的奖励，反应在用户余额里

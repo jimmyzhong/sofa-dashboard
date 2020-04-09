@@ -168,6 +168,8 @@ public class LotsServiceHelper {
         info.setStartPrice(lots.getStartPrice().multiply(BigDecimal.valueOf(100)).longValue());
         info.setStartTime(DateUtil.convertToDate(lots.getStartTime()));
         info.setStepPrice(lots.getAddPrice().multiply(BigDecimal.valueOf(100)).longValue());
+        info.setPercentAmount(Long.valueOf(LotsService.AUCTION_PER_RETURN_PERCENTAGE));
+        info.setPercentPoint(Long.valueOf(LotsService.AUCTION_PER_RETURN_SCORE_PERCENTAGE));
 
         List<User> userList = userDao.selectAcutionUsers(MoneyTypeEnum.AUCTION_MARGIN.getType(), lots.getId(),
                 OrderStateEnum.PAID.getState());
