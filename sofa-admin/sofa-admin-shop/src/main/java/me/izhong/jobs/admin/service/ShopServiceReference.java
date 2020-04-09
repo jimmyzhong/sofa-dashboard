@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.alipay.sofa.runtime.api.annotation.SofaReference;
 import com.alipay.sofa.runtime.api.annotation.SofaReferenceBinding;
 
+import me.izhong.jobs.manage.IPlatformParamConfigMngFacade;
 import me.izhong.jobs.manage.IShopAdMngFacade;
 import me.izhong.jobs.manage.IShopAppVersionsMngFacade;
 import me.izhong.jobs.manage.IShopArticlesMngFacade;
@@ -12,6 +13,7 @@ import me.izhong.jobs.manage.IShopConsignmentRuleMngFacade;
 import me.izhong.jobs.manage.IShopGoodsCategoryMngFacade;
 import me.izhong.jobs.manage.IShopGoodsMngFacade;
 import me.izhong.jobs.manage.IShopHomeMngFacade;
+import me.izhong.jobs.manage.IShopLotParamInfoMngFacade;
 import me.izhong.jobs.manage.IShopLotsCategoryMngFacade;
 import me.izhong.jobs.manage.IShopLotsItemMngFacade;
 import me.izhong.jobs.manage.IShopLotsMngFacade;
@@ -24,6 +26,7 @@ import me.izhong.jobs.manage.IShopRegionMngFacade;
 import me.izhong.jobs.manage.IShopSuppliersMngFacade;
 import me.izhong.jobs.manage.IShopTemplateMngFacade;
 import me.izhong.jobs.manage.IShopUserMngFacade;
+import me.izhong.jobs.manage.IShopVipInfoMngFacade;
 
 @Service
 public class ShopServiceReference {
@@ -141,4 +144,22 @@ public class ShopServiceReference {
     		jvmFirst = false,
     		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
     public IShopLotsItemMngFacade lotsItemService;
+
+    @SofaReference(interfaceType = IShopVipInfoMngFacade.class,
+    		uniqueId = "${service.unique.id}",
+    		jvmFirst = false,
+    		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
+    public IShopVipInfoMngFacade vipInfoService;
+
+    @SofaReference(interfaceType = IShopLotParamInfoMngFacade.class,
+    		uniqueId = "${service.unique.id}",
+    		jvmFirst = false,
+    		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
+    public IShopLotParamInfoMngFacade lotParamInfoService;
+
+    @SofaReference(interfaceType = IPlatformParamConfigMngFacade.class,
+    		uniqueId = "${service.unique.id}",
+    		jvmFirst = false,
+    		binding = @SofaReferenceBinding(bindingType = "bolt", timeout = 20000))
+    public IPlatformParamConfigMngFacade platformParamConfigService;
 }
