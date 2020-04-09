@@ -54,6 +54,16 @@ public class BidUploadInfo implements Serializable {
     private Date endTime;
 
     /**
+     * 出价返余额百分比，20% 则传 20
+     */
+    private Long percentAmount;
+
+    /**
+     * 出价返积分百分比，20% 则传 20
+     */
+    private Long percentPoint;
+
+    /**
      * 能够有权限参与报价的用户信息
      */
     private List<UserItem> users;
