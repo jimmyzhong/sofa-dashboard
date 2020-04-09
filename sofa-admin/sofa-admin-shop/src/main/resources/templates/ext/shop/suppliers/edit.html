@@ -76,6 +76,14 @@
 			var content = $("#detail_desc_s").val();
 			$('#editor').summernote('code', content);
 		})
+		// 上传文件
+		function sendFile(file, obj) {
+			var data = new FormData();
+			data.append("file", file);
+			SHOP_COMMON.ajax.uploadImg(data,function (result) {
+				$(obj).summernote('editor.insertImage', result.data.pictureUrl, result.data.pictureUrl);
+			})
+		}
 		function uploadImg(){
 			var formdata = new FormData();
 			formdata.append("file", $("#imageFile")[0].files[0]);
