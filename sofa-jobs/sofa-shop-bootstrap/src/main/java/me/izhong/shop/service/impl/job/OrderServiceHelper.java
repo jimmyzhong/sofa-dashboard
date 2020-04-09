@@ -29,5 +29,13 @@ public class OrderServiceHelper {
                 log.error("order update expired status error", throwable);
             }
         }, 1, 2, TimeUnit.MINUTES);
+
+        orderStatusUpdater.scheduleAtFixedRate(() -> {
+            try {
+                orderService.updateExpiredAuctionOrders();
+            }catch (Throwable throwable) {
+                log.error("order update auction expired status error", throwable);
+            }
+        }, 1, 2, TimeUnit.HOURS);
     }
 }

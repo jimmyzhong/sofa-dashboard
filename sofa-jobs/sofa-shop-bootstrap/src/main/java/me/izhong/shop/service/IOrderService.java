@@ -24,7 +24,10 @@ public interface IOrderService {
     @Transactional
     void updateExpiredOrders();
 
-    Order saveOrUpdate(Order order);
+	@Transactional
+	void updateExpiredAuctionOrders();
+
+	Order saveOrUpdate(Order order);
 
     Order findById(Long orderId);
 

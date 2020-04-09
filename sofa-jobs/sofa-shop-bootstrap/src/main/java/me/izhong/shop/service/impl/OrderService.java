@@ -106,6 +106,7 @@ public class OrderService implements IOrderService {
 		}
 	}
 
+	@Override
 	@Transactional
 	public void updateExpiredAuctionOrders() {
 		Long start = System.currentTimeMillis();
@@ -128,8 +129,9 @@ public class OrderService implements IOrderService {
 					record.setPayerId(user);
 					record.setComment("违约扣钱");
 					payRecords.add(record);
-					// TODO change lots status
 				}
+				lotsDao.updateLotsStatus(unpaidOrders.stream().map(Order::getOrderSn).collect(Collectors.toList()),
+						LotsStatusEnum.EXPIRED.getType());
 				orderDao.updateOrderStatus(unpaidOrders.stream().map(Order::getId).collect(Collectors.toList()),
 						AUCTION_REMAIN_EXPIRED.getState());
 				payRecordDao.saveAll(payRecords);

@@ -203,6 +203,11 @@ public class OrderController {
     	orderService.updateExpiredOrders();
 	}
 
+	@PostMapping(value = "/updateAuctionExpires")
+	public void updateAuctionExpires() {
+		orderService.updateExpiredAuctionOrders();
+	}
+
 	@GetMapping(value = "/detail/{orderNo}")
 	@ResponseBody
 	@RequireUserLogin
