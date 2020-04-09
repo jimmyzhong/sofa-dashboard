@@ -243,8 +243,9 @@ public class LotsService implements ILotsService {
 		} else {
 			for(int i=0; i< args.length; i++) args[i] = 1;
 		}
+		LocalDateTime now = LocalDateTime.now();
 		Page<Map<String, Object>> page = lotsDao.listOfUser(userId, args[0], args[1],args[2], args[3], args[4],
-				LocalDateTime.now(), pageableReq);
+				now, pageableReq);
 
 		List<LotsDTO> dto = page.getContent().stream().map(m-> {
 			Integer type = null;
@@ -264,9 +265,57 @@ public class LotsService implements ILotsService {
 			if (type != null) {
 				d.setOrderType(MoneyTypeEnum.getByType(type).name());
 			}
+
+			Integer auctionStatus = getAuctionViewStatus(now, type, status, l);
+			d.setAuctionViewState(auctionStatus);
 			return d;
 		}).collect(Collectors.toList());
 		return PageModel.instance(page.getTotalElements(), dto);
+	}
+
+	/**
+	 * 1. 报名没开始
+	 * 2. 报名开始了
+	 * 3. 拍中没付钱
+	 * 4. 拍中付钱了
+	 * 5. 结束了 (转拍了、转积分了、转卖了、超时没付尾款、没拍中)
+	 * @param now
+	 * @param type
+	 * @param status
+	 * @param l
+	 * @return
+	 */
+	private Integer getAuctionViewStatus(LocalDateTime now, Integer type, Integer status, Lots l) {
+		boolean notStarted = l.getStartTime().compareTo(now) > 0;
+		boolean ended = l.getEndTime().compareTo(now) <= 0;
+		boolean onGoing = (!notStarted) && (!ended);
+		boolean done = false;
+		if (l.getPayStatus() != null) {
+			done = l.getPayStatus() == LotsStatusEnum.EXPIRED.getType()
+					|| l.getPayStatus() == LotsStatusEnum.DONE.getType()
+					|| l.getPayStatus() == LotsStatusEnum.NOT_DEAL.getType();
+		}
+		Integer auctionStatus = 0;
+		if (type != null && status != null) {
+			boolean auctionMargin = type == MoneyTypeEnum.AUCTION_MARGIN.getType()
+					&& status == OrderStateEnum.PAID.getState();
+			boolean auctionRemain = type == MoneyTypeEnum.AUCTION_REMAIN.getType();
+			boolean unpaidRemain = status == OrderStateEnum.WAIT_PAYING_AUCTION_REMAIN.getState();
+			boolean paidRemain = status == OrderStateEnum.PAID.getState();
+			if (auctionMargin && notStarted) {
+				auctionStatus = 1;
+			} else if (auctionMargin && onGoing) {
+				auctionStatus = 2;
+			} else if (auctionRemain && unpaidRemain) {
+				auctionStatus = 3;
+			} else if (auctionRemain && paidRemain){
+				auctionStatus = 4;
+			}
+			if (done) {
+				auctionStatus = 5;
+			}
+		}
+		return auctionStatus;
 	}
 
 	@Override
@@ -513,23 +562,46 @@ public class LotsService implements ILotsService {
 				p = cb.and(p, cb.lessThanOrEqualTo(r.get("startTime"), now));
 				p = cb.and(p, cb.greaterThan(r.get("endTime"), now));
 			}
-			// 已成交或违约
+			// 已成交
 			else if (filter == 3) {
 				Predicate statusPredicate = cb.or(
 						cb.equal(r.get("payStatus"), LotsStatusEnum.DONE.getType()),
-						cb.equal(r.get("payStatus"), LotsStatusEnum.DEAL.getType()),
-						cb.equal(r.get("payStatus"), LotsStatusEnum.EXPIRED.getType()));
+						cb.equal(r.get("payStatus"), LotsStatusEnum.DEAL.getType()));
 				p = cb.and(p, statusPredicate);
 			}
 			// 流拍
 			else if (filter == 4) {
 				p = cb.and(p, cb.equal(r.get("payStatus"), LotsStatusEnum.NOT_DEAL.getType()));
 			}
+			// 违约
+			else if (filter == 5) {
+				p = cb.and(p, cb.equal(r.get("payStatus"), LotsStatusEnum.EXPIRED.getType()));
+			}
 			return p;
 		};
 
 		Page<Lots> page = lotsDao.findAll(sp, pageableReq);
 		List<LotsDTO> dto = converToDTO(page);
+		LocalDateTime now = LocalDateTime.now();
+		dto.stream().forEach(d->{
+			Integer viewState = 0;
+			if (d.getStartTime().compareTo(now) > 0) {
+				viewState = 1;
+			} else if (d.getStartTime().compareTo(now) <= 0 && d.getEndTime().compareTo(now)>0) {
+				viewState = 2;
+			}
+			if (d.getPayStatus() != null) {
+				if (d.getPayStatus() == LotsStatusEnum.DONE.getType() ||
+					d.getPayStatus() == LotsStatusEnum.DEAL.getType()) {
+					viewState = 3;
+				} else if (d.getPayStatus() == LotsStatusEnum.NOT_DEAL.getType()) {
+					viewState = 4;
+				} else if (d.getPayStatus() == LotsStatusEnum.EXPIRED.getType()) {
+					viewState = 5;
+				}
+			}
+			d.setAuctionViewState(viewState);
+		});
 		return PageModel.instance(page.getTotalElements(), dto);
 	}
 }

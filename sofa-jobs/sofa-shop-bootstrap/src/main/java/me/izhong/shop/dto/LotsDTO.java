@@ -82,4 +82,5 @@ public class LotsDTO {
     private String orderType;
     private Long supplier; // 供应商
     private String supplierName; // 供应商名称
+    private Integer auctionViewState;
 }
