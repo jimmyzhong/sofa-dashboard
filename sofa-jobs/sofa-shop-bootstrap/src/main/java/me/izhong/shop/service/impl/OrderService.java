@@ -1,7 +1,6 @@
 package me.izhong.shop.service.impl;
 
 import com.alipay.api.response.AlipayFundTransUniTransferResponse;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.exception.BusinessException;
@@ -35,19 +34,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static me.izhong.shop.consts.MoneyTypeEnum.*;
 import static me.izhong.shop.consts.OrderStateEnum.*;
+import static me.izhong.shop.consts.OrderStateEnum.AUCTION_REMAIN_EXPIRED;
 
 @Slf4j
 @Service
@@ -89,20 +85,6 @@ public class OrderService implements IOrderService {
 	@Value("${score.return.rate}")
 	private Double scoreReturnRate;
 
-	@PostConstruct
-	public void setUp() {
-		ScheduledExecutorService orderStatusUpdater = Executors.newSingleThreadScheduledExecutor(
-				new ThreadFactoryBuilder()
-				.setNameFormat("order-status-updater").build());
-		orderStatusUpdater.scheduleAtFixedRate(() -> {
-			try {
-				//updateExpiredOrders();
-			}catch (Throwable throwable) {
-				log.error("order update expired status error", throwable);
-			}
-		}, 1, 2, TimeUnit.MINUTES);
-	}
-
 	@Override
 	@Transactional
 	@NeedOptimisticLockRetry
@@ -118,6 +100,39 @@ public class OrderService implements IOrderService {
 				}
 				orderDao.updateOrderStatus(unpaidOrders.stream().map(Order::getId).collect(Collectors.toList()),
 						EXPIRED.getState());
+			}
+		} finally {
+			log.info("task finish time: " + (System.currentTimeMillis() - start));
+		}
+	}
+
+	@Transactional
+	public void updateExpiredAuctionOrders() {
+		Long start = System.currentTimeMillis();
+		try {
+			List<Order> unpaidOrders = orderDao.findAllByStatusAndCreateTimeBeforeOrderByOrderSnDesc(
+					WAIT_PAYING_AUCTION_REMAIN.getState(), LocalDateTime.now().minusDays(1));
+			log.info("find auction remain orders : " + unpaidOrders.size());
+			if (!unpaidOrders.isEmpty()) {
+				List<PayRecord> payRecords = new ArrayList<>();
+				for (Order order : unpaidOrders) {
+					BigDecimal margin = order.getAuctionMargin();
+					Long user = order.getUserId();
+					// minus margin
+					PayRecord record = new PayRecord();
+					record.setSysState(0);
+					record.setCreateTime(LocalDateTime.now());
+					record.setInternalId(order.getOrderSn());
+					record.setPayAmount(margin);
+					record.setType(AUCTION_EXPIRED.getDescription());
+					record.setPayerId(user);
+					record.setComment("违约扣钱");
+					payRecords.add(record);
+					// TODO change lots status
+				}
+				orderDao.updateOrderStatus(unpaidOrders.stream().map(Order::getId).collect(Collectors.toList()),
+						AUCTION_REMAIN_EXPIRED.getState());
+				payRecordDao.saveAll(payRecords);
 			}
 		} finally {
 			log.info("task finish time: " + (System.currentTimeMillis() - start));

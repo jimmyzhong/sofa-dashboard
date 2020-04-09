@@ -11,6 +11,7 @@ import me.izhong.jobs.model.bid.BidItem;
 import me.izhong.shop.consts.LotsStatusEnum;
 import me.izhong.shop.consts.MoneyTypeEnum;
 import me.izhong.shop.consts.OrderStateEnum;
+import me.izhong.shop.consts.PayMethodEnum;
 import me.izhong.shop.dao.*;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.LotsDTO;
@@ -65,6 +66,8 @@ public class LotsService implements ILotsService {
 
 	@Autowired
 	private UserScoreDao userScoreDao;
+	@Autowired
+	private PayRecordDao payRecordDao;
 
 	@Override
 	@Transactional
@@ -184,6 +187,7 @@ public class LotsService implements ILotsService {
 			// calculate user stats
 			Map<Long, List<BidItem>> userMap = items.stream().collect(Collectors.groupingBy(i->i.getUserId()));
 			List<LotsItemStats> userStats = new ArrayList<>();
+			List<PayRecord> payRecords = new ArrayList<>();
 			for (Map.Entry<Long, List<BidItem>> entry: userMap.entrySet()) {
 				Long userId = entry.getKey();
 				List<BidItem> userBids = entry.getValue();
@@ -196,8 +200,20 @@ public class LotsService implements ILotsService {
 				stats.setOfferAmount(stats.getAmount().multiply(BigDecimal.valueOf(AUCTION_PER_RETURN_PERCENTAGE))
 						.divide(BigDecimal.valueOf(100), 2, BigDecimal.ROUND_HALF_UP)); // TODO 返利累计加价10%
 				userStats.add(stats);
+
+				PayRecord record = new PayRecord();
+				record.setSysState(0);
+				record.setCreateTime(LocalDateTime.now());
+				record.setInternalId(lotsNo);
+				record.setPayAmount(stats.getAmount());
+				record.setTotalAmount(stats.getAmount());
+				record.setType(MoneyTypeEnum.RETURN_MONEY.getDescription());
+				record.setReceiverId(userId);
+				record.setComment("出价返利");
+				payRecords.add(record);
 			}
 			itemStatsDao.saveAll(userStats); // TODO 以获得的奖励，反应在用户余额里
+			payRecordDao.saveAll(payRecords);
 		}
 
 

@@ -68,6 +68,10 @@ public class PayRecordService {
                 .map(PayRecord::getPayAmount)
                 .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
 
+        List<PayRecord> auctionExpireRecords = payRecordDao.findAllByPayerIdAndBetweenCreationDateAndTypeIn(userId, start, end,
+                0, Arrays.asList(MoneyTypeEnum.RETURN_MONEY.getDescription(),
+                        MoneyTypeEnum.RESALE_GOODS.getDescription()));
+
         userMoney.setAvailableAmount(userMoney.getAvailableAmount().add(increasedMoney));
         userMoney.setMoneySaleAmount(userMoney.getMoneySaleAmount().add(moneyFromResale));
         userMoney.setMoneyReturnAmount(userMoney.getMoneyReturnAmount().add(increasedMoney.subtract(moneyFromResale)));
@@ -77,10 +81,37 @@ public class PayRecordService {
         log.info("update user money done for " + userId);
     }
 
+    @Transactional
+    public void updateUserMoneyPaid(Long userId, LocalDateTime start, LocalDateTime end) {
+        UserMoney userMoney = userMoneyDao.selectUserForUpdate(userId);
+        List<PayRecord> auctionExpireRecords = payRecordDao.findAllByPayerIdAndBetweenCreationDateAndTypeIn(userId, start, end,
+                0, Arrays.asList(MoneyTypeEnum.AUCTION_EXPIRED.getDescription()));
+
+        BigDecimal amountBeforeUpdate = userMoney.getUnavailableAmount();
+        BigDecimal decreasedMoney = BigDecimal.ZERO;
+        for (PayRecord pr : auctionExpireRecords) {
+            pr.setSysState(1);
+            decreasedMoney = decreasedMoney.add(pr.getPayAmount());
+            amountBeforeUpdate = amountBeforeUpdate.subtract(pr.getPayAmount());
+            pr.setTotalAmount(amountBeforeUpdate);
+        }
+
+        userMoney.setUnavailableAmount(userMoney.getUnavailableAmount().subtract(decreasedMoney));
+        userMoneyDao.save(userMoney);
+        payRecordDao.saveAll(auctionExpireRecords);
+
+        log.info("update user money/auction expire done for " + userId);
+    }
+
+
     public Set<Long> getUserIdsWhoReceivedMoneyBetween(LocalDateTime start, LocalDateTime end) {
         return payRecordDao.findReceiversBetweenCreationDateWithSysState(start, end, 0);
     }
 
+    public Set<Long> getUserIdsWhoShouldPayMoneyBetween(LocalDateTime start, LocalDateTime end) {
+        return payRecordDao.findPayersBetweenCreationDateWithSysStateAndTypeIn(start, end, 0,
+                Arrays.asList(MoneyTypeEnum.AUCTION_EXPIRED.getDescription()));
+    }
 
     public PageModel<PayRecord> listMoneyReturnRecord(Long userId,
                                                       PageRequest pageRequest, Set<MoneyTypeEnum> types) {

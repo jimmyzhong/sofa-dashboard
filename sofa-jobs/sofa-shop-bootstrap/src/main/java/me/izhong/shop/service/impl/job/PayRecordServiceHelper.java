@@ -48,12 +48,17 @@ public class PayRecordServiceHelper {
             }
             LocalDateTime end = now;
 
-            Set<Long> userIds = payRecordService.getUserIdsWhoReceivedMoneyBetween(start, end);
-            userIds.addAll(userIds);
-
-            for (Long userId: userIds) {
+            Set<Long> userIdsGotMoney = payRecordService.getUserIdsWhoReceivedMoneyBetween(start, end);
+            for (Long userId: userIdsGotMoney) {
                 payRecordService.updateUserMoney(userId, start, end);
             }
+
+
+            Set<Long> userIdsShouldPayMoney = payRecordService.getUserIdsWhoShouldPayMoneyBetween(start, end);
+            for (Long userId: userIdsShouldPayMoney) {
+                payRecordService.updateUserMoneyPaid(userId, start, end);
+            }
+
             updateUserMoneyJob.setLastRunState(1);
         }catch (Throwable throwable) {
             log.error("order update expired status error", throwable);
