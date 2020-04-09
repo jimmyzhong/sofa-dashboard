@@ -106,6 +106,37 @@
 	</div>
 	<div class="ibox">
 		<div class="ibox-title">
+			商品明细
+		</div>
+		<div class="ibox-content">
+			<div class="row  m-t-sm">
+				<div class="bs-example" data-example-id="striped-table">
+					<table class="table table-striped">
+						<thead>
+						<tr>
+							<th>商品ID</th>
+							<th>封面图</th>
+							<th>标题</th>
+							<th>价格</th>
+						</tr>
+						</thead>
+						<tbody>
+						<tr th:each="orderItem : ${orderItems}">
+							<th th:text="${orderItem.id}"></th>
+							<td>
+								<img class="img-sm" th:src="${orderItem.productPic}" >
+							</td>
+							<td th:text="${orderItem.name}"></td>
+							<td th:text="${orderItem.price}"></td>
+						</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ibox">
+		<div class="ibox-title">
 			 收货信息
 		</div>
 		<div class="ibox-content">

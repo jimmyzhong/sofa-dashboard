@@ -18,8 +18,8 @@
 </div>
 <th:block th:include="include :: footer"/>
 <script th:inline="javascript">
-    var detailFlag = [[${@permission.hasPermi('ext:shop:consignment:view')}]];
-    var editFlag = [[${@permission.hasPermi('ext:shop:consignment:edit')}]];
+    var detailFlag = [[${@permission.hasPermi('ext:shop:consignmentRule:edit')}]];
+    var editFlag = [[${@permission.hasPermi('ext:shop:consignmentRule:edit')}]];
     var removeFlag = [[${@permission.hasPermi('ext:shop:consignment:remove')}]];
     var prefix = ctx + "ext/shop/consignmentRule";
     $(function () {
