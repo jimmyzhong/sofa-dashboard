@@ -388,7 +388,7 @@ public class LotsService implements ILotsService {
 	@Override
 	@Transactional
 	public void markLotsAsUploadedFail(Lots lot, String msg) {
-		lotsDao.markAsUploadedSuccess(lot.getId(), LocalDateTime.now(),msg);
+		lotsDao.markAsUploadedFail(lot.getId(), LocalDateTime.now(),msg);
 	}
 
 	@Override
