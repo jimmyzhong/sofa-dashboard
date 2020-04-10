@@ -39,6 +39,11 @@ public class BidUploadInfo implements Serializable {
     private Long stepPrice;
 
     /**
+     * 保留价格，单位分
+     */
+    private Long reservePrice;
+
+    /**
      * 最后一次报价是否可以超过 endPrice，默认给 true
      */
     private Boolean overPrice;
