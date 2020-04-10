@@ -7,6 +7,7 @@ import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import com.mongodb.client.result.UpdateResult;
 import me.izhong.jobs.manage.impl.core.model.ZJobLog;
 import me.izhong.jobs.manage.impl.service.ZJobLogService;
+import me.izhong.jobs.model.JobLog;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.springframework.data.domain.Sort;
@@ -142,6 +143,9 @@ public class ZJobLogServiceImpl extends CrudBaseServiceImpl<Long,ZJobLog> implem
     @Override
     public void updateHandleDoneMessage(Long jobLogId, Integer handleCode, String handleMsg,Date finishHandleTime) {
         Assert.notNull(jobLogId,"");
+
+        ZJobLog jLog = super.selectByPId(jobLogId);
+        Date jobHandleTime = jLog.getHandleTime();
         Query query = new Query();
         query.addCriteria(Criteria.where("jobLogId").is(jobLogId));
         query.addCriteria(Criteria.where("handleCode").is(null));
@@ -151,11 +155,13 @@ public class ZJobLogServiceImpl extends CrudBaseServiceImpl<Long,ZJobLog> implem
         update.set("handleMsg",handleMsg);
         update.set("updateTime",new Date());
         if(finishHandleTime != null) {
-            long second1 = DateUtils.getFragmentInMilliseconds(finishHandleTime, Calendar.YEAR);
-            long second2 = DateUtils.getFragmentInMilliseconds(finishHandleTime,Calendar.YEAR);
-            String dur = DurationFormatUtils.formatPeriod(second1,second2,"HH:mm:ss");
             update.set("finishHandleTime",finishHandleTime);
-            update.set("costHandleTime",dur);
+            if(jobHandleTime != null) {
+                long second1 = DateUtils.getFragmentInMilliseconds(jobHandleTime, Calendar.YEAR);
+                long second2 = DateUtils.getFragmentInMilliseconds(finishHandleTime,Calendar.YEAR);
+                String dur = DurationFormatUtils.formatPeriod(second1,second2,"HH:mm:ss");
+                update.set("costHandleTime",dur);
+            }
         }
         mongoTemplate.findAndModify(query, update, ZJobLog.class);
     }
