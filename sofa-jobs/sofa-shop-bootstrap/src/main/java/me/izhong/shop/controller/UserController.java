@@ -352,9 +352,26 @@ public class UserController {
         boolean certified = userService.certify(user);
         return new HashMap(){{
             put("certified", certified);
-            put("name", user.getName());
-            put("idCard", user.getIdentityID());
+            put("name", hideInfo(user.getName(), 0, user.getName().length()-1));
+            put("idCard", hideInfo(user.getIdentityID(),1, user.getIdentityID().length() - 1));
         }};
+    }
+
+    /**
+     *
+     * @param value
+     * @param start 包含:隐藏字符起始
+     * @param end 不包含:隐藏字符结束
+     * @return
+     */
+    private String hideInfo(String value, int start, int end){
+        char [] chs = value.toCharArray();
+        for (int i=0; i<chs.length; i++) {
+            if (i>= start && i < end) {
+                chs[i] = '*';
+            }
+        }
+        return new String(chs);
     }
 
     @GetMapping("/certify")
@@ -370,8 +387,8 @@ public class UserController {
 
         return new HashMap(){{
             put("certified", user.getIsCertified());
-            put("name", user.getName());
-            put("idCard", user.getIdentityID());
+            put("name", hideInfo(user.getName(), 0, user.getName().length()-1));
+            put("idCard", hideInfo(user.getIdentityID(),1, user.getIdentityID().length() - 1));
         }};
     }
 
