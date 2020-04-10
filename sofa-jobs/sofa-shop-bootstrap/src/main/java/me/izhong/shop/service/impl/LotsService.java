@@ -205,8 +205,8 @@ public class LotsService implements ILotsService {
 				record.setSysState(0);
 				record.setCreateTime(LocalDateTime.now());
 				record.setInternalId(lotsNo);
-				record.setPayAmount(stats.getAmount());
-				record.setTotalAmount(stats.getAmount());
+				record.setPayAmount(stats.getOfferAmount());
+				record.setTotalAmount(stats.getOfferAmount());
 				record.setType(MoneyTypeEnum.RETURN_MONEY.getDescription());
 				record.setReceiverId(userId);
 				record.setComment("出价返利");

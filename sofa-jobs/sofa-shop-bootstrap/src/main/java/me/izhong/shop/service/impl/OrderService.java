@@ -914,8 +914,13 @@ public class OrderService implements IOrderService {
 				PayStatusEnum.SUCCESS.name(), "");
 
 		LocalDateTime now = LocalDateTime.now();
-		if (lots.getStartTime().compareTo(now)<=0 && lots.getEndTime().compareTo(now) >0) {
-			lotsServiceHelper.addUser(lots.getLotsNo(), userId);
+		// 没结束就尝试上传用户，失败了忽略
+		if (lots.getEndTime().compareTo(now) >0) {
+			try {
+				lotsServiceHelper.addUser(lots.getLotsNo(), userId);
+			}catch (Throwable e){
+				log.error("add user to bid :: error", e);
+			}
 		}
 		return order;
 	}
