@@ -33,6 +33,17 @@ public class LotsItemStats {
     private Long userId;
 
     /**
+     * 出价用户
+     */
+    @Column(name = "USER_NICK", length = 20)
+    private String userNick;
+
+    /**
+     * 出价用户ava
+     */
+    @Column(name = "USER_AVATAR", length = 200)
+    private String userAva;
+    /**
      * 出价次数
      */
     @Column(name = "TIMES")

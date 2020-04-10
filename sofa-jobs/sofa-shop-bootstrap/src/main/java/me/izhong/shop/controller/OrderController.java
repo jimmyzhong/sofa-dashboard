@@ -144,7 +144,7 @@ public class OrderController {
 		if(orderRequest.getOrderNo()==null) {
 			throw BusinessException.build("订单号不能为空");
 		}
-		orderService.applyToDeliverOrder(getCurrentUserId(request), orderRequest.getOrderNo());
+		orderService.applyToDeliverOrder(getCurrentUserId(request), orderRequest.getOrderNo(), orderRequest.getAddressId());
 	}
 
     @PostMapping(value = "/cancelOrder")

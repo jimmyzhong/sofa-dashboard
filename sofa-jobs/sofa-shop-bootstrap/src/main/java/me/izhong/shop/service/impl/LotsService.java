@@ -33,10 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -169,6 +166,7 @@ public class LotsService implements ILotsService {
 		lotsDao.save(lot);
 
 		log.info("bid items from cache, size:" + (items == null ? 0 : items.size()));
+		Map<Long, User> userInfoMap = new HashMap<>();
 		// persistent bids items
 		List<LotsItem> lotsItems = new ArrayList<>();
 		if (items != null) {
@@ -181,6 +179,15 @@ public class LotsService implements ILotsService {
 				lotItem.setSeqId(item.getSeqId());
 				lotItem.setOfferAmount(lot.getAddPrice().multiply(BigDecimal.valueOf(AUCTION_PER_RETURN_PERCENTAGE)).longValue()); // TODO 返利累计加价10%
 				lotsItems.add(lotItem);
+				User u = userInfoMap.get(item.getUserId());
+				if (u == null) {
+					u = userDao.findById(item.getUserId()).orElse(new User());
+					userInfoMap.put(item.getUserId(), u);
+				}
+				if (u != null) {
+					lotItem.setUserNick(u.getNickName());
+					lotItem.setUserAva(u.getAvatar());
+				}
 			}
 			lotsItemDao.saveAll(lotsItems);
 
@@ -192,6 +199,8 @@ public class LotsService implements ILotsService {
 				Long userId = entry.getKey();
 				List<BidItem> userBids = entry.getValue();
 				LotsItemStats stats = new LotsItemStats();
+				stats.setUserAva(userInfoMap.get(userId).getAvatar());
+				stats.setUserNick(userInfoMap.get(userId).getNickName());
 				stats.setUserId(userId);
 				stats.setTimes(userBids.size());
 				stats.setLotsId(lot.getId());

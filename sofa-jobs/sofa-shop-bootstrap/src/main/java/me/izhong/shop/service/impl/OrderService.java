@@ -12,6 +12,7 @@ import me.izhong.shop.dao.*;
 import me.izhong.shop.dto.CartItemParam;
 import me.izhong.shop.dto.GoodsDTO;
 import me.izhong.shop.dto.PageQueryParamDTO;
+import me.izhong.shop.dto.ReceiveAddressParam;
 import me.izhong.shop.dto.order.OrderDTO;
 import me.izhong.shop.dto.order.OrderFullDTO;
 import me.izhong.shop.entity.*;
@@ -683,10 +684,18 @@ public class OrderService implements IOrderService {
 	}
 
 	@Override
-	public Order applyToDeliverOrder(Long currentUserId, String orderNo) {
+	public Order applyToDeliverOrder(Long currentUserId, String orderNo, Long addressId) {
 		Order order = orderDao.findFirstByOrderSn(orderNo);
 		if (order.getStatus() != PAID.getState()) {
 			throw BusinessException.build("只有已付款的订单才能发货");
+		}
+
+		if (addressId != null) {
+			UserReceiveAddress address = getUserReceiveAddress(currentUserId, addressId);
+			if (address == null) {
+				throw BusinessException.build("地址不存在");
+			}
+			setReceiverInfoOfOrder(address, order);
 		}
 		order.setStatus(WAIT_DELIVER.getState());
 		orderDao.save(order);

@@ -89,7 +89,7 @@ public interface IOrderService {
 	 * @param orderNo
 	 * @return
 	 */
-    Order applyToDeliverOrder(Long currentUserId, String orderNo);
+    Order applyToDeliverOrder(Long currentUserId, String orderNo, Long addressId);
 
 	void payByMoney(Long id, Order order);
 
