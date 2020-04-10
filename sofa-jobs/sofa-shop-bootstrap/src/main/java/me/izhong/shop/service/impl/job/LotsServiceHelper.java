@@ -111,16 +111,16 @@ public class LotsServiceHelper {
                     //上架成功
                     log.info("upload bid {} success.", bid.getBidId());
                     schedulerBidEnd(scheduler, lots.getEndTime(), bid);
-                    service.markLotsAsUploadedSuccess(lots,"上架成功"+ IpUtil.getHostName());
+                    service.markLotsAsUploadedSuccess(lots,"成功"+ IpUtil.getHostName());
                 } else {
                     //上架失败
                     log.info("upload bid {} fail.", bid.getBidId());
-                    service.markLotsAsUploadedFail(lots,"上架失败");
+                    service.markLotsAsUploadedFail(lots,"失败");
                 }
             } catch (Exception e) {
                 //上架失败
                 log.error("schedule bid error.", e);
-                service.markLotsAsUploadedFail(lots,"上架失败：" + e.getMessage());
+                service.markLotsAsUploadedFail(lots,"失败：" + e.getMessage());
             }
         }
     }
@@ -168,6 +168,7 @@ public class LotsServiceHelper {
         info.setStartPrice(lots.getStartPrice().multiply(BigDecimal.valueOf(100)).longValue());
         info.setStartTime(DateUtil.convertToDate(lots.getStartTime()));
         info.setStepPrice(lots.getAddPrice().multiply(BigDecimal.valueOf(100)).longValue());
+        info.setReservePrice(lots.getReservePrice().multiply(BigDecimal.valueOf(100)).longValue());
         info.setPercentAmount(Long.valueOf(LotsService.AUCTION_PER_RETURN_PERCENTAGE));
         info.setPercentPoint(Long.valueOf(LotsService.AUCTION_PER_RETURN_SCORE_PERCENTAGE));
 
