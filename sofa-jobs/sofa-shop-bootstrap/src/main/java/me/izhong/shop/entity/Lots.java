@@ -119,6 +119,8 @@ public class Lots {
     private String productPic;
     @Column(name = "ALBUM_PICS", length = 1024)
     private String albumPics;
+    @Column(name = "DETAIL_DESC", length = 5000)
+    private String detailDesc;
     @Column(name = "BID_TIMES")
     private Integer bidTimes; //出价次数
     @Column(name = "UPLOADED", columnDefinition = "int(11) default 0")

@@ -62,7 +62,7 @@ public class Goods {
     private String note;
     @Column(name = "ALBUM_PICS", length = 1024)
     private String albumPics;
-    @Column(name = "DETAIL_DESC")
+    @Column(name = "DETAIL_DESC", length = 5000)
     private String detailDesc;
     @Column(name = "REDUCE_PRICE_COUNT")
     private String reducePriceCount;

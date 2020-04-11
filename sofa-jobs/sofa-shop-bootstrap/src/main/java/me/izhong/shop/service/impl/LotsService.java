@@ -90,6 +90,8 @@ public class LotsService implements ILotsService {
 					lots.setSupplier(g.getSupplier());
 					lots.setSupplierName(suppliers.getName());
 				}
+
+				lots.setDetailDesc(g.getDetailDesc());
 			}
 		}
 		if (lots.getUploaded() == null) {
