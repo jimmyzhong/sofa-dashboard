@@ -15,7 +15,6 @@
         <module>sofa-admin-bootstrap</module>
         <module>sofa-admin-common</module>
         <module>sofa-admin-framework</module>
-        <module>sofa-admin-job</module>
         <module>sofa-admin-shop</module>
     </modules>
 

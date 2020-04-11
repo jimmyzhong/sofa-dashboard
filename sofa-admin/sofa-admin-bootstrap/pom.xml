@@ -64,19 +64,6 @@
             <artifactId>sofa-admin-framework</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <!-- 定时任务-->
-        <dependency>
-            <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-jobs-facade</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>me.izhong.sofa</groupId>
-            <artifactId>sofa-admin-job</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- 定时任务-->
         <dependency>
             <groupId>me.izhong.sofa</groupId>
@@ -88,7 +75,6 @@
             <artifactId>sofa-admin-shop</artifactId>
             <version>${project.version}</version>
         </dependency>
-
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
