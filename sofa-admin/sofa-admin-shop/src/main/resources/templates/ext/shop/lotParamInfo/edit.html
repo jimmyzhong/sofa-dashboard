@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增寄售规则')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-shop-lotParamInfo-edit" th:object="${lotParamInfo}">
+        <input id="id" name="id" type="hidden" th:field="*{id}"/>
+        <input id="type" name="type" type="hidden" th:field="*{type}"/>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">类型</label>
+            <div class="col-sm-8">
+                <input class="form-control" readonly type="text" name="title" id="title" required th:field="*{title}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">奖励基数</label>
+            <div class="col-sm-8">
+                <input class="form-control" readonly type="text" name="radix" id="radix" required th:field="*{radix}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">余额奖励</label>
+            <div class="col-sm-8">
+                <input oninput="descriptionChange()" class="form-control" type="text" name="balanceReward" id="balanceReward" required th:field="*{balanceReward}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">积分奖励</label>
+            <div class="col-sm-8">
+                <input oninput="descriptionChange()" class="form-control" type="text" name="pointReward" id="pointReward" required th:field="*{pointReward}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">说明</label>
+            <div class="col-sm-8">
+                <p id="description" th:text="${lotParamInfo.description}" style="margin-top: 7px"></p>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript" th:inline="javascript">
+    var prefix = ctx + "ext/shop/lotParamInfo";
+    var description=$("#description").text();
+
+    function descriptionChange(){
+        var balanceReward=$("#balanceReward").val();
+        var pointReward=$("#pointReward").val();
+        var type=$("#type").val();
+        if(type==1){
+            $("#description").text("用户出价一次，奖励加价幅度金额"+balanceReward+"%的余额和"+pointReward+"%的积分")
+        }else if(type==2){
+            $("#description").text("用户成功交付了尾款，奖励成交价"+balanceReward+"%的余额和"+pointReward+"%的积分")
+        }else if(type==3){
+            $("#description").text("用户出价一次，奖励该用户上级加价幅度"+balanceReward+"%的余额和"+pointReward+"%的积分")
+        }else if(type==4){
+            $("#description").text("用户出价一次，奖励该用户上上级加价幅度"+balanceReward+"%的余额和"+pointReward+"%的积分")
+        }
+    }
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            var data = $("#form-shop-lotParamInfo-edit").serializeArray();
+            data.push({"name": "description", "value": $("#description").text()});
+            $.operate.save(prefix + "/edit", data);
+        }
+    }
+</script>
+</body>
+</html>

@@ -22,8 +22,10 @@ public class LotParamInfo {
     private Long id;
     @Column(name = "TYPE")
     private Integer type;
+    @Column(name = "TITLE")
+    private String title;
     @Column(name = "RADIX")
-    private Integer radix;
+    private String radix;
     @Column(name = "BALANCE_REWARD")
     private String balanceReward;
     @Column(name = "POINT_REWARD")

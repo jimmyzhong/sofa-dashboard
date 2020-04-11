@@ -7,4 +7,5 @@ import me.izhong.shop.entity.LotParamInfo;
 
 @Repository
 public interface LotParamInfoDao extends JpaRepository<LotParamInfo, Long> {
+    LotParamInfo findByType(Long type);
 }

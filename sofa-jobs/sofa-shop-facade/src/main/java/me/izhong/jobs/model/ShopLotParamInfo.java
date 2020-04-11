@@ -15,7 +15,8 @@ public class ShopLotParamInfo implements Serializable {
 	private static final long serialVersionUID = 1L;
     private Long id;
     private Integer type;
-    private Integer radix;
+    private String title;
+    private String radix;
     private String balanceReward;
     private String pointReward;
     private String description;

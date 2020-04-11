@@ -56,7 +56,6 @@
 		}
 		if ($.validate.form()) {
 			var data = $("#form-shop-category-edit").serializeArray();
-			// data.push({"name": "parentId", "value": $("#parentIds").val()?$("#parentIds").val():0});
 			$.operate.save(prefix + "/edit", data);
 		}
 

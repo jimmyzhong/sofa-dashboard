@@ -50,11 +50,7 @@ public class ShopLotParamInfoMngFacadeImpl implements IShopLotParamInfoMngFacade
 	@Override
 	public PageModel<ShopLotParamInfo> pageList(PageRequest request) {
 		LotParamInfo lotParamInfo = new LotParamInfo();
-
-		ExampleMatcher matcher = ExampleMatcher.matchingAll()
-				.withMatcher("name", ExampleMatcher.GenericPropertyMatchers.contains());
-		Example<LotParamInfo> example = Example.of(lotParamInfo, matcher);
-
+		Example<LotParamInfo> example = Example.of(lotParamInfo);
         Page<LotParamInfo> page = lotParamInfoDao.findAll(example, PageableConvertUtil.toDataPageable(request));
         List<ShopLotParamInfo> list = page.getContent().stream().map(t -> {
         	ShopLotParamInfo obj = new ShopLotParamInfo();

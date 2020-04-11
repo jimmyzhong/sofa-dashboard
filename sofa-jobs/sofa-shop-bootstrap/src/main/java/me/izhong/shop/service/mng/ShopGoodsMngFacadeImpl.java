@@ -131,6 +131,9 @@ public class ShopGoodsMngFacadeImpl implements IShopGoodsMngFacade {
         	if (goods.getSupplier() != null) {
         		predicates.add(cb.equal(r.get("supplier"), goods.getSupplier()));
         	}
+        	if (goods.getId() != null) {
+        		predicates.add(cb.equal(r.get("id"), goods.getId()));
+        	}
             return cb.and(predicates.toArray(new Predicate[predicates.size()]));
         };
     }

@@ -7,4 +7,6 @@ public interface ILotParamInfoService {
     void saveOrUpdate(LotParamInfo lotParamInfo);
 
 	LotParamInfo findById(Long id);
+
+	LotParamInfo findByType(Long type);
 }

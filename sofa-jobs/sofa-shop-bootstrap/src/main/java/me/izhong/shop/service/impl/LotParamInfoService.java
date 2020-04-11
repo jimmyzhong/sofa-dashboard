@@ -25,4 +25,9 @@ public class LotParamInfoService implements ILotParamInfoService {
 	public LotParamInfo findById(Long id) {
 		return lotParamInfoDao.findById(id).orElseThrow(()-> BusinessException.build("找不到拍卖奖励参数配置" + id));
 	}
+
+	@Override
+	public LotParamInfo findByType(Long type) {
+		return lotParamInfoDao.findByType(type);
+	}
 }
