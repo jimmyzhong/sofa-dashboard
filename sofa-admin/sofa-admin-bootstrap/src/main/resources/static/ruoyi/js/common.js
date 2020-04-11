@@ -37,6 +37,24 @@ $(function() {
         })
     }
 
+
+    // 气泡弹出框特效（移到元素时）
+    $(document).on("mouseenter", '.table [data-toggle="popover"]', function() {
+        var _this = this;
+        $(this).popover("show");
+        $(".popover").on("mouseleave", function() {
+            $(_this).popover('hide');
+        });
+    })
+
+    // 气泡弹出框特效（离开元素时）
+    $(document).on("mouseleave", '.table [data-toggle="popover"]', function() {
+        var _this = this;
+        setTimeout(function() {
+            if (!$(".popover:hover").length) $(_this).popover("hide");
+        }, 100);
+    });
+
     // laydate 时间控件绑定
     if ($(".select-time").length > 0) {
         layui.use('laydate', function() {

@@ -128,6 +128,7 @@ var table = {
                     queryParams: options.queryParams,                   // 传递参数（*）
                     rowStyle: options.rowStyle,                         // 通过自定义函数设置行样式
                     columns: options.columns,                           // 显示列信息（*）
+                    data: options.data,                                 // 被加载的数据
                     responseHandler: $.table.responseHandler,           // 在加载服务器发送来的数据之前处理函数
                     onLoadSuccess: $.table.onLoadSuccess,               // 当所有数据被加载时触发处理函数
                     exportOptions: options.exportOptions,               // 前端导出忽略列索引
@@ -270,26 +271,6 @@ var table = {
 
                 // 浮动提示框特效
                 $(".table [data-toggle='tooltip']").tooltip();
-
-                // 气泡弹出框特效
-                $('.table [data-toggle="popover"]').each(function() {
-                    $(this).popover({ trigger: "manual", html: true, animation: false, container: "body", placement: "left"
-                    }).on("mouseenter",
-                        function() {
-                            var _this = this;
-                            $(this).popover("show");
-                            $(".popover").on("mouseleave", function() {
-                                $(_this).popover('hide');
-                            });
-                        }).on("mouseleave",
-                        function() {
-                            var _this = this;
-                            setTimeout(function() {
-                                if (!$(".popover:hover").length)
-                                    $(_this).popover("hide");
-                            }, 100);
-                        });
-                });
             },
             // 表格销毁
             destroy: function (tableId) {

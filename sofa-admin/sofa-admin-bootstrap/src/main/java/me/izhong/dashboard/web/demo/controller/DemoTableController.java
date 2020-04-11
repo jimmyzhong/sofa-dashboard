@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import me.izhong.common.annotation.AjaxWrapper;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -126,6 +127,16 @@ public class DemoTableController {
     @GetMapping("/button")
     public String button() {
         return prefix + "/button";
+    }
+
+    /**
+     * 直接加载表格数据
+     */
+    @GetMapping("/data")
+    public String data(ModelMap mmap)
+    {
+        mmap.put("users", users);
+        return prefix + "/data";
     }
 
     /**
