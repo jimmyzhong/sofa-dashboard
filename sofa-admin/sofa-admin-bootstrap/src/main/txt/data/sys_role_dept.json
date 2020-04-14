@@ -1,1 +1,1 @@
-{"_id":{"$oid":"5ddcf18619edd147fc31938e"},"roleId":{"$numberLong":"1"},"deptId":{"$numberLong":"1"},"_class":"me.izhong.dashboard.manage.entity.SysRoleDept"}
+{"_id":{"$oid":"5ddcf18619edd147fc31938e"},"roleId":{"$numberLong":"1"},"deptId":{"$numberLong":"1"}}

@@ -1,1 +1,1 @@
-{"_id":{"$oid":"5cf522aef2e9290726179466"},"userId":{"$numberLong":"1"},"roleId":{"$numberLong":"1"},"_class":"me.izhong.tianru.training.entity.UserRole"}
+{"_id":{"$oid":"5cf522aef2e9290726179466"},"userId":{"$numberLong":"1"},"roleId":{"$numberLong":"1"}}
