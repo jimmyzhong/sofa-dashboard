@@ -18,4 +18,5 @@ public interface RoleDao extends MongoRepository<SysRole, Long> {
 
     List<SysRole> findAllByRoleIdIn(List<Long> roleId);
 
+    List<SysRole> findAllByRoleIdIn(Long[] ids);
 }

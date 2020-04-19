@@ -95,6 +95,12 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
     }
 
     @Override
+    public List<SysRole> selectRolesByRoleIds(Long[] ids) {
+        Assert.notNull(ids,"");
+        return roleDao.findAllByRoleIdIn(ids);
+    }
+
+    @Override
     public List<SysRole> selectRolesByUserId(Long userId) {
         return findAllByUserId(userId);
     }

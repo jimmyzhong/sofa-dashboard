@@ -79,7 +79,7 @@ shiro:
     maxAge: 3
   session:
     # Session超时时间，-1代表永不过期（默认30分钟）
-    expireTime: 30
+    expireTime: 180
     # 相隔多久检查一次session的有效性，默认就是10分钟
     validationInterval: 1
 

@@ -83,8 +83,8 @@ public class PageRequestUtil {
     public static void injectQuery(PageRequest request, Query query) {
 
         boolean succ  = request.alreadyInjectToQuery.compareAndSet(false,true);
-        //if(!succ)
-        //    return;
+        if(!succ)
+            return;
         //if (StringUtils.isNotBlank(status)) {
         //    query.addCriteria(Criteria.where("status").is(status));
         //}
@@ -138,6 +138,7 @@ public class PageRequestUtil {
                     //reqDeptCri.getCriteriaObject();
                     //reqDeptCri.in(xx);
                     reqDeptCri.andOperator(Criteria.where("deptId").in(request.getDepts()));
+                    log.info("inject query:{}",query);
                 } else {
                     Criteria addCri = Criteria.where("deptId").in(request.getDepts());
                     query.addCriteria(addCri);

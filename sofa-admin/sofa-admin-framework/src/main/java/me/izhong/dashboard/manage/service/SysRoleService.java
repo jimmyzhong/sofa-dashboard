@@ -16,11 +16,12 @@ public interface SysRoleService extends CrudBaseService<Long,SysRole> {
      * @param userId 用户ID
      * @return 权限列表
      */
-    public Set<String> selectRoleKeys(Long userId);
+    Set<String> selectRoleKeys(Long userId);
 
 
     List<Long> selectDeptIdsByRoleId(Long roleId);
 
+    List<SysRole> selectRolesByRoleIds(Long[] ids);
     /**
      * 根据用户ID查询角色，所有的 有check
      *

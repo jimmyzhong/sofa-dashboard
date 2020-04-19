@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -99,7 +100,16 @@ public class UserAdminController {
     @RequiresPermissions(PermissionConstants.User.ADD)
     @GetMapping("/add")
     public String add(ModelMap mmap) {
-        mmap.put("roles", sysRoleService.selectAll());
+        //只查询自己有权限的角色
+        List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(UserInfoContextHelper.getCurrentUserId());
+        List<SysRole> filterRoles = new ArrayList<>();
+        if(useRoles != null)
+            useRoles.forEach(e -> {
+                e.setFlag(false);
+                filterRoles.add(e);
+            });
+
+        mmap.put("roles", filterRoles);
         mmap.put("posts", sysPostService.selectAll());
         return prefix + "/add";
     }
@@ -159,7 +169,18 @@ public class UserAdminController {
     @GetMapping("/edit/{userId}")
     public String edit(@PathVariable("userId") Long userId, ModelMap mmap) {
         mmap.put("user", sysUserService.findUser(userId));
-        mmap.put("roles", sysRoleService.selectAllRolesByUserId(userId));
+
+        //只查询有权限的角色
+        List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(userId);
+        List<SysRole> filterRoles = new ArrayList<>();
+        if(useRoles != null)
+            useRoles.forEach(e -> {
+                if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,e.getDeptId())){
+                    filterRoles.add(e);
+                }
+            });
+
+        mmap.put("roles", filterRoles);
         mmap.put("posts", sysPostService.selectPostsByUserId(userId));
         return prefix + "/edit";
     }
@@ -204,11 +225,10 @@ public class UserAdminController {
             SysDept sysDept = sysDeptService.selectDeptByDeptId(user.getDeptId());
             dbUser.setDeptName(sysDept.getDeptName());
         }
-        if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,user.getDeptId())){
-            dbUser.setRoleIds(user.getRoleIds());
-        } else {
-            //没有权限不修改 dbUser roles  is null
-        }
+
+        List<Long> toSaveRoleIds = filterRoles(user.getUserId(),user.getRoleIds() == null ? new ArrayList<>() : Arrays.asList(user.getRoleIds()));
+        dbUser.setRoleIds(toSaveRoleIds.toArray(new Long[]{}));
+
         dbUser.setRemark(user.getRemark());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
@@ -274,7 +294,7 @@ public class UserAdminController {
         List<SysUser> users = sysUserService.findUsersByUserIds(userIds);
         if(users != null ){
             users.forEach(e ->
-                    UserInfoContextHelper.checkScopePermission(PermissionConstants.User.EDIT,e.getDeptId())
+                    UserInfoContextHelper.checkScopePermission(PermissionConstants.User.REMOVE,e.getDeptId())
             );
         }
         return sysUserService.deleteUserByIds(ids);
@@ -361,6 +381,9 @@ public class UserAdminController {
         if(roleIds != null && !Arrays.asList(roleIds).contains(1L))
             sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
 
+        List<Long> toSaveRoleIds = filterRoles(userId,Arrays.asList(roleIds));
+        roleIds = toSaveRoleIds.toArray(new Long[]{});
+
         sysUserService.saveUserRoles(userId, roleIds);
     }
 
@@ -388,4 +411,38 @@ public class UserAdminController {
         sysUserService.resetLoginFail(userId);
     }
 
+    /**
+     * 有 PermissionConstants.User.ROLE 权限才能给其他人
+     * @param userId
+     * @param roleIds
+     * @return
+     */
+    private List<Long> filterRoles(Long userId, List<Long> roleIds){
+        //这里不能让用户保存的时候选择太多权限
+        //这个用户以前就有的权限
+        List<Long> dbRoles = sysRoleService.selectRolesByUserId(userId).stream().map(e->e.getRoleId()).collect(Collectors.toList());
+        //给客户端操作的角色
+        List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(userId);
+        List<SysRole> toPageRoles = new ArrayList<>();
+        if(useRoles != null)
+            useRoles.forEach(e -> {
+                if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,e.getDeptId())){
+                    toPageRoles.add(e);
+                }
+            });
+        //除去给客户端展示的，剩下是没权限的，都保存
+        dbRoles.removeAll(toPageRoles.stream().map(e->e.getRoleId()).collect(Collectors.toList()));
+        //请求的如果有权限就保存
+        if(roleIds != null && roleIds.size() > 0) {
+            List<SysRole> requestRoles = sysRoleService.selectRolesByRoleIds(roleIds.toArray(new Long[]{}));
+            //判断用户有没有添加新的角色
+            requestRoles.forEach(e -> {
+                boolean hp = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE, e.getDeptId());
+                if (hp) {
+                    dbRoles.add(e.getRoleId());
+                }
+            });
+        }
+        return dbRoles;
+    }
 }

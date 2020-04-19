@@ -8,6 +8,7 @@
 <div class="wrapper wrapper-content animated fadeInRight ibox-content">
     <form class="form-horizontal m" id="form-role-edit" th:object="${role}">
         <input id="roleId" name="roleId" type="hidden" th:field="*{roleId}"/>
+        <input name="deptId" type="hidden" th:field="*{deptId}" id="deptId"/>
         <div class="form-group">
             <label class="col-sm-3 control-label is-required">角色名称：</label>
             <div class="col-sm-8">
@@ -33,6 +34,16 @@
                     <input type="checkbox" id="status" th:checked="${role.status == '0' ? true : false}">
                     <span></span>
                 </label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label is-required">归属部门：</label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <input name="deptName" onclick="selectDeptTree()" id="deptName" type="text"
+                           placeholder="请选择归属部门" class="form-control"  th:field="*{deptName}" required>
+                    <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                </div>
             </div>
         </div>
         <div class="form-group">
@@ -124,6 +135,7 @@
         var roleSort = $("input[name='roleSort']").val();
         var status = $("input[id='status']").is(':checked') == true ? 0 : 1;
         var remark = $("input[name='remark']").val();
+        var deptId = $("input[name='deptId']").val();
         var menuIds = $.tree.getCheckedNodes();
         $.ajax({
             cache: true,
@@ -136,6 +148,7 @@
                 "roleSort": roleSort,
                 "status": status,
                 "remark": remark,
+                "deptId": deptId,
                 "menuIds": menuIds
             },
             async: false,
@@ -146,6 +159,27 @@
                 $.operate.successCallback(data);
             }
         });
+    }
+
+    /*用户管理-新增-选择部门树*/
+    function selectDeptTree() {
+        var deptId = $("#deptId").val();
+        var url = ctx + "system/dept/selectDeptTree?deptId=" + deptId+"&viewPerm=system:user:view";
+        var options = {
+            title: '选择部门',
+            width: "380",
+            url: url,
+            callback: doSubmit
+        };
+        $.modal.openOptions(options);
+    }
+
+    function doSubmit(index, layero) {
+        var tree = layero.find("iframe")[0].contentWindow.$._tree;
+        var body = layer.getChildFrame('body', index);
+        $("#deptId").val(body.find('#treeId').val());
+        $("#deptName").val(body.find('#treeName').val());
+        layer.close(index);
     }
 
     function submitHandler() {

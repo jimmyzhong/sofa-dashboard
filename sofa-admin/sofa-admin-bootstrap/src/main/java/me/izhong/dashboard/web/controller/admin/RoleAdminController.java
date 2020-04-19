@@ -1,5 +1,9 @@
 package me.izhong.dashboard.web.controller.admin;
 
+import me.izhong.common.domain.PageRequest;
+import me.izhong.common.util.Convert;
+import me.izhong.dashboard.manage.entity.SysDept;
+import me.izhong.dashboard.manage.service.SysDeptService;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +41,9 @@ public class RoleAdminController {
     @Autowired
     private SysUserService sysUserService;
 
+    @Autowired
+    private SysDeptService sysDeptService;
+
     @RequiresPermissions(PermissionConstants.Role.VIEW)
     @GetMapping()
     public String role() {
@@ -48,7 +55,29 @@ public class RoleAdminController {
     @AjaxWrapper
     public PageModel<SysRole> list(SysRole sysRole, HttpServletRequest request) {
         sysRole.setIsDelete(false);
-        PageModel<SysRole> list = sysRoleService.selectPage(PageRequestUtil.fromRequest(request), sysRole);
+        PageRequest pageRequest = PageRequestUtil.fromRequest(request);
+        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
+            pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.Role.VIEW));
+        PageModel<SysRole> list = sysRoleService.selectPage(pageRequest, sysRole);
+        return list;
+    }
+
+    /**
+     * 用户菜单，选择权限列表页面
+     * 需要有 1.角色查询权限，2.用户授权权限 PermissionConstants.User.ROLE
+     * @param sysRole
+     * @param request
+     * @return
+     */
+    @RequiresPermissions(PermissionConstants.Role.VIEW)
+    @PostMapping("/list/forAuthUser")
+    @AjaxWrapper
+    public PageModel<SysRole> listRoles(SysRole sysRole, HttpServletRequest request) {
+        sysRole.setIsDelete(false);
+        PageRequest pageRequest = PageRequestUtil.fromRequest(request);
+        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
+            pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.User.ROLE));
+        PageModel<SysRole> list = sysRoleService.selectPage(pageRequest, sysRole);
         return list;
     }
 
@@ -88,6 +117,19 @@ public class RoleAdminController {
         if(sysRole.getDataScope() == null) {
             sysRole.setDataScope("1"); //所有数据权限
         }
+
+        if (sysRole.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectDeptByDeptId(sysRole.getDeptId());
+            if(sysDept == null)
+                throw BusinessException.build("新增角色'" + sysRole.getRoleName() + "'失败，部门不存在");
+            sysRole.setDeptId(sysRole.getDeptId());
+            sysRole.setDeptName(sysDept.getDeptName());
+        } else {
+            throw BusinessException.build("新增角色'" + sysRole.getRoleName() + "'失败，部门不能为空");
+        }
+
+        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.Role.ADD,sysRole.getDeptId());
+
         sysRole.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
         sysRole.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
@@ -108,12 +150,22 @@ public class RoleAdminController {
     @AjaxWrapper
     public int editSave(SysRole sysRole) {
         SysRole dbSysRole = sysRoleService.selectByPId(sysRole.getRoleId());
+        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.Role.EDIT,dbSysRole.getDeptId());
         dbSysRole.setStatus(sysRole.getStatus());
         dbSysRole.setRoleName(sysRole.getRoleName());
         dbSysRole.setRoleKey(sysRole.getRoleKey());
         dbSysRole.setRoleSort(sysRole.getRoleSort());
         dbSysRole.setRemark(sysRole.getRemark());
         dbSysRole.setMenuIds(sysRole.getMenuIds());
+        if (sysRole.getDeptId() != null) {
+            SysDept sysDept = sysDeptService.selectDeptByDeptId(sysRole.getDeptId());
+            if(sysDept == null)
+                throw BusinessException.build("修改角色'" + sysRole.getRoleName() + "'失败，部门不存在");
+            dbSysRole.setDeptId(sysRole.getDeptId());
+            dbSysRole.setDeptName(sysDept.getDeptName());
+        } else {
+            throw BusinessException.build("修改角色'" + sysRole.getRoleName() + "'失败，部门不能为空");
+        }
 
         if (!sysRoleService.checkRoleNameUnique(sysRole)) {
             throw BusinessException.build("修改角色'" + sysRole.getRoleName() + "'失败，角色名称已存在");
@@ -121,6 +173,7 @@ public class RoleAdminController {
         else if (!sysRoleService.checkRoleKeyUnique(sysRole)) {
             throw BusinessException.build("修改角色'" + sysRole.getRoleName() + "'失败，角色权限已存在");
         }
+        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.Role.EDIT,sysRole.getDeptId());
         dbSysRole.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
         return sysRoleService.updateRole(dbSysRole);
@@ -151,6 +204,13 @@ public class RoleAdminController {
     @PostMapping("/remove")
     @AjaxWrapper
     public long remove(String ids) throws BusinessException {
+        Long[] userIds = Convert.toLongArray(ids);
+        List<SysRole> roles = sysRoleService.selectRolesByRoleIds(userIds);
+        if(roles != null ){
+            roles.forEach(e ->
+                    UserInfoContextHelper.checkScopePermission(PermissionConstants.Role.REMOVE,e.getDeptId())
+            );
+        }
         return sysRoleService.removeRoleInfo(ids);
     }
 
@@ -183,7 +243,6 @@ public class RoleAdminController {
         sysRoleService.checkRoleAllowed(sysRole);
         return sysRoleService.changeStatus(sysRole);
     }
-
 
     @RequiresPermissions(PermissionConstants.Role.EDIT)
     @GetMapping("/authUser/{roleId}")
@@ -251,12 +310,4 @@ public class RoleAdminController {
         return sysRoleService.insertAuthUsers(roleId, userIds);
     }
 
-    private void sortRoles(List<SysRole> sysRoles) {
-        if (sysRoles == null || sysRoles.size() == 0)
-            return;
-
-        Collections.sort(sysRoles, (e1, e2) -> {
-            return e1.getRoleSort().compareTo(e2.getRoleSort());
-        });
-    }
 }
