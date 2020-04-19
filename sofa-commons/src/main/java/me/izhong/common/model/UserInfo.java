@@ -82,8 +82,6 @@ public class UserInfo implements Serializable {
     }
 
     public boolean hashScopePermission(String perm, Long deptId){
-        if(hasAllDeptPerm)
-            return true;
         Set<Long> s = scopes.get(perm);
         if(s != null && s.contains(deptId))
             return true;
@@ -91,8 +89,6 @@ public class UserInfo implements Serializable {
     }
 
     public void checkScopePermission(String perm, Long deptId){
-        if(hasAllDeptPerm)
-            return;
         if(!hashScopePermission(perm,deptId)) {
             String notice = deptIdNames.get(deptId);
             throw new RuntimeException("缺少数据对应的部门权限! 权限:[" + perm + "],部门:" + notice + "[" + deptId + "]");
