@@ -1,5 +1,6 @@
 package me.izhong.dashboard.web.controller.admin;
 
+import me.izhong.dashboard.common.expection.user.UserHasNotPermissionException;
 import me.izhong.dashboard.manage.entity.SysRole;
 import me.izhong.dashboard.manage.service.*;
 import me.izhong.db.mongo.util.PageRequestUtil;
@@ -168,14 +169,17 @@ public class UserAdminController {
     @RequiresPermissions(PermissionConstants.User.EDIT)
     @GetMapping("/edit/{userId}")
     public String edit(@PathVariable("userId") Long userId, ModelMap mmap) {
-        mmap.put("user", sysUserService.findUser(userId));
+        SysUser sysUser = sysUserService.findUser(userId);
+        mmap.put("user", sysUser);
 
         //只查询有权限的角色
         List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(userId);
         List<SysRole> filterRoles = new ArrayList<>();
         if(useRoles != null)
             useRoles.forEach(e -> {
-                if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,e.getDeptId())){
+                boolean hasUserDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,sysUser.getDeptId());
+                boolean hasRoleDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,e.getDeptId());
+                if(hasUserDept && hasRoleDept){
                     filterRoles.add(e);
                 }
             });
@@ -226,8 +230,10 @@ public class UserAdminController {
             dbUser.setDeptName(sysDept.getDeptName());
         }
 
-        List<Long> toSaveRoleIds = filterRoles(user.getUserId(),user.getRoleIds() == null ? new ArrayList<>() : Arrays.asList(user.getRoleIds()));
-        dbUser.setRoleIds(toSaveRoleIds.toArray(new Long[]{}));
+        if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,user.getDeptId())) {
+            List<Long> toSaveRoleIds = filterRoles(user.getUserId(), user.getRoleIds() == null ? new ArrayList<>() : Arrays.asList(user.getRoleIds()));
+            dbUser.setRoleIds(toSaveRoleIds.toArray(new Long[]{}));
+        }
 
         dbUser.setRemark(user.getRemark());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
@@ -380,6 +386,10 @@ public class UserAdminController {
     public void insertAuthRole(Long userId, Long[] roleIds) {
         if(roleIds != null && !Arrays.asList(roleIds).contains(1L))
             sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
+        SysUser user = sysUserService.findUser(userId);
+        boolean hasUserDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,user.getDeptId());
+        if(hasUserDept)
+            throw UserHasNotPermissionException.buildWithPermission(PermissionConstants.User.ROLE);
 
         List<Long> toSaveRoleIds = filterRoles(userId,Arrays.asList(roleIds));
         roleIds = toSaveRoleIds.toArray(new Long[]{});
