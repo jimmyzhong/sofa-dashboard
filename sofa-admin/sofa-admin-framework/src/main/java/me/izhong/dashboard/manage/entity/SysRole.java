@@ -70,6 +70,12 @@ public class SysRole extends TimedBasedEntity {
     private String status;
 
     /**
+     * 部门ID
+     */
+    @Excel(name = "部门编号", type = Excel.Type.ALL)
+    private Long deptId;
+
+    /**
      * 用户是否存在此角色标识 默认不存在
      */
     @Transient

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
     <th:block th:include="include :: header('修改用户')"/>
     <th:block th:include="include :: select2-css"/>
@@ -97,7 +97,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" shiro:hasPermission="system:user:role">
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="col-xs-2 control-label">角色：</label>
@@ -135,6 +135,7 @@
 <th:block th:include="include :: select2-js"/>
 <script type="text/javascript">
     var prefix = ctx + "system/user";
+    var userRoleFlag = [[${@permission.isPermitted('system:user:role')}]];
 
     $("#form-user-edit").validate({
         onkeyup: false,
@@ -196,7 +197,8 @@
             var roleIds = $.form.selectCheckeds("role");
             var postIds = $.form.selectSelects("post");
             data.push({"name": "status", "value": status});
-            data.push({"name": "roleIds", "value": roleIds});
+            if(userRoleFlag)
+                data.push({"name": "roleIds", "value": roleIds});
             data.push({"name": "postIds", "value": postIds});
             $.operate.saveTab(prefix + "/edit", data);
         }

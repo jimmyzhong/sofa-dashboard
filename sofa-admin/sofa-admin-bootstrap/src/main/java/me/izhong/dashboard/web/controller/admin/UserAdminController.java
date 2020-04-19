@@ -204,7 +204,11 @@ public class UserAdminController {
             SysDept sysDept = sysDeptService.selectDeptByDeptId(user.getDeptId());
             dbUser.setDeptName(sysDept.getDeptName());
         }
-        dbUser.setRoleIds(user.getRoleIds());
+        if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,user.getDeptId())){
+            dbUser.setRoleIds(user.getRoleIds());
+        } else {
+            //没有权限不修改 dbUser roles  is null
+        }
         dbUser.setRemark(user.getRemark());
         dbUser.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());
 
@@ -349,7 +353,7 @@ public class UserAdminController {
     /**
      * 用户授权角色
      */
-    @RequiresPermissions("system:user:edit")
+    @RequiresPermissions("system:user:role")
     @Log(title = "用户管理", businessType = BusinessType.GRANT)
     @PostMapping("/authRole/insertAuthRole")
     @AjaxWrapper

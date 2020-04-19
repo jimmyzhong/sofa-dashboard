@@ -535,10 +535,13 @@ public class SysUserServiceImpl extends CrudBaseServiceImpl<Long,SysUser> implem
 
     private void doUserPerms(SysUser user) {
         Long userId = user.getUserId();
-        // 删除用户与角色关联
-        userRoleDao.deleteAllByUserId(userId);
-        // 新增用户与角色管理
-        insertUserRole(user.getUserId(),user.getRoleIds());
+        //如果传递的roleIds为空，表示不修改角色
+        if(user.getRoleIds() != null) {
+            // 删除用户与角色关联
+            userRoleDao.deleteAllByUserId(userId);
+            // 新增用户与角色管理
+            insertUserRole(user.getUserId(), user.getRoleIds());
+        }
         // 删除用户与岗位关联
         userPostDao.deleteAllByUserId(userId);
         // 新增用户与岗位管理

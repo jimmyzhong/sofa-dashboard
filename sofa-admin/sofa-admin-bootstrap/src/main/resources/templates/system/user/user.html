@@ -98,6 +98,7 @@
 <th:block th:include="include :: ztree-js"/>
 <script th:inline="javascript">
     var editFlag = [[${@permission.hasPermi('system:user:edit')}]];
+    var userRoleFlag = [[${@permission.hasPermi('system:user:role')}]];
     var removeFlag = [[${@permission.hasPermi('system:user:remove')}]];
     var resetPwdFlag = [[${@permission.hasPermi('system:user:resetPwd')}]];
     var prefix = ctx + "system/user";
@@ -192,7 +193,7 @@
                         actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.userId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
                         actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.userId + '\')"><i class="fa fa-remove"></i>删除</a> ');
                         actions.push('<a class="btn btn-info btn-xs ' + resetPwdFlag + '" href="javascript:void(0)" onclick="resetPwd(\'' + row.userId + '\')"><i class="fa fa-key"></i>重置密码</a> ');
-                        actions.push("<a class='btn btn-info btn-xs " + editFlag + "' href='javascript:void(0)' onclick='authRole(" + row.userId + ")'><i class='fa fa-check-square-o'></i>分配角色</a>");
+                        actions.push("<a class='btn btn-info btn-xs " + userRoleFlag + "' href='javascript:void(0)' onclick='authRole(" + row.userId + ")'><i class='fa fa-check-square-o'></i>分配角色</a>");
                         return actions.join('');
                         /*var actions = [];
                         actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.editTab(\'' + row.userId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
