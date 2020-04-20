@@ -38,10 +38,8 @@
         <div class="form-group">
             <label class="col-sm-3 control-label is-required">可见范围：</label>
             <div class="col-sm-8">
-                <select id="visibleScope" name="visibleScope" class="form-control m-b">
-                    <option value="1">共享</option>
-                    <option value="2">只限归属部门</option>
-                    <option value="3">归属部门和父部门</option>
+                <select id="sex" name="sex" class="form-control m-b" th:with="type=${@dict.getType('system_role_visible_scope')}">
+                    <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
                 </select>
             </div>
         </div>
