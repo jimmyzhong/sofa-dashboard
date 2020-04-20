@@ -48,6 +48,7 @@
 	<script th:inline="javascript">
 	    var prefix = ctx + "system/user/authRole";
 	    var userRoles = [[${userRoles}]];
+        var visibleDatas = [[${@dict.getType('system_role_visible_scope')}]];
 
 	    $(function() {
 		    var options = {
@@ -91,6 +92,18 @@
 		            title: '权限字符',
 		            sortable: true
 		        },
+                {
+                    field: 'visibleScope',
+                    title: '可见范围',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(visibleDatas, value);
+                    }
+                },
+                {
+                    field: 'deptName',
+                    title: '部门',
+                    sortable: true
+                },
 		        {
 		            field: 'createTime',
 		            title: '创建时间',

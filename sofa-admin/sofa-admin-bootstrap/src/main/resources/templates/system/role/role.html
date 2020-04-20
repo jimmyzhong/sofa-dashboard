@@ -67,7 +67,7 @@
     var editFlag = [[${@permission.hasPermi('system:role:edit')}]];
     var removeFlag = [[${@permission.hasPermi('system:role:remove')}]];
     var prefix = ctx + "system/role";
-
+    var visibleDatas = [[${@dict.getType('system_role_visible_scope')}]];
 
     $(function () {
         var options = {
@@ -94,6 +94,13 @@
                     field: 'roleKey',
                     title: '权限字符',
                     sortable: true
+                },
+                {
+                    field: 'visibleScope',
+                    title: '可见范围',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(visibleDatas, value);
+                    }
                 },
                 {
                     field: 'deptName',

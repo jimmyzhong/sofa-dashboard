@@ -36,6 +36,16 @@
             </div>
         </div>
         <div class="form-group">
+            <label class="col-sm-3 control-label is-required">可见范围：</label>
+            <div class="col-sm-8">
+                <select id="visibleScope" name="visibleScope" class="form-control m-b">
+                    <option value="1">共享</option>
+                    <option value="2">只限归属部门</option>
+                    <option value="3">归属部门和父部门</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
             <label class="col-sm-3 control-label is-required">归属部门：</label>
             <div class="col-sm-8">
                 <div class="input-group">
@@ -154,6 +164,7 @@
         var roleSort = $("input[name='roleSort']").val();
         var status = $("input[id='status']").is(':checked') == true ? 0 : 1;
         var remark = $("input[name='remark']").val();
+        var visibleScope = $("select[name='visibleScope']").val();
         var deptId = $("input[name='deptId']").val();
         var menuIds = $.tree.getCheckedNodes();
         $.ajax({
@@ -166,6 +177,7 @@
                 "roleSort": roleSort,
                 "status": status,
                 "remark": remark,
+                "visibleScope": visibleScope,
                 "deptId": deptId,
                 "menuIds": menuIds
             },

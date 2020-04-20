@@ -102,15 +102,8 @@ public class UserAdminController {
     @GetMapping("/add")
     public String add(ModelMap mmap) {
         //只查询自己有权限的角色
-        List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(UserInfoContextHelper.getCurrentUserId());
-        List<SysRole> filterRoles = new ArrayList<>();
-        if(useRoles != null)
-            useRoles.forEach(e -> {
-                e.setFlag(false);
-                filterRoles.add(e);
-            });
-
-        mmap.put("roles", filterRoles);
+        List<SysRole> useRoles = sysRoleService.selectAllVisibleRolesByUserId(UserInfoContextHelper.getCurrentUserId(), null);
+        mmap.put("roles", useRoles);
         mmap.put("posts", sysPostService.selectAll());
         return prefix + "/add";
     }
@@ -172,19 +165,15 @@ public class UserAdminController {
         SysUser sysUser = sysUserService.findUser(userId);
         mmap.put("user", sysUser);
 
-        //只查询有权限的角色
-        List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(userId);
-        List<SysRole> filterRoles = new ArrayList<>();
-        if(useRoles != null)
-            useRoles.forEach(e -> {
-                boolean hasUserDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,sysUser.getDeptId());
-                boolean hasRoleDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,e.getDeptId());
-                if(hasUserDept && hasRoleDept){
-                    filterRoles.add(e);
-                }
-            });
+        if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,sysUser.getDeptId())) {
+            mmap.put("showVisibleScppe", true);
+            //只查询有权限的角色 check
+            List<SysRole> useRoles = sysRoleService.selectAllVisibleRolesByUserId(UserInfoContextHelper.getCurrentUserId(),userId);
+            mmap.put("roles", useRoles);
+        } else {
+            mmap.put("showVisibleScppe", false);
+        }
 
-        mmap.put("roles", filterRoles);
         mmap.put("posts", sysPostService.selectPostsByUserId(userId));
         return prefix + "/edit";
     }
@@ -388,7 +377,7 @@ public class UserAdminController {
             sysUserService.checkUserAllowed(new SysUser(userId),"取消授权");
         SysUser user = sysUserService.findUser(userId);
         boolean hasUserDept = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,user.getDeptId());
-        if(hasUserDept)
+        if(!hasUserDept)
             throw UserHasNotPermissionException.buildWithPermission(PermissionConstants.User.ROLE);
 
         List<Long> toSaveRoleIds = filterRoles(userId,Arrays.asList(roleIds));
@@ -432,23 +421,18 @@ public class UserAdminController {
         //这个用户以前就有的权限
         List<Long> dbRoles = sysRoleService.selectRolesByUserId(userId).stream().map(e->e.getRoleId()).collect(Collectors.toList());
         //给客户端操作的角色
-        List<SysRole> useRoles = sysRoleService.selectAllRolesByUserId(userId);
-        List<SysRole> toPageRoles = new ArrayList<>();
-        if(useRoles != null)
-            useRoles.forEach(e -> {
-                if(UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE,e.getDeptId())){
-                    toPageRoles.add(e);
-                }
-            });
-        //除去给客户端展示的，剩下是没权限的，都保存
+        List<SysRole> toPageRoles = sysRoleService.selectAllVisibleRolesByUserId(UserInfoContextHelper.getCurrentUserId(),userId);
+
+        //除去给客户端展示的，剩下保持不变
         dbRoles.removeAll(toPageRoles.stream().map(e->e.getRoleId()).collect(Collectors.toList()));
-        //请求的如果有权限就保存
+        //给客户端的检查有没有勾选
         if(roleIds != null && roleIds.size() > 0) {
             List<SysRole> requestRoles = sysRoleService.selectRolesByRoleIds(roleIds.toArray(new Long[]{}));
+            List<Long> pageRoleIds = toPageRoles.stream().map(e->e.getRoleId()).collect(Collectors.toList());
             //判断用户有没有添加新的角色
             requestRoles.forEach(e -> {
-                boolean hp = UserInfoContextHelper.getLoginUser().hashScopePermission(PermissionConstants.User.ROLE, e.getDeptId());
-                if (hp) {
+                //防止越权
+                if (pageRoleIds.contains(e.getRoleId())) {
                     dbRoles.add(e.getRoleId());
                 }
             });

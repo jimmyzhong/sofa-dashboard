@@ -30,6 +30,14 @@ public interface SysRoleService extends CrudBaseService<Long,SysRole> {
      */
     public List<SysRole> selectAllRolesByUserId(Long userId);
 
+    /**
+     * 获取当前登陆用户有权限看到的角色
+     * @param currentUserId 当前登陆用户
+     * @param userId 需要修改的用户，新增传null
+     * @return
+     */
+    List<SysRole> selectAllVisibleRolesByUserId(Long currentUserId, Long userId);
+
     public List<SysRole> selectRolesByUserId(Long userId);
 
     /**

@@ -70,6 +70,11 @@ public class SysRole extends TimedBasedEntity {
     private String status;
 
     /**
+     * 角色状态（1全部 2指定部门）
+     */
+    private String visibleScope;
+
+    /**
      * 部门ID
      */
     @Excel(name = "部门编号", type = Excel.Type.ALL)

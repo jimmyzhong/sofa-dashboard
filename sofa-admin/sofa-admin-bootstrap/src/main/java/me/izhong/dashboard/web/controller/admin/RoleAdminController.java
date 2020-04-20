@@ -4,6 +4,7 @@ import me.izhong.common.domain.PageRequest;
 import me.izhong.common.util.Convert;
 import me.izhong.dashboard.manage.entity.SysDept;
 import me.izhong.dashboard.manage.service.SysDeptService;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.db.mongo.util.PageRequestUtil;
 import me.izhong.common.domain.PageModel;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,8 @@ import me.izhong.dashboard.manage.security.config.PermissionConstants;
 import me.izhong.dashboard.common.util.ExcelUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -77,7 +80,29 @@ public class RoleAdminController {
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
         if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
             pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.User.ROLE));
-        PageModel<SysRole> list = sysRoleService.selectPage(pageRequest, sysRole);
+
+        Query query = new Query();
+        Long currentUserId = UserInfoContextHelper.getCurrentUserId();
+        SysUser curUser = sysUserService.findUser(currentUserId);
+        SysDept curDept = sysDeptService.selectDeptByDeptId(curUser.getDeptId());
+
+
+        Criteria visCri = new Criteria().orOperator(
+                Criteria.where("visibleScope").is("1"),
+                new Criteria().andOperator(
+                        Criteria.where("visibleScope").is("2"),
+                        Criteria.where("deptId").is(curDept.getDeptId())
+                ),
+                new Criteria().andOperator(
+                        Criteria.where("visibleScope").is("3"),
+                        Criteria.where("deptId").in(curDept.getDescendents())
+                )
+        );
+
+        CriteriaUtil.addCriteria(query, visCri);
+
+        PageModel<SysRole> list = sysRoleService.selectPage(query,pageRequest, sysRole);
+
         return list;
     }
 
@@ -150,11 +175,13 @@ public class RoleAdminController {
     @AjaxWrapper
     public int editSave(SysRole sysRole) {
         SysRole dbSysRole = sysRoleService.selectByPId(sysRole.getRoleId());
-        UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.Role.EDIT,dbSysRole.getDeptId());
+        if(dbSysRole.getDeptId() != null)
+            UserInfoContextHelper.getLoginUser().checkScopePermission(PermissionConstants.Role.EDIT,dbSysRole.getDeptId());
         dbSysRole.setStatus(sysRole.getStatus());
         dbSysRole.setRoleName(sysRole.getRoleName());
         dbSysRole.setRoleKey(sysRole.getRoleKey());
         dbSysRole.setRoleSort(sysRole.getRoleSort());
+        dbSysRole.setVisibleScope(sysRole.getVisibleScope());
         dbSysRole.setRemark(sysRole.getRemark());
         dbSysRole.setMenuIds(sysRole.getMenuIds());
         if (sysRole.getDeptId() != null) {

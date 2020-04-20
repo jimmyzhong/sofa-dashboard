@@ -1,6 +1,7 @@
 package me.izhong.dashboard.manage.service.impl;
 
 import me.izhong.dashboard.manage.entity.*;
+import me.izhong.dashboard.manage.service.SysDeptService;
 import me.izhong.dashboard.manage.service.SysUserService;
 import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.dashboard.manage.dao.RoleDao;
@@ -11,6 +12,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.dashboard.manage.service.SysRoleService;
 import me.izhong.common.util.Convert;
 import me.izhong.db.mongo.util.CriteriaUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -42,6 +44,9 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Autowired
+    private SysDeptService sysDeptService;
 
     /**
      * 根据用户ID查询权限
@@ -87,6 +92,57 @@ public class SysRoleServiceImpl extends CrudBaseServiceImpl<Long,SysRole> implem
                 if (sysRole.getRoleId().longValue() == userSysRole.getRoleId().longValue()) {
                     sysRole.setFlag(true);
                     break;
+                }
+            }
+        }
+        //返回的是系统所有的角色,用户有权限的节点会打勾
+        return sysRoles;
+    }
+
+    @Override
+    public List<SysRole> selectAllVisibleRolesByUserId(Long currentUserId, Long userId) {
+        SysUser loginUser = sysUserService.findUser(currentUserId);
+
+        List<SysRole> sysRoles = selectAll();
+        //过滤
+        sysRoles = sysRoles.stream().filter(e->{
+            String visible = e.getVisibleScope();
+            if(StringUtils.equals("1",visible)) {
+                return true;
+            } else if(StringUtils.equals("2",visible) ){
+                //部门可见
+                Long roleDepId = e.getDeptId();
+                Long userDepId = loginUser.getDeptId();
+                if(roleDepId!=null && userDepId !=null && roleDepId.equals(userDepId)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else if(StringUtils.equals("3",visible) ){
+                //部门父部门可见,  登陆用户的部门在角色的任何一个父部门
+                Long roleDepId = e.getDeptId();
+                Long userDepId = loginUser.getDeptId();
+                if(roleDepId!=null && userDepId !=null ) {
+                    if(roleDepId.equals(userDepId))
+                        return true;
+                    SysDept parent = sysDeptService.selectDeptByDeptId(roleDepId);
+                    if(parent != null && parent.getAncestors() !=null && parent.getAncestors().contains(userDepId)) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }).collect(Collectors.toList());
+
+
+        if(userId != null) {
+            List<SysRole> userSysRoles = findAllByUserId(userId);
+            for (SysRole sysRole : sysRoles) {
+                for (SysRole userSysRole : userSysRoles) {
+                    if (sysRole.getRoleId().longValue() == userSysRole.getRoleId().longValue()) {
+                        sysRole.setFlag(true);
+                        break;
+                    }
                 }
             }
         }
