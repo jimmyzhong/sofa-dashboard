@@ -124,10 +124,6 @@ public class ProfileAdminController {
     public void update(String userName, String phoneNumber, String email, String sex) {
         UserInfo loginUser = UserInfoContextHelper.getLoginUser();
         sysUserService.updateMyInfos(loginUser.getUserId(),userName,email,phoneNumber,sex);
-        loginUser.setUserName(userName);
-        loginUser.setEmail(email);
-        loginUser.setPhoneNumber(phoneNumber);
-        loginUser.setSex(sex);
         UserRealm.refreshUserScope();
     }
 
@@ -144,7 +140,7 @@ public class ProfileAdminController {
             if (!file.isEmpty()) {
                 String avatar = FileUploadUtil.upload(Global.getAvatarPath(), file);
                 sysUserService.updateMyAvatar(loginUser.getUserId(),avatar);
-                loginUser.setAvatar(avatar);
+                UserRealm.refreshUserScope();
             } else {
                 throw BusinessException.build("头像为空");
             }

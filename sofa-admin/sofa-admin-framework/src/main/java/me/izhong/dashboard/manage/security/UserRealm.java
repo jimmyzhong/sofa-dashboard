@@ -150,12 +150,16 @@ public class UserRealm extends AuthorizingRealm {
     public static void refreshUserScope() {
 
         UserInfo u = UserInfoContextHelper.getLoginUser();
-
-        SpringUtil.getBean(UserRealm.class).setUserScope(u);
+        if(u == null) {
+            log.info("用户没有登陆refreshUserScope失败");
+        }
+        SysUser sysUser = SpringUtil.getBean(SysUserService.class).findUser(u.getUserId());
+        UserInfo loginUser = UserConvertUtil.convert(sysUser);
+        SpringUtil.getBean(UserRealm.class).setUserScope(loginUser);
 
         Subject subject = SecurityUtils.getSubject();
         String realmName = subject.getPrincipals().getRealmNames().iterator().next();
-        SimplePrincipalCollection principals = new SimplePrincipalCollection(u, realmName);
+        SimplePrincipalCollection principals = new SimplePrincipalCollection(loginUser, realmName);
         subject.runAs(principals);
 
 /*        //清理缓存
