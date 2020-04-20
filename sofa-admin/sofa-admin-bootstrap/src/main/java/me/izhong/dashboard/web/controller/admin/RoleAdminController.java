@@ -78,8 +78,8 @@ public class RoleAdminController {
     public PageModel<SysRole> listRoles(SysRole sysRole, HttpServletRequest request) {
         sysRole.setIsDelete(false);
         PageRequest pageRequest = PageRequestUtil.fromRequest(request);
-        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
-            pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.User.ROLE));
+//        if(!UserInfoContextHelper.getLoginUser().isHasAllDeptPerm())
+//            pageRequest.setDepts(UserInfoContextHelper.getLoginUser().getScopeData(PermissionConstants.User.ROLE));
 
         Query query = new Query();
         Long currentUserId = UserInfoContextHelper.getCurrentUserId();
