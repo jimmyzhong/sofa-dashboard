@@ -15,8 +15,8 @@ import me.izhong.jobs.manage.impl.service.ZJobLogService;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.stream.Collectors.toList;
 
@@ -53,20 +53,74 @@ public class CustomerJobsRouter extends Router {
 
             log.info("路由地址: interfaceName:{} method:{}", interfaceName, method);
             if ("trigger".equals(method)) {
-                int providerSize = providerInfos.size();
-                int randInt = RandomUtils.nextInt() % providerSize;
-                ProviderInfo pi = providerInfos.get(randInt);
-                log.info("按照路由策略执行trigger,总共{}选择{}地址是{}",providerSize,randInt,pi.getHost());
 
                 Object[] args = request.getMethodArgs();
                 Long jobId = (Long) args[0];
                 Long triggerId = (Long) args[1];
-                jobInfoService.selectByPId(jobId);
 
-                jobLogService.updateExecutorAddress(triggerId, pi.getHost());
+                List<String> allIPs = new ArrayList<>();
+                Map<String,Integer> map = new HashMap<>();
+                providerInfos.forEach(e->{
+                    String avaIp = e.getHost();
+                    map.put(avaIp,0);
+                    allIPs.add(avaIp);
+                });
+
+                List<ZJobLog> runningJobs = jobLogService.findRunningJobs(jobId);
+                if(runningJobs != null) {
+                    runningJobs.forEach(e->{
+                        String ip = e.getExecutorAddress();
+                        if(StringUtils.isNotBlank(ip)) {
+                            Integer v = map.get(ip);
+                            if(v != null) {
+                                map.put(ip,v.intValue() + 1);
+                            }
+                        }
+                    });
+                }
+                //选最小
+                final int[] max = {-1};
+                map.forEach( (k,v) -> {
+                    if(v != null) {
+                        if(v.intValue() > max[0]) {
+                            max[0] = v.intValue();
+                        }
+                    }
+                });
+
+                List<String> selectedIps = new ArrayList<>();
+                map.forEach( (k,v) -> {
+                    if(v != null) {
+                        if(v.intValue() == max[0] && !selectedIps.contains(k)) {
+                            selectedIps.add(k);
+                        }
+                    }
+                });
+                int randInt = RandomUtils.nextInt() % selectedIps.size();
+                String selectedIp = selectedIps.get(randInt);
+                AtomicReference<ProviderInfo> pi = new AtomicReference<>();
+                providerInfos.forEach(e->{
+                    String avaIp = e.getHost();
+                    if(StringUtils.equals(selectedIp,avaIp)) {
+                        pi.set(e);
+                    }
+                });
+                log.info("本次候选ip地址 {} 最闲IP {}, 选择ip地址 {} , 选择的pi {}", allIPs, selectedIps, selectedIp, pi.get());
+
+                //
+//                int providerSize = providerInfos.size();
+//                int randInt = RandomUtils.nextInt() % providerSize;
+//                ProviderInfo pi = providerInfos.get(randInt);
+//                log.info("按照路由策略执行trigger,总共{}选择{}地址是{}",providerSize,randInt,pi.getHost());
+//
+
+//                jobInfoService.selectByPId(jobId);
+
+                jobLogService.updateExecutorAddress(triggerId, pi.get().getHost());
+               // log.info("按照路由策略执行trigger,总共{}选择{}地址是{}",providerInfos,randInt, pi.get().getHost());
 
                 return new ArrayList<ProviderInfo>() {{
-                    add(pi);
+                    add(pi.get());
                 }};
 
             } else if (StringUtils.equalsAny(method, "catLog", "kill","status")) {
