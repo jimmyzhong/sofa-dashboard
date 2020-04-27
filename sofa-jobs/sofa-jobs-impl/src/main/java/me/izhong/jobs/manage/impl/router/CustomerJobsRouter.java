@@ -79,11 +79,11 @@ public class CustomerJobsRouter extends Router {
                     });
                 }
                 //选最小
-                final int[] max = {-1};
+                final int[] min = {Integer.MAX_VALUE};
                 map.forEach( (k,v) -> {
                     if(v != null) {
-                        if(v.intValue() > max[0]) {
-                            max[0] = v.intValue();
+                        if(v.intValue() < min[0]) {
+                            min[0] = v.intValue();
                         }
                     }
                 });
@@ -91,7 +91,7 @@ public class CustomerJobsRouter extends Router {
                 List<String> selectedIps = new ArrayList<>();
                 map.forEach( (k,v) -> {
                     if(v != null) {
-                        if(v.intValue() == max[0] && !selectedIps.contains(k)) {
+                        if(v.intValue() == min[0] && !selectedIps.contains(k)) {
                             selectedIps.add(k);
                         }
                     }
