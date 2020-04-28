@@ -62,7 +62,9 @@ public class ZJobLog extends TimedBasedEntity implements Serializable {
 	// alarm info
 	private int alarmStatus;
 
-    public String getHandleMsg() {
+	private Date heartbeat;
+
+	public String getHandleMsg() {
         return handleMsg;
     }
 

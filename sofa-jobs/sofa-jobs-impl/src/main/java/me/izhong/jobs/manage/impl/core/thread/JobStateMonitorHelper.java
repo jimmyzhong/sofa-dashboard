@@ -87,11 +87,14 @@ public class JobStateMonitorHelper {
                                         log.info("检测任务,收到任务运行状态, jobId:{}jobDesc:{} jobLogId:{} code:{} content:{} message:{}", jobLog.getJobId(), jobLog.getJobDesc(), jobLog.getJobLogId(), code, content, message);
 
                                         //任务已经结束
-                                        Date oneMinutesAgo = DateUtils.addMinutes(new Date(),-1);
-                                        Date cTime = jobLog.getCreateTime();
                                         if (StringUtils.equals(content, "DONE")) {
-                                            if(cTime == null || cTime.before(oneMinutesAgo))
+                                            Date oneMinutesAgo = DateUtils.addMinutes(new Date(),-1);
+                                            Date cTime = jobLog.getCreateTime();
+                                            Date heartbeat = jobLog.getHeartbeat();
+                                            if(heartbeat != null && heartbeat.before(oneMinutesAgo))
                                                 setJobLogResult(jobLog, 404, "异常结束,进程没找到(stats触发)");
+                                        } else {
+                                            jobLogService.updateHeartbeat(jobLog.getJobLogId());
                                         }
                                     }
                                 } catch (Exception jobLogException) {

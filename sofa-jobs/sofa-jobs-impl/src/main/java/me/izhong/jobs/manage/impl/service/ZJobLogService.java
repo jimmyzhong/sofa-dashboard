@@ -27,6 +27,8 @@ public interface ZJobLogService extends CrudBaseService<Long, ZJobLog> {
 
     void updateHandleStartMessage(Long jobLogId, Date startTime);
 
+    void updateHeartbeat(Long jobLogId);
+
     void updateHandleDoneMessage(Long jobLogId, Integer handleCode, String handleMsg, Date finishHandleTime);
 
     long updateAlarmStatus(long failLogId, int oldStatus, int newStatus);

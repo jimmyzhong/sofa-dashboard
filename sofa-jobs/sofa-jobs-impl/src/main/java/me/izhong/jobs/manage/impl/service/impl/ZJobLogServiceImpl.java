@@ -129,7 +129,19 @@ public class ZJobLogServiceImpl extends CrudBaseServiceImpl<Long,ZJobLog> implem
 
         Update update = new Update();
         update.set("handleTime",startTime);
+        update.set("heartbeat",startTime);
         update.set("updateTime",new Date());
+        mongoTemplate.findAndModify(query, update, ZJobLog.class);
+    }
+
+    @Override
+    public void updateHeartbeat(Long jobLogId) {
+        Assert.notNull(jobLogId,"");
+        Query query = new Query();
+        query.addCriteria(Criteria.where("jobLogId").is(jobLogId));
+
+        Update update = new Update();
+        update.set("heartbeat",new Date());
         mongoTemplate.findAndModify(query, update, ZJobLog.class);
     }
 
