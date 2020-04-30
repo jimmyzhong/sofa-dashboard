@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <lombok.version>1.18.8</lombok.version>
-        <fastjson.version>1.2.60</fastjson.version>
+        <fastjson.version>1.2.68</fastjson.version>
         <logback-classic.version>1.2.3</logback-classic.version>
     </properties>
 
@@ -86,6 +86,11 @@
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
                 <version>3.17</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-base</artifactId>
+                <version>2.10.1</version>
             </dependency>
             <dependency>
                 <groupId>me.izhong.sofa</groupId>

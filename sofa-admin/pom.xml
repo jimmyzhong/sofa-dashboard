@@ -23,7 +23,7 @@
 
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <shiro.version>1.4.2</shiro.version>
+        <shiro.version>1.5.2</shiro.version>
         <thymeleaf.extras.shiro.version>2.0.0</thymeleaf.extras.shiro.version>
         <bitwalker.version>1.19</bitwalker.version>
         <kaptcha.version>2.3.2</kaptcha.version>
