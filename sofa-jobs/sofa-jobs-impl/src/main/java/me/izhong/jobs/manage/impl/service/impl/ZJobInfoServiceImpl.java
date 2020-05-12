@@ -6,6 +6,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.jobs.manage.impl.core.cron.CronExpression;
 import me.izhong.jobs.manage.impl.core.model.ZJobGroup;
 import me.izhong.jobs.manage.impl.core.model.ZJobInfo;
@@ -48,6 +49,7 @@ public class ZJobInfoServiceImpl extends CrudBaseServiceImpl<Long,ZJobInfo> impl
 		Query query = new Query();
 		query.addCriteria(Criteria.where("triggerNextTime").lte(maxNextTime));
 		query.addCriteria(Criteria.where("triggerStatus").is(0));
+		query.addCriteria(CriteriaUtil.notDeleteCriteria());
 		return super.selectList(query, null, null);
 	}
 
