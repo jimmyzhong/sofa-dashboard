@@ -40,7 +40,7 @@ public class Job implements Serializable {
     private String triggerLastTimeString;	// 上次调度时间
     private String triggerNextTimeString;	// 下次调度时间
 
-    private List<Long> runningTriggerIds;
+    private String tIds;
 
     private Integer concurrentSize; //并发执行的数量
 
