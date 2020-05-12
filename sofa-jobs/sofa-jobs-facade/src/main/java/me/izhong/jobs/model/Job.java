@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,6 +39,8 @@ public class Job implements Serializable {
 
     private String triggerLastTimeString;	// 上次调度时间
     private String triggerNextTimeString;	// 下次调度时间
+
+    private List<Long> runningTriggerIds;
 
     private Integer concurrentSize; //并发执行的数量
 

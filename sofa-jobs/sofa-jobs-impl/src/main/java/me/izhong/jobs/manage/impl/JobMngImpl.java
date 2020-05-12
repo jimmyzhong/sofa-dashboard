@@ -8,6 +8,7 @@ import me.izhong.common.exception.BusinessException;
 import me.izhong.db.mongo.service.MongoDistributedLock;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
+import me.izhong.db.mongo.util.CriteriaUtil;
 import me.izhong.jobs.manage.IJobMngFacade;
 import me.izhong.jobs.manage.impl.core.cron.CronExpression;
 import me.izhong.jobs.manage.impl.core.model.*;
@@ -21,6 +22,8 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -298,7 +301,24 @@ public class JobMngImpl implements IJobMngFacade {
         if(ino != null) {
             se = JobLogUtil.toDbBean(ino);
         }
-        PageModel<ZJobLog> gs = jobLogService.selectPage(request,se);
+        Query query = new Query();
+        if(ino.getHandleCode() == -1) {
+            CriteriaUtil.addCriteria(query, Criteria.where("handleCode").is(null));
+            ino.setHandleCode(null);
+        }
+
+        if (request.getBeginCreateTime() != null && request.getEndCreateTime() != null) {
+            //query.addCriteria(Criteria.where("createTime").gte(request.getBeginCreateTime()).lte(request.getEndCreateTime() ));
+            CriteriaUtil.addCriteria(query,Criteria.where("triggerTime").gte(request.getBeginCreateTime()).lte(request.getEndCreateTime() ));
+        } else if (request.getBeginCreateTime() != null) {
+            //query.addCriteria(Criteria.where("createTime").gte(request.getBeginCreateTime()));
+            CriteriaUtil.addCriteria(query,Criteria.where("triggerTime").gte(request.getBeginCreateTime()));
+        } else if (request.getEndCreateTime()  != null) {
+            //query.addCriteria(Criteria.where("createTime").lte(request.getEndCreateTime() ));
+            CriteriaUtil.addCriteria(query,Criteria.where("triggerTime").lte(request.getEndCreateTime() ));
+        }
+
+        PageModel<ZJobLog> gs = jobLogService.selectPage(query,request,se);
         if(gs != null && gs.getRows().size() > 0) {
             List<JobLog> jgs = gs.getRows().stream().map(e -> JobLogUtil.toRpcBean(e)).collect(Collectors.toList());
             return PageModel.instance(gs.getCount(),jgs);
