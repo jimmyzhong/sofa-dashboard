@@ -61,7 +61,7 @@ $(function() {
             var laydate = layui.laydate;
             var startDate = laydate.render({
                 elem: '#startTime',
-                max: $('#endTime').val(),
+                //max: $('#endTime').val(),
                 theme: 'molv',
                 trigger: 'click',
                 done: function(value, date) {
@@ -79,7 +79,6 @@ $(function() {
             });
             var endDate = laydate.render({
                 elem: '#endTime',
-                min: $('#startTime').val(),
                 theme: 'molv',
                 trigger: 'click',
                 done: function(value, date) {

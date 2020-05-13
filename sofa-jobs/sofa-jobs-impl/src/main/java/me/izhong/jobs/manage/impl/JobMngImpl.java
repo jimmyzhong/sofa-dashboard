@@ -304,7 +304,7 @@ public class JobMngImpl implements IJobMngFacade {
         Query query = new Query();
         if(ino != null && ino.getHandleCode() != null && ino.getHandleCode().intValue() == -1) {
             CriteriaUtil.addCriteria(query, Criteria.where("handleCode").exists(false));
-            ino.setHandleCode(null);
+            se.setHandleCode(null);
         }
 
         if (request.getBeginCreateTime() != null && request.getEndCreateTime() != null) {
