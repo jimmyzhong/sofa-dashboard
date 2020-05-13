@@ -302,7 +302,7 @@ public class JobMngImpl implements IJobMngFacade {
             se = JobLogUtil.toDbBean(ino);
         }
         Query query = new Query();
-        if(ino.getHandleCode() == -1) {
+        if(ino != null && ino.getHandleCode() == -1) {
             CriteriaUtil.addCriteria(query, Criteria.where("handleCode").is(null));
             ino.setHandleCode(null);
         }
