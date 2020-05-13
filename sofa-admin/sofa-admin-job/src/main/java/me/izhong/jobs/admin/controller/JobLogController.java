@@ -65,7 +65,7 @@ public class JobLogController {
 	
 	@RequestMapping("/list")
 	@AjaxWrapper
-	public PageModel<JobLog> pageList(HttpServletRequest request, String jobDesc, Long jobGroupId,
+	public PageModel<JobLog> pageList(HttpServletRequest request, Long jobLogId, String jobDesc, Long jobGroupId,
 									  String status,Integer handleCode, String processResult, String filterTime) {
 		PageRequest pageRequest = PageRequestUtil.fromRequest(request);
 		// parse param
@@ -82,6 +82,9 @@ public class JobLogController {
 		JobLog jLog = new JobLog();
 		if(StringUtil.isNotBlank(jobDesc))
 			jLog.setJobDesc(jobDesc);
+		if(jobLogId != null) {
+			jLog.setJobLogId(jobLogId);
+		}
 		if(jobGroupId != null)
 			jLog.setJobGroupId(jobGroupId);
 		if(handleCode != null)

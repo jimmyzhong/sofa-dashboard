@@ -20,6 +20,7 @@ import java.util.Date;
 @Document(collection = "sys_djob_log")
 public class ZJobLog extends TimedBasedEntity implements Serializable {
 
+	@Search
 	@AutoId
 	@PrimaryId
 	@Indexed(unique = true)
