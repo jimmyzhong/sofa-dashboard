@@ -43,7 +43,7 @@
             <ul class="nav" id="side-menu">
                 <li>
                     <div class="user-panel">
-                        <a class="menuItem" title="个人中心" th:href="@{/system/user/profile}">
+                        <a class="menuItem noactive" title="个人中心" th:href="@{/system/user/profile}">
                             <div class="hide" th:text="个人中心"></div>
                             <div class="pull-left image">
                                 <img th:src="(${user.avatar} == '' or ${user.avatar} ==  null) ? @{/img/profile.png} : @{${user.avatar}}" class="img-circle" alt="">
@@ -314,7 +314,10 @@
          /*   if($.inArray(url, excludesUrl) < 0){
                 $('a[href$="' + url + '"]').parent("li").addClass("selected").parents("li").addClass("active").end().parents("ul").addClass("in");
             }*/
-            $('a[href$="' + url + '"]').parent("li").addClass("selected").parents("li :not(.user-panel)").addClass("active").end().parents("ul").addClass("in");
+            //$('a[href$="' + url + '"]').parent("li").addClass("selected").parents("li :not(.user-panel)").addClass("active").end().parents("ul").addClass("in");
+            if (!$('a[href$="' + url + '"]').hasClass("noactive")) {
+                $('a[href$="' + url + '"]').parent("li").addClass("selected").parents("li").addClass("active").end().parents("ul").addClass("in");
+            }
         }
 
         $(function() {

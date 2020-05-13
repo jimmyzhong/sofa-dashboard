@@ -644,7 +644,7 @@ label {
     margin: 5px 15px 5px 0px;
 }
 
-.select-list li p, .select-list li label:not(.radio-box){
+.select-list li p, .select-list li label:not(.radio-box):not(:select-time){
     float: left;
     width: 65px;
     margin: 5px 5px 5px 0px;
@@ -898,6 +898,16 @@ label {
     border-left:1px solid #ddd;
     display: none;
     z-index:100;
+}
+
+/** 表格全屏样式 **/
+.bootstrap-table.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1050;
+    width: 100%!important;
+    background: #FFF;
 }
 
 /** 表格树样式 **/
