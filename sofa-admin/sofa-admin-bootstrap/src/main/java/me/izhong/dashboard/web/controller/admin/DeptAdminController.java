@@ -54,8 +54,8 @@ public class DeptAdminController {
         SysDept sysDept = null;
         if (parentId == null || parentId.longValue() == 0) {
             sysDept = new SysDept();
-            sysDept.setDeptName("总部");
-            sysDept.setDeptId(1L);
+            sysDept.setDeptName("无");
+            sysDept.setDeptId(0L);
         } else {
             sysDept = sysDeptService.selectDeptByDeptId(parentId);
         }
@@ -77,14 +77,22 @@ public class DeptAdminController {
         if (!sysDeptService.checkDeptNameUnique(sysDept)) {
             throw BusinessException.build("新增部门'" + sysDept.getDeptName() + "'失败，部门名称已存在");
         }
-        if(sysDept.getParentId() == null) {
-            throw BusinessException.build("新增部门'" + sysDept.getDeptName() + "'失败，上级部门不能为空");
-        }
+        //if(sysDept.getParentId() == null) {
+        //    throw BusinessException.build("新增部门'" + sysDept.getDeptName() + "'失败，上级部门不能为空");
+        //}
         if(sysDept.getParentId().equals(sysDept.getDeptId())) {
             throw BusinessException.build("新增部门'" + sysDept.getDeptName() + "'失败，上级部门不能是自己");
         }
-        if(sysDept.getParentId().equals(0L)) {
-            throw BusinessException.build("新增部门'" + sysDept.getDeptName() + "'失败，上级部门不能为空部门");
+        //if(sysDept.getParentId().equals(0L)) {
+         //   throw BusinessException.build("新增部门'" + sysDept.getDeptName() + "'失败，上级部门不能为空部门");
+        //}
+        if (sysDept != null) {
+            if (sysDept.getParentId() == 0L)
+                sysDept.setParentName("无");
+            else {
+                SysDept parentSysDept = sysDeptService.selectDeptByDeptId(sysDept.getParentId());
+                sysDept.setParentName(parentSysDept.getDeptName());
+            }
         }
         sysDept.setCreateBy(UserInfoContextHelper.getCurrentLoginName());
         sysDept.setUpdateBy(UserInfoContextHelper.getCurrentLoginName());

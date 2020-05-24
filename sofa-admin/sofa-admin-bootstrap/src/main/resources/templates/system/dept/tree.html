@@ -19,13 +19,15 @@
 <input id="treeName" name="treeName" type="hidden" th:value="${sysDept.deptName}"/>
 <input id="viewPerm" name="viewPerm" type="hidden" th:value="${viewPerm}"/>
 <div class="wrapper">
-    <div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
+  <!--  <div class="treeShowHideButton" onclick="$.tree.toggleSearch();">
         <label id="btnShow" title="显示搜索" style="display:none;">︾</label>
         <label id="btnHide" title="隐藏搜索">︽</label>
-    </div>
+    </div>-->
     <div class="treeSearchInput" id="search">
-        <label for="keyword">关键字：</label><input type="text" class="empty" id="keyword" maxlength="50">
+        <label for="keyword">关键字：</label>
+        <input type="text" class="empty" id="keyword" maxlength="50">
         <button class="btn" id="btn" onclick="$.tree.searchNode()"> 搜索</button>
+        <button class="btn" id="btn2" onclick="zOnClickNull()"> 取消选择</button>
     </div>
     <div class="treeExpandCollapse">
         <a href="#" onclick="$.tree.expand()">展开</a> /
@@ -46,6 +48,12 @@
         };
         $.tree.init(options);
     });
+
+    function zOnClickNull() {
+        $.tree.cancelSelectedNode();
+        $("#treeId").val("0");
+        $("#treeName").val("无");
+    }
 
     function zOnClick(event, treeId, treeNode) {
         var treeId = treeNode.id;

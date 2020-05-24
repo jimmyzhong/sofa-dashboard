@@ -146,6 +146,16 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
     @Override
     @Transactional
     public int insertDept(SysDept sysDept) {
+        Assert.notNull(sysDept,"");
+        Assert.notNull(sysDept.getParentId(),"");
+        if(sysDept.getParentId().longValue() < 0) {
+            throw BusinessException.build("部门的父部门Id不能小于0");
+        }
+        if(sysDept.getParentId().longValue() > 0) {
+            SysDept dbSysDept = deptDao.findByDeptId(sysDept.getParentId());
+            if(dbSysDept == null)
+                throw BusinessException.build("父部不门存在");
+        }
         checkDeptNameUnique(sysDept);
         sysDept.setCreateTime(new Date());
         super.insert(sysDept);
@@ -157,6 +167,34 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
     @Transactional
     @Override
     public int updateDept(SysDept sysDept) {
+        Assert.notNull(sysDept,"");
+        Assert.notNull(sysDept.getParentId(),"");
+        if(sysDept.getParentId().longValue() < 0) {
+            throw BusinessException.build("部门的父部门Id不能小于0");
+        }
+        if(sysDept.getParentId().longValue() > 0) {
+            SysDept dbSysDept = deptDao.findByDeptId(sysDept.getParentId());
+            if(dbSysDept == null)
+                throw BusinessException.build("父部不门存在");
+        }
+        //不能将父部门移动到子部门下面
+        Long deptId = sysDept.getDeptId();
+        Long newParentId = sysDept.getParentId();
+        SysDept originParent = deptDao.findByDeptId(sysDept.getDeptId());
+        Long originParentId = originParent.getParentId() ;
+        if(!originParentId.equals(newParentId)) {
+            //修改了上级部门,这个上级部门不能是自己的子节点
+            do {
+                SysDept newParent = deptDao.findByDeptId(newParentId);
+                if(newParent == null) {
+                    break;
+                }
+                if (newParent!=null && newParent.getDeptId().equals(deptId)) {
+                    throw BusinessException.build("修改了上级部门,这个上级部门不能是自己的子节点");
+                }
+                newParentId = newParent.getParentId();
+            } while (true);
+        }
         boolean isUnique = checkDeptNameUnique(sysDept);
         if (!isUnique)
             throw BusinessException.build("部门名称已存在");
@@ -359,15 +397,17 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
         //记录后面准备update到数据库的节点
         List<SysDept> modifySysDepts = new ArrayList<>();
 
-        //当前节点的所有父节点
+        //当前节点的所有父节点更新
         List<Long> newAnscents = new ArrayList<>();
         Long loopId = newParentDeptId;
         while (loopId != null) {
             SysDept parent = searchDept(allSysDepts, loopId);
             if (parent == null)
                 break;
-            newAnscents.add(parent.getDeptId());
-            loopId = parent.getParentId();
+            if(!parent.getDeptId().equals(0L)) {
+                newAnscents.add(parent.getDeptId());
+                loopId = parent.getParentId();
+            }
         }
         if (newAnscents.size() > 0) {
             newSysDept.setAncestors(newAnscents);
@@ -398,11 +438,30 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
             }
         });
         for (SysDept d : allDesSysDepts) {
+            if (!modifySysDepts.contains(d))
+                modifySysDepts.add(d);
             //ancestors 去掉oldParentId
             if (oldParentDeptId != null)
                 d.getAncestors().remove(oldParentDeptId);
             //ancestors 增加newParentId
-            d.getAncestors().add(newParentDeptId);
+            if(!d.getAncestors().contains(newParentDeptId) && !newParentDeptId.equals(0L))
+                d.getAncestors().add(newParentDeptId);
+            //当前节点的所有子孙节点 去掉 祖先id
+            List<Long> oldAcs = oldSysDept.getAncestors();
+            if(oldAcs != null) {
+                oldAcs.forEach(e -> {
+                    if(d.getAncestors().contains(e))
+                        d.getAncestors().remove(e);
+                });
+            }
+            //当前节点的所有子孙节点 加上 祖先id
+            List<Long> newAcs = newSysDept.getAncestors();
+            if(newAcs != null) {
+                newAcs.forEach(e -> {
+                    if(!d.getAncestors().contains(e))
+                        d.getAncestors().add(e);
+                });
+            }
         }
 
         //老的父节点Descendents都去掉allDesDeptIds
@@ -439,6 +498,9 @@ public class SysDeptServiceImpl extends CrudBaseServiceImpl<Long,SysDept> implem
                 modifySysDepts.add(parentSysDept);
             cp = parentSysDept.getParentId();
         }
+        modifySysDepts.forEach(e ->{
+            e.setUpdateTime(new Date());
+        });
         deptDao.saveAll(modifySysDepts);
     }
 

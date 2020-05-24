@@ -1500,6 +1500,10 @@ var table = {
                 }
                 return true;
             },
+            // 取消选中
+            cancelSelectedNode: function () {
+                $._tree.cancelSelectedNode();
+            },
             // 隐藏/显示搜索栏
             toggleSearch: function () {
                 $('#search').slideToggle(200);
