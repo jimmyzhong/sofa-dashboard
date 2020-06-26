@@ -1,5 +1,7 @@
 package me.izhong.dashboard.manage.service.impl;
 
+import com.querydsl.core.types.Predicate;
+import me.izhong.dashboard.manage.entity.QSysDictData;
 import me.izhong.db.mongo.service.CrudBaseServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import me.izhong.dashboard.manage.dao.DictDataDao;
@@ -28,11 +30,17 @@ public class SysDictDataServiceImpl extends CrudBaseServiceImpl<Long,SysDictData
 
     @Override
     public List<SysDictData> selectNormalDictDataByType(String dictType) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where("dictType").is(dictType));
-        query.addCriteria(Criteria.where("status").is("0"));
-        query.addCriteria(CriteriaUtil.notDeleteCriteria());
-        return mongoTemplate.find(query, SysDictData.class);
+//        Query query = new Query();
+//        query.addCriteria(Criteria.where("dictType").is(dictType));
+//        query.addCriteria(Criteria.where("status").is("0"));
+//        query.addCriteria(CriteriaUtil.notDeleteCriteria());
+//        return mongoTemplate.find(query, SysDictData.class);
+
+        QSysDictData qSysDictData = QSysDictData.sysDictData;
+        Predicate predicate = qSysDictData.dictType.eq(dictType).and(qSysDictData.status.eq("0"));
+        return (List<SysDictData>) dictDataDao.findAll(predicate);
+        //dictDataDao.findAll(predicate);
+        //return selectList(predicate);
     }
 
     @Override

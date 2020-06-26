@@ -21,5 +21,9 @@
             <artifactId>sofa-db-commons</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.querydsl</groupId>
+            <artifactId>querydsl-mongodb</artifactId>
+        </dependency>
     </dependencies>
 </project>

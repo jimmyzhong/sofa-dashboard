@@ -1,5 +1,6 @@
 package me.izhong.db.common.service;
 
+import com.querydsl.core.types.Predicate;
 import me.izhong.common.domain.PageModel;
 import me.izhong.common.domain.PageRequest;
 import me.izhong.common.exception.BusinessException;
@@ -18,6 +19,8 @@ public interface CrudBaseService<K,T> {
      List<T> selectList(PageRequest request, T target);
 
      List<T> selectList(T target);
+
+//     List<T> selectList(Predicate predicate);
 
      long count(Query query, PageRequest pageRequest, T searchUser);
 

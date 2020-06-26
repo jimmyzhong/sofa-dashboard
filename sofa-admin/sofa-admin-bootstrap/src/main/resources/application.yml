@@ -54,6 +54,8 @@ logging:
 #    org.mongodb: DEBUG
     org.apache.shiro: INFO
 #    org.thymeleaf: INFO
+#    org.springframework.data.mongodb.core: DEBUG
+
 
 # Shiro
 shiro:

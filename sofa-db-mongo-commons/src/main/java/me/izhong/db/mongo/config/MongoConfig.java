@@ -12,6 +12,8 @@ import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
+import org.springframework.data.mongodb.repository.support.MappingMongoEntityInformation;
+import org.springframework.data.mongodb.repository.support.QuerydslMongoPredicateExecutor;
 
 @Configuration
 public class MongoConfig  {
@@ -26,6 +28,7 @@ public class MongoConfig  {
         MongoTemplate mongoTemplate = new MongoTemplate(factory, mappingMongoConverter);
         return mongoTemplate;
     }
+
     @Bean
     public MappingMongoConverter mappingMongoConverter(MongoDbFactory factory, MongoMappingContext context, BeanFactory beanFactory, CustomConversions conversions) {
         DbRefResolver dbRefResolver = new DefaultDbRefResolver(factory);

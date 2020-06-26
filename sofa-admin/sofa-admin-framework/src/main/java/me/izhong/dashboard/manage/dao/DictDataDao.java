@@ -2,12 +2,13 @@ package me.izhong.dashboard.manage.dao;
 
 import me.izhong.dashboard.manage.entity.SysDictData;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface DictDataDao extends MongoRepository<SysDictData, Long> {
+public interface DictDataDao extends MongoRepository<SysDictData, Long> , QuerydslPredicateExecutor<SysDictData> {
 
     List<SysDictData> findAllByDictTypeOrderByDictSortAsc(String dictType);
 
